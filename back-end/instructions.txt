@@ -1,0 +1,25 @@
+Package Manager : npm
+
+Pour setup un projet
+
+	- installer nestjs en local
+		* npm i @nestjs/cli
+	
+	- créer un projet
+		* ./node_modules/.bin/nest new Name_project
+
+	- installer prisma
+		* npm install prisma @prisma/client
+	- créer ou modifier le schema.prisma
+
+	- Generer le prisma client
+		* npx prisma generate
+	
+	- Configurer la connexion a la db
+	 * Dans main.ts, ajouter dans la fonction bootstrap, apres 'const app = await NestFactory.create(AppModule);' :
+	 	const prisma = new PrismaClient();
+
+		app.use((req, res, next) => {
+			req['prisma'] = prisma;
+			next();
+		});

@@ -1,0 +1,247 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 1.
+// User represents a user in the application
+model User {
+	// Unique identifier for the user
+	idUser              Int     @id     @default(autoincrement())
+	// Unique username for the user
+	username            String  @unique
+	// Email of the user
+	email               String
+	// Password of the user
+	password            String
+	// Path to the avatar picture of the user
+	avatar              String
+	// Total of points of the user
+	points              Int
+	// User use the two factor authentification or not
+	isTwoFactorAuth     Boolean
+
+	// Relations with others tables
+
+	User_Game           User_Game[]
+	Message             Message[]
+	User_Channel        User_Channel[]
+	User_Achievement    User_Achievement[]
+	Channel				Channel[]
+	
+	Blocking            Block[] @relation("Blocking")
+	Blocked             Block[] @relation("Blocked")
+	User				Friend[] @relation("User")
+	Friend           	Friend[] @relation("Friend")
+	
+}
+
+// 2.
+// Game represents a game in the application
+model Game {
+	// Unique identifier for the game
+	idGame      Int         @id     @default(autoincrement())
+	// Left score of the game
+	scoreLeft   Int
+	// Right score of the game
+	scoreRight  Int
+	// Date of the game
+	date        DateTime
+
+	// Relations with others tables
+
+	User_Game   User_Game[]
+}
+
+// 3.
+// User_Game represents the relationship between a user and a game
+model User_Game {
+	// Unique identifier for the user-game relationship
+	idUser_Game     Int     @id     @default(autoincrement())
+	// User's id
+	idUser          Int
+	// Game's id
+	idGame          Int
+	// Indicate if the user is the winner or not
+	isWinner        Boolean
+
+	// Relations with others tables
+
+	User            User    @relation(fields: [idUser], references: [idUser])
+	Game            Game    @relation(fields: [idGame], references: [idGame])
+}
+
+// 4.
+// Channel represents a chat channel in the application
+model Channel {
+	// Unique identifier for the channel
+	idChannel       Int		@id		@default(autoincrement())
+	// Name of the channel
+	name            String
+	// Password of the channel
+	password        String
+	// User's id who has the ownership of the channel
+	idOwner         Int
+	// Type of the channel
+	idType          Int
+
+	// Relations with others tables
+
+	User_Channel    User_Channel[]
+	Message	        Message[]
+
+	User            User			@relation(fields: [idOwner], references: [idUser])
+	ChannelType     ChannelType		@relation(fields: [idType], references: [idChannelType])	
+}
+
+// 5.
+// ChannelType represents a channel type in the application
+model ChannelType {
+	// Unique identifier for the type
+	idChannelType	Int		@id		@default(autoincrement())
+	// Name of the type
+	name			String
+
+	// Relations with other tables
+
+	Channel			Channel[]
+}
+
+// 6.
+// Message represents a message in the application
+model Message {
+	// Unique identifier for the message
+	idMessage		Int		@id		@default(autoincrement())
+	// Content of the message
+	content			String
+	// Timestamps of the message
+	timestamps		DateTime
+	// User's id who sent the message
+	idUser			Int
+	// Channel's id in which the message was sent
+	idChannel		Int
+
+	// Relations with others tables
+
+	User			User			@relation(fields: [idUser], references: [idUser])
+	Channel			Channel			@relation(fields: [idChannel], references: [idChannel])
+}
+
+// 7.
+// User_Channel represents the relationship between a user and a channel
+model User_Channel {
+	// Unique identifier for the user-channel relationship
+	idUser_Channel		Int		@id		@default(autoincrement())
+	// User's id
+	idUser				Int
+	// Channel's id
+	idChannel			Int
+	// User role's id
+	idRole				Int
+	// User status's id
+	idStatus			Int
+	// Time to unmute the user
+	muteTime			DateTime?
+
+	// Relations with others tables
+
+	User				User		@relation(fields: [idUser], references: [idUser])
+	Channel				Channel		@relation(fields: [idChannel], references: [idChannel])
+	Role				Role		@relation(fields: [idRole], references: [idRole])
+	Status				Status		@relation(fields: [idStatus], references: [idStatus])
+}
+
+// 8.
+// Role represents a user role in a channel in the applicaiton
+model Role {
+	// Unique identifier for the role
+	idRole			Int				@id		@default(autoincrement())
+	// Name of the role
+	name			String
+
+	// Relations with others tables
+
+	User_Channel	User_Channel[]
+}
+
+// 9.
+// Status represents the user status in a channel in the application
+model Status {
+	// Unique identifier for the status
+	idStatus		Int				@id		@default(autoincrement())
+	// Name of the status
+	name			String
+
+	// Relations with others tables
+
+	User_Channel	User_Channel[]
+}
+
+// 10.
+// User_Achievement represents the relationship between a user and an achievement 
+model User_Achievement {
+	// Unique identifier for the user-achievement relationship
+	idUser_Achievement		Int		@id		@default(autoincrement())
+	// User's id
+	idUser					Int
+	// Achievement's id
+	idAchievement			Int
+
+	// Relations with others tables
+
+	User					User			@relation(fields: [idUser], references: [idUser])
+	Achievement				Achievement		@relation(fields: [idAchievement], references: [idAchievement])
+}
+
+// 11.
+// Achievement represents an achievement for the user in the application
+model Achievement {
+	// Unique identifier for the user-achievement relationship
+	idAchievement		Int		@id		@default(autoincrement())
+	// Name of the achievement
+	name				String
+	// Content of the achievement
+	content				String
+
+	// Relations with others tables
+
+	User_Achievement	User_Achievement[]
+}
+
+// 12.
+// Friend represents a list of friend for a specific user in the application
+model Friend {
+	// Unique identifier for the friend list
+	idFriend		Int		@id		@default(autoincrement())
+	// Specific user's id
+	idUser			Int
+	// Friend user's id
+	idFriendUser	Int
+
+	// Relations with others tables
+
+	User			User	@relation("User", fields: [idUser], references: [idUser])
+ 	FriendUser  	User	@relation("Friend", fields: [idFriendUser], references: [idUser])
+}
+
+// 13.
+// Block represents a list of blocked user for a specific user in the applicaiton
+model Block {
+	// Unique identifier for the blocked user list
+	idBlock			Int		@id		@default(autoincrement())
+	// Specific user's id
+	idUser			Int
+	// Blocked user's id
+	idBlockedUser	Int
+
+	// Relations with others tables
+
+	User			User	@relation("Blocking", fields: [idUser], references: [idUser])
+ 	BlockedUser		User	@relation("Blocked", fields: [idBlockedUser], references: [idUser])
+}
