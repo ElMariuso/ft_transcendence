@@ -1,0 +1,19 @@
+// Préfixe pour les routes -> /users/
+@Controller('users')
+
+// Définition de la route, ici une route dynamique car id peut changer
+@Get(':id')
+
+// Sans Définition, il s'agira de la route par défaut, ici /users
+@Get()
+
+NE PAS OUBLIER D'AJOUTER LES CONTROLLERS DANS APP.MODULE
+
+
+Définition
+
+DTO (Data Transfert Object)
+
+C'est un patron de conception utilisé pour simplifier le transfert des données entre les différentes parties d'une application,
+	généralement entre les couches de cette dernière et notamment entre les logiques de visualisation et métier.
+Grâce à lui, on peut avoir un meilleur contrôle sur les données en transit.
