@@ -11,7 +11,10 @@ case $1 in
         docker-compose down
         docker-compose up --build -d
         ;;
+    clean-volumes)
+        rm -rf database backend/dist
+        ;;
     *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Usage: $0 {start|stop|restart|clean-volumes}"
         exit 1
 esac
