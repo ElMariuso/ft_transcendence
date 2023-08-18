@@ -25,12 +25,15 @@ WORKDIR /usr/src/app
 RUN chown -R node:node /usr/src/app
 USER node
 
-# Copy built files from the build step.
-COPY --from=builder /usr/src/app-build/dist ./dist
+# Copy built files from the build step to a temporary location.
+COPY --from=builder /usr/src/app-build/dist /tmp/dist
 
 # Copy the dependency files and install only the production dependencies.
 COPY package*.json ./
 RUN npm ci --only=production
 
+# Copy the entrypoint script
+COPY --chmod=755 entrypoint.sh /usr/src/app/entrypoint.sh
+
 EXPOSE 3000
-CMD [ "node", "dist/main" ]
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
