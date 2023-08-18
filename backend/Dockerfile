@@ -5,7 +5,7 @@ WORKDIR /usr/src/app-build
 
 # First, copy the dependency files to leverage Docker caching.
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the files
 COPY . .
