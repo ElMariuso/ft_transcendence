@@ -2,26 +2,33 @@ version: '3'
 
 services:
   postgres:
+    container_name: postgres
     image: postgres:13
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ./database:/var/lib/postgresql/data
     networks:
       - db-network
     environment:
       POSTGRES_DB: postgreDB
       POSTGRES_USER: rootDB
       POSTGRES_PASSWORD: passwordDB
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
     restart: always
-
-volumes:
-  db_data:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/usr/src/app
+    networks:
+      - web-network
+      - db-network
+    depends_on:
+      - postgres
+    restart: always
 
 networks:
   web-network:
