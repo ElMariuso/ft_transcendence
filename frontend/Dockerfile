@@ -16,7 +16,7 @@ RUN npm run build
 # Running
 FROM nginx:alpine
 
-COPY --from=build /usr/src/app-build/ /usr/share/nginx/html
+COPY --from=build /usr/src/app-build/build/ /usr/share/nginx/html/
 
 EXPOSE 8080
 
