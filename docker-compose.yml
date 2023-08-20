@@ -10,10 +10,8 @@ services:
       - ./database:/var/lib/postgresql/data
     networks:
       - db-network
-    environment:
-      POSTGRES_DB: postgreDB
-      POSTGRES_USER: rootDB
-      POSTGRES_PASSWORD: passwordDB
+    env_file:
+      - ./env/.env.db
     restart: always
   backend:
     container_name: backend
@@ -25,6 +23,8 @@ services:
     networks:
       - web-network
       - db-network
+    env_file:
+      - ./env/.env.backend
     depends_on:
       - postgres
     restart: always
@@ -37,6 +37,8 @@ services:
       - "8080:80"
     networks:
       - web-network
+    env_file:
+      - ./env/.env.frontend
     depends_on:
       - backend
     restart: always
