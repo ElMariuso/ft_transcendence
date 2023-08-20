@@ -22,9 +22,6 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules/.prisma
     networks:
       - web-network
       - db-network

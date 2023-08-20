@@ -1,39 +1,29 @@
 # Building
-FROM node:16 AS builder
+FROM node:18 as build
 
-WORKDIR /usr/src/app-build
+WORKDIR /usr/src/app
+COPY package.json .
+COPY package-lock.json .
 
-# First, copy the dependency files to leverage Docker caching.
-COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the files
 COPY . .
 
-# Generate Prisma Client
 RUN npx prisma generate
 
-# Run the build
 RUN npm run build
 
 # Running
-FROM node:16
+FROM node:18-slim
 
+RUN apt-get update -y && apt-get install libssl-dev -y --no-install-recommends
 WORKDIR /usr/src/app
-
-# Create a non-root user to run the application for added security.
-RUN chown -R node:node /usr/src/app
-USER node
-
-# Copy built files from the build step to a temporary location.
-COPY --from=builder /usr/src/app-build/dist /tmp/dist
-
-# Copy the dependency files and install only the production dependencies.
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Copy the entrypoint script
-COPY --chmod=755 entrypoint.sh /usr/src/app/entrypoint.sh
-
+COPY --from=build /usr/src/app/dist ./dist
+#COPY --from=build /usr/src/app/.env .env
+COPY --from=build /usr/src/app/package.json .
+COPY --from=build /usr/src/app/package-lock.json .
+RUN npm install --omit=dev
+COPY --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+ENV NODE_ENV production
 EXPOSE 3000
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+CMD ["npm", "run","start:prod"]

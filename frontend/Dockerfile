@@ -1,5 +1,5 @@
 # Building
-FROM node:16 AS builder
+FROM node:16 AS build
 
 WORKDIR /usr/src/app-build
 
@@ -16,7 +16,7 @@ RUN npm run build
 # Running
 FROM nginx:alpine
 
-COPY --from=builder /usr/src/app-build/ /usr/share/nginx/html
+COPY --from=build /usr/src/app-build/ /usr/share/nginx/html
 
 EXPOSE 8080
 
