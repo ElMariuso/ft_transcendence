@@ -1,11 +1,11 @@
-# Building
-FROM node:16 AS build
+### Build phase ###
+FROM node:18 AS build
 
 WORKDIR /usr/src/app-build
 
 # First, copy the dependency files to leverage Docker caching.
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the files
 COPY . .
@@ -13,7 +13,7 @@ COPY . .
 # Run the build
 RUN npm run build
 
-# Running
+### Execution phase ###
 FROM nginx:alpine
 
 COPY --from=build /usr/src/app-build/build/ /usr/share/nginx/html/
