@@ -28,8 +28,8 @@ COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 # Install execution dependencies (excluding devDependencies)
 RUN npm ci --omit=dev
 
-# Generate the Prisma client during the execution phase
-RUN npx prisma generate
+# Copy prisma files
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
 
 # Define the user to run the application for added security
 USER node
