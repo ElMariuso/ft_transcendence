@@ -24,7 +24,7 @@ services:
       - web-network
       - db-network
     env_file:
-      - ./env/.env.backend
+      - ./backend/.env
     depends_on:
       - postgres
     restart: always
