@@ -26,7 +26,7 @@ COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 
 # Install execution dependencies (excluding devDependencies)
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # Copy prisma files
 COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
