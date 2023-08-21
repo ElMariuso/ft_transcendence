@@ -1,6 +1,5 @@
 ### Build phase ###
 FROM node:18 AS build
-
 WORKDIR /usr/src/app-build
 
 # First, copy the dependency files to leverage Docker caching.
@@ -15,8 +14,9 @@ RUN npm run build
 
 ### Execution phase ###
 FROM nginx:alpine
+WORKDIR /usr/share/nginx/html/
 
-COPY --from=build /usr/src/app-build/build/ /usr/share/nginx/html/
+COPY --from=build /usr/src/app-build/build/ .
 
 EXPOSE 8080
 
