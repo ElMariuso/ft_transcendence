@@ -1,4 +1,4 @@
-# Building
+### Build phase ###
 FROM node:18 as build
 WORKDIR /usr/src/app
 
@@ -13,7 +13,7 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-# Execution
+### Execution phase ###
 FROM node:18-slim
 
 # Update, install necessary dependencies, then clean up to reduce image size
@@ -28,8 +28,8 @@ COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 # Install execution dependencies (excluding devDependencies)
 RUN npm ci --omit=dev
 
-# Copy prisma files
-COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+# Generate the Prisma client during the execution phase
+RUN npx prisma generate
 
 # Define the user to run the application for added security
 USER node
