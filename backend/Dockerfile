@@ -20,6 +20,9 @@ FROM node:18-slim
 RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/src/app
 
+# Create folders for logs and uploads
+RUN mkdir -p logs uploads
+
 # Copy necessary files from the build phase
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env

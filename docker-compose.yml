@@ -20,6 +20,9 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./uploads:/usr/src/app/uploads
     networks:
       - web-network
       - db-network
