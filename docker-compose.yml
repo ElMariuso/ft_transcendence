@@ -11,7 +11,7 @@ services:
     networks:
       - db-network
     env_file:
-      - ./env/.env.db
+      - .env
     restart: always
   backend:
     container_name: backend
@@ -41,7 +41,7 @@ services:
     networks:
       - web-network
     env_file:
-      - ./env/.env.frontend
+      - ./frontend/.env
     depends_on:
       - backend
     restart: always
