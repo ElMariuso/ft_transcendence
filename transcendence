@@ -12,7 +12,7 @@ case $1 in
         docker-compose up --build -d
         ;;
     clean-volumes)
-        rm -rf database logs uploads
+        rm -rf database logs-front logs-back uploads
         ;;
     remove-volumes)
         docker-compose down -v

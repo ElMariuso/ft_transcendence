@@ -21,7 +21,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./logs:/usr/src/app/logs
+      - ./logs-back:/usr/src/app/logs
       - ./uploads:/usr/src/app/uploads
     networks:
       - web-network
@@ -38,6 +38,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8080:80"
+    volumes:
+      - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
     env_file:
