@@ -1,6 +1,6 @@
 Backend Dockerfile Documentation
-
 This Dockerfile defines the setup for the backend of our application. It follows a multi-stage build process to separate the build phase from the execution phase, ensuring that the final image is as lightweight as possible while containing all the required components.
+
 1. Build Phase
 a. Base Image:
     We start with an official Node.js image.
