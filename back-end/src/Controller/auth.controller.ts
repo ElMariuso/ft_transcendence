@@ -1,16 +1,53 @@
-// auth.controller.ts
-import { ConsoleLogger, Controller, Get, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
-  @Get('/start-oauth')
-  async startOAuth(@Req() req, @Res() res) {
-    // Construct the OAuth provider's authorization URL
-    const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-fdfa37f70ca1fab842f0a19e1cb52d4a3836dd35ca69c619191ada8a7f0646df&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code';
-    
-    return res.json({ authorizationUrl });
-  }
+	
+	@Get('/start-oauth')
+	async startOAuth(@Req() req, @Res() res) {
+		const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Ftest&response_type=code';
+		
+		console.log("Inside start ?");
+
+		return res.json({ authorizationUrl });
+	}
+
+	
+  	@Post('/oauth-token')
+  	async exchangeCodeForToken(@Req() req, @Res() res) {
+		const authorizationCode : string = req.body.code;
+		
+		console.log("Inside post ?");
+		
+
+		try {
+			const tokenResponse = await axios.post(
+				'https://api.intra.42.fr/oauth/token',
+				{
+					grant_type: 'authorization_code',
+					client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
+					client_secret: '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',
+					code: authorizationCode,
+					// redirect_uri: 'http://localhost:3001/profile',
+				}
+			);
+
+				// Handle the response and store the access token
+				// ...
+
+			return res.json(tokenResponse.data);
+		} 
+		catch (error) {
+			console.error('Error exchanging code for token:', error);
+			return res.status(500).json({ error: 'Failed to exchange code for token' });
+		}
+	}
+}
+
+
+
+
 
 //   @Get('oauth-callback')
 //   async oauthCallback(@Req() req, @Res() res) {
@@ -33,4 +70,3 @@ export class AuthController {
 
   //   return res.redirect('/'); // Redirect back to frontend
   // }
-}
