@@ -19,6 +19,7 @@ export class AuthController {
 		const authorizationCode : string = req.body.code;
 		
 		console.log("Inside post ?");
+		console.log(authorizationCode);
 		
 
 		try {
@@ -30,6 +31,7 @@ export class AuthController {
 					client_secret: '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',
 					code: authorizationCode,
 					// redirect_uri: 'http://localhost:3001/profile',
+					redirect_uri: 'http://localhost:3001/test',
 				}
 			);
 
