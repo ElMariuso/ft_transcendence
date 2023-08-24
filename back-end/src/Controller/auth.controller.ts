@@ -8,8 +8,6 @@ export class AuthController {
 	async startOAuth(@Req() req, @Res() res) {
 		const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Ftest&response_type=code';
 		
-		console.log("Inside start ?");
-
 		return res.json({ authorizationUrl });
 	}
 
@@ -17,11 +15,7 @@ export class AuthController {
   	@Post('/oauth-token')
   	async exchangeCodeForToken(@Req() req, @Res() res) {
 		const authorizationCode : string = req.body.code;
-		
-		console.log("Inside post ?");
-		console.log(authorizationCode);
-		
-
+	
 		try {
 			const tokenResponse = await axios.post(
 				'https://api.intra.42.fr/oauth/token',
@@ -30,13 +24,13 @@ export class AuthController {
 					client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
 					client_secret: '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',
 					code: authorizationCode,
-					// redirect_uri: 'http://localhost:3001/profile',
 					redirect_uri: 'http://localhost:3001/test',
 				}
 			);
-
-				// Handle the response and store the access token
-				// ...
+			
+			// Handle token here
+			if (tokenResponse)
+				console.log(tokenResponse);
 
 			return res.json(tokenResponse.data);
 		} 
