@@ -1,7 +1,8 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
-import { UserService } from '../Service/user.service';
-import { UserDTO } from '../DTO/user.dto';
-import { CreateUserDTO } from '../DTO/createUser.dto';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { UserService } from 'src/Service/user.service';
+import { UserDTO } from 'src/DTO/user/user.dto';
+import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
+import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
 
 @Controller('users')
 export class UserController
@@ -63,6 +64,7 @@ export class UserController
 	 * @param id User's id to delete
 	 * 
 	 * @returns Message in a string
+	 * @throws HTTPException with status NOT_FOUND if the user is not found
 	 */
 	@Delete('/delete/:id')
 	async deleteUserById(@Param('id') id: number) : Promise<String>
@@ -74,4 +76,31 @@ export class UserController
 		
 		return "User deleted successfully";
 	}
+
+	/**
+	 * 
+	 * Update a user
+	 * 
+	 * @param id id of the user
+	 * @param updateUserDTO DTO containing data to update the user
+	 * @returns UserDTO
+	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the update of the user failed
+	 */
+	@Put('/update/:id')
+	async updateUser(@Param('id') id: number, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
+	{
+		try
+		{
+			return this.userService.updateUser(id, updateUserDTO);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User not found');
+
+			throw new InternalServerErrorException('User update failed');
+		}
+	}
 }
+
