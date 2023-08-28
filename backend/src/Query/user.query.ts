@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User } from '@prisma/client';
-import { CreateUserDTO } from 'src/DTO/createUser.dto';
+import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 
 @Injectable()
 export class UserQuery
@@ -24,7 +24,7 @@ export class UserQuery
 	 * 
 	 * @returns User if the id match, null otherwise
 	 */
-	async findUserBydId(idUser: number)
+	async findUserById(idUser: number)
 	{
 		return this.prisma.user.findUnique(
 		{
@@ -43,9 +43,24 @@ export class UserQuery
 	{
 		return this.prisma.user.findUnique(
 		{
-			where: { username },
+			where: { username: username },
 		});
 	}
+
+	/**
+	 * Gets a user by his id
+	 * 
+	 * @param idUser user's id to find
+	 * 
+	 * @returns User if the id match, null otherwise
+	 */
+	 async findUserBy42Id(id42: number)
+	 {
+		 return this.prisma.user.findUnique(
+		 {
+			 where: { id42: id42 },
+		 });
+	 }
 
 	/**
 	 * Posts a new user in DB
@@ -69,6 +84,7 @@ export class UserQuery
 				avatar: 'default',
 				points: 0,
 				isTwoFactorAuth: false,
+				id42: null
 			},
 		});
 
@@ -85,6 +101,16 @@ export class UserQuery
 		this.prisma.user.delete(
 		{
 			where : { idUser }
+		}
+		);
+	}
+
+	async updateUser(idUser: number, updateData: any)
+	{
+		this.prisma.user.update(
+		{
+			where: { idUser },
+			data: updateData
 		}
 		);
 	}
