@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import token from './../app/utils/token';
 
-export default function testPage() {
+export default function TestPage() {
 	const router = useRouter();
 
 	const getToken = async () => {
