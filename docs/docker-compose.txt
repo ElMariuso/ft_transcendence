@@ -1,0 +1,61 @@
+Docker System Documentation for ft_transcendence
+1. Introduction
+This docker-compose.yml outlines how the various services of the ft_transcendence project are containerized and how they interact with one another.
+
+2. Services
+a. Postgres
+    Image: Uses the postgres:13 image.
+    Ports: The container's port 5432 is mapped to the host's port 5432.
+    Volumes: The database data is persisted in the local directory ./database.
+    Network: Connected to the db-network.
+    Environment Variables: Uses the .env file for its environment variables.
+
+b. Backend
+    Build Context: Directory ./backend with the Dockerfile located at ./backend/Dockerfile.
+    Ports: The container's port 3000 is mapped to the host's port 3000.
+    Volumes:
+        Logs are stored in ./logs-back.
+        Uploads/downloads are stored in ./uploads.
+    Networks: Connected to the web-network and db-network.
+    Environment Variables: Uses the ./backend/.env file for its environment variables.
+    Dependencies: Relies on the postgres service to operate correctly.
+
+c. Frontend
+    Build Context: Directory ./frontend with the Dockerfile located at ./frontend/Dockerfile.
+    Ports: The container's port 80 is mapped to the host's port 8080.
+    Volumes: Logs are stored in ./logs-front.
+    Network: Connected to the web-network.
+    Environment Variables: Uses the ./frontend/.env file for its environment variables.
+    Dependencies: Relies on the backend service to operate correctly.
+
+3. Networks
+There are two bridge networks defined:
+    web-network: Used to connect the frontend and the backend.
+    db-network: Used to connect the backend to the Postgres database.
+
+4. How to Use the Management Script
+Instead of using Docker Compose commands directly, a management script is provided to simplify common tasks.
+Here's how to use the script:
+a. Make sure the script has execution permissions:
+    < chmod +x your_script_name.sh >
+
+b. The available commands for the script are:
+    b-a. start: This command initializes and starts all the services. It builds any necessary images that are not available locally.
+    < ./transcendence start >
+
+    b-b. stop: This stops and removes all running containers but retains volumes.
+    < ./your_script_name.sh stop >
+    
+    b-c. restart: This command restarts all services, rebuilding the images if necessary.
+    < ./your_script_name.sh restart >
+    
+    b-d. clean-volumes: Deletes the directories used for persistent storage (database, logs-front, logs-back, and uploads). Use this with caution as it removes data!
+    < ./your_script_name.sh clean-volumes >
+    
+    b-e. remove-volumes: Stops all services and removes associated volumes.
+    < ./your_script_name.sh remove-volumes >
+    
+    b-f. remove-images: Stops all services and removes all associated images.
+    < ./your_script_name.sh remove-images >
+
+c. If an unrecognized command is provided, the script will output a usage guide.

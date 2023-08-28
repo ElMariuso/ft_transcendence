@@ -1,0 +1,47 @@
+Frontend Dockerfile Documentation
+This Dockerfile outlines the setup for the frontend of our application. Similar to the backend, it employs a multi-stage build process. This approach ensures we have a clean separation between the build and execution phases, and results in a leaner final image.
+
+1. Build Phase
+a. Base Image:
+    We initiate with the official Node.js image for our build phase:
+    [ FROM node:18 AS build ]
+
+    This environment gives us Node.js and npm, essential for building our frontend.
+
+b. Set Working Directory:
+    [ WORKDIR /usr/src/app-build ]
+    
+    This command establishes /usr/src/app-build as the working directory for subsequent Dockerfile commands.
+
+c. Installing Dependencies:
+    Before building the frontend, we must first fetch its dependencies.
+    [ COPY package*.json ./ ]
+    [ RUN npm ci ]
+    
+    Here, package.json and package-lock.json are copied into the image, followed by npm ci for a clean and consistent dependency installation.
+
+d. Copying Application Files & Building:
+    Post dependency installation, we proceed to copy the remaining frontend files and then build the application.
+    [ COPY . . ]
+    [ RUN npm run build ]
+
+2. Execution Phase
+a. Base Image:
+    For running the built frontend, we employ a lightweight nginx image based on Alpine Linux:
+    [ FROM nginx:alpine ]
+    
+    NGINX serves as an efficient static file server, making it ideal for serving frontend applications.
+
+b. Set Working Directory:
+    [ WORKDIR /usr/share/nginx/html/ ]
+    
+    This sets the working directory to NGINX's default directory for serving content.
+
+c. Copying Built Frontend:
+    We transfer only the built files from our build phase into our final image. This ensures the image remains as compact as possible.
+    [ COPY --from=build /usr/src/app-build/build/ . ]
+
+d. Launch Settings:
+    Finally, we expose port 8080 and set the container to start NGINX in the foreground when launched. Running NGINX in the foreground ensures that the Docker container continues running.
+    [ EXPOSE 8080 ]
+    [ CMD ["nginx", "-g", "daemon off;"] ]

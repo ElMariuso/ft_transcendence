@@ -1,0 +1,70 @@
+Backend Dockerfile Documentation
+This Dockerfile defines the setup for the backend of our application. It follows a multi-stage build process to separate the build phase from the execution phase, ensuring that the final image is as lightweight as possible while containing all the required components.
+
+1. Build Phase
+a. Base Image:
+    We start with an official Node.js image.
+    [ FROM node:18 as build ]
+
+    This provides us with a Node.js and npm environment to build our application.
+
+b. Set Working Directory:
+    [ WORKDIR /usr/src/app ]
+
+    This sets /usr/src/app as the working directory for any subsequent commands in the Dockerfile.
+
+c. Installing Dependencies:
+    Before we can build our application, we need to install its dependencies.
+    [ COPY package*.json ./ ]
+    [ RUN npm ci ]
+
+    We first copy over the package.json and package-lock.json files and then use npm ci for a clean, reproducible build.
+
+d. Copy Application Files:
+    [ COPY . . ]
+    
+    We then copy the rest of the application files into the image.
+
+e. Prisma Client Generation & Build:
+    The application uses Prisma for database operations. We generate the Prisma client and then build our application.
+    [ RUN npx prisma generate ]
+    [ RUN npm run build ]
+
+2. Execution Phase
+a. Base Image:
+    [ FROM node:18-slim ]
+
+    For the execution phase, we use a slimmer version of the Node image to reduce the final image size.
+
+b. Installing System Dependencies:
+    [ RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends && rm -rf /var/lib/apt/lists/* ]
+
+    We update the package list, install the necessary system libraries and then clean up to minimize the image size. We also include dumb-init which helps handle process signals and is particularly useful for Node.js applications in Docker.
+
+c. Set Working Directory & Create Required Folders:
+    [ WORKDIR /usr/src/app ]
+    [ RUN mkdir -p logs uploads ]
+
+d. Copying Built Application:
+    We copy only the necessary files from the build phase to ensure our final image remains lean.
+    [ COPY --chown=node:node --from=build /usr/src/app/dist ./dist ]
+    [ COPY --chown=node:node --from=build /usr/src/app/.env .env ]
+    [ COPY --chown=node:node --from=build /usr/src/app/package*.json ./ ]
+
+e. Installing Execution Dependencies:
+    This step installs only the production dependencies for our application.
+    [ RUN npm ci --omit=dev ]
+
+f. Copying Prisma Client:
+    Since our backend relies on Prisma, we need to ensure the generated Prisma client is part of our final image.
+    [ COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client ]
+
+g. User Definition:
+    For added security, we define a non-root user (node) to run our application.
+    [ USER node ]
+
+h. Setting Up Environment & Launching:
+    Finally, we set the NODE_ENV to production and expose port 3000 for our application. The CMD defines the command that will be executed when the container starts.
+    [ ENV NODE_ENV production ]
+    [ EXPOSE 3000 ]
+    [ CMD ["dumb-init", "node", "dist/main"] ]
