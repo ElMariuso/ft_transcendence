@@ -19,7 +19,8 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html/
 
 # Copy built files from the build stage
-COPY --from=build /usr/src/app-build/build/ .
+COPY --from=build /usr/src/app-build/.next ./.next
+COPY --from=build /usr/src/app-build/public ./public
 
 # Launching
 EXPOSE 8080
