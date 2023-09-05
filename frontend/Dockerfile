@@ -14,17 +14,18 @@ COPY . .
 # Run the build
 RUN npm run build
 
-### Execution phase ###
-FROM nginx:alpine
-WORKDIR /usr/share/nginx/html/
+CMD ["npm", "run", "start"]
+# ### Execution phase ###
+# FROM nginx:alpine
+# WORKDIR /usr/share/nginx/html/
 
-# Copy built files from the build stage
-COPY --from=build /usr/src/app-build/.next ./.next
-COPY --from=build /usr/src/app-build/public ./public
+# # Copy built files from the build stage
+# COPY --from=build /usr/src/app-build/.next ./.next
+# COPY --from=build /usr/src/app-build/public ./public
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# COPY nginx.conf /etc/nginx/nginx.conf
 
-# Launching
-# EXPOSE 8080
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# # Launching
+# # EXPOSE 8080
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
