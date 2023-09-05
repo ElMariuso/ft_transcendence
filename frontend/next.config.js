@@ -4,15 +4,19 @@
 // module.exports = nextConfig
 
 module.exports = {
+	server: {
+		port: 8080,
+	},
+
     async rewrites() {
       return [
         {
           source: '/api/auth/start-oauth',
-          destination: 'http://localhost:3000/auth/start-oauth',
+          destination: 'http://backend:3000/auth/start-oauth',
         },
 		{
 			source: '/token/auth/oauth-token',
-			destination: 'http://localhost:3000/auth/oauth-token',
+			destination: 'http://backend:3000/auth/oauth-token',
 		},
       ];
     },
