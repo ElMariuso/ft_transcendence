@@ -1,5 +1,5 @@
 ### Build phase ###
-FROM node:18 as build
+FROM node:18 AS build
 WORKDIR /usr/src/app
 
 # Copy package files and install dependencies using npm ci for a clean, reproducible build

@@ -4,10 +4,6 @@
 // module.exports = nextConfig
 
 module.exports = {
-	server: {
-		port: 8080,
-	},
-
     async rewrites() {
       return [
         {
