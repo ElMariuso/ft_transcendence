@@ -8,34 +8,36 @@ import api from './utils/api';
 
 
 export default function Home() {
-	// const startOAuthFlow = async () => {
-	// 	try {
-	// 		const response = await api.get('/auth/start-oauth');
-	// 		console.log('Authorization URL:', response.data.authorizationUrl);
-	// 		window.location.href = response.data.authorizationUrl;
-	// 	} 
-	// 	catch (error) {
-	// 		console.error('Error starting OAuth flow:', error);
-	// 	}
-	// };
+	const startOAuthFlow = async () => {
+		try {
+			console.log("Trying to connect w/ api")
+			const response = await api.get('/auth/start-oauth');
+			console.log('Authorization URL:', response.data.authorizationUrl);
+			window.location.href = response.data.authorizationUrl;
+		} 
+		catch (error) {
+			console.error('Error starting OAuth flow:', error);
+		}
+	};
 
-	// useEffect(() => {
-	// 	startOAuthFlow();
-	// }, []);
+	useEffect(() => {
+		startOAuthFlow();
+	}, []);
 
-	// return (
-	// 	<div>
-	// 		<p>Starting OAuth flow...</p>
-	// 	</div>
-	// );
+	return (
+		<div>
+			<p>Starting OAuth flow...</p>
+		</div>
+	);
 
 
 	// TESTING LAYOUT
-	return (
-		<p>Test</p>
+	// return (
+		// <p>Test</p>
+
 		// <>
 		// 	<Navbar />
 		// 	<Profile />
 		// </>
-	);
+	// );
 }
