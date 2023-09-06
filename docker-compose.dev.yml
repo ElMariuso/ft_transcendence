@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   postgres:
     container_name: postgres
     image: postgres:13
@@ -13,16 +14,18 @@ services:
     env_file:
       - .env
     restart: always
-  backend:
-    container_name: backend
+
+  backend-dev:
+    container_name: backend-dev
     build:
       context: ./backend
-      dockerfile: ./Dockerfile
+      dockerfile: ../dockerfiles/backend/Dockerfile.dev
     ports:
       - "3000:3000"
     volumes:
       - ./logs-back:/usr/src/app/logs
       - ./uploads:/usr/src/app/uploads
+      - ./backend:/usr/src/app  # Mount the local backend directory into the container for live code updates
     networks:
       - web-network
       - db-network
@@ -31,21 +34,23 @@ services:
     depends_on:
       - postgres
     restart: always
-  frontend:
-    container_name: frontend
+
+  frontend-dev:
+    container_name: frontend-dev
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
+      dockerfile: ../dockerfiles/frontend/Dockerfile.dev
     ports:
       - "8080:8080"
     volumes:
       - ./logs-front:/usr/src/app/logs
+      - ./frontend:/usr/src/app  # Mount the local frontend directory into the container for live code updates
     networks:
       - web-network
     env_file:
       - ./frontend/.env
     depends_on:
-      - backend
+      - backend-dev
     restart: always
 
 networks:

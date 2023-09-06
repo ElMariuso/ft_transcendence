@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    networks:
+      - db-network
+    env_file:
+      - .env
+    restart: always
+
+  backend-prod:
+    container_name: backend-prod
+    build:
+      context: ./backend
+      dockerfile: ../dockerfiles/backend/Dockerfile.prod  # Use the production Dockerfile for the backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs-back:/usr/src/app/logs
+      - ./uploads:/usr/src/app/uploads
+    networks:
+      - web-network
+      - db-network
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+    restart: always
+
+  frontend-prod:
+    container_name: frontend-prod
+    build:
+      context: ./frontend
+      dockerfile: ../dockerfiles/frontend/Dockerfile.prod  # Use the production Dockerfile for the frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs-front:/usr/src/app/logs
+    networks:
+      - web-network
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend-prod
+    restart: always
+
+networks:
+  web-network:
+    driver: bridge
+  db-network:
+    driver: bridge
