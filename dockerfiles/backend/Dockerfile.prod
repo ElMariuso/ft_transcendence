@@ -12,6 +12,8 @@ COPY . .
 # Generate the Prisma client and build the application
 RUN npx prisma generate
 RUN npm run build
+RUN npx prisma migrate deploy
+
 
 ### Execution phase ###
 FROM node:18-slim

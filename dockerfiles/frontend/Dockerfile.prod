@@ -11,6 +11,9 @@ RUN npm ci
 # Copy the rest of the files
 COPY . .
 
+# Set MODE variable in the .env file
+RUN echo "MODE=prod" > .env
+
 # Build the production application
 RUN npm run build
 

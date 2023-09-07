@@ -13,6 +13,7 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+
 ### Execution phase ###
 FROM node:18-slim
 
@@ -29,15 +30,18 @@ COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 
 # Install the Nest.js CLI
-RUN npm install -g @nestjs/cli
+# RUN npm install -g @nestjs/cli
+RUN npm ci
 
 # Copy prisma files
-COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+# COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
 
 # Define the user to run the application for added security
 USER node
 
+
 # Launching in development mode
 ENV NODE_ENV development
 EXPOSE 3000
+
 CMD ["dumb-init", "npm", "run", "start:dev"]
