@@ -30,10 +30,18 @@ export class AuthController {
 			);
 			
 			// Handle token here
-			if (tokenResponse)
-				console.log(tokenResponse);
 
-			return res.json(tokenResponse.data);
+			// if (tokenResponse) {
+				
+			// 	// const userInfo = axios.get('https://api.intra.42.fr/v2/me',
+			// 	// {
+			// 	// 	headers: 'Authorization: Bearer ' + tokenResponse,
+			// 	// }
+			// 	// )
+			// 	// console.log(userInfo);
+
+			// // return res.json(userInfo);
+			// }
 		} 
 		catch (error) {
 			console.error('Error exchanging code for token:', error);

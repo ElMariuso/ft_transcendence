@@ -15,15 +15,15 @@ if [ "$1" != "dev" ] && [ "$1" != "prod" ]; then
 fi
 
 # Function to wait for PostgreSQL to be ready
-wait_for_postgres() {
-    until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER; do
-        echo "Waiting for PostgreSQL to be ready..."
-        sleep 1
-    done
-}
+# wait_for_postgres() {
+#     until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER; do
+#         echo "Waiting for PostgreSQL to be ready..."
+#         sleep 1
+#     done
+# }
 
-# Wait for PostgreSQL
-wait_for_postgres
+# # Wait for PostgreSQL
+# wait_for_postgres
 
 # Run Prisma migration based on the environment argument
 if [ "$1" == "dev" ]; then

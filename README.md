@@ -11,3 +11,5 @@ Access backend at localhost:3000
 Access frontend at localhost:8080
 
 WIP
+
+?username=cwastche
