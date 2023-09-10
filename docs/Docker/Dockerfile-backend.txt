@@ -49,8 +49,14 @@
 				This copies necessary files from the build phase, including the .env file,
 				package*.json files, the dist folder, and the Prisma client.
 
-			.Install Nest.js CLI: "RUN npm install -g @nestjs/cli"
-				Here, we install the Nest.js CLI globally to enable Nest.js command-line tools.
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "dev"]"
+				This script allows for custom entrypoint behavior during development.
+				Used to migrate the DB using prisma
+
+			.Install Nest.js CLI: "RUN npm ci"
+				Here, we install the dependencies globally to enable Nest.js command-line tools.
 			
 			.User Definition: "USER node"
 				This step defines a non-root user (node) to run the application for enhanced security.
@@ -110,6 +116,12 @@
 				This copies necessary files from the build phase, including the .env file,
 				package*.json files, the dist folder, and the Prisma client.
 			
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]"
+	  			This script allows for custom entrypoint behavior during development.
+	  			Used to migrate the DB using prisma
+
 			.Install Execution Dependencies: "RUN npm ci --production"
 				This step installs only production dependencies for the application.
 			

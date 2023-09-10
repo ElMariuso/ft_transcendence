@@ -30,7 +30,11 @@ It provides separate Dockerfiles and build instructions for both development and
 
 			.Copy Application Files: "COPY . ."
 				Copies the remaining application files into the image.
-		
+
+			.Set Mode: "RUN echo "MODE=dev" > .env"
+				Sets the correct mode in .env file for routing purposes.
+				See frontend/next.config.js file for context
+
 		* Execution Phase:
 			
 			.Base Image: "FROM node:18-slim"
@@ -78,7 +82,11 @@ It provides separate Dockerfiles and build instructions for both development and
 	
 			.Copy Application Files: "COPY . ."
 				This step copies all other application files into the image.
-	
+
+			.Set Mode: "RUN echo "MODE=prod" > .env"
+				Sets the correct mode in .env file for routing purposes.
+				See frontend/next.config.js file for context
+
 			.Build the Production Application: "RUN npm run build"
 				Here, we execute the npm run build command to generate a production-ready build of the application.
 	
