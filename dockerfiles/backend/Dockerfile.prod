@@ -12,8 +12,6 @@ COPY . .
 # Generate the Prisma client and build the application
 RUN npx prisma generate
 RUN npm run build
-RUN npx prisma migrate deploy
-
 
 ### Execution phase ###
 FROM node:18-slim
@@ -30,11 +28,22 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 
+# Copy prisma files
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+
+# Copy the custom entry script into the container
+COPY entrypoint.sh /usr/src/app/entrypoint.sh
+
+# Grant execute permissions to the script
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Set the script as the entry point
+ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]
+
 # Install execution dependencies (excluding devDependencies for production)
 RUN npm ci --production
 
-# Copy prisma files
-COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+
 
 # Define the user to run the application for added security
 USER node
