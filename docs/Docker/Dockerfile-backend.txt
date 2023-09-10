@@ -121,6 +121,7 @@
 						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]"
 	  			This script allows for custom entrypoint behavior during development.
 	  			Used to migrate the DB using prisma
+############## MIGRATION DOES NOT WORK PROPERLY IN PROD MODE #################
 
 			.Install Execution Dependencies: "RUN npm ci --production"
 				This step installs only production dependencies for the application.
