@@ -67,4 +67,12 @@ export class MatchmakingService {
     remove(playerId: number): void {
         this.queueService.remove(playerId);
     }
+
+    /**
+     * Retrieves the current number of players in the queue.
+     * @returns {number} The number of players in the queue.
+     */
+    getQueueSize(): number {
+        return this.queueService.getQueueSize();
+    }
 }
