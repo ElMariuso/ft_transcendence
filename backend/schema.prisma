@@ -54,7 +54,7 @@ model Game {
 	// Right score of the game
 	scoreRight  Int
 	// Date of the game
-	date        DateTime @default(now())
+	date        DateTime
 
 	// Relations with others tables
 
