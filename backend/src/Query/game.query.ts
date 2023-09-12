@@ -33,20 +33,28 @@ export class GameQuery {
 	}
 
     /**
-	 * Posts a new game in DB
-	 * 
-	 * @param data CreateGameDTO
-	 * 
-	 * @returns New Game
-	 */
-    async createGame(data: CreateGameDTO): Promise<Game>
+     * Creates a new game in the database. If certain properties are not provided, 
+     * they will default to a preset value (e.g., scoreLeft and scoreRight default to 0, date defaults to the current date).
+     * 
+     * @param data? Optional data for the game. Any missing properties will use default values.
+     * 
+     * @returns The created game object.
+     */
+    async createGame(data?: Partial<CreateGameDTO>): Promise<Game>
     {
+        const defaultData: CreateGameDTO = {
+            scoreLeft: 0,
+            scoreRight: 0,
+            date: new Date(),
+        };
+
+        const gameData = {
+            ...defaultData,
+            ...data,
+        };
+
         return this.prisma.game.create({
-            data: {
-                scoreLeft: data.scoreLeft,
-                scoreRight: data.scoreRight,
-                date: data.date,
-            },
+            data: gameData,
         });
     }
 
