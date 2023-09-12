@@ -44,4 +44,13 @@ export class QueueService {
     get currentQueue(): PlayerInQueue[] {
         return this.queue;
     }
+
+    /**
+     * Retrieves the players from the queue and sorts them in ascending order based on their points.
+     * 
+     * @returns A sorted array of players, with players having the least points appearing first.
+     */
+    getSortedQueue(): PlayerInQueue[] {
+        return this.queue.sort((a, b) => a.points - b.points);
+    }
 }
