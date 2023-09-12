@@ -35,4 +35,13 @@ export class QueueService {
     getQueueSize(): number {
         return this.queue.length;
     }
+
+    /**
+     * Getter for the current queue of players waiting for a match.
+     * 
+     * @returns The array of players in the queue.
+     */
+    get currentQueue(): PlayerInQueue[] {
+        return this.queue;
+    }
 }
