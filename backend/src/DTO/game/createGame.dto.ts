@@ -6,12 +6,12 @@ import { IsInt, IsNotEmpty, IsDate, Min } from 'class-validator';
 export class CreateGameDTO {
 	@IsNotEmpty()
 	@IsInt()
-	@Min(-1)
+	@Min(0)
 	scoreLeft: number;
 
 	@IsNotEmpty()
 	@IsInt()
-	@Min(-1)
+	@Min(0)
 	scoreRight: number;
 
 	@IsNotEmpty()
