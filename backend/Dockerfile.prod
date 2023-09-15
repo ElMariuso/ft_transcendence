@@ -32,7 +32,7 @@ COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
 
 # Copy the custom entry script into the container
-COPY entrypoint.sh /usr/src/app/entrypoint.sh
+COPY entrypoint.sh /usr/src/app/
 
 # Grant execute permissions to the script
 RUN chmod +x /usr/src/app/entrypoint.sh
@@ -43,12 +43,11 @@ ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]
 # Install execution dependencies (excluding devDependencies for production)
 RUN npm ci --production
 
-
-
 # Define the user to run the application for added security
 USER node
 
 # Launching in production mode
 ENV NODE_ENV production
 EXPOSE 3000
+
 CMD ["dumb-init", "node", "dist/main"]

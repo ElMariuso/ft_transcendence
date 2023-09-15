@@ -19,7 +19,7 @@ services:
     container_name: backend-prod
     build:
       context: ./backend
-      dockerfile: ../dockerfiles/backend/Dockerfile.prod  # Use the production Dockerfile for the backend
+      dockerfile: ./Dockerfile.prod  # Use the production Dockerfile for the backend
     ports:
       - "3000:3000"
     volumes:
@@ -38,7 +38,7 @@ services:
     container_name: frontend-prod
     build:
       context: ./frontend
-      dockerfile: ../dockerfiles/frontend/Dockerfile.prod  # Use the production Dockerfile for the frontend
+      dockerfile: ./Dockerfile.prod  # Use the production Dockerfile for the frontend
     ports:
       - "8080:8080"
     volumes:

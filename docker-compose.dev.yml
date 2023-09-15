@@ -19,7 +19,7 @@ services:
     container_name: backend-dev
     build:
       context: ./backend
-      dockerfile: ../dockerfiles/backend/Dockerfile.dev
+      dockerfile: ./Dockerfile.dev
     ports:
       - "3000:3000"
     volumes:
@@ -39,7 +39,7 @@ services:
     container_name: frontend-dev
     build:
       context: ./frontend
-      dockerfile: ../dockerfiles/frontend/Dockerfile.dev
+      dockerfile: ./Dockerfile.dev
     ports:
       - "8080:8080"
     volumes:

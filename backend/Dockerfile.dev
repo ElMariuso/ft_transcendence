@@ -84,18 +84,18 @@ COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 
+# Install the Nest.js CLI
+# RUN npm install -g @nestjs/cli
+RUN npm ci
+
 # Copy the custom entry script into the container
-COPY entrypoint.sh /usr/src/app/entrypoint.sh
+COPY entrypoint.sh /usr/src/app/
 
 # Grant execute permissions to the script
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 # Set the script as the entry point
 ENTRYPOINT ["/usr/src/app/entrypoint.sh", "dev"]
-
-# Install the Nest.js CLI
-# RUN npm install -g @nestjs/cli
-RUN npm ci
 
 # Define the user to run the application for added security
 USER node
