@@ -41,10 +41,10 @@ services:
       context: ./frontend
       dockerfile: ./Dockerfile.dev
     ports:
-      - "8080:3000"
+      - "8080:8080"
     volumes:
-      - ./logs-front:/usr/src/app/logs
       - ./frontend:/usr/src/app  # Mount the local frontend directory into the container for live code updates
+      - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
     env_file:

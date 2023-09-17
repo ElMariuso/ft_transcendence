@@ -29,21 +29,17 @@ WORKDIR /usr/src/app
 # Create folders for logs and uploads
 RUN mkdir -p logs uploads
 
-# Install global dependencies
-RUN npm install -g next@latest react@latest react-dom@latest
-
 # Copy necessary files from the build phase
 COPY --from=build /usr/src/app-build/.env .env
 COPY --from=build /usr/src/app-build/package*.json ./
-COPY --from=build /usr/src/app-build/.next ./.next
-COPY --from=build /usr/src/app-build/public ./public
-COPY --from=build /usr/src/app-build/node_modules ./node_modules
+COPY --from=build /usr/src/app-build/dist ./dist
 
 # Define the user to run the application for added security
 USER node
 
 # Launching in production mode
 ENV NODE_ENV production
-EXPOSE 3000
+EXPOSE 8080
 
-CMD ["dumb-init", "npm", "start"]
+CMD ["npx", "serve", "-s", "dist"]
+
