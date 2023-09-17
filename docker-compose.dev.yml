@@ -41,7 +41,7 @@ services:
       context: ./frontend
       dockerfile: ./Dockerfile.dev
     ports:
-      - "8080:8080"
+      - "8080:3000"
     volumes:
       - ./logs-front:/usr/src/app/logs
       - ./frontend:/usr/src/app  # Mount the local frontend directory into the container for live code updates
