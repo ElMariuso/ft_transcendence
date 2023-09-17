@@ -2,7 +2,7 @@
 FROM node:18 AS build
 WORKDIR /usr/src/app
 
-# Copy package files and install dependencies using npm ci for a clean, reproducible build
+# Copy package files and install ALL dependencies (including devDependencies)
 COPY package*.json ./
 RUN npm ci
 
@@ -29,18 +29,14 @@ COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
 
 # Copy prisma files
-COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --chown=node:node --from=build /usr/src/app/schema.prisma ./
 
 # Copy the custom entry script into the container
-COPY entrypoint.sh /usr/src/app/
-
-# Grant execute permissions to the script
+COPY --chown=node:node entrypoint.sh /usr/src/app/
 RUN chmod +x /usr/src/app/entrypoint.sh
 
-# Set the script as the entry point
-ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]
-
-# Install execution dependencies (excluding devDependencies for production)
+# Install ONLY production dependencies
 RUN npm ci --production
 
 # Define the user to run the application for added security
