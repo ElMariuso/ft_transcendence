@@ -1,70 +1,136 @@
-Backend Dockerfile Documentation
-This Dockerfile defines the setup for the backend of our application. It follows a multi-stage build process to separate the build phase from the execution phase, ensuring that the final image is as lightweight as possible while containing all the required components.
+=====================================================================================
+== DOCKER SYSTEM DOCUMENTATION FOR ft_transcendence - BACKEND nest.js Dockerfiles ==
+=====================================================================================
+(In vscode, install the "Txt Syntax" extension for coloured text)
 
-1. Build Phase
-a. Base Image:
-    We start with an official Node.js image.
-    [ FROM node:18 as build ]
 
-    This provides us with a Node.js and npm environment to build our application.
+	Development Environment (Dockerfile.dev):
+	-----------------------------------------
 
-b. Set Working Directory:
-    [ WORKDIR /usr/src/app ]
+		* Build Phase
 
-    This sets /usr/src/app as the working directory for any subsequent commands in the Dockerfile.
+			.Base Image: "FROM node:18 AS build"
+				This sets up a Node.js environment for building the application.
+		
+			.Set Working Directory: "WORKDIR /usr/src/app"
+				This defines /usr/src/app as the working directory for subsequent build-related commands.
+			
+			. Copy Dependency Files and Install Dependencies: "COPY package*.json ./
+															   RUN npm ci"
+				Here, we copy the package.json and package-lock.json files and use npm ci to ensure consistent dependency installation.
+			
+			. Copy All Other Files: "COPY . ."
+				This step copies all other application files into the image.
+			
+			. Generate Prisma Client and Build Application: "RUN npx prisma generate
+															 RUN npm run build"
+				Here, we execute commands to generate the Prisma client and build the application.
+		
+		* Execution Phase
 
-c. Installing Dependencies:
-    Before we can build our application, we need to install its dependencies.
-    [ COPY package*.json ./ ]
-    [ RUN npm ci ]
+			.Base Image: "FROM node:18-slim"
+				This phase switches to a slimmer Node.js image for the execution phase to reduce the final image size.
 
-    We first copy over the package.json and package-lock.json files and then use npm ci for a clean, reproducible build.
+			.Install System Dependencies: "RUN apt update && apt install -y --no-install-recommends \
+										   libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				We update the package list, install required system libraries,
+				including libssl-dev,
+				and clean up to minimize image size.dumb-init is included for handling process signals.
 
-d. Copy Application Files:
-    [ COPY . . ]
-    
-    We then copy the rest of the application files into the image.
+			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
+														RUN mkdir -p logs uploads"
+				This sets the working directory to /usr/src/app,
+				where the application will run, and creates folders for logs and uploads.
 
-e. Prisma Client Generation & Build:
-    The application uses Prisma for database operations. We generate the Prisma client and then build our application.
-    [ RUN npx prisma generate ]
-    [ RUN npm run build ]
+			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+									COPY --chown=node:node --from=build /usr/src/app/.env .env
+									COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+									COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client"
+				This copies necessary files from the build phase, including the .env file,
+				package*.json files, the dist folder, and the Prisma client.
 
-2. Execution Phase
-a. Base Image:
-    [ FROM node:18-slim ]
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "dev"]"
+				This script allows for custom entrypoint behavior during development.
+				Used to migrate the DB using prisma
 
-    For the execution phase, we use a slimmer version of the Node image to reduce the final image size.
+			.Install Nest.js CLI: "RUN npm ci"
+				Here, we install the dependencies globally to enable Nest.js command-line tools.
+			
+			.User Definition: "USER node"
+				This step defines a non-root user (node) to run the application for enhanced security.
 
-b. Installing System Dependencies:
-    [ RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends && rm -rf /var/lib/apt/lists/* ]
+			.Launching in Development Mode: "ENV NODE_ENV development
+											 EXPOSE 3000
+											 CMD ["dumb-init", "npm", "run", "start:dev"]"
+				Finally, we set the NODE_ENV to development, 
+				expose port 3000 for the application, 
+				and define the command to start the application in development mode using npm run start:dev
 
-    We update the package list, install the necessary system libraries and then clean up to minimize the image size. We also include dumb-init which helps handle process signals and is particularly useful for Node.js applications in Docker.
+	Development Environment (Dockerfile.prod):
+	-----------------------------------------
 
-c. Set Working Directory & Create Required Folders:
-    [ WORKDIR /usr/src/app ]
-    [ RUN mkdir -p logs uploads ]
 
-d. Copying Built Application:
-    We copy only the necessary files from the build phase to ensure our final image remains lean.
-    [ COPY --chown=node:node --from=build /usr/src/app/dist ./dist ]
-    [ COPY --chown=node:node --from=build /usr/src/app/.env .env ]
-    [ COPY --chown=node:node --from=build /usr/src/app/package*.json ./ ]
+		*Build Phase:
 
-e. Installing Execution Dependencies:
-    This step installs only the production dependencies for our application.
-    [ RUN npm ci --omit=dev ]
+			.Base Image: "FROM node:18 AS build"
+				This sets up a Node.js environment for building the application.
+			
+			.Set Working Directory: "WORKDIR /usr/src/app"
+				This defines /usr/src/app as the working directory for subsequent build-related commands.
+			
+			.Copy Dependency Files and Install Dependencies: "COPY package*.json ./
+															  RUN npm ci"
+				Here, we copy the package.json and package-lock.json files and 
+				use npm ci to ensure consistent dependency installation.
+			
+			.Copy All Other Files: "COPY . ."
+				This step copies all other application files into the image.
+			
+			.Generate Prisma Client and Build Application: "RUN npx prisma generate
+															RUN npm run build"
+				Here, we execute commands to generate the Prisma client and build the application.
+		
+		* Execution Phase
+			
+			.Base Image: "FROM node:18-slim"
+				This phase switches to a slimmer Node.js image for the execution phase 
+				to reduce the final image size.
+			
+			.Install System Dependencies: "RUN apt update && apt install -y --no-install-recommends \ 
+										   libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				We update the package list, install required system libraries,
+				including libssl-dev, and clean up to minimize image size.dumb-init is
+				included for handling process signals.
+			
+			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
+														RUN mkdir -p logs uploads"
+				This sets the working directory to /usr/src/app, where the application will run, 
+				and creates folders for logs and uploads.
+			
+			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+									COPY --chown=node:node --from=build /usr/src/app/.env .env
+									COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+									COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client"
+				This copies necessary files from the build phase, including the .env file,
+				package*.json files, the dist folder, and the Prisma client.
+			
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]"
+	  			This script allows for custom entrypoint behavior during development.
+	  			Used to migrate the DB using prisma
+############## MIGRATION DOES NOT WORK PROPERLY IN PROD MODE #################
 
-f. Copying Prisma Client:
-    Since our backend relies on Prisma, we need to ensure the generated Prisma client is part of our final image.
-    [ COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client ]
-
-g. User Definition:
-    For added security, we define a non-root user (node) to run our application.
-    [ USER node ]
-
-h. Setting Up Environment & Launching:
-    Finally, we set the NODE_ENV to production and expose port 3000 for our application. The CMD defines the command that will be executed when the container starts.
-    [ ENV NODE_ENV production ]
-    [ EXPOSE 3000 ]
-    [ CMD ["dumb-init", "node", "dist/main"] ]
+			.Install Execution Dependencies: "RUN npm ci --production"
+				This step installs only production dependencies for the application.
+			
+			.User Definition: "USER node"
+				This step defines a non-root user (node) to run the application for enhanced security.
+			
+			.Launching in Production Mode: "ENV NODE_ENV production
+											EXPOSE 3000
+											CMD ["dumb-init", "node", "dist/main"]"
+				Finally, we set the NODE_ENV to production, expose port 3000 for the application,
+				and define the command to start the application in production mode using node dist/main.
