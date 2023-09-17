@@ -13,9 +13,6 @@ COPY . .
 RUN npx prisma generate
 RUN npm run build
 
-# # Perform Prisma schema migration
-# RUN npx prisma migrate dev
-
 ### Execution phase ###
 FROM node:18-slim
 
@@ -30,6 +27,10 @@ RUN mkdir -p logs uploads
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+
+# Copy prisma files
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --chown=node:node --from=build /usr/src/app/schema.prisma ./schema.prisma
 
 # Install the Nest.js CLI
 # RUN npm install -g @nestjs/cli
