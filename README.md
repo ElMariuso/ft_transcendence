@@ -9,7 +9,3 @@ Launches the Docker containers as DEV mode, meaning our local files are linked w
 
 Access backend at localhost:3000
 Access frontend at localhost:8080
-
-WIP
-
-?username=cwastche
