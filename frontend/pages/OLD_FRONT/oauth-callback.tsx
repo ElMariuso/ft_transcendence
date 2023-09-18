@@ -4,7 +4,6 @@ import axios from 'axios';
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
-	console.log("IN OAUTH ROUTE");
   useEffect(() => {
     const { code } = router.query;
 

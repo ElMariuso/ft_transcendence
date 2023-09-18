@@ -1,10 +1,8 @@
-"use client";
-
-import Navbar from '@/components/navbar/navbar';
-import Profile from '@/components/profile/profile';
+// import Navbar from '@/components/navbar/navbar';
+// import Profile from '@/components/profile/profile';
 
 import { useEffect } from 'react';
-import api from './utils/api';
+import api from '../api/api';
 
 
 export default function Home() {
@@ -29,15 +27,4 @@ export default function Home() {
 			<p>Starting OAuth flow...</p>
 		</div>
 	);
-
-
-	// TESTING LAYOUT
-	// return (
-		// <p>Test</p>
-
-		// <>
-		// 	<Navbar />
-		// 	<Profile />
-		// </>
-	// );
 }

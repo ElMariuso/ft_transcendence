@@ -1,53 +1,85 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
-import axios from 'axios';
+import { Controller, Get, Post, Req, Res, UseGuards, BadRequestException, Body } from '@nestjs/common';
+// import axios from 'axios';
+import { AuthService } from '../Service/auth.service';
+import { FtAuthGuard } from '../Auth/FT.guard';
 
 @Controller('auth')
 export class AuthController {
+	constructor(private AuthService: AuthService) { }
+	@UseGuards(FtAuthGuard)
+	@Get('login')
+	async fortyTwoAuth(@Req() req: any) { }
 	
-	@Get('/start-oauth')
-	async startOAuth(@Req() req, @Res() res) {
-		console.log("Accessing 42 login page")
-		const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftest&response_type=code';
+	@Get('redirect')
+	@UseGuards(FtAuthGuard)
+	async FT_AuthRedirect(
+	  @Req() req: any,
+	  @Res({ passthrough: true }) res: any,
+	) {
+	  if (!req.user) 
+	  	return res.redirect("http://frontent-dev:8080/");
+	  
+		const { username, name, _json } = req.user;
+	  	const image = _json?.image?.link;
+	  const jwt = await this.AuthService.login(username, name, image);
+	  res.cookie('jwt', jwt);
+	  return res.redirect("http://frontent-dev:8080/profile");
+	}
+
+	@Get('logout')
+	async logout(@Req() req: any, @Res({ passthrough: true }) res: any) {
+	  res.clearCookie('jwt');
+	  return res.redirect(process.env.HOST_FRONT);
+	}
+	
+
+
+
+	
+	// @Get('/start-oauth')
+	// async startOAuth(@Req() req, @Res() res) {
+	// 	console.log("Accessing 42 login page")
+	// 	const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftest&response_type=code';
 		
-		return res.json({ authorizationUrl });
-	}
+	// 	return res.json({ authorizationUrl });
+	// }
 
 	
-  	@Post('/oauth-token')
-  	async exchangeCodeForToken(@Req() req, @Res() res) {
-		const authorizationCode : string = req.body.code;
+  	// @Post('/oauth-token')
+  	// async exchangeCodeForToken(@Req() req, @Res() res) {
+	// 	const authorizationCode : string = req.body.code;
 	
-		try {
-			const tokenResponse = await axios.post(
-				'https://api.intra.42.fr/oauth/token',
-				{
-					grant_type: 'authorization_code',
-					client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
-					client_secret: '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',
-					code: authorizationCode,
-					redirect_uri: 'http://localhost:8080/test',
-				}
-			);
+	// 	try {
+	// 		const tokenResponse = await axios.post(
+	// 			'https://api.intra.42.fr/oauth/token',
+	// 			{
+	// 				grant_type: 'authorization_code',
+	// 				client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
+	// 				client_secret: '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',
+	// 				code: authorizationCode,
+	// 				redirect_uri: 'http://localhost:8080/test',
+	// 			}
+	// 		);
 			
-			// Handle token here
+	// 		// Handle token here
 
-			// if (tokenResponse) {
+	// 		// if (tokenResponse) {
 				
-			// 	// const userInfo = axios.get('https://api.intra.42.fr/v2/me',
-			// 	// {
-			// 	// 	headers: 'Authorization: Bearer ' + tokenResponse,
-			// 	// }
-			// 	// )
-			// 	// console.log(userInfo);
+	// 		// 	// const userInfo = axios.get('https://api.intra.42.fr/v2/me',
+	// 		// 	// {
+	// 		// 	// 	headers: 'Authorization: Bearer ' + tokenResponse,
+	// 		// 	// }
+	// 		// 	// )
+	// 		// 	// console.log(userInfo);
 
-			// // return res.json(userInfo);
-			// }
-		} 
-		catch (error) {
-			console.error('Error exchanging code for token:', error);
-			return res.status(500).json({ error: 'Failed to exchange code for token' });
-		}
-	}
+	// 		// // return res.json(userInfo);
+	// 		// }
+	// 	} 
+	// 	catch (error) {
+	// 		console.error('Error exchanging code for token:', error);
+	// 		return res.status(500).json({ error: 'Failed to exchange code for token' });
+	// 	}
+	// }
 }
 
 

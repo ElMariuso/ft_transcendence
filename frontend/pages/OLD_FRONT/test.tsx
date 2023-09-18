@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import token from './../app/utils/token';
+import token from '../api/token';
 
 export default function TestPage() {
 	const router = useRouter();
