@@ -5,16 +5,14 @@ export default {
 </script>
 
 <template>
-    <div class="max-w-1800 mx-auto mt-0 mb-0 flex justify-between">
-        <div class="flex items-center">
-            <h1 class="font-site-title text-2xl mt-1 mb-0 mr-4 mx-2 leading-relaxed">ft_transcendence</h1>
-            <nav class="mt-1 m-0 text-lg">
-                <section>
-                    Play
-                </section>
+    <div class="w-full relative mx-auto mt-0 mb-0 flex justify-between border-b border-gray-400 p-15px">
+        <div class="ml-30px flex items-baseline">
+            <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
+            <nav class="text-lg">
+                <section>Play</section>
             </nav>
         </div>
-        <div class="">
+        <div class="mr-30px text-lg">
             Right
         </div>
     </div>

@@ -3,11 +3,11 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}", ],
   theme: {
     extend: {
-      maxWidth: {
-        '1800': '1800px',
+      margin: {
+        '30px': '30px',
       },
-      fontFamily: {
-        'site-title': ['Open Sans', 'sans-serif'],
+      padding: {
+        '15px': '15px',
       },
       backgroundImage: {
         'custom-gradient': "linear-gradient(to bottom, hsl(37, 12%, 16%), hsl(37, 10%, 8%) 116px)",
