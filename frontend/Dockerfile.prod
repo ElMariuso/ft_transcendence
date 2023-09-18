@@ -1,45 +1,32 @@
-### Build phase ###
+### Build stage ###
 FROM node:18 AS build
-WORKDIR /usr/src/app-build
+WORKDIR /app
 
-# Copy the dependency files to leverage Docker caching.
+# Copie des fichiers de configuration pour les dépendances
 COPY package*.json ./
 
-# Install dependencies using npm ci for consistency.
-RUN npm ci
+# Installation de toutes les dépendances
+RUN npm install
 
-# Copy the rest of the files
+# Copie de tous les fichiers sources
 COPY . .
 
-# Set MODE variable in the .env file
-RUN echo "MODE=prod" > .env
-
-# Build the production application
+# Si vous avez un script de build, ajoutez-le ici
 RUN npm run build
 
-### Execution phase ###
+### Execution stage ###
 FROM node:18-slim
+WORKDIR /app
 
-# Update and install necessary dependencies, then clean up to reduce image size
-RUN apt update && apt install -y --no-install-recommends \
-    libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*
+# Copie des dépendances du stage de build
+COPY --from=build /app/node_modules ./node_modules
 
-WORKDIR /usr/src/app
+# Copie de tous les autres fichiers du stage de build
+COPY --from=build /app . 
 
-# Create folders for logs and uploads
-RUN mkdir -p logs uploads
+# Expose le port par défaut de Vite
+EXPOSE 5173
 
-# Copy necessary files from the build phase
-COPY --from=build /usr/src/app-build/.env .env
-COPY --from=build /usr/src/app-build/package*.json ./
-COPY --from=build /usr/src/app-build/dist ./dist
-
-# Define the user to run the application for added security
-USER node
-
-# Launching in production mode
-ENV NODE_ENV production
-EXPOSE 8080
-
-CMD ["npx", "serve", "-s", "dist"]
+# Commande pour exécuter l'application
+CMD ["npm", "start"]
 

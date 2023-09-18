@@ -23,9 +23,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
+      - ./backend:/usr/src/app  # Mount the local backend directory into the container for live code updates
       - ./logs-back:/usr/src/app/logs
       - ./uploads:/usr/src/app/uploads
-      - ./backend:/usr/src/app  # Mount the local backend directory into the container for live code updates
     networks:
       - web-network
       - db-network
@@ -43,7 +43,7 @@ services:
     ports:
       - "8080:5173"
     volumes:
-      - ./frontend:/usr/src/app  # Mount the local frontend directory into the container for live code updates
+      - ./frontend:/app  # Mount the local frontend directory into the container for live code updates
       - ./logs-front:/usr/src/app/logs
     networks:
       - web-network

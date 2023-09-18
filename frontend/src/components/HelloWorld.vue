@@ -1,7 +1,7 @@
 <template>
   <div class="justify-center flex bg-blue-300 items-center h-screen">
     <div class="text-4xl">
-      Hello Welcome to Tailwind Css test un deux un deux
+      Hello Welcome to Tailwind Css test un deux un deux  test qwehbqwehgqwuheqwuheqwuhe  erujhweuhfweuhfwuehfweuhfuweh 
     </div>
   </div>
 </template>
