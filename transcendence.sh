@@ -31,7 +31,7 @@ case $2 in
         docker-compose -f "$DOCKER_COMPOSE_FILE" up --build -d
         ;;
     clean-volumes)
-        rm -rf database logs-front logs-back uploads ./frontend/.next ./frontend/node_modules ./frontend/next-env.d.ts ./backend/uploads ./backend/dist ./backend/logs ./backend/node_modules
+        rm -rf ./frontend/logs database logs-front logs-back uploads frontend-live ./frontend/.next ./frontend/node_modules ./frontend/next-env.d.ts ./backend/uploads ./backend/dist ./backend/logs ./backend/node_modules
         ;;
     remove-volumes)
         docker-compose -f "$DOCKER_COMPOSE_FILE" down -v
