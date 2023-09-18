@@ -2,31 +2,32 @@
 FROM node:18 AS build
 WORKDIR /app
 
-# Copie des fichiers de configuration pour les dépendances
+# Copying configuration files for dependencies
 COPY package*.json ./
 
-# Installation de toutes les dépendances
+# Installing all dependencies
 RUN npm install
 
-# Copie de tous les fichiers sources
+# Copying all source files
 COPY . .
 
-# Si vous avez un script de build, ajoutez-le ici
+# If you have a build script, add it here
 RUN npm run build
 
 ### Execution stage ###
 FROM node:18-slim
 WORKDIR /app
 
-# Copie des dépendances du stage de build
+# Copying dependencies from the build stage
 COPY --from=build /app/node_modules ./node_modules
 
-# Copie de tous les autres fichiers du stage de build
+# Copying all other files from the build stage
 COPY --from=build /app . 
 
-# Expose le port par défaut de Vite
+# Expose the default port for Vite
 EXPOSE 3000
 
-# Commande pour exécuter l'application
+# Command to run the application
 CMD ["npm", "start"]
+
 
