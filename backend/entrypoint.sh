@@ -31,8 +31,8 @@ if [ "$1" == "dev" ]; then
     npx prisma migrate dev
 elif [ "$1" == "prod" ]; then
     # Run Prisma migration for production (deploy)
-    # npx prisma migrate deploy
-	npx prisma migrate dev
+    npx prisma migrate deploy
+	# npx prisma migrate dev
 fi
 
 # Start your application based on the environment argument
