@@ -1,6 +1,19 @@
 <script>
+import axios from 'axios'
+
 export default {
-    name: 'Navbar'
+    name: 'Navbar',
+    methods: {
+        sendMessage() {
+            axios.get('http://localhost:3000/test/message')
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.log("Error: ", error);
+                });
+        }
+    }
 }
 </script>
 
@@ -9,7 +22,7 @@ export default {
         <div class="ml-30px flex items-baseline">
             <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
             <nav class="text-lg">
-                <section>Play</section>
+                <button @click="sendMessage">Play</button>
             </nav>
         </div>
         <div class="mr-30px text-lg">

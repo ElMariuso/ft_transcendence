@@ -8,6 +8,8 @@ import { AuthController } from './Controller/auth.controller';
 // import { GameController } from './game/game.controller';
 // import { GameService } from './game/game.service';
 
+import { TestController } from './Controller/test.controller';
+
 @Module({
   imports: [
     // WebSocketsModule.forRoot({
@@ -15,7 +17,7 @@ import { AuthController } from './Controller/auth.controller';
       // serveClient: true,
     // }),
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController, AuthController, TestController],
   providers: [AppService],
 })
 export class AppModule {}
