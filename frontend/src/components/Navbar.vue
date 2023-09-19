@@ -37,6 +37,7 @@ export default {
         getQueueStatus() {
             getQueueStatus()
             .then(response => {
+                this.playersInQueue = response.data.playersInQueue;
                 console.log(response.data);
             })
             .catch(error => {
@@ -59,6 +60,7 @@ export default {
             Right
         </div>
     </div>
+    <Matchmaking  :isOpen="isSearching" :numberOfPlayers="playersInQueue" @cancel="leaveQueue" />
 </template>
 
 <style scoped>
