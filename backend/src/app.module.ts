@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { WebSocketModule } from '@nestjs/websockets';
+// import { WebSocketsModule } from '@nestjs/websockets';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from 'src/Module/user.module';
@@ -10,10 +10,10 @@ import { AuthController } from './Controller/auth.controller';
 
 @Module({
   imports: [
-    WebSocketModule.forRoot({
-      namespace: 'matchmaking',
-      serveClient: true,
-    }),
+    // WebSocketsModule.forRoot({
+      // namespace: 'matchmaking',
+      // serveClient: true,
+    // }),
   ],
   controllers: [AppController, AuthController],
   providers: [AppService],
