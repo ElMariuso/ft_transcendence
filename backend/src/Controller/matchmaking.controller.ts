@@ -7,8 +7,8 @@ import { PlayerInQueue } from 'src/Model/player.model';
  * It enables players to join or leave a queue and also provides insights 
  * about the current state of the queue.
  *
- * @author [Your Name Here]
- * @version 1.0.0
+ * @author [mthiry]
+ * @version 0.0.1
  */
 @Controller('matchmaking')
 export class MatchmakingController {
