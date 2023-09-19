@@ -1,11 +1,41 @@
 <script>
+import Matchmaking from './Matchmaking.vue';
 import { joinQueue } from '@/services/matchmakingService';
 
 export default {
     name: 'Navbar',
+    components: {
+        Matchmaking
+    },
+    data() {
+        return {
+            isSearching: false,
+            playersInQueue: 0
+        };
+    },
     methods: {
         joinQueue() {
+            this.isSearching = true;
             joinQueue()
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log("Error: ", error);
+            });
+        },
+        leaveQueue() {
+            this.isSearching = false;
+            leaveQueue()
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log("Error: ", error);
+            });
+        },
+        getQueueStatus() {
+            getQueueStatus()
             .then(response => {
                 console.log(response.data);
             })
