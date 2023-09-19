@@ -1,17 +1,17 @@
 <script>
-import axios from 'axios'
+import { joinQueue } from '@/services/matchmakingService';
 
 export default {
     name: 'Navbar',
     methods: {
-        sendMessage() {
-            axios.get('http://localhost:3000/test/message')
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.log("Error: ", error);
-                });
+        joinQueue() {
+            joinQueue()
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log("Error: ", error);
+            });
         }
     }
 }
@@ -22,7 +22,7 @@ export default {
         <div class="ml-30px flex items-baseline">
             <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
             <nav class="text-lg">
-                <button @click="sendMessage">Play</button>
+                <button @click="joinQueue">Play</button>
             </nav>
         </div>
         <div class="mr-30px text-lg">

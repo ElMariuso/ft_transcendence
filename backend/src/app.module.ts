@@ -8,16 +8,15 @@ import { AuthController } from './Controller/auth.controller';
 // import { GameController } from './game/game.controller';
 // import { GameService } from './game/game.service';
 
-import { TestController } from './Controller/test.controller';
-
 @Module({
   imports: [
+    GameModule
     // WebSocketsModule.forRoot({
       // namespace: 'matchmaking',
       // serveClient: true,
     // }),
   ],
-  controllers: [AppController, AuthController, TestController],
+  controllers: [AppController, AuthController],
   providers: [AppService],
 })
 export class AppModule {}
