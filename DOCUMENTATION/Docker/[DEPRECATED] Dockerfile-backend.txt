@@ -1,0 +1,136 @@
+=====================================================================================
+== DOCKER SYSTEM DOCUMENTATION FOR ft_transcendence - BACKEND nest.js Dockerfiles ==
+=====================================================================================
+(In vscode, install the "Txt Syntax" extension for coloured text)
+
+
+	Development Environment (Dockerfile.dev):
+	-----------------------------------------
+
+		* Build Phase
+
+			.Base Image: "FROM node:18 AS build"
+				This sets up a Node.js environment for building the application.
+		
+			.Set Working Directory: "WORKDIR /usr/src/app"
+				This defines /usr/src/app as the working directory for subsequent build-related commands.
+			
+			. Copy Dependency Files and Install Dependencies: "COPY package*.json ./
+															   RUN npm ci"
+				Here, we copy the package.json and package-lock.json files and use npm ci to ensure consistent dependency installation.
+			
+			. Copy All Other Files: "COPY . ."
+				This step copies all other application files into the image.
+			
+			. Generate Prisma Client and Build Application: "RUN npx prisma generate
+															 RUN npm run build"
+				Here, we execute commands to generate the Prisma client and build the application.
+		
+		* Execution Phase
+
+			.Base Image: "FROM node:18-slim"
+				This phase switches to a slimmer Node.js image for the execution phase to reduce the final image size.
+
+			.Install System Dependencies: "RUN apt update && apt install -y --no-install-recommends \
+										   libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				We update the package list, install required system libraries,
+				including libssl-dev,
+				and clean up to minimize image size.dumb-init is included for handling process signals.
+
+			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
+														RUN mkdir -p logs uploads"
+				This sets the working directory to /usr/src/app,
+				where the application will run, and creates folders for logs and uploads.
+
+			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+									COPY --chown=node:node --from=build /usr/src/app/.env .env
+									COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+									COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client"
+				This copies necessary files from the build phase, including the .env file,
+				package*.json files, the dist folder, and the Prisma client.
+
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "dev"]"
+				This script allows for custom entrypoint behavior during development.
+				Used to migrate the DB using prisma
+
+			.Install Nest.js CLI: "RUN npm ci"
+				Here, we install the dependencies globally to enable Nest.js command-line tools.
+			
+			.User Definition: "USER node"
+				This step defines a non-root user (node) to run the application for enhanced security.
+
+			.Launching in Development Mode: "ENV NODE_ENV development
+											 EXPOSE 3000
+											 CMD ["dumb-init", "npm", "run", "start:dev"]"
+				Finally, we set the NODE_ENV to development, 
+				expose port 3000 for the application, 
+				and define the command to start the application in development mode using npm run start:dev
+
+	Development Environment (Dockerfile.prod):
+	-----------------------------------------
+
+
+		*Build Phase:
+
+			.Base Image: "FROM node:18 AS build"
+				This sets up a Node.js environment for building the application.
+			
+			.Set Working Directory: "WORKDIR /usr/src/app"
+				This defines /usr/src/app as the working directory for subsequent build-related commands.
+			
+			.Copy Dependency Files and Install Dependencies: "COPY package*.json ./
+															  RUN npm ci"
+				Here, we copy the package.json and package-lock.json files and 
+				use npm ci to ensure consistent dependency installation.
+			
+			.Copy All Other Files: "COPY . ."
+				This step copies all other application files into the image.
+			
+			.Generate Prisma Client and Build Application: "RUN npx prisma generate
+															RUN npm run build"
+				Here, we execute commands to generate the Prisma client and build the application.
+		
+		* Execution Phase
+			
+			.Base Image: "FROM node:18-slim"
+				This phase switches to a slimmer Node.js image for the execution phase 
+				to reduce the final image size.
+			
+			.Install System Dependencies: "RUN apt update && apt install -y --no-install-recommends \ 
+										   libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				We update the package list, install required system libraries,
+				including libssl-dev, and clean up to minimize image size.dumb-init is
+				included for handling process signals.
+			
+			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
+														RUN mkdir -p logs uploads"
+				This sets the working directory to /usr/src/app, where the application will run, 
+				and creates folders for logs and uploads.
+			
+			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+									COPY --chown=node:node --from=build /usr/src/app/.env .env
+									COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+									COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client"
+				This copies necessary files from the build phase, including the .env file,
+				package*.json files, the dist folder, and the Prisma client.
+			
+			.Entrypoint: "COPY entrypoint.sh /usr/src/app/entrypoint.sh
+						  RUN chmod +x /usr/src/app/entrypoint.sh
+						  ENTRYPOINT ["/usr/src/app/entrypoint.sh", "prod"]"
+	  			This script allows for custom entrypoint behavior during development.
+	  			Used to migrate the DB using prisma
+############## MIGRATION DOES NOT WORK PROPERLY IN PROD MODE #################
+
+			.Install Execution Dependencies: "RUN npm ci --production"
+				This step installs only production dependencies for the application.
+			
+			.User Definition: "USER node"
+				This step defines a non-root user (node) to run the application for enhanced security.
+			
+			.Launching in Production Mode: "ENV NODE_ENV production
+											EXPOSE 3000
+											CMD ["dumb-init", "node", "dist/main"]"
+				Finally, we set the NODE_ENV to production, expose port 3000 for the application,
+				and define the command to start the application in production mode using node dist/main.

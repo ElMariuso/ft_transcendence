@@ -1,0 +1,131 @@
+
+=====================================================================================
+== DOCKER SYSTEM DOCUMENTATION FOR ft_transcendence - FRONTEND Next.js Dockerfiles ==
+=====================================================================================
+(In vscode, install the "Txt Syntax" extension for coloured text)
+
+This Docker System Documentation outlines the Dockerfiles for the frontendof the ft_transcendence project using Next.js.
+It provides separate Dockerfiles and build instructions for both development and production environments.
+
+
+	Development Environment (Dockerfile.dev):
+	-----------------------------------------
+	
+	This Dockerfile defines the setup for the development environment of our frontend Next.js application.
+	It allows developers to work with the application locally while having code updates rendered live in the container.
+
+		* Build Phase:
+			
+			.Base Image: "FROM node:18 AS build"
+				We start with an official Node.js image.
+				This provides a Node.js and npm environment for building the application.
+
+			.Set Working Directory: "WORKDIR /usr/src/app-build"
+				Sets /usr/src/app-build as the working directory for subsequent commands.
+
+			.Installing Dependencies: "COPY package*.json ./
+									   RUN npm ci"
+				Copies package.json and package-lock.json files and 
+				uses npm ci for consistent dependency installation.
+
+			.Copy Application Files: "COPY . ."
+				Copies the remaining application files into the image.
+
+			.Set Mode: "RUN echo "MODE=dev" > .env"
+				Sets the correct mode in .env file for routing purposes.
+				See frontend/next.config.js file for context
+
+		* Execution Phase:
+			
+			.Base Image: "FROM node:18-slim"
+				A slimmer Node image is used to minimize the final image size.
+			
+			.Installing System Dependencies: "RUN apt update && apt install -y --no-install-recommends \
+											  libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				Updates the package list, installs required system libraries (libssl-dev),
+				includes dumb-init for signal handling, and cleans up to reduce image size.
+
+			.Set Working Directory & Create Required Folders: "WORKDIR /usr/src/app
+															   RUN mkdir -p logs uploads"
+				Sets /usr/src/app as the working directory and creates folders for logs and uploads.
+			
+			.Copying Built Application: "COPY --from=build /usr/src/app-build/.env .env
+										 COPY --from=build /usr/src/app-build/package*.json ./"
+				Copies necessary files from the build phase to ensure a lean final image.
+
+			.Installing Execution Dependencies: "RUN npm install -g next@latest react@latest react-dom@latest"
+				Installs global dependencies for Next.js development.
+
+			.Define User & Launching: "USER node
+									   ENV NODE_ENV development
+									   EXPOSE 3000
+									   CMD ["dumb-init", "npm", "run", "dev"]"
+				Defines a non-root user (node) for added security,
+				sets NODE_ENV to development (used by node.js),
+				exposes port 3000, and defines the command to start the application (npm run dev).
+		
+
+	Production Environment (Dockerfile.prod):
+	-----------------------------------------
+
+		* Build Phase:
+
+			.Base Image: "FROM node:18 AS build"
+				This sets up a Node.js environment for building the application.
+			
+			.Set Working Directory: "WORKDIR /usr/src/app-build"
+				This defines /usr/src/app-build as the working directory for subsequent build-related commands.
+			
+			.Copy Dependency Files and Install Dependencies: "COPY package*.json ./
+															  RUN npm ci"
+				Here, we copy the package.json and package-lock.json files and use npm ci to ensure consistent dependency installation.
+	
+			.Copy Application Files: "COPY . ."
+				This step copies all other application files into the image.
+
+			.Set Mode: "RUN echo "MODE=prod" > .env"
+				Sets the correct mode in .env file for routing purposes.
+				See frontend/next.config.js file for context
+
+			.Build the Production Application: "RUN npm run build"
+				Here, we execute the npm run build command to generate a production-ready build of the application.
+	
+		* Execution Phase:
+
+			.Base Image: "FROM node:18-slim"
+				This phase switches to a slimmer Node.js image for the execution phase
+				to reduce the final image size.
+		
+			.Install System Dependencies: "RUN apt update && apt install -y --no-install-recommends \
+										   libssl-dev dumb-init && rm -rf /var/lib/apt/lists/*"
+				We update the package list, install required system libraries,
+				including libssl-dev,
+				and clean up to minimize image size.dumb-init is included for handling process signals.
+	
+			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
+														RUN mkdir -p logs uploads"
+				This sets the working directory to /usr/src/app,
+				where the application will run, and creates folders for logs and uploads.
+	
+			.Install Global Dependencies: "RUN npm install -g next@latest react@latest react-dom@latest"
+				Here, we install global dependencies, including the latest versions
+				of Next.js, React, and React DOM.
+	
+			.Copy Necessary Files: "COPY --from=build /usr/src/app-build/.env .env
+									COPY --from=build /usr/src/app-build/package*.json ./
+									COPY --from=build /usr/src/app-build/.next ./.next
+									COPY --from=build /usr/src/app-build/public ./public
+									COPY --from=build /usr/src/app-build/node_modules ./node_modules"
+				This copies necessary files from the build phase,
+				including the .env file, package*.json files,
+				the .next folder, public folder, and node_modules.
+	
+			.User Definition: "USER node"
+				This step defines a non-root user (node) to run the application for enhanced security.
+	
+			.Set Environment and Launch: "ENV NODE_ENV production
+										  EXPOSE 3000
+										  CMD ["dumb-init", "npm", "start"]"
+				Finally, we set the NODE_ENV to production (used by node.js),
+				expose port 3000 for the application,
+				and define the command to start the application using npm start.

@@ -1,0 +1,49 @@
+### Build phase ###
+FROM node:18 AS build
+WORKDIR /usr/src/app
+
+# Copy package files and install ALL dependencies (including devDependencies)
+COPY package*.json ./
+RUN npm ci
+
+# Copy all other files
+COPY . .
+
+# Generate the Prisma client and build the application
+RUN npx prisma generate
+RUN npm run build
+
+### Execution phase ###
+FROM node:18-slim
+
+# Update, install necessary dependencies, then clean up to reduce image size
+RUN apt update && apt install libssl-dev dumb-init postgresql-client -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
+
+# Create folders for logs and uploads
+RUN mkdir -p logs uploads
+
+# Copy necessary files from the build phase
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/.env .env
+COPY --chown=node:node --from=build /usr/src/app/package*.json ./
+
+# Copy prisma files
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --chown=node:node --from=build /usr/src/app/schema.prisma ./
+
+# Copy the custom entry script into the container
+COPY --chown=node:node entrypoint.sh /usr/src/app/
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Install ONLY production dependencies
+RUN npm ci --production
+
+# Define the user to run the application for added security
+USER node
+
+# Launching in production mode
+ENV NODE_ENV production
+EXPOSE 3000
+
+CMD ["dumb-init", "node", "dist/main"]

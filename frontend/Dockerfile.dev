@@ -1,0 +1,24 @@
+# Use the official Node.js image.
+FROM node:14
+
+# Set the working directory in the container.
+WORKDIR /app
+
+# Copy the `package.json` and `package-lock.json` files (if it exists).
+COPY package*.json ./
+
+# Install the project's dependencies.
+RUN npm install
+
+# Use a volume for node_modules to improve rebuild speed.
+# This will prevent the need to reinstall all node modules with every build.
+VOLUME [ "/app/node_modules" ]
+
+# Copy the rest of the application files into the container.
+COPY . .
+
+# Expose Vite's default port.
+EXPOSE 5173
+
+# Command to run the application using Vite.
+CMD ["npm", "run", "dev"]
