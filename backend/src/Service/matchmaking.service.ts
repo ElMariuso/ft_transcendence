@@ -41,22 +41,22 @@ export class MatchmakingService {
      * 
      * @returns {Promise<Game | null>} - Returns the newly created game if a match is found, otherwise null.
      */
-    async match(): Promise<Game | null> {
-        const sortedQueue = this.queueService.getSortedQueue();
+    // async match(): Promise<Game | null> {
+    //     const sortedQueue = this.queueService.getSortedQueue();
 
-        if (sortedQueue.length < 2) {
-            return null;
-        }
-        const player1 = sortedQueue[0];
-        const player2 = sortedQueue[1];
+    //     if (sortedQueue.length < 2) {
+    //         return null;
+    //     }
+    //     const player1 = sortedQueue[0];
+    //     const player2 = sortedQueue[1];
 
-        this.queueService.remove(player1.id);
-        this.queueService.remove(player2.id);
+    //     this.queueService.remove(player1.id);
+    //     this.queueService.remove(player2.id);
 
-        const newGame = await this.gameQuery.createGame();
+    //     const newGame = await this.gameQuery.createGame();
 
-        return newGame;
-    }
+    //     return newGame;
+    // }
 
     /**
      * Removes a player from the matchmaking queue.
