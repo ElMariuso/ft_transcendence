@@ -10,8 +10,14 @@ export default {
     data() {
         return {
             isSearching: false,
-            playersInQueue: 0
+            playersInQueue: 0,
+            currentUser: null,
         };
+    },
+    computed: {
+        isAuthenticated() {
+            return this.currentUser !== null;
+        }
     },
     methods: {
         joinQueue() {
@@ -53,7 +59,8 @@ export default {
         <div class="ml-30px flex items-baseline">
             <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
             <nav class="text-lg">
-                <button @click="joinQueue">Play</button>
+                <button @click="joinQueue">Standard Match</button>
+                <button v-if="isAuthenticated">Ranked Match</button>
             </nav>
         </div>
         <div class="mr-30px text-lg">
