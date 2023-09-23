@@ -55,7 +55,7 @@ export default {
                 return ;
             }
             this.isSearching = false;
-            leaveQueue(this.currentUser.id)
+            leaveQueue({ playerId: this.currentUser.id })
             .then(response => {
                 console.log(response.data);
             })

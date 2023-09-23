@@ -52,7 +52,7 @@ export class MatchmakingService {
      * @returns {void}
      */
     remove(playerId: string | number): void {
-        this.queueService.remove({ playerId });
+        this.queueService.remove( playerId );
     }
 
     /**
@@ -83,8 +83,8 @@ export class MatchmakingService {
         const player1 = queue[0];
         const player2 = queue[1];
     
-        this.queueService.remove({ playerId: player1.id });
-        this.queueService.remove({ playerId: player2.id });
+        this.queueService.remove(player1.id);
+        this.queueService.remove(player2.id);
     
         return { player1, player2 };
     }    

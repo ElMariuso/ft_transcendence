@@ -5,9 +5,7 @@ const joinQueue = (playerData) => {
 };
 
 const leaveQueue = (playerId) => {
-    return api.post('/matchmaking/leave', {
-        playerId: playerId
-    });
+    return api.post('/matchmaking/leave', playerId);
 };
 
 const getQueueStatus = () => {

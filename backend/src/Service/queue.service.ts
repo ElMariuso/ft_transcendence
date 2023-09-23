@@ -24,19 +24,8 @@ export class QueueService {
      * 
      * @param playerId - The ID of the player to be removed from the stab queue.
      */
-    remove(data: { playerId: string | number }): void {
-        console.log("Standard Queue before removal:", this.standardQueue);
-    
-        const playerId = data.playerId;
-        this.standardQueue = this.standardQueue.filter(player => {
-            const isSameId = player.id === playerId;
-            if (!isSameId) {
-                console.log(`Comparing: ${player.id} (Type: ${typeof player.id}) with ${playerId} (Type: ${typeof playerId})`);
-            }
-            return !isSameId;
-        });
-    
-        console.log("Standard Queue after removal:", this.standardQueue);
+    remove(playerId: string | number ): void {
+        this.standardQueue = this.standardQueue.filter(player => player.id !== playerId);
     }
 
     /**

@@ -25,15 +25,9 @@ export class MatchmakingController {
      */
     @Post('join')
     joinQueue(@Body() player: PlayerInQueue) {
-        console.log("Before ID assignment:", player);
-
         if (player.isGuest) {
             player.id = uuidv4();
-            console.log("After ID assignment:", player);
         }
-
-        console.log("Status on Join: ", this.matchmakingService.getQueueSize());
-
         this.matchmakingService.add(player);
         return { status: 'Added to standard queue', playerId: player.id };
     }
@@ -45,14 +39,9 @@ export class MatchmakingController {
      * @returns An object indicating the status of the operation.
      */
     @Post('leave')
-    leaveQueue(@Body() playerId: string | number) {
-
-        console.log("Id to remove: ", playerId);
-
+    leaveQueue(@Body() data: { playerId: string | number }) {
+        const playerId = data.playerId;
         this.matchmakingService.remove(playerId);
-
-        console.log("Status on Leave: ", this.matchmakingService.getQueueSize());
-
         return { status: 'Removed from standard queue' };
     }
 
