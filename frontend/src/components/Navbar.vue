@@ -82,9 +82,14 @@ export default {
         <div class="ml-30px flex items-baseline">
             <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
             <nav class="text-lg">
-                <button v-if="!isSearching" @click="joinQueue">Standard</button>
-                <button v-if="isSearching">Cancel</button>
-                <button v-if="isAuthenticated">Ranked</button>
+                <div>
+                    <button v-if="!isSearching" @click="joinQueue">Standard</button>
+                    <button v-if="isSearching">Cancel</button>
+                </div>
+                <div>
+                    <button v-if="isAuthenticated">Ranked</button>
+                    <button v-if="isAuthenticated">Cancel</button>
+                </div>
             </nav>
         </div>
         <div class="mr-30px text-lg">
