@@ -84,7 +84,7 @@ export default {
             <nav class="text-lg">
                 <div>
                     <button v-if="!isSearching" @click="joinQueue">Standard</button>
-                    <button v-if="isSearching">Cancel</button>
+                    <button v-if="isSearching" @click="leaveQueue">Cancel</button>
                 </div>
                 <div>
                     <button v-if="isAuthenticated">Ranked</button>
@@ -97,7 +97,6 @@ export default {
         </div>
     </div>
     <Matchmaking  :isOpen="isSearching" :numberOfPlayers="playersInQueue" @cancel="leaveQueue" />
-    <div v-if="isSearching">TEST AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH</div>
 </template>
 
 <style scoped>
