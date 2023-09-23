@@ -20,12 +20,23 @@ export class QueueService {
     }
 
     /**
-     * Adds a player to the ranked queue.
+     * Removes a player from the standard queue based on their ID.
      * 
-     * @param player - The authenticated player to be added to the ranked queue.
+     * @param playerId - The ID of the player to be removed from the stab queue.
      */
-    remove(playerId: string | number): void {
-        this.standardQueue = this.standardQueue.filter(player => player.id !== playerId);
+    remove(data: { playerId: string | number }): void {
+        console.log("Standard Queue before removal:", this.standardQueue);
+    
+        const playerId = data.playerId;
+        this.standardQueue = this.standardQueue.filter(player => {
+            const isSameId = player.id === playerId;
+            if (!isSameId) {
+                console.log(`Comparing: ${player.id} (Type: ${typeof player.id}) with ${playerId} (Type: ${typeof playerId})`);
+            }
+            return !isSameId;
+        });
+    
+        console.log("Standard Queue after removal:", this.standardQueue);
     }
 
     /**

@@ -1,6 +1,6 @@
 <script>
 import Matchmaking from './Matchmaking.vue';
-import { joinQueue } from '@/services/matchmakingService';
+import { joinQueue, leaveQueue, getQueueStatus } from '@/services/matchmakingService';
 
 export default {
     name: 'Navbar',
@@ -12,18 +12,33 @@ export default {
             isSearching: false,
             playersInQueue: 0,
             currentUser: null,
+            queueInterval: null,
         };
+    },
+    mounted() {
+        this.getQueueStatus();
+        this.queueInterval = setInterval(this.getQueueStatus, 5000);
+    },
+    beforeDestroy() {
+        clearInterval(this.queueInterval);
     },
     computed: {
         isAuthenticated() {
-            return this.currentUser !== null;
+            return this.currentUser !== null && !this.currentUser.isGuest;
         }
     },
     methods: {
         joinQueue() {
             this.isSearching = true;
-            joinQueue()
+            const playerData = {
+                isGuest: true
+            };
+            joinQueue(playerData)
             .then(response => {
+                this.currentUser = {
+                    id: response.data.playerId,
+                    isGuest: true
+                }
                 console.log(response.data);
             })
             .catch(error => {
@@ -31,8 +46,16 @@ export default {
             });
         },
         leaveQueue() {
+            if (!this.currentUser) {
+                console.error("Unable to leave queue. User null.");
+                return ;
+            }
+            if (!this.currentUser.id) {
+                console.error("Unable to leave queue. User ID not found.");
+                return ;
+            }
             this.isSearching = false;
-            leaveQueue()
+            leaveQueue(this.currentUser.id)
             .then(response => {
                 console.log(response.data);
             })
@@ -59,8 +82,8 @@ export default {
         <div class="ml-30px flex items-baseline">
             <router-link to="/"><h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1></router-link>
             <nav class="text-lg">
-                <button @click="joinQueue">Standard Match</button>
-                <button v-if="isAuthenticated">Ranked Match</button>
+                <button @click="joinQueue">Standard</button>
+                <button v-if="isAuthenticated">Ranked</button>
             </nav>
         </div>
         <div class="mr-30px text-lg">

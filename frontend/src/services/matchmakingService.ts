@@ -1,11 +1,13 @@
 import api from './api';
 
-const joinQueue = () => {
-    return api.post('/matchmaking/join');
+const joinQueue = (playerData) => {
+    return api.post('/matchmaking/join', playerData);
 };
 
-const leaveQueue = () => {
-    return api.post('/matchmaking/leave');
+const leaveQueue = (playerId) => {
+    return api.post('/matchmaking/leave', {
+        playerId: playerId
+    });
 };
 
 const getQueueStatus = () => {
