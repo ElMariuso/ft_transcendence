@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
-// import { WebSocketsModule } from '@nestjs/websockets';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
 import { UserModule } from 'src/Module/user.module';
 import { GameModule } from './Module/game.module';
+import { WebSocketsModule } from './Module/websockets.module';
+
 import { AuthController } from './Controller/auth.controller';
-// import { GameController } from './game/game.controller';
-// import { GameService } from './game/game.service';
 
 @Module({
   imports: [
-    GameModule
+    GameModule,
+    WebSocketsModule
     // WebSocketsModule.forRoot({
       // namespace: 'matchmaking',
       // serveClient: true,
