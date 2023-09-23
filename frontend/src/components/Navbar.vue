@@ -17,7 +17,7 @@ export default {
     },
     mounted() {
         this.getQueueStatus();
-        this.queueInterval = setInterval(this.getQueueStatus, 5000);
+        this.queueInterval = setInterval(this.getQueueStatus, 1000);
     },
     beforeDestroy() {
         clearInterval(this.queueInterval);
