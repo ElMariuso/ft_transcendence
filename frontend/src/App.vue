@@ -1,6 +1,13 @@
-<script setup lang="ts">
+<script>
 import router from './router';
 import Navbar from './components/Navbar.vue';
+
+export default {
+  name: 'App',
+  components: {
+    Navbar
+  },
+}
 </script>
 
 <template>
