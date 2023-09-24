@@ -16,8 +16,20 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue')
     }
   ]
+})
+
+router.beforeEach((to, from) => {
+  if (to.name !== 'login' ) { //&& (!Status.loggedIn || !Status.JWTvalide)
+    // store.commit('setReady', false);
+    return { name: 'login' };
+  }
 })
 
 export default router

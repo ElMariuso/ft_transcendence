@@ -1,53 +1,73 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import axios from 'axios';
+import { FT_AuthGuard } from '../Guards/42-auth.guard';
+import { Public } from '@prisma/client/runtime/library';
+import { FT_User } from '../Utils/42user'
+import { AuthService } from '../Service/auth.service';
 
 @Controller('auth')
 export class AuthController {
-	
-	@Get('/start-oauth')
-	async startOAuth(@Req() req, @Res() res) {
-		console.log("Accessing 42 login page")
-		const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftest&response_type=code';
+	constructor(
+		private readonly authService: AuthService,
+		// private readonly connectionService: ConnectionService,
+	  ) {}
+
+	// @Public()
+	@UseGuards(FT_AuthGuard)
+	@Get('/42/redirect')
+	async login(@Req() req, @Res() res) {
+		const token = await this.authService.login(req.user as FT_User);
 		
-		return res.json({ authorizationUrl });
+		console.log("Login authcontroller")
+		// const token = await 
 	}
+	
+	
+	
+	// @Get('/start-oauth')
+	// async startOAuth(@Req() req, @Res() res) {
+	// 	console.log("Accessing 42 login page")
+	// 	const authorizationUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Ftest&response_type=code';
+		
+	// 	return res.json({ authorizationUrl });
+	// }
 
 	
-  	@Post('/oauth-token')
-  	async exchangeCodeForToken(@Req() req, @Res() res) {
-		const authorizationCode : string = req.body.code;
+  	// @Post('/oauth-token')
+  	// async exchangeCodeForToken(@Req() req, @Res() res) {
+	// 	const authorizationCode : string = req.body.code;
 	
-		try {
-			const tokenResponse = await axios.post(
-				'https://api.intra.42.fr/oauth/token',
-				{
-					grant_type: 'authorization_code',
-					client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
-					client_secret: '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',
-					code: authorizationCode,
-					redirect_uri: 'http://localhost:8080/test',
-				}
-			);
+	// 	try {
+	// 		const tokenResponse = await axios.post(
+	// 			'https://api.intra.42.fr/oauth/token',
+	// 			{
+	// 				grant_type: 'authorization_code',
+	// 				client_id: 'u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4',
+	// 				client_secret: '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',
+	// 				code: authorizationCode,
+	// 				redirect_uri: 'http://localhost:8080/test',
+	// 			}
+	// 		);
 			
-			// Handle token here
+	// 		// Handle token here
 
-			// if (tokenResponse) {
+	// 		// if (tokenResponse) {
 				
-			// 	// const userInfo = axios.get('https://api.intra.42.fr/v2/me',
-			// 	// {
-			// 	// 	headers: 'Authorization: Bearer ' + tokenResponse,
-			// 	// }
-			// 	// )
-			// 	// console.log(userInfo);
+	// 		// 	// const userInfo = axios.get('https://api.intra.42.fr/v2/me',
+	// 		// 	// {
+	// 		// 	// 	headers: 'Authorization: Bearer ' + tokenResponse,
+	// 		// 	// }
+	// 		// 	// )
+	// 		// 	// console.log(userInfo);
 
-			// // return res.json(userInfo);
-			// }
-		} 
-		catch (error) {
-			console.error('Error exchanging code for token:', error);
-			return res.status(500).json({ error: 'Failed to exchange code for token' });
-		}
-	}
+	// 		// // return res.json(userInfo);
+	// 		// }
+	// 	} 
+	// 	catch (error) {
+	// 		console.error('Error exchanging code for token:', error);
+	// 		return res.status(500).json({ error: 'Failed to exchange code for token' });
+	// 	}
+	// }
 }
 
 
