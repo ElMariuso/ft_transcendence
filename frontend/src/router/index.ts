@@ -21,15 +21,30 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: () => import('../views/CommunityView.vue')
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue')
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: () => import('../views/test.vue')
     }
   ]
 })
 
-router.beforeEach((to, from) => {
-  if (to.name !== 'login' ) { //&& (!Status.loggedIn || !Status.JWTvalide)
-    // store.commit('setReady', false);
-    return { name: 'login' };
-  }
-})
+// router.beforeEach((to, from) => {
+//   if (to.name !== 'login' ) { //&& (!Status.loggedIn || !Status.JWTvalide)
+//     // store.commit('setReady', false);
+//     return { name: 'login' };
+//   }
+// })
 
 export default router
