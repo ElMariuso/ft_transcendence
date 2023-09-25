@@ -1,14 +1,18 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
+
 import { UserQuery } from 'src/Query/user.query';
+import { FriendQuery } from 'src/Query/friend.query';
+
 import { UserDTO } from 'src/DTO/user/user.dto';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
+import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 @Injectable()
 export class UserService
 {
-	constructor(private readonly userQuery: UserQuery) {}
+	constructor(private readonly userQuery: UserQuery, private readonly friendQuery: FriendQuery) {}
 
 	/**
 	 * Gets all the users
@@ -108,6 +112,7 @@ export class UserService
 		
 		await this.userQuery.deleteUser(id);
 
+		console.log("Delete User OK");
 		return deletedUser;
 	}
 
@@ -137,6 +142,62 @@ export class UserService
 		return this.transformToDTO(updatedUser);
 	}
 
+	async getFriendsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException();
+
+		const friends = await this.userQuery.getFriends(idUser);
+
+		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
+			
+			const {idUser, username, email} = friend;
+
+			return {
+				idUser,
+				username,
+				email,
+			};
+		});
+		return formatFriends;
+	}
+
+	async addFriend(idUser: number, friendUsername: string) : Promise<FriendBlockedDTO>
+	{
+		const checkUser = await this.userQuery.findUserByUsername(friendUsername);
+
+		if (!checkUser)
+			throw new NotFoundException();
+		
+		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
+
+		return this.transformToFriendBlockUserDTO(checkUser);
+	}
+
+	async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException();
+
+		const blockeds = await this.userQuery.getBlockeds(idUser);
+
+		const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
+			
+			const {idUser, username, email} = blocked;
+
+			return {
+				idUser,
+				username,
+				email,
+			};
+		});
+		return formatBlockeds;
+	}
+
 	/**
 	 * Transform a Prisma User Object to a UserDTO
 	 * 
@@ -151,9 +212,27 @@ export class UserService
 			idUser: user.idUser,
 			username: user.username,
 			email: user.email,
-			password: user.password,
 			points: user.points,
 			isTwoFactorAuth: user.isTwoFactorAuth,
+		};
+
+		return userDTO;
+	}
+
+	/**
+	 * Transform a Prisma User Object to a FriendBlockedDTO
+	 * 
+	 * @param user Prisma User Object
+	 * 
+	 * @returns FriendBlockedDTO
+	 */
+	private transformToFriendBlockUserDTO(user: User) : FriendBlockedDTO
+	{
+		const userDTO: FriendBlockedDTO = 
+		{
+			idUser: user.idUser,
+			username: user.username,
+			email: user.email
 		};
 
 		return userDTO;

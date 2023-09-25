@@ -1,13 +1,17 @@
 import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put } from '@nestjs/common';
+
 import { UserService } from 'src/Service/user.service';
+import { FriendService } from 'src/Service/friend.service';
+
 import { UserDTO } from 'src/DTO/user/user.dto';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
+import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 @Controller('users')
 export class UserController
 {
-	constructor(private readonly userService: UserService) {}
+	constructor(private readonly userService: UserService, private readonly friendService: FriendService) {}
 
 	/**
 	 * Get all Users
@@ -28,9 +32,10 @@ export class UserController
 	 * @returns UserDTO or null
 	 */
 	@Get(':id')
-	async findUserById(@Param('id') id: number) : Promise<UserDTO | null>
+	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
-		return this.userService.findUserById(id);
+		let newId = parseInt(id, 10);
+		return this.userService.findUserById(newId);
 	}
 
 	/**
@@ -67,10 +72,13 @@ export class UserController
 	 * @throws HTTPException with status NOT_FOUND if the user is not found
 	 */
 	@Delete('/delete/:id')
-	async deleteUserById(@Param('id') id: number) : Promise<String>
+	async deleteUserById(@Param('id') id: string) : Promise<String>
 	{
-		const deletedUser = this.userService.deleteUser(id);
-
+		let newId = parseInt(id, 10);
+		const deletedUser = this.userService.deleteUser(newId);
+		
+		console.log(deletedUser);
+		
 		if (!deletedUser)
 			throw new NotFoundException("User not found");
 		
@@ -88,11 +96,12 @@ export class UserController
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the update of the user failed
 	 */
 	@Put('/update/:id')
-	async updateUser(@Param('id') id: number, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
+	async updateUser(@Param('id') id: string, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
 	{
 		try
 		{
-			return this.userService.updateUser(id, updateUserDTO);
+			let newId = parseInt(id, 10);
+			return this.userService.updateUser(newId, updateUserDTO);
 		}
 		catch(error)
 		{
@@ -100,6 +109,142 @@ export class UserController
 				throw new NotFoundException('User not found');
 
 			throw new InternalServerErrorException('User update failed');
+		}
+	}
+
+	/**
+	 *	=========================================================
+	 *  ======================== FRIENDS ========================
+	 *	=========================================================
+	 */
+
+	/**
+	 * Gets friends list of the user
+	 * 
+	 * @param id  id of the user
+	 * 
+	 * @returns FriendBlockedDTO[]
+	 * 
+	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if get the friends list failed
+	 */
+	@Get(':id/friends')
+	async getFriendsByUserId(@Param('id') id: string) : Promise<FriendBlockedDTO[]>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			return this.friendService.getFriendsByUserId(newId);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User not found');
+
+			throw new InternalServerErrorException('Gets friends list failed');
+		}
+	}
+
+	@Post(':id/addFriend')
+	async addFriend(@Param('id') id: string, @Body() username: string) : Promise<FriendBlockedDTO>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			return this.friendService.addFriend(newId, username);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User not found');
+			
+			throw new InternalServerErrorException('Adding friend failed');	
+		}
+	}
+
+	@Put(':id/acceptFriendship')
+	async acceptFriendship(@Param('id') id: string, @Body() idFriend: string)
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			let newFriendId = parseInt(idFriend, 10);
+			return this.friendService.acceptFriendship(newId, newFriendId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User or Friendship not found');
+			
+			throw new InternalServerErrorException('Accept friendship failed');	
+		}
+	}
+
+	@Put(':id/refuseFriendship')
+	async refuseFriendship(@Param('id') id: string, @Body() idFriend: string)
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			let newFriendId = parseInt(idFriend, 10);
+			return this.friendService.refuseFriendship(newId, newFriendId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User or Friendship not found');
+			
+			throw new InternalServerErrorException('Refuse friendship failed');	
+		}
+	}
+
+	@Delete(':id/deleteFrienship')
+	async deleteFriendship(@Param('id') id: string, @Body() idFriend: string)
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			let newFriendId = parseInt(idFriend, 10);
+			return this.friendService.acceptFriendship(newId, newFriendId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User or Friendship not found');
+			
+			throw new InternalServerErrorException('Accept friendship failed');	
+		}
+	}
+
+	/**
+	 *	=========================================================
+	 *  ======================== BLOCKED ========================
+	 *	=========================================================
+	 */
+	/**
+	 * Gets blocked users list of the user
+	 * 
+	 * @param id  id of the user
+	 * 
+	 * @returns FriendBlockedDTO[]
+	 * 
+	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if get the blocked users list failed
+	 */
+	@Get(':id/blocked')
+	async getBlockedByUserId(@Param('id') id: string) : Promise<FriendBlockedDTO[]>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+			return this.userService.getBlockedsByUserId(newId);
+		}
+		catch(error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException('User not found');
+
+			throw new InternalServerErrorException('Gets blocked users list failed');
 		}
 	}
 }

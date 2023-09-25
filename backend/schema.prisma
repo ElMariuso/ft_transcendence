@@ -18,8 +18,6 @@ model User {
 	username            String  @unique
 	// Email of the user
 	email               String
-	// Password of the user
-	password            String
 	// Path to the avatar picture of the user
 	avatar              String
 	// Total of points of the user
@@ -183,6 +181,7 @@ model Status {
 	// Relations with others tables
 
 	User_Channel	User_Channel[]
+	Friend			Friend[]
 }
 
 // 10.
@@ -226,10 +225,14 @@ model Friend {
 	// Friend user's id
 	idFriendUser	Int
 
+	// Status of invitations
+	idStatus		Int
+
 	// Relations with others tables
 
-	User			User	@relation("User", fields: [idUser], references: [idUser])
- 	FriendUser  	User	@relation("Friend", fields: [idFriendUser], references: [idUser])
+	User			User		@relation("User", fields: [idUser], references: [idUser])
+ 	FriendUser  	User		@relation("Friend", fields: [idFriendUser], references: [idUser])
+	Status			Status		@relation(fields: [idStatus], references: [idStatus])
 }
 
 // 13.
