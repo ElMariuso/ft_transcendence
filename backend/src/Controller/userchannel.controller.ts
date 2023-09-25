@@ -11,7 +11,7 @@ import { UpdateRoleUserChannelDTO } from 'src/DTO/userchannel/updateRoleUserChan
 import { UpdateMuteTimeUserChannelDTO } from 'src/DTO/userchannel/updateMuteTimeUserChannel.dto';
 
 @Controller('userchannels')
-export class ChannelController
+export class UserChannelController
 {
 	constructor(
 		private readonly userchannelService: UserChannelService) {}
