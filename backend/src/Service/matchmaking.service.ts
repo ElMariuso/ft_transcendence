@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Game } from '@prisma/client'
 import { QueueService } from './queue.service';
 import { AuthenticatedPlayer, PlayerInQueue } from 'src/Model/player.model';
@@ -12,8 +12,11 @@ import { GameQuery } from 'src/Query/game.query';
  */
 @Injectable()
 export class MatchmakingService {
+    private matchmakingInterval: NodeJS.Timeout;
+
     /**
      * Creates an instance of MatchmakingService.
+     * This service is responsible for matchmaking players for games.
      *
      * @param {QueueService} queueService - Service for handling player queue operations.
      * @param {GameQuery} gameQuery - Service for handling game-related database operations.
@@ -21,7 +24,9 @@ export class MatchmakingService {
     constructor(
         private readonly queueService: QueueService,
         private readonly gameQuery: GameQuery
-    ) {}
+    ) {
+        this.startMatchmakingInterval();
+    }
 
     /**
      * Adds a player to the standard matchmaking queue. Both guest and authenticated
@@ -130,5 +135,44 @@ export class MatchmakingService {
      */
     getRankedQueueSize(): number {
         return this.queueService.getRankedQueueSize();
+    }
+
+    /**
+     * Initiates the matchmaking interval to repeatedly attempt player matching.
+     * This method sets up an interval to check the queue every 5 seconds for potential matches.
+     * If a match is found, further actions can be taken, such as starting a game.
+     * 
+     * @private
+     * @returns {void}
+     */
+    private startMatchmakingInterval(): void {
+        this.matchmakingInterval = setInterval(async () => {
+            let match = await this.match();
+            while (match) {
+                // AAAAAH
+                match = await this.match();
+            }
+        }, 5000);
+    }
+
+    /**
+     * Stops the matchmaking interval. This method clears the matchmaking interval,
+     * ensuring no further attempts at matching are made.
+     * 
+     * @private
+     * @returns {void}
+     */
+    private stopMatchmakingInterval(): void {
+        clearInterval(this.matchmakingInterval);
+    }
+
+    /**
+     * Lifecycle hook that gets called when the module is destroyed.
+     * Useful for cleanup purposes, in this case, to clear the matchmaking interval.
+     * 
+     * @returns {void}
+     */
+    onModuleDestroy(): void {
+        this.stopMatchmakingInterval();
     }
 }
