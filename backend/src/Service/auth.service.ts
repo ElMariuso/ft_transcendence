@@ -1,42 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { FT_User } from '../Utils/42user'
 import { UserService } from './user.service'
+import { CreateUserDTO } from '../DTO/user/createUser.dto'
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        // private readonly jwtService: JwtService,
+        private readonly jwtService: JwtService,
         private readonly userService: UserService,
-        // private readonly connectionService: ConnectionService,
       ) {}
+	
+	generateJWT(userId: number, username : string) {
+		return {
+			access_token: this.jwtService.signAsync({ sub: userId, username }),
+		}
+	}
 
     async login(data: FT_User): Promise<string> {
         
+		let userId = parseInt(data.id, 10);
+
         let connection = await this.userService
-          .findUserById(data.id)
+          .findUserById42(userId)
           .catch(() => null);
-    
-        if (!connection) {
-            console.log ('Not found')
-        //   const user = await this.userService.createUser();
-        //   connection = await this.connectionService.createConnection(user.id);
-        //   await this.connectionService.updateConnection(connection.id, {
-        //     '42': data.id,
-        //   });
-    
-        //   if (data.photos) {
-        //     const photo = await download(data.photos[0].value);
-        //     await this.userService.setAvatar(user.id, {
-        //       originalname: '42',
-        //       buffer: photo,
-        //     } as Express.Multer.File);
-        //   }
+
+		if (!connection) {
+			const userDto: CreateUserDTO = {
+				username: data.username,
+				email: data.email,
+				id42: userId
+			};
+			const user = await this.userService.createUser(userDto);
         }
-        else {
-            console.log('Found')
-        }
-        return connection;
-        // this.generateJWT(connection.id, !connection.otp);
+
+		return  this.jwtService.signAsync({ sub: connection.userId, username: connection.username });
     }
 }

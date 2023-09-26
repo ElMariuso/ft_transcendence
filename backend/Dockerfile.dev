@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 # Copy package files and install dependencies using npm ci for a clean, reproducible build
 COPY package*.json ./
-RUN npm ci
+RUN npm i
 
 # Copy all other files
 COPY . .
@@ -34,7 +34,7 @@ COPY --chown=node:node --from=build /usr/src/app/schema.prisma ./schema.prisma
 
 # Install the Nest.js CLI
 # RUN npm install -g @nestjs/cli
-RUN npm ci
+RUN npm i
 
 # Copy the custom entry script into the container
 COPY entrypoint.sh /usr/src/app/

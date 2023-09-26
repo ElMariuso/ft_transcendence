@@ -13,6 +13,6 @@ export class CreateUserDTO
 	email: string;
 
 	@IsNotEmpty()
-	password: string;
+	id42: number;
 
 }

@@ -1,3 +1,5 @@
 export interface FT_User {
-    id: number;
+    id: string;
+	email: string;
+	username: string;
   }

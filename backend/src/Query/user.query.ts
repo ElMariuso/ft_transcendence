@@ -72,19 +72,18 @@ export class UserQuery
 	async createUser(user: CreateUserDTO) : Promise<User>
 	{
 		// Deconstruction de l'objet CreateUserDTO
-		const { username, email, password } = user;
+		const { username, email, id42 } = user;
 
 		const newUser = await this.prisma.user.create(
 		{
 			data: 
 			{
 				username,
-				email,
-				password,
+				email: "test@test.com",
+				id42,
 				avatar: 'default',
 				points: 0,
 				isTwoFactorAuth: false,
-				id42: null
 			},
 		});
 

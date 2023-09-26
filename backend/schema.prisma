@@ -18,8 +18,6 @@ model User {
 	username            String  @unique
 	// Email of the user
 	email               String
-	// Password of the user
-	password            String
 	// Path to the avatar picture of the user
 	avatar              String
 	// Total of points of the user

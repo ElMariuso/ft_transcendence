@@ -17,5 +17,6 @@ import { PrismaClient } from '@prisma/client';
 	UserQuery,
 	UserService,
 ],
+exports: [UserService, UserQuery, CreateUserDTO]
 })
 export class UserModule {}

@@ -151,7 +151,7 @@ export class UserService
 			idUser: user.idUser,
 			username: user.username,
 			email: user.email,
-			password: user.password,
+			id42: user.id42,
 			points: user.points,
 			isTwoFactorAuth: user.isTwoFactorAuth,
 		};
