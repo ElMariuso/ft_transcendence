@@ -11,7 +11,6 @@ export class AuthController {
 		private readonly authService: AuthService,
 	  ) {}
 
-	// @Public() Needed ??
 	@UseGuards(FT_AuthGuard)
 	@Get('/42/redirect')
 	async login(@Req() req, @Res() res) {
@@ -26,4 +25,8 @@ export class AuthController {
 
 		res.status(302).redirect(url.href);
 	}
+
+	// @Get(/2fa)
+	// async loginTwoFactorAuth() {
+	// }
 }

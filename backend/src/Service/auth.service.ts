@@ -20,21 +20,25 @@ export class AuthService {
 
     async login(data: FT_User): Promise<string> {
         
-		let userId = parseInt(data.id, 10);
+		let user42Id = parseInt(data.id, 10);
 
-        let connection = await this.userService
-          .findUserById42(userId)
+        let user = await this.userService
+          .findUserById42(user42Id)
           .catch(() => null);
 
-		if (!connection) {
+		if (!user) {
 			const userDto: CreateUserDTO = {
 				username: data.username,
 				email: data.email,
-				id42: userId
+				id42: user42Id
 			};
-			const user = await this.userService.createUser(userDto);
+			user = await this.userService.createUser(userDto);
         }
 
-		return  this.jwtService.signAsync({ sub: connection.userId, username: connection.username });
+		return  await this.jwtService.signAsync({ 
+			sub: user.userId, // Maybe user42Id ??
+			username: user.username,
+			TwoFactorAuthEnabled: user.isTwoFactorAuth 
+		});
     }
 }
