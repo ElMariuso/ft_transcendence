@@ -17,4 +17,6 @@ export class UpdateUserDTO
 	points: number;
 
 	isTwoFactorAuth: boolean;
+
+	profileSetupComplete: boolean;
 }

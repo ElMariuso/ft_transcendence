@@ -12,12 +12,22 @@ export class AuthService {
         private readonly userService: UserService,
       ) {}
 	
-	generateJWT(userId: number, username : string) {
-		return {
-			access_token: this.jwtService.signAsync({ sub: userId, username }),
+	// generateJWT(userId: number, username : string, TwoFactorAuthEnabled: boolean) {
+	// 	return {
+	// 		access_token: this.jwtService.sign({ sub: userId, username, TwoFactorAuthEnabled}),
+	// 	}
+	// }
+
+	jwtVerify(token: string): Promise<boolean> {
+		try {
+			const res =  this.jwtService.verify(token);
+			console.log("JWT VERIFY " + res)
+			return res
+		} 
+		catch {
+			return null;
 		}
 	}
-
     async login(data: FT_User): Promise<string> {
         
 		let user42Id = parseInt(data.id, 10);
@@ -35,9 +45,10 @@ export class AuthService {
 			user = await this.userService.createUser(userDto);
         }
 
-		return  await this.jwtService.signAsync({ 
-			sub: user.userId, // Maybe user42Id ??
-			username: user.username,
+		console.log("USER ID: " +user.idUser)
+		return this.jwtService.sign({ 
+			sub: user.idUser, // Maybe user42Id ??
+			// username: user.username,
 			TwoFactorAuthEnabled: user.isTwoFactorAuth 
 		});
     }

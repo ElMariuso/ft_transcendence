@@ -28,9 +28,10 @@ export class UserController
 	 * @returns UserDTO or null
 	 */
 	@Get(':id')
-	async findUserById(@Param('id') id: number) : Promise<UserDTO | null>
+	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
-		return this.userService.findUserById(id);
+		let idInt = parseInt(id, 10);
+		return this.userService.findUserById(idInt);
 	}
 
 	/**
