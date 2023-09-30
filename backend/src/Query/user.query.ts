@@ -81,7 +81,7 @@ export class UserQuery
 				username,
 				email: "test@test.com",
 				id42,
-				avatar: 'default',
+				avatar: './src/assets/default_avatar.png',
 				points: 0,
 				isTwoFactorAuth: false,
 			},

@@ -4,6 +4,7 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
+import { useProfileStore } from '../stores/ProfileStore'
 
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
@@ -42,16 +43,25 @@ const router = createRouter({
   ]
 })
 
-async function checkJWT() {
+async function checkJWT(authStore, profileStore) {
 	const status = {
 		isAuth: false,
 		jwtValid: false,
-		profileSetupCompleted: false,
 	}
 
 	const token = localStorage.getItem('token')
   	status.isAuth = (token !== null)
 	if (token) {
+		const userID = jwt_decode(token).sub;
+		await axios.get("/users/" + userID, {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		}).then(res => {
+			profileStore.setUsername(res.data.username);
+			profileStore.setAvatar(res.data.avatar);
+		})
+
 		// Handle 2FA
 		const TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
 		if (TwoFactorAuthEnabled) {
@@ -67,6 +77,7 @@ async function checkJWT() {
 			// redirect to auth/2fa
 			// get a new jwt token
 		}
+		authStore.authState = true;
 		return status
 	}
 	return status;
@@ -74,8 +85,9 @@ async function checkJWT() {
 
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore()
+	const profileStore = useProfileStore()
 
-	checkJWT().then(Status => {
+	checkJWT(authStore, profileStore).then(Status => {
 		// Detects if a token exists and verifies it + checks if 2fa enabled
 		if (to.name === 'login' && to.query.code !== undefined) {
 			localStorage.setItem('token', to.query.code.toString());
@@ -85,11 +97,11 @@ router.beforeEach((to, from, next) => {
 			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
 			
 			if (TwoFactorAuthEnabled) {
-				authStore.authState = true;
+				// authStore.authState = true;
 				return next({ name: '2fa' });
 				
 			}
-			authStore.authState = true;
+			// authStore.authState = true;
 			return next({ name: 'home' });
 		}
 		

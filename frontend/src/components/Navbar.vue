@@ -1,13 +1,14 @@
 <template>
-    <div class="w-full relative mx-auto mt-0 mb-0 flex justify-between border-b border-gray-400 p-15px">
+	<!-- w-full relative mx-auto mt-0 mb-0 flex justify-between border-b border-gray-400 p-15px -->
+    <div class="w-full h-20 flex justify-between border-b border-gray-400 p-4">
         <div class="ml-30px flex items-baseline">
             <router-link to="/">
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 			</router-link>
             
-			<router-link to="">
+			<!-- <router-link to="">
 					<p class="text-lg mr-5" >Play</p>
-			</router-link>
+			</router-link> -->
 
 			<router-link :to="{name: 'community'}">
 				<nav class="text-lg mr-5">
@@ -22,11 +23,14 @@
 			</router-link>
 
 		</div>
-
-		<div v-if="authStore.authState"> 
+		
+		<div v-if="authStore.authState" class="flex items-center"> 
+			<div>
+				<p>{{ profileStore.username }}</p>
+			</div>
 			<router-link  to=""></router-link>
-			<div class="mr-30px text-lg">
-				Profile + settings (2af, avatar, name)
+			<div class="mr-4 text-lg">
+				<img :src="profileStore.avatar" alt="avatar" class="h-14 w-auto">
 			</div>
 		</div>
 		
@@ -35,9 +39,12 @@
 
 <script setup lang="ts">
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
+import { useProfileStore } from '../stores/ProfileStore'
 
 const authStore = useAuthenticationStore()
+const profileStore = useProfileStore()
 const name = 'Navbar'
+
 </script>
 
 <style scoped>

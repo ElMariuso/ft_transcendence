@@ -30,8 +30,9 @@ export class UserController
 	@Get(':id')
 	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
+		console.log("/users/:id called: " + id)
 		let idInt = parseInt(id, 10);
-		return this.userService.findUserById(idInt);
+		return await this.userService.findUserById(idInt);
 	}
 
 	/**

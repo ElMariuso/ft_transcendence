@@ -33,7 +33,7 @@ export class UserService
 
 		if (!user)
 			return null;
-		
+		console.log("Passed user query")
 		return this.transformToDTO(user);
 	}
 
@@ -154,8 +154,10 @@ export class UserService
 			id42: user.id42,
 			points: user.points,
 			isTwoFactorAuth: user.isTwoFactorAuth,
+			avatar: user.avatar
 		};
 
+		console.log("Copied DTO")
 		return userDTO;
 	}
 

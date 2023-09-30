@@ -11,17 +11,10 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly userService: UserService,
       ) {}
-	
-	// generateJWT(userId: number, username : string, TwoFactorAuthEnabled: boolean) {
-	// 	return {
-	// 		access_token: this.jwtService.sign({ sub: userId, username, TwoFactorAuthEnabled}),
-	// 	}
-	// }
 
 	jwtVerify(token: string): Promise<boolean> {
 		try {
 			const res =  this.jwtService.verify(token);
-			console.log("JWT VERIFY " + res)
 			return res
 		} 
 		catch {
@@ -45,11 +38,10 @@ export class AuthService {
 			user = await this.userService.createUser(userDto);
         }
 
-		console.log("USER ID: " +user.idUser)
 		return this.jwtService.sign({ 
-			sub: user.idUser, // Maybe user42Id ??
+			sub: user.idUser,
 			// username: user.username,
-			TwoFactorAuthEnabled: user.isTwoFactorAuth 
+			// TwoFactorAuthEnabled: user.isTwoFactorAuth 
 		});
     }
 }
