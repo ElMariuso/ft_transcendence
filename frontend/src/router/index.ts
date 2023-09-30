@@ -3,13 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
+import { useAuthenticationStore } from '../stores/AuthenticationStore'
+
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import ProfileSetupView from '../views/ProfileSetupView.vue';
-
-import AboutView from '../views/AboutView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,14 +18,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: AboutView
     },
     {
       path: '/login',
@@ -52,13 +44,13 @@ const router = createRouter({
 
 async function checkJWT() {
 	const status = {
-		isAuthenticated: false,
+		isAuth: false,
 		jwtValid: false,
 		profileSetupCompleted: false,
 	}
 
 	const token = localStorage.getItem('token')
-  	status.isAuthenticated = (token !== null)
+  	status.isAuth = (token !== null)
 	if (token) {
 		// Handle 2FA
 		const TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
@@ -81,8 +73,8 @@ async function checkJWT() {
 }
 
 router.beforeEach((to, from, next) => {
+	const authStore = useAuthenticationStore()
 
-	
 	checkJWT().then(Status => {
 		// Detects if a token exists and verifies it + checks if 2fa enabled
 		if (to.name === 'login' && to.query.code !== undefined) {
@@ -93,14 +85,16 @@ router.beforeEach((to, from, next) => {
 			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
 			
 			if (TwoFactorAuthEnabled) {
+				authStore.authState = true;
 				return next({ name: '2fa' });
+				
 			}
-		
+			authStore.authState = true;
 			return next({ name: 'home' });
 		}
 		
 		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !Status.isAuthenticated) {
+		else if (to.name !== 'login' && !Status.isAuth) {
 			return next({ name: 'login'});
 		}
 

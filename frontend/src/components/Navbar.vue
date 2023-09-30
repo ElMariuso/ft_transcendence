@@ -1,11 +1,3 @@
-<script>
-export default {
-    name: 'Navbar',
-}
-
-
-</script>
-
 <template>
     <div class="w-full relative mx-auto mt-0 mb-0 flex justify-between border-b border-gray-400 p-15px">
         <div class="ml-30px flex items-baseline">
@@ -29,13 +21,24 @@ export default {
 				</nav>
 			</router-link>
 
+		</div>
+
+		<div v-if="authStore.authState"> 
+			<router-link  to=""></router-link>
+			<div class="mr-30px text-lg">
+				Profile + settings (2af, avatar, name)
 			</div>
-				<router-link to=""></router-link>
-				<div class="mr-30px text-lg">
-					Right
-			</div>
+		</div>
+		
     </div>
 </template>
+
+<script setup lang="ts">
+import { useAuthenticationStore } from '../stores/AuthenticationStore'
+
+const authStore = useAuthenticationStore()
+const name = 'Navbar'
+</script>
 
 <style scoped>
 </style>
