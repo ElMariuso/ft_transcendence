@@ -10,7 +10,7 @@ import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
-import ProfileSetupView from '../views/ProfileSetupView.vue';
+import SettingsView from '../views/SettingsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,9 +36,9 @@ const router = createRouter({
       component: ProfileView
     },
     {
-      path: '/profileSetup',
-      name: 'profileSetup',
-      component: ProfileSetupView
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView
     }
   ]
 })
@@ -52,7 +52,14 @@ async function checkJWT(authStore, profileStore) {
 	const token = localStorage.getItem('token')
   	status.isAuth = (token !== null)
 	if (token) {
-		const userID = jwt_decode(token).sub;
+		let userID;
+		try {
+
+			userID = jwt_decode(token).sub;
+		}
+		catch (error){
+			console.log("jwt decode failed");
+		}
 		await axios.get("/users/" + userID, {
 			headers: {
 				Authorization: 'Bearer ' + token
@@ -63,7 +70,14 @@ async function checkJWT(authStore, profileStore) {
 		})
 
 		// Handle 2FA
-		const TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
+		let TwoFactorAuthEnabled
+		try {
+
+			TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
+		}
+		catch {
+			console.log("jwt decode failed");
+		}
 		if (TwoFactorAuthEnabled) {
 			await axios.get('/auth/jwt/verify', {
 				headers: {
@@ -93,7 +107,13 @@ router.beforeEach((to, from, next) => {
 			localStorage.setItem('token', to.query.code.toString());
 			axios.defaults.headers.common['Authorization'] = 'Bearer ' + to.query.code.toString();
 			
-			const jwtDecoded = jwt_decode(to.query.code.toString())
+			let jwtDecoded;
+			try {
+				jwtDecoded = jwt_decode(to.query.code.toString())
+			} catch {
+				console.log("jwt decode failed");
+			}
+				
 			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
 			
 			if (TwoFactorAuthEnabled) {
@@ -106,9 +126,9 @@ router.beforeEach((to, from, next) => {
 		}
 		
 		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !Status.isAuth) {
-			return next({ name: 'login'});
-		}
+		// else if (to.name !== 'login' && !Status.isAuth) {
+		// 	return next({ name: 'login'});
+		// }
 
 		next();
 	});

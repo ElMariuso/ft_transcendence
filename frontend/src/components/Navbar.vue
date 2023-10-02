@@ -24,7 +24,8 @@
 
 		</div>
 		
-		<div v-if="authStore.authState" class="flex items-center"> 
+		<!-- <div v-if="authStore.authState" class="flex items-center"> -->
+		<div  class="flex items-center">
 			<div>
 				<p>{{ profileStore.username }}</p>
 			</div>
@@ -32,6 +33,7 @@
 			<div class="mr-4 text-lg">
 				<img :src="profileStore.avatar" alt="avatar" class="h-14 w-auto">
 			</div>
+			<SettingsDropDown />
 		</div>
 		
     </div>
@@ -40,11 +42,14 @@
 <script setup lang="ts">
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
 import { useProfileStore } from '../stores/ProfileStore'
+import SettingsDropDown from './SettingsDropDown.vue' 
 
 const authStore = useAuthenticationStore()
 const profileStore = useProfileStore()
 const name = 'Navbar'
 
+// Sets username, avatar and 2fa to correct DB values
+profileStore.setupProfile()
 </script>
 
 <style scoped>

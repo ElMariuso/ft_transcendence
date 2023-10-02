@@ -1,7 +1,7 @@
 import { IsEmail, IsInt } from 'class-validator';
 
 /**
- * DTO used for creating a new user
+ * DTO used for updating a new user
  */
 export class UpdateUserDTO
 {
@@ -17,6 +17,4 @@ export class UpdateUserDTO
 	points: number;
 
 	isTwoFactorAuth: boolean;
-
-	profileSetupComplete: boolean;
 }
