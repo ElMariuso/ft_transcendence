@@ -1,6 +1,4 @@
 <!-- WIP: AVATAR + BACKEND API -->
-
-
 <template>
   <div class="p-4">
     <h2 class="text-lg font-semibold mb-4">Profile Settings</h2>
@@ -32,7 +30,8 @@
       <!-- Two-Factor Authentication Toggle -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Two-Factor Authentication:</label>
-        <div class="flex space-x-4 mt-1">
+        
+		<div class="flex space-x-4 mt-1">
           <button
             :class="{ 'bg-blue-500 text-white': twoFactorAuth, 'bg-gray-200': !twoFactorAuth }"
             @click="enableTwoFactorAuth"
@@ -40,6 +39,7 @@
           >
             Enabled
           </button>
+
           <button
             :class="{ 'bg-blue-500 text-white': !twoFactorAuth, 'bg-gray-200': twoFactorAuth }"
             @click="disableTwoFactorAuth"
@@ -61,7 +61,7 @@
           Save
         </button>
         
-        <button @click="closeSettingsModal" class="ml-5 text-gray-600 bg-gray-200 px-4 py-2 rounded-lg">Cancel</button>
+        <button @click="" class="ml-5 text-gray-600 bg-gray-200 px-4 py-2 rounded-lg">Cancel</button>
       </div>
     </div>
   </div>
@@ -77,7 +77,7 @@ export default {
 
   setup() {
   // Store
-    const profileStore = useProfileStore()
+    const profileStore = useProfileStore();
 
   // Variables
     const newUsername = ref('');
@@ -85,8 +85,7 @@ export default {
     const usernameCheckPerformed = ref(false);
     const checkButtonDisabled = ref(true);
     const twoFactorAuth = ref(profileStore.twoFactorAuth);
-
-    const newAvatar = ref(null); // Store the selected file for avatar
+    const newAvatar = ref('');
 
     const checkButtonLabel = computed(() => {
       if (usernameAvailable.value && usernameCheckPerformed.value)
@@ -119,14 +118,8 @@ export default {
         return {'bg-blue-500 text-white': true};
     });
 
-
-
-
-    
-
-
   // Methods
-    // !! Values are trimmed, so the username sent to request must be trimmed also
+
     watch(newUsername, (newVal, oldVal) => {
       newVal = newVal.trim();
       oldVal = oldVal.trim();
@@ -143,14 +136,15 @@ export default {
     function checkUsernameAvailability() {
       if (!checkButtonDisabled.value) {
 
+		// API ROUTE NEEDS TO BE IMPLEMENTED
         // axios.get(`/checkUsernameAPI/${newUsername.value}`).then(res => {
-          //   // Either new api route, or use getAllUsers and perform check here
-          //   usernameCheckPerformed.value = true;
-          //   // If username found: 
-          //   usernameAvailable.value = false;
-          //   // else
-          //   // usernameAvailable.value = true;
-          // });
+        //     // Either new api route, or use getAllUsers and perform check here
+        //     usernameCheckPerformed.value = true;
+        //     // If username found: 
+        //     usernameAvailable.value = false;
+        //     // else
+        //     // usernameAvailable.value = true;
+        //   });
           
           // Testing
           usernameCheckPerformed.value = true;
@@ -158,30 +152,7 @@ export default {
       }
     }
 
-    function saveSettings() {
-      if (!saveButtonDisabled.value) {
-        // username
-        if (newUsername.value.trim() !== '' && usernameAvailable.value) {
-          // 1. push new username in db
-          // 2. update profileStore username
-        }
-        
-        // avatar
-        // if ()
-
-        // 2fa
-        if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
-          // 1. push new 2fa val in db
-          // 2. update profileStore 2fa
-        }
-
-        // Actual DB post w/ new values
-        // axios.post('/users/updateUser') ...
-        
-      }
-    }
-
-    function enableTwoFactorAuth() {
+	function enableTwoFactorAuth() {
       twoFactorAuth.value = true;
     }
 
@@ -189,15 +160,44 @@ export default {
       twoFactorAuth.value = false;
     }
 
-  
-    // 
-    function handleAvatarChange(event) {
-      newAvatar.value = event.target.files[0];
+    // WIP
+    function handleAvatarChange() {
+      newAvatar.value = "/newAvatarImgPath/";
     }
 
+    async function saveSettings() {
+      let bodyInfo = {};
 
-    
+      if (!saveButtonDisabled.value) {
+        // username
+        if (newUsername.value.trim() !== '' && usernameAvailable.value) {
+          bodyInfo['username'] = newUsername.value;
+        }
+        
+        // avatar
+        // if () {
+			// 1. bodyInfo['avatar'] = newAvatar.value;
+			// 2. Post img to upload folder
+		// }
 
+        // 2fa
+        // if (twoFactorAuth.value !== profileStore.twoFactorAuth)
+        //  bodyInfo['isTwoFactorAuth'] = twoFactorAuth.value;
+       
+        const token = localStorage.getItem('token');
+
+        let jsonToSend = JSON.stringify(bodyInfo);
+        await axios.put('/users/update/' + profileStore.userID.value, jsonToSend, {
+          headers: {
+            Authorization: 'Bearer ' + token
+          },
+
+        });
+
+      }
+    }
+
+   
     
 
     return {
@@ -207,10 +207,7 @@ export default {
       usernameCheckPerformed,
       checkButtonDisabled,
       twoFactorAuth,
-      
       newAvatar,
-
-      // Computed variables
       checkButtonLabel,
       checkButtonClass,
       saveButtonDisabled,
@@ -221,7 +218,6 @@ export default {
       saveSettings,
       enableTwoFactorAuth,
       disableTwoFactorAuth,
-      
       handleAvatarChange,
     };
   },

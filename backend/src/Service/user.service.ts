@@ -33,7 +33,6 @@ export class UserService
 
 		if (!user)
 			return null;
-		console.log("Passed user query")
 		return this.transformToDTO(user);
 	}
 
@@ -157,7 +156,6 @@ export class UserService
 			avatar: user.avatar
 		};
 
-		console.log("Copied DTO")
 		return userDTO;
 	}
 

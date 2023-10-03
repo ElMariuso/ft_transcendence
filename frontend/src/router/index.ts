@@ -1,10 +1,9 @@
 
 import { createRouter, createWebHistory } from 'vue-router';
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
-
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
 import { useProfileStore } from '../stores/ProfileStore'
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
 
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
@@ -117,18 +116,15 @@ router.beforeEach((to, from, next) => {
 			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
 			
 			if (TwoFactorAuthEnabled) {
-				// authStore.authState = true;
 				return next({ name: '2fa' });
 				
 			}
-			// authStore.authState = true;
 			return next({ name: 'home' });
 		}
 		
 		// Guards all views if not authenticated
-		// else if (to.name !== 'login' && !Status.isAuth) {
-		// 	return next({ name: 'login'});
-		// }
+		else if (to.name !== 'login' && !Status.isAuth)
+			return next({ name: 'login'});
 
 		next();
 	});

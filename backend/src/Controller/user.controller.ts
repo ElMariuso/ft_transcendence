@@ -30,7 +30,6 @@ export class UserController
 	@Get(':id')
 	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
-		console.log("/users/:id called: " + id)
 		let idInt = parseInt(id, 10);
 		return await this.userService.findUserById(idInt);
 	}
@@ -90,11 +89,13 @@ export class UserController
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the update of the user failed
 	 */
 	@Put('/update/:id')
-	async updateUser(@Param('id') id: number, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
+	async updateUser(@Param('id') id: string, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
 	{
+		let idInt = parseInt(id, 10);
 		try
 		{
-			return this.userService.updateUser(id, updateUserDTO);
+			const user = await this.userService.updateUser(idInt, updateUserDTO);
+			return user ;
 		}
 		catch(error)
 		{

@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import router from './router';
 import Navbar from './components/Navbar.vue';
 </script>
 
 
 <template>
   <div class=" bg-no-repeat min-h-screen">
-    <!-- <Suspense> -->
       <Navbar />
-    <!-- </Suspense> -->
     <div class="container mx-auto mt-8">
       <router-view />
     </div>

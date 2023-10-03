@@ -104,11 +104,8 @@ export class UserQuery
 		);
 	}
 
-
-
-	// Usage ex: updateUser(data.id, {2fa: true})
 	async updateUser(idUser: number, updateData: any)
-	{
+	{		
 		this.prisma.user.update(
 		{
 			where: { idUser },

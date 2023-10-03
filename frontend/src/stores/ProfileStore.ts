@@ -6,16 +6,17 @@ import jwt_decode from 'jwt-decode';
 
 export const useProfileStore = defineStore('profile', () => {
 
-	
 	const avatar = ref("./src/assets/default_avatar.png")
 	const username = ref("username")
 	const twoFactorAuth = ref(false)
+	const userID = ref(0)
 
 	async function setupProfile() {
 		const token = localStorage.getItem('token')
-		const userID = jwt_decode(token).sub;
+		const id = jwt_decode(token).sub;
+		userID.value = ref(id);
 
-		await axios.get('/users/' + userID, {
+		await axios.get('/users/' + id, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}
@@ -38,5 +39,5 @@ export const useProfileStore = defineStore('profile', () => {
 		twoFactorAuth.value = val
 	}
 
-	return {avatar, username, twoFactorAuth, setAvatar, setUsername, setTwoFactorAuth, setupProfile}
+	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile}
 })

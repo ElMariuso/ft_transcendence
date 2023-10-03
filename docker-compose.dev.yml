@@ -14,10 +14,6 @@ services:
     env_file:
       - .env
     restart: always
-    
-    # # Idk why, docker started messing up
-    # environment:
-    #   POSTGRES_PASSWORD: mysecretpassword
 
   backend-dev:
     container_name: backend-dev

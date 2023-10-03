@@ -40,8 +40,6 @@ export class AuthService {
 
 		return this.jwtService.sign({ 
 			sub: user.idUser,
-			// username: user.username,
-			// TwoFactorAuthEnabled: user.isTwoFactorAuth 
 		});
     }
 }
