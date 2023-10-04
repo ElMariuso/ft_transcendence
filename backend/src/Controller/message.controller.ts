@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundEx
 import { MessageService } from 'src/Service/message.service';
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
+
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
 
 @Controller('messages')
@@ -52,6 +53,7 @@ export class MessageController
 		catch(error)
 		{
 			throw new InternalServerErrorException(ERROR_MESSAGES.MESSAGE.CREATEMESSAGE_FAILED);
+
 		}
 	}
 

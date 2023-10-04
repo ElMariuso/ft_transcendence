@@ -81,9 +81,7 @@ export class UserQuery
 	async findAllUsernames()
 	{
 		const users = await this.prisma.user.findMany();
-		console.log("ALL USERS => ", users);
 		const usernames = users.map(user => user.username);
-		console.log("All usernames -> ", usernames);
 		return usernames;
 	}
 

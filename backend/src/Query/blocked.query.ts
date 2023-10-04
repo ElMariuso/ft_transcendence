@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, Block } from '@prisma/client';
 
+
 @Injectable()
 export class BlockedQuery
 {
@@ -54,6 +55,7 @@ export class BlockedQuery
 	async getBlockedByUserIds(idUser: number, idBlockedUser: number) : Promise<Block | null>
 	{
 		let blocked = await this.prisma.block.findFirst
+
 		(
 			{
 				where: 
@@ -105,6 +107,7 @@ export class BlockedQuery
 		(
 			{
 				where: { idBlock },
+
 			}
 		);
 	}

@@ -19,6 +19,7 @@ export class UserChannelQuery
 	async findUserChannelByUserAndChannelIds(idUser: number, idChannel: number) : Promise<User_Channel | null>
 	{
 		const userchannel = await this.prisma.user_Channel.findFirst
+
 		(
 			{
 				where: { idUser, idChannel },
@@ -69,6 +70,7 @@ export class UserChannelQuery
 		(
 			{
 				where: { idUser_Channel: idUserChannel }
+
 			}
 		);
 	}
@@ -89,6 +91,7 @@ export class UserChannelQuery
 		(
 			{
 				where: { idUser_Channel: idUserChannel },
+
 				data:
 				{
 					idRole: idRole
@@ -118,6 +121,7 @@ export class UserChannelQuery
 		(
 			{
 				where: { idUser_Channel: idUserChannel },
+
 				data:
 				{
 					muteTime: newMuteTime,
@@ -127,5 +131,4 @@ export class UserChannelQuery
 
 		return userchannel;
 	}
-
 }

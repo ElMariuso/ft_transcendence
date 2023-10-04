@@ -9,7 +9,9 @@ import { UserChannelDTO } from 'src/DTO/userchannel/userchannel.dto';
 import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto';
 import { UpdateRoleUserChannelDTO } from 'src/DTO/userchannel/updateRoleUserChannel.dto';
 import { UpdateMuteTimeUserChannelDTO } from 'src/DTO/userchannel/updateMuteTimeUserChannel.dto';
+
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
+
 
 @Controller('userchannels')
 export class UserChannelController
@@ -95,8 +97,8 @@ export class UserChannelController
 			let newIdChannel = parseInt(idChannel, 10);
 
 			this.userchannelService.deleteMember(newIdUser, newIdChannel);
-
 			return MESSAGES.USER_CHANNEL.DELETE_SUCCESS;
+
 		}
 		catch (error)
 		{

@@ -46,11 +46,13 @@ export const ERROR_MESSAGES =
 	{
 		NOT_FOUND: "Friendship not found",
 
+		IN_WAITING: "Friendship in waiting",
 		ALREADY_ACCEPTED: "Friendship already accepted",
 		ALREADY_REFUSED: "Friendship already refused",
 
 		USER_TRYING_ACCEPT: "You can not accept for others...",
 		USER_TRYING_REFUSE: "You can not refuse for others...",
+		USER_TRYING_INVITE_ITSELF: "You can not invite yourself",
 
 		GETFRIENDS_FAILED: "Gets friends list failed",
 		GETINVITATIONS_FAILED: "Gets friend invitations failed",

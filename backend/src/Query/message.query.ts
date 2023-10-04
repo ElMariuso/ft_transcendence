@@ -75,9 +75,7 @@ export class MessageQuery
 		const { content, idUser, idChannel } = message;
 
 		const timestamps = new Date();
-
-		// const timestamps = date.toLocaleDateString("en-GB", {timeZone: "Europe/Brussels"});
-
+		
 		const newMessage = await this.prisma.message.create(
 		{
 			data: 

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundEx
 import { GameService } from 'src/Service/game.service';
 import { GameDTO } from 'src/DTO/game/game.dto';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
+
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
 // import { UpdateGameDTO } from 'src/DTO/game/updateGame.dto';
 
@@ -86,7 +87,6 @@ export class GameController
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.DELETEGAME_FAILED);
 		}
-		
 	}
 
 }

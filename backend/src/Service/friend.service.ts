@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Friend, User } from '@prisma/client';
+import { User } from '@prisma/client';
 
 import { FriendQuery } from 'src/Query/friend.query'
 import { UserQuery } from 'src/Query/user.query'
@@ -27,8 +27,8 @@ export class FriendService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const friends = await this.friendQuery.getFriends(idUser);
-		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
-			
+		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => 
+		{
 			const {idUser, username, email} = friend;
 
 			return {
@@ -55,6 +55,7 @@ export class FriendService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const friends = await this.friendQuery.getFriendsInvitations(idUser);
+
 		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
 			
 			const {idUser, username, email} = friend;
@@ -82,12 +83,19 @@ export class FriendService
 
 		if (!checkUser)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-
+		if (checkUser.idUser == idUser)
+			throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_INVITE_ITSELF);
+		
 		const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
 		
 		/** DEMANDER SI ON ACCEPT DE RENVOYER UNE NOUVELLE DEMANDE SI ELLE A ETE REFUSEE */
-		if (bond)
-			throw new ConflictException();
+
+		if (bond && bond.idStatus == 1)
+			throw new ConflictException(ERROR_MESSAGES.FRIEND.IN_WAITING);
+		if (bond && bond.idStatus == 2)
+			throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_ACCEPTED);
+		if (bond && bond.idStatus == 3)
+			throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_REFUSED);
 		
 		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
 
@@ -171,6 +179,7 @@ export class FriendService
 		
 		if (!bond)
 			throw new NotFoundException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
+
 
 		await this.friendQuery.deleteFriendship(bond.idFriend);
 

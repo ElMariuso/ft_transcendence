@@ -244,6 +244,9 @@ export class UserController
 	 * @throw HTTPException with status NOT_FOUND if the invitation is not found
 	 * @throw HTTPException with status CONFLICT if the user has already accepted the invitation
 	 * @throw HTTPException with status CONFLICT if the user who sent the invitation tried to accept it
+	 * @throw HTTPException with status CONFLICT if the invitation is in waiting
+	 * @throw HTTPException with status CONFLICT if the invitation is accepted
+	 * @throw HTTPException with status CONFLICT if the invitation is refused
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the acceptance failed
 	 */
 	@Put(':id/acceptFriendship')
@@ -310,7 +313,7 @@ export class UserController
 	 * @throw HTTPException with status NOT_FOUND if the bond is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
-	@Delete(':id/deleteFrienship')
+	@Delete(':id/deleteFriendship')
 	async deleteFriendship(@Param('id') id: string, @Body() data: { idFriend: string })
 	{
 		try
@@ -419,5 +422,6 @@ export class UserController
 			throw new InternalServerErrorException(ERROR_MESSAGES.BLOCK.BLOCKUSER_FAILED);
 		}
 	}
+
 }
 

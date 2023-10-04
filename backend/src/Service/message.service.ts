@@ -8,6 +8,7 @@ import { UserChannelQuery } from 'src/Query/userchannel.query';
 
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
+
 import { ERROR_MESSAGES } from 'src/globalVariables';
 
 @Injectable()
@@ -43,6 +44,7 @@ export class MessageService
 
 		if (!message)
 			throw new NotFoundException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
+
 		
 		return this.transformToDTO(message);
 	}

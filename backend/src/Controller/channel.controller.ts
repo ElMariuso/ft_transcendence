@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
 
+
 import { ChannelService } from 'src/Service/channel.service';
 
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
@@ -80,7 +81,6 @@ export class ChannelController
 	{
 		try
 		{
-
 			let newId = parseInt(id, 10);
 
 			this.channelService.deleteChannel(newId);
@@ -94,7 +94,6 @@ export class ChannelController
 			
 			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.DELETECHANNEL_FAILED);
 		}
-		
 	}
 }
 

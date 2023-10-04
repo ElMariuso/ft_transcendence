@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import { BlockedQuery } from 'src/Query/blocked.query'
 import { UserQuery } from 'src/Query/user.query'
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
+
 import { ERROR_MESSAGES } from 'src/globalVariables';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class BlockedService
 	 * 
 	 * @returns FriendBlockedDTO[]
 	 */
+
 	async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
 	{
 		const checkUser = await this.userQuery.findUserById(idUser);
@@ -26,7 +28,6 @@ export class BlockedService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const blockeds = await this.blockedQuery.getBlockeds(idUser);
-		console.log("Liste bloqué => ", blockeds);
 
 		const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
 			
@@ -56,10 +57,12 @@ export class BlockedService
 		if (!checkUser)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
+
 		const bond = await this.blockedQuery.getBlockedByUserIds(idUser, checkUser.idUser);
 		
 		if (bond)
 			throw new ConflictException(ERROR_MESSAGES.BLOCK.ALREADY_BLOCK);
+
 		
 		await this.blockedQuery.addBlockedUser(idUser, checkUser.idUser);
 

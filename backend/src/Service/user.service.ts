@@ -11,6 +11,7 @@ import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
 
+
 @Injectable()
 export class UserService
 {
@@ -124,6 +125,7 @@ export class UserService
 		
 		await this.userQuery.deleteUser(id);
 
+		console.log("Delete User OK");
 		return deletedUser;
 	}
 
@@ -188,7 +190,7 @@ export class UserService
 
 		if (!checkUser)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-		
+
 		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
 
 		return this.transformToFriendBlockUserDTO(checkUser);
@@ -200,6 +202,7 @@ export class UserService
 
 		if (!checkUser)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
 
 		const blockeds = await this.userQuery.getBlockeds(idUser);
 

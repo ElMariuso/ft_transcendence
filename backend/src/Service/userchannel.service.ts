@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+
 import { User_Channel } from '@prisma/client';
 
 import { UserQuery } from 'src/Query/user.query';
@@ -6,12 +7,12 @@ import { ChannelQuery } from 'src/Query/channel.query';
 import { UserChannelQuery } from 'src/Query/userchannel.query';
 import { RoleQuery } from 'src/Query/role.query';
 
-
 import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto';
 import { UserChannelDTO } from 'src/DTO/userchannel/userchannel.dto';
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
+
 
 @Injectable()
 export class UserChannelService
@@ -38,7 +39,7 @@ export class UserChannelService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const channels = await this.channelQuery.findAllChannelsByUserId(idUser);
-		
+
 		if (!channels)
 			return [];
 
@@ -107,6 +108,7 @@ export class UserChannelService
 		if (!userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
 
+
 		await this.userchannelQuery.deleteMember(userChannel.idUser_Channel);
 	}
 
@@ -133,9 +135,9 @@ export class UserChannelService
 			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
 
 		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
-
 		if (!userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
+
 		
 		userChannel = await this.userchannelQuery.updateRole(userChannel.idUser_Channel, idRole);
 		
@@ -163,11 +165,13 @@ export class UserChannelService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+
 		
 		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 
 		if (!userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
+
 
 		const newUsCh = await this.userchannelQuery.updateMuteTime(userChannel.idUser_Channel, timeToMute);
 

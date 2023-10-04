@@ -66,7 +66,8 @@ export class ChannelService
 		
 		if(type.name === TYPE.PRIVATE && !channel.password)
 			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.PASSWORD_MISSING);
-
+		if(type.name === TYPE.PUBLIC && !channel.password)
+			channel.password = "";
 		const newChannel = await this.channelQuery.createChannel(channel);
 
 		return this.transformToDTO(newChannel);
