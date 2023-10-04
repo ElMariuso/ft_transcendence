@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsInt } from 'class-validator';
 
 /**
  * DTO used for creating a new user
@@ -13,6 +13,7 @@ export class CreateUserDTO
 	email: string;
 
 	@IsNotEmpty()
+	@IsInt()
 	id42: number;
 
 }

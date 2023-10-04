@@ -1,14 +1,21 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
+
 import { UserQuery } from 'src/Query/user.query';
+import { FriendQuery } from 'src/Query/friend.query';
+
 import { UserDTO } from 'src/DTO/user/user.dto';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
+import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
+
+import { ERROR_MESSAGES } from 'src/globalVariables';
+
 
 @Injectable()
 export class UserService
 {
-	constructor(private readonly userQuery: UserQuery) {}
+	constructor(private readonly userQuery: UserQuery, private readonly friendQuery: FriendQuery) {}
 
 	/**
 	 * Gets all the users
@@ -71,6 +78,16 @@ export class UserService
 	}
 
 	/**
+	 * Get the list of all usernames
+	 * 
+	 * @returns List of usernames
+	 */
+	async findAllUsernames() : Promise<string []>
+	{
+		return this.userQuery.findAllUsernames();
+	}
+
+	/**
 	 * Creates a user in DB
 	 * 
 	 * @param user UserDTO to create
@@ -84,7 +101,7 @@ export class UserService
 		const existingUser = await this.userQuery.findUserByUsername(user.username);
 
 		if (existingUser)
-			throw new ConflictException();
+			throw new ConflictException(ERROR_MESSAGES.USER.USERNAME_ALREADY_EXIST);
 		
 		const newUser = await this.userQuery.createUser(user);
 
@@ -103,10 +120,11 @@ export class UserService
 		const deletedUser = await this.userQuery.findUserById(id);
 
 		if (!deletedUser)
-			return null;
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		await this.userQuery.deleteUser(id);
 
+		console.log("Delete User OK");
 		return deletedUser;
 	}
 
@@ -125,15 +143,79 @@ export class UserService
 		const updateUser = await this.userQuery.findUserById(id);
 
 		if (!updateUser)
-			throw new NotFoundException();
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const data = this.checkUpdateData(userData);
+
+		if (data.username)
+		{
+			const check = await this.userQuery.findUserByUsername(data.username);
+			if (check)
+				throw new ConflictException(ERROR_MESSAGES.USER.USERNAME_ALREADY_EXIST);
+		}
 
 		await this.userQuery.updateUser(id, data);
 
 		const updatedUser = await this.userQuery.findUserById(id);
 
 		return this.transformToDTO(updatedUser);
+	}
+
+	async getFriendsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const friends = await this.userQuery.getFriends(idUser);
+
+		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
+			
+			const {idUser, username, email} = friend;
+
+			return {
+				idUser,
+				username,
+				email,
+			};
+		});
+		return formatFriends;
+	}
+
+	async addFriend(idUser: number, friendUsername: string) : Promise<FriendBlockedDTO>
+	{
+		const checkUser = await this.userQuery.findUserByUsername(friendUsername);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
+
+		return this.transformToFriendBlockUserDTO(checkUser);
+	}
+
+	async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+
+		const blockeds = await this.userQuery.getBlockeds(idUser);
+
+		const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
+			
+			const {idUser, username, email} = blocked;
+
+			return {
+				idUser,
+				username,
+				email,
+			};
+		});
+		return formatBlockeds;
 	}
 
 	/**
@@ -154,6 +236,25 @@ export class UserService
 			points: user.points,
 			isTwoFactorAuth: user.isTwoFactorAuth,
 			avatar: user.avatar
+		};
+
+		return userDTO;
+	}
+
+	/**
+	 * Transform a Prisma User Object to a FriendBlockedDTO
+	 * 
+	 * @param user Prisma User Object
+	 * 
+	 * @returns FriendBlockedDTO
+	 */
+	private transformToFriendBlockUserDTO(user: User) : FriendBlockedDTO
+	{
+		const userDTO: FriendBlockedDTO = 
+		{
+			idUser: user.idUser,
+			username: user.username,
+			email: user.email
 		};
 
 		return userDTO;

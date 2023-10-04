@@ -10,7 +10,6 @@ export class UpdateUserDTO
 	@IsEmail()
 	email: string;
 
-	password: string;
 	avatar: string;
 	
 	@IsInt()
