@@ -29,7 +29,7 @@ import { PrismaClient } from '@prisma/client';
 	PrismaClient,
 	UserQuery,
 	UserService,
-],
-exports: [UserService, UserQuery, CreateUserDTO]
+	],
+	exports: [UserService, UserQuery, CreateUserDTO]
 })
 export class UserModule {}
