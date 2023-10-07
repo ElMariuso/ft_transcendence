@@ -98,21 +98,19 @@ export class UserQuery
 	{
 		// Deconstruction de l'objet CreateUserDTO
 		const { username, email, id42 } = user;
-		
-		const newUser = await this.prisma.user.create
-		(
+
+		const newUser = await this.prisma.user.create(
+		{
+			data: 
 			{
-				data: 
-				{
-					username,
-					email,
-					avatar: 'default',
-					points: 0,
-					isTwoFactorAuth: false,
-					id42
-				},
-			}
-		);
+				username,
+				email: "test@test.com",
+				id42,
+				avatar: './src/assets/default_avatar.png',
+				points: 0,
+				isTwoFactorAuth: false,
+			},
+		});
 
 		return newUser;
 	}
@@ -268,3 +266,6 @@ export class UserQuery
 		return user.Blocked.map((blocked)  => blocked.BlockedUser);
 	}
 }
+
+
+

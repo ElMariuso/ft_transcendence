@@ -12,6 +12,7 @@ export class CreateUserDTO
 	@IsEmail()
 	email: string;
 
+	@IsNotEmpty()
 	@IsInt()
 	id42: number;
 

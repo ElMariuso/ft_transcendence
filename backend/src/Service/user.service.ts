@@ -40,7 +40,6 @@ export class UserService
 
 		if (!user)
 			return null;
-		
 		return this.transformToDTO(user);
 	}
 
@@ -233,8 +232,10 @@ export class UserService
 			idUser: user.idUser,
 			username: user.username,
 			email: user.email,
+			id42: user.id42,
 			points: user.points,
 			isTwoFactorAuth: user.isTwoFactorAuth,
+			avatar: user.avatar
 		};
 
 		return userDTO;
