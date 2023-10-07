@@ -29,7 +29,7 @@ wait_for_postgres
 # Run Prisma migration based on the environment argument
 if [ "$1" == "dev" ]; then
     # Run Prisma migration for development
-    npx prisma db push;
+    npx prisma db push
 elif [ "$1" == "prod" ]; then
     # Run Prisma migration for production
     npx prisma migrate deploy

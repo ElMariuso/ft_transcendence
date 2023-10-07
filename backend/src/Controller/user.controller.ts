@@ -128,6 +128,7 @@ export class UserController
 	@Put('/update/:id')
 	async updateUser(@Param('id') id: string, @Body() updateUserDTO : UpdateUserDTO): Promise<UserDTO>
 	{
+		let idInt = parseInt(id, 10);
 		try
 		{
 			let newId = parseInt(id, 10);
