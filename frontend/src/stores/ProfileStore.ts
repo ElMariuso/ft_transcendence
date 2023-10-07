@@ -3,8 +3,7 @@ import { ref } from 'vue'
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
-
-export const useProfileStore = defineStore('profile', () => {
+const useProfileStore = defineStore('profile', () => {
 
 	const avatar = ref("./src/assets/default_avatar.png")
 	const username = ref("username")
@@ -41,3 +40,5 @@ export const useProfileStore = defineStore('profile', () => {
 
 	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile}
 })
+
+export default useProfileStore;

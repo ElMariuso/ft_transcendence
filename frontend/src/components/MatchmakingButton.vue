@@ -25,6 +25,7 @@ export default {
 </script>
 
 <template>
+    <div>AAAAAAAH</div>
 </template>
 
 <style scoped>
