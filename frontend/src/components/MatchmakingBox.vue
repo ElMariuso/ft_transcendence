@@ -1,21 +1,4 @@
 <script>
-export default {
-    props: {
-        isOpen: {
-            type: Boolean,
-            default: false
-        },
-        numberOfPlayers: {
-            type: Number,
-            default: 0
-        }
-    },
-    methods: {
-        cancelSearch() {
-            this.$emit('cancel');
-        }
-    }
-}
 </script>
 
 <template>
