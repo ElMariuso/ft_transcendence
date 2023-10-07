@@ -43,16 +43,15 @@ export class GameQuery
 	 * 
 	 * Posts a new Game in DB
 	 * 
-	 * @param Game CreateGameDTO
+	 * @param Game CreateGameDTO (optionnal)
 	 * 
 	 * @returns New Game
 	 * 
 	 * @query insert into game (scoreLeft, scoreRight, date) values ($scoreLeft, $scoreRight, date);
 	 */
-	async createGame(Game: CreateGameDTO) : Promise<Game>
+	async createGame(Game?: CreateGameDTO) : Promise<Game>
 	{
-		// Deconstruction de l'objet CreateGameDTO
-		const { scoreLeft, scoreRight } = Game;
+		const { scoreLeft = 0, scoreRight = 0 } = Game ?? {};
 
 		const date = new Date();
 
