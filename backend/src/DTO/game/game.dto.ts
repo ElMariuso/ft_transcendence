@@ -1,9 +1,10 @@
 /**
  * DTO used representing a game's information
  */
-export class GameDTO {
+ export class GameDTO
+ {
 	idGame: number;
-    scoreLeft: number;
-    scoreRight: number;
-    date: Date;
-}
+	scoreLeft: number;
+	scoreRight: number;
+	date: Date;
+ }

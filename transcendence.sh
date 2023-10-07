@@ -39,8 +39,8 @@ case $2 in
     remove-images)
         docker-compose -f "$DOCKER_COMPOSE_FILE" down --rmi all
         ;;
-    computer-clean)
-        docker system prune --volumes
+    annihilation)
+        docker system prune -a
         ;;
     *)
         echo "Usage: $0 {dev|prod} {start|stop|restart|clean-volumes|remove-volumes|remove-images}"

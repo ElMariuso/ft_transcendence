@@ -1,20 +1,15 @@
-import { IsInt, IsNotEmpty, IsDate, Min } from 'class-validator';
+import { IsNumber, IsPositive } from 'class-validator';
 
 /**
  * DTO used for creating a new game
  */
-export class CreateGameDTO {
-	@IsNotEmpty()
-	@IsInt()
-	@Min(0)
+export class CreateGameDTO
+{
+	@IsNumber()
+	@IsPositive()
 	scoreLeft: number;
 
-	@IsNotEmpty()
-	@IsInt()
-	@Min(0)
+	@IsNumber()
+	@IsPositive()
 	scoreRight: number;
-
-	@IsNotEmpty()
-	@IsDate()
-	date: Date;
 }
