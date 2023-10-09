@@ -83,6 +83,14 @@ export const ERROR_MESSAGES =
 
 		CREATECHANNEL_FAILED: "Channel creation failed",
 		DELETECHANNEL_FAILED: "Delete channel failed",
+		GETALLMESSAGESFROMCHANNEL_FAILED: "Get all messages from a channel failed",
+	},
+
+	/*	CHANNEL TYPE ERROR	*/
+
+	CHANNELTYPE:
+	{
+		NOT_FOUND: "Channel type not found",
 	},
 
 	/*	MESSAGE ERROR	*/

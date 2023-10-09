@@ -53,7 +53,6 @@ export class MessageController
 		catch(error)
 		{
 			throw new InternalServerErrorException(ERROR_MESSAGES.MESSAGE.CREATEMESSAGE_FAILED);
-
 		}
 	}
 

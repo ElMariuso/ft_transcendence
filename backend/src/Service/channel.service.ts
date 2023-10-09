@@ -1,15 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import { Channel } from '@prisma/client';
+import { Channel, Message } from '@prisma/client';
 
 import { ChannelQuery } from 'src/Query/channel.query';
 import { ChannelTypeQuery } from 'src/Query/type.query';
 import { UserQuery } from 'src/Query/user.query';
+import { MessageQuery } from 'src/Query/message.query';
 
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
 
 import { ERROR_MESSAGES, TYPE } from 'src/globalVariables';
+
+import { MessageDTO } from 'src/DTO/message/message.dto';
 
 @Injectable()
 export class ChannelService
@@ -17,7 +20,8 @@ export class ChannelService
 	constructor(
 		private readonly channelQuery: ChannelQuery,
 		private readonly typeQuery: ChannelTypeQuery,
-		private readonly userQuery: UserQuery
+		private readonly userQuery: UserQuery,
+		private readonly messageQuery: MessageQuery
 		) {}
 
 	/**
@@ -47,6 +51,35 @@ export class ChannelService
 		return this.transformToDTO(channel);
 	}
 
+	async findAllMessageByChannelId(id: number) : Promise<MessageDTO[]>
+	{
+		const channel = await this.channelQuery.findChannelById(id);
+
+		if (!channel)
+			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+
+		const messages = await this.messageQuery.findAllMessagesByChannelId(id);
+
+		if (!messages)
+			return [];
+		
+		const allUsers = await this.userQuery.findAllUsers();
+
+		const users = {};
+
+		allUsers.forEach((user) =>
+		{
+			users[user.idUser] = user.username;
+		});
+		
+		const messagesDTO: MessageDTO[] = messages.map((message) =>
+		{
+			return this.transformtoMessageDTO(message, users[message.idUser]);
+		});
+
+		return messagesDTO;
+	}
+
 	/**
 	 * Creates a channel in DB
 	 * 
@@ -62,7 +95,7 @@ export class ChannelService
 			
 		const type = await this.typeQuery.findChannelTypeById(channel.idType);
 		if (!type)
-			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
+			throw new NotFoundException(ERROR_MESSAGES.CHANNELTYPE.NOT_FOUND);
 		
 		if(type.name === TYPE.PRIVATE && !channel.password)
 			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.PASSWORD_MISSING);
@@ -108,5 +141,20 @@ export class ChannelService
 		};
 
 		return channelDTO;
+	}
+
+	private transformtoMessageDTO(message: Message, username: string) : MessageDTO
+	{
+		const messageDTO: MessageDTO =
+		{
+			idMessage: message.idMessage,
+			idUser: message.idUser,
+			idChannel: message.idChannel,
+			username: username,
+			content: message.content,
+			timestamps: message.timestamps,
+		};
+
+		return messageDTO;
 	}
 }

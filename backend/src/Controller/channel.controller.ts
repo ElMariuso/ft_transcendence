@@ -8,6 +8,8 @@ import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
 
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
 
+import { MessageDTO } from 'src/DTO/message/message.dto';
+
 @Controller('channels')
 export class ChannelController
 {
@@ -38,6 +40,23 @@ export class ChannelController
 		let newId = parseInt(id, 10);
 
 		return this.channelService.findChannelById(newId);
+	}
+
+	@Get('/AllMessages/:id')
+	async getAllMessagesFromChannel(@Param('id') id:string) : Promise<MessageDTO[]>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+
+			return this.channelService.findAllMessageByChannelId(newId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.GETALLMESSAGESFROMCHANNEL_FAILED);
+		}
 	}
 
 	/**
