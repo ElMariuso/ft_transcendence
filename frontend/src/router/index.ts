@@ -117,7 +117,6 @@ router.beforeEach((to, from, next) => {
 			
 			if (TwoFactorAuthEnabled) {
 				return next({ name: '2fa' });
-				
 			}
 			return next({ name: 'home' });
 		}
