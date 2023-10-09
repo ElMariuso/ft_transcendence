@@ -7,6 +7,7 @@ import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import ChannelView from '../views/ChannelView.vue';
 
 import AboutView from '../views/AboutView.vue';
 
@@ -40,11 +41,18 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView
+    },
+    {
+      path: '/channel/1',
+      name: 'channel',
+      component: ChannelView
     }
   ]
 })
 
-router.beforeEach((to, from) => {
+
+
+router.beforeEach( (to, from) => {
 
 	const status = {
 		isAuthenticated: false,
