@@ -11,6 +11,7 @@ const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 // Sets username, avatar and 2fa to correct DB values
 profileStore.setupProfile();
+console.log(authStore.isAuthenticated);
 </script>
 
 <template>
@@ -18,7 +19,7 @@ profileStore.setupProfile();
         <router-link to="/">
 			<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 		</router-link>
-		<div>
+		<div class="flex space-x-4">
 			<matchmaking-button />
             <matchmaking-button v-if="isAuthenticated" :is-ranked="true" />
 		</div>
