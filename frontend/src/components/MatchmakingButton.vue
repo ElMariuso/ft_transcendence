@@ -25,7 +25,7 @@ export default {
 </script>
 
 <template>
-    <div>AAAAAAAH</div>
+    <div>{{ buttonText }}</div>
 </template>
 
 <style scoped>
