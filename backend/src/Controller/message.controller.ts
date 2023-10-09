@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
 import { MessageService } from 'src/Service/message.service';
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
@@ -52,6 +52,11 @@ export class MessageController
 		}
 		catch(error)
 		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+				
 			throw new InternalServerErrorException(ERROR_MESSAGES.MESSAGE.CREATEMESSAGE_FAILED);
 		}
 	}
