@@ -18,7 +18,7 @@
 	export default {
 		data() {
 			return {
-			url: "http://localhost:3000/auth/42/redirect",
+				url: "http://localhost:3000/auth/42/redirect",
 			};
 		},
 	};
