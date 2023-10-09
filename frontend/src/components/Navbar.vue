@@ -1,13 +1,5 @@
-<script>
-export default {
-    name: 'Navbar',
-}
-
-
-</script>
-
 <template>
-    <div class="w-full relative mx-auto mt-0 mb-0 flex justify-between border-b border-gray-400 p-15px">
+    <div class="w-full h-20 flex justify-between border-b border-gray-400 p-4">
         <div class="ml-30px flex items-baseline">
             <router-link to="/">
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
@@ -29,13 +21,34 @@ export default {
 				</nav>
 			</router-link>
 
+		</div>
+		
+		<div v-if="authStore.authState" class="flex items-center">
+			<div>
+				<p>{{ profileStore.username }}</p>
 			</div>
-				<router-link to=""></router-link>
-				<div class="mr-30px text-lg">
-					Right
+			
+			<div class="mr-4 text-lg">
+				<img :src="profileStore.avatar" alt="avatar" class="h-14 w-auto">
 			</div>
+
+			<SettingsDropDown />
+		</div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { useAuthenticationStore } from '../stores/AuthenticationStore'
+import { useProfileStore } from '../stores/ProfileStore'
+import SettingsDropDown from './SettingsDropDown.vue' 
+
+const authStore = useAuthenticationStore()
+const profileStore = useProfileStore()
+const name = 'Navbar'
+
+// Sets username, avatar and 2fa to correct DB values
+profileStore.setupProfile()
+</script>
 
 <style scoped>
 </style>

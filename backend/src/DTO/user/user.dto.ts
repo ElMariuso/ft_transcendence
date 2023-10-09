@@ -9,4 +9,5 @@ export class UserDTO
 	id42: number;
 	points: number;
 	isTwoFactorAuth: boolean;
+	avatar: string;
 }

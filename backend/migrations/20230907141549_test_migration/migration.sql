@@ -3,7 +3,6 @@ CREATE TABLE "User" (
     "idUser" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
     "avatar" TEXT NOT NULL,
     "points" INTEGER NOT NULL,
     "isTwoFactorAuth" BOOLEAN NOT NULL,
@@ -113,6 +112,7 @@ CREATE TABLE "Friend" (
     "idFriend" SERIAL NOT NULL,
     "idUser" INTEGER NOT NULL,
     "idFriendUser" INTEGER NOT NULL,
+    "idStatus" INTEGER NOT NULL,
 
     CONSTRAINT "Friend_pkey" PRIMARY KEY ("idFriend")
 );
@@ -175,7 +175,22 @@ ALTER TABLE "Friend" ADD CONSTRAINT "Friend_idUser_fkey" FOREIGN KEY ("idUser") 
 ALTER TABLE "Friend" ADD CONSTRAINT "Friend_idFriendUser_fkey" FOREIGN KEY ("idFriendUser") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Friend" ADD CONSTRAINT "Friend_idStatus_fkey" FOREIGN KEY ("idStatus") REFERENCES "Status"("idStatus") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Block" ADD CONSTRAINT "Block_idUser_fkey" FOREIGN KEY ("idUser") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Block" ADD CONSTRAINT "Block_idBlockedUser_fkey" FOREIGN KEY ("idBlockedUser") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Insert
+
+INSERT INTO "Status" ("name") VALUES ('Waiting');
+INSERT INTO "Status" ("name") VALUES ('Accepted');
+INSERT INTO "Status" ("name") VALUES ('Refused');
+
+INSERT INTO "Role" ("name") VALUES ('Admin');
+INSERT INTO "Role" ("name") VALUES ('Member');
+
+INSERT INTO "ChannelType" ("name") VALUES ('private');
+INSERT INTO "ChannelType" ("name") VALUES ('public');
