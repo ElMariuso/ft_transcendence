@@ -26,6 +26,7 @@ import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import jwt_decode from 'jwt-decode';
+import ChannelView from '../views/ChannelView.vue';
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -60,6 +61,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
+    },
+    {
+      path: '/channel/1',
+      name: 'channel',
+      component: ChannelView
     }
   ]
 })

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User } from '@prisma/client';
+import { userInfo } from 'os';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { DEFAULT_AVATAR } from 'src/globalVariables';
 
