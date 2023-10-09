@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import useAuthenticationStore from '@/stores/AuthenticationStore';
-import useProfileStore from '@/stores/ProfileStore';
+import { useAuthenticationStore } from '@/stores/AuthenticationStore';
+import { useProfileStore } from '@/stores/ProfileStore';
 import MatchmakingButton from './MatchmakingButton.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
 
