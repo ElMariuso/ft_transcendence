@@ -18,18 +18,17 @@ import { PrismaClient } from '@prisma/client';
 @Module({
   controllers: [UserController],
   providers: [
-	FriendBlockedDTO,
-	BlockedQuery,
-	BlockedService,
-	FriendQuery,
-	FriendService,
-	UserDTO,
-	CreateUserDTO,
-	UpdateUserDTO,
-	PrismaClient,
-	UserQuery,
-	UserService,
-	],
-	exports: [UserService, UserQuery, CreateUserDTO]
+    FriendBlockedDTO,
+    BlockedQuery,
+    BlockedService,
+    FriendQuery,
+    FriendService,
+    UserDTO,
+    CreateUserDTO,
+    UpdateUserDTO,
+    PrismaClient,
+    UserQuery,
+    UserService,
+    ]
 })
 export class UserModule {}
