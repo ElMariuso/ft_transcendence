@@ -47,6 +47,7 @@ export class AuthService {
    	 */
 	private async findOrCreateUser(userIdFrom42: number, data: FT_User) {
 		let user;
+
 		try {
 			user = await this.userService.findUserById42(userIdFrom42)
 		} catch (error){
@@ -58,7 +59,7 @@ export class AuthService {
 			  email: data.email,
 			  id42: userIdFrom42,
 			};
-	  
+			
 			try {
 			  user = await this.userService.createUser(userDto);
 			} catch (error) {
