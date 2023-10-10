@@ -1,6 +1,6 @@
 import {	Controller, Body, Param, 
 			Get, Post, Put, Delete, 
-			InternalServerErrorException, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+			InternalServerErrorException, NotFoundException, ConflictException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
 import { UserChannelService } from 'src/Service/userchannel.service';
 
@@ -114,20 +114,24 @@ export class UserChannelController
 	 * Update the role of a member of a channel
 	 * 
 	 * @param updateRoleUserChannelDTO DTO containing data to update the role
+	 * @param id User's id
 	 * 
 	 * @returns Updated record
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if user is not found
+	 * @throw HTTPException with status NOT_FOUND if user is not found or the member is not found
 	 * @throw HTTPException with status NOT_FOUND if channel is not found
-	 * @throw HTTPException with status NOT_FOUND if role is not found
-	 * @throw HTTPException with status CONFLICT if user is not in the channel
+	 * @throw HTTPException with status NOT_FOUND if user's role is not found or the new role is not found
+	 * @throw HTTPException with status CONFLICT if user or member is not in the channel
+	 * @throw HTTPException with status FORBIDDEN if the user is not a admin of the channel
+	 * @throw HTTPException with status FORBIDDEN if trying to change the owner's role
 	 */
-	@Put('/modifyRole')
-	async modifyMemberRole(@Body() updateRoleUserChannelDTO : UpdateRoleUserChannelDTO): Promise<UserChannelDTO>
+	@Put('/modifyRole/:id')
+	async modifyMemberRole(@Body() updateRoleUserChannelDTO : UpdateRoleUserChannelDTO, @Param('id') id : string): Promise<UserChannelDTO>
 	{
 		try
 		{
-			return this.userchannelService.modifyMemberRole(updateRoleUserChannelDTO.idUser, updateRoleUserChannelDTO.idChannel, updateRoleUserChannelDTO.idRole);
+			const newId = parseInt(id, 10);
+			return this.userchannelService.modifyMemberRole(newId, updateRoleUserChannelDTO.idMember, updateRoleUserChannelDTO.idChannel, updateRoleUserChannelDTO.idRole);
 		}
 		catch (error)
 		{
@@ -135,6 +139,9 @@ export class UserChannelController
 				throw new NotFoundException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
+			if (error instanceof ForbiddenException)
+				throw new ForbiddenException(error.message);
+				
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER_CHANNEL.MODIFYROLE_FAILED);
 		}
 	}

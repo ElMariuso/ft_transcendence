@@ -51,6 +51,13 @@ export class ChannelService
 		return this.transformToDTO(channel);
 	}
 
+	/**
+	 * Gets a channel by his id
+	 * 
+	 * @param id channel's id to find
+	 * 
+	 * @returns List of messages
+	 */
 	async findAllMessageByChannelId(id: number) : Promise<MessageDTO[]>
 	{
 		const channel = await this.channelQuery.findChannelById(id);

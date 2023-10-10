@@ -122,6 +122,9 @@ export const ERROR_MESSAGES =
 		WRONG_PASSWORD: "Passwords don't match",
 		WRONG_MUTETIME: "Wrong mute time",
 		ALREADY_IN: "User already in the channel",
+		FORBIDDEN_ACTION: "Forbidden action",
+		KICK_OWNER: "Can not kick the owner",
+		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
 
 		JOINCHANNEL_FAILED: "Joining channel failed",
 		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",

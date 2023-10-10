@@ -42,7 +42,17 @@ export class ChannelController
 		return this.channelService.findChannelById(newId);
 	}
 
-	@Get('/AllMessages/:id')
+	/**
+	 * Get all messages from a specific channel
+	 *  
+	 * @param id Channel's id
+	 * 
+	 * @returns List of messages
+	 * 
+	 * @throw HTTPException with status NOT_FOUND if the channel is not found
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the list failed
+	 */
+	@Get('/allMessages/:id')
 	async getAllMessagesFromChannel(@Param('id') id:string) : Promise<MessageDTO[]>
 	{
 		try
