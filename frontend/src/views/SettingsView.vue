@@ -136,23 +136,16 @@ export default {
     });
 
     function checkUsernameAvailability() {
-      if (!checkButtonDisabled.value) {
-
-		// API ROUTE NEEDS TO BE IMPLEMENTED
-        // axios.get(`/checkUsernameAPI/${newUsername.value}`).then(res => {
-        //     // Either new api route, or use getAllUsers and perform check here
-        //     usernameCheckPerformed.value = true;
-        //     // If username found: 
-        //     usernameAvailable.value = false;
-        //     // else
-        //     // usernameAvailable.value = true;
-        //   });
-          
-          // Testing
-          usernameCheckPerformed.value = true;
-          usernameAvailable.value = true;
-      }
-    }
+    	if (!checkButtonDisabled.value) {
+			axios.get('/users/usernames').then(res => {
+				if (res.data.includes(newUsername.value))
+					usernameAvailable.value = false;
+				else
+					usernameAvailable.value = true;
+				usernameCheckPerformed.value = true;
+      		});
+    	}
+	}
 
 	function enableTwoFactorAuth() {
       twoFactorAuth.value = true;
@@ -172,10 +165,8 @@ export default {
 
       if (!saveButtonDisabled.value) {
         // username
-        if (newUsername.value.trim() !== '' && usernameAvailable.value) {
-          bodyInfo['username'] = newUsername.value;
-		  console.log("NEW USERNAME: " + newUsername.value)
-        }
+        if (newUsername.value.trim() !== '' && usernameAvailable.value)
+        	bodyInfo['username'] = newUsername.value;
         
         // avatar
         // if () {
