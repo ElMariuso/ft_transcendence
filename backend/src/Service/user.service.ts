@@ -88,7 +88,17 @@ export class UserService
 		return this.userQuery.findAllUsernames();
 	}
 
-
+	/**
+	 * Get the absolute path of the user's avatar
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns Absolute path of the user's avatar
+	 * 
+	 * @throw NotFoundException if the user is not found
+	 * @throw NotFoundException if the avatar file is not found
+	 * @throw NotFoundException if the absolute path of the avatar don't find the avatar
+	 */
 	async getAvatarPath(id: number) : Promise<string>
 	{
 		const user = await this.userQuery.findUserBy42Id(id);

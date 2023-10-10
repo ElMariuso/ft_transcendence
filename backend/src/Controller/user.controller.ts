@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 
 import { UserService } from 'src/Service/user.service';
 import { FriendService } from 'src/Service/friend.service';
@@ -15,10 +15,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
 
-import { createReadStream, fstat } from 'fs';
-
-import * as path from 'path';
-const fs = require('fs');
 @Controller('users')
 export class UserController
 {
@@ -66,6 +62,18 @@ export class UserController
 		return this.userService.findAllUsernames();
 	}
 
+	/**
+	 * Get the avatar's picture of the user
+	 * 
+	 * @param id User's id
+	 * 
+	 * @return Avatar
+	 * 
+	 * @throw HTTPException with status NOT_FOUND if the the user is not found
+	 * @throw HTTPException with status NOT_FOUND if the avatar file is not found
+	 * @throw HTTPException with status NOT_FOUND if the absolute path of the avatar don't find the avatar
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the user failed
+	 */
 	@Get('avatar/:id')
 	async getAvatar(@Param('id') id: string, @Res() res: Response)
 	{
@@ -125,7 +133,7 @@ export class UserController
 	 * 
 	 * @throw HTTPException with status BAD_REQUEST if file extension is not supported
 	 */
-	@Post('upload-avatar/:id')
+	@Post('uploadAvatar/:id')
 	@UseInterceptors
 	(
 		FileInterceptor('file', 
