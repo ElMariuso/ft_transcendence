@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, Put, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
 
 import { UserService } from 'src/Service/user.service';
 import { FriendService } from 'src/Service/friend.service';
@@ -9,17 +9,24 @@ import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
-import { ERROR_MESSAGES } from 'src/globalVariables';
-import { MESSAGES } from '../globalVariables';
+import { ERROR_MESSAGES, MESSAGES, ACCEPTED_TYPE_FILE } from 'src/globalVariables';
+import { FileInterceptor } from '@nestjs/platform-express';
 
+import { diskStorage } from 'multer';
+import { Response } from 'express';
+
+import { createReadStream, fstat } from 'fs';
+
+import * as path from 'path';
+const fs = require('fs');
 @Controller('users')
 export class UserController
 {
 	constructor(
 		private readonly userService: UserService,
 		private readonly friendService: FriendService,
-		private readonly blockedService: BlockedService
-		) {}
+		private readonly blockedService: BlockedService,
+	) {}
 
 	/**
 	 * Get all Users
@@ -59,6 +66,27 @@ export class UserController
 		return this.userService.findAllUsernames();
 	}
 
+	@Get('avatar/:id')
+	async getAvatar(@Param('id') id: string, @Res() res: Response)
+	{
+		try
+		{
+			const newId = parseInt(id, 10);
+
+			let filePath = await this.userService.getAvatarPath(newId);
+			
+			res.sendFile(filePath);
+
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			
+			throw new InternalServerErrorException(ERROR_MESSAGES.USER.GETAVATAR_FAILED);
+		}
+	}
+
 	/**
 	 * Create a new user in database
 	 * 
@@ -86,6 +114,69 @@ export class UserController
 	}
 
 	/**
+	 * Allow to upload a file on the server.
+	 * 		The file must be a .jpg or .png.
+	 * 		His size must not oversize 15Mb
+	 * 
+	 * @param file File to upload
+	 * @param id User's id
+	 * 
+	 * @returns Message and uploaded's file path
+	 * 
+	 * @throw HTTPException with status BAD_REQUEST if file extension is not supported
+	 */
+	@Post('upload-avatar/:id')
+	@UseInterceptors
+	(
+		FileInterceptor('file', 
+		{
+			storage: diskStorage(
+				{
+					destination: (req, file, cb) =>
+					{
+						cb(null, MESSAGES.UPLOAD.UPLOAD_PATH);
+					},
+					filename: (req, file, cb) =>
+					{
+						const filename = file.originalname;
+						const extension = filename.split('.').pop();
+						const idUser = req.params.id;
+						cb(null, 'avatar' + '-' + idUser + '.' + extension);
+					}
+				}
+			),
+			limits:
+			{
+				fileSize: 15 * 1024 * 1024,
+			},
+			fileFilter: (req, file, cb) => {
+				if (file.mimetype === ACCEPTED_TYPE_FILE.JPG || file.mimetype === ACCEPTED_TYPE_FILE.PNG)
+				{
+					cb(null, true);
+				} 
+				else 
+				{
+					cb(new BadRequestException(ERROR_MESSAGES.USER.FILE_FORMAT_ERROR), false);
+				}
+			},
+		})
+	)
+	async uploadFile(@UploadedFile() file: Express.Multer.File, @Param('id') id: string): Promise<{ message: string, path: string}>
+	{
+		try
+		{
+			const filePath = MESSAGES.UPLOAD.UPLOAD_PATH + '/'+ file.filename;
+			return { message: MESSAGES.UPLOAD.UPLOAD_SUCCESS, path: filePath };
+		
+		}
+		catch (error)
+		{
+			console.log(error.message);
+			return { message: MESSAGES.UPLOAD.UPLOAD_FAILED, path: '' };
+		}
+	}
+
+	/**
 	 * Delete a user by his id
 	 * 
 	 * @param id User's id to delete
@@ -97,13 +188,14 @@ export class UserController
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion of the user failed
 	 */
 	@Delete('/delete/:id')
-	async deleteUserById(@Param('id') id: string) : Promise<String>
+	async deleteUserById(@Param('id') id: string): Promise<{ message : string}>
 	{
 		try
 		{
 			let newId = parseInt(id, 10);
 			const user = this.userService.deleteUser(newId);
-			return MESSAGES.USER.DELETE_SUCCESS;
+
+			return { message: MESSAGES.USER.DELETE_SUCCESS };
 		}
 		catch (error)
 		{

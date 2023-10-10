@@ -23,6 +23,13 @@ export const MESSAGES =
 	USER_CHANNEL:
 	{
 		DELETE_SUCCESS: "Userchannel deleted successfully",
+	},
+
+	UPLOAD:
+	{
+		UPLOAD_PATH: "src/../upload",
+		UPLOAD_SUCCESS: "Upload Successfully",
+		UPLOAD_FAILED: "Upload failed"
 	}
 }
 
@@ -33,11 +40,15 @@ export const ERROR_MESSAGES =
 	USER:
 	{
 		NOT_FOUND: "User not found",
+		AVATAR_NOT_FOUND: "Avatar not found",
+
+		FILE_FORMAT_ERROR: "File must be a .jpg, a .jpeg or a .png",
 		USERNAME_ALREADY_EXIST: "Username already exists",
 
 		CREATION_FAILED: "User creation failed",
 		DELETION_FAILED: "User deletion failed",
 		UPDATE_FAILED: "User deletion failed",
+		GETAVATAR_FAILED: "Get avatar failed",
 	},
 
 	/*	FRIEND ERROR	*/
@@ -146,3 +157,13 @@ export const ROLE =
 	ADMIN: "Admin",
 	MEMBER: "Member"
 }
+
+export const ACCEPTED_TYPE_FILE =
+{
+	JPG: "image/jpeg",
+	PNG: "image/png"
+}
+
+export const DEFAULT_AVATAR = "src/../upload/avatar-default.jpg";
+
+export const DEFAULT_PATH = "/usr/src/app/";

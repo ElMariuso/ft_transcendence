@@ -9,9 +9,9 @@ import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
-import { ERROR_MESSAGES } from 'src/globalVariables';
+import { DEFAULT_AVATAR, DEFAULT_PATH, ERROR_MESSAGES } from 'src/globalVariables';
 
-
+const fs = require('fs');
 @Injectable()
 export class UserService
 {
@@ -88,6 +88,26 @@ export class UserService
 		return this.userQuery.findAllUsernames();
 	}
 
+
+	async getAvatarPath(id: number) : Promise<string>
+	{
+		const user = await this.userQuery.findUserBy42Id(id);
+
+		if (!user)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+		
+		if (!fs.existsSync(user.avatar))
+			throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
+		
+		let tmp = user.avatar.split('../').pop();
+		tmp = DEFAULT_PATH + tmp;
+
+		if (!fs.existsSync(tmp))
+				throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
+		
+		return tmp;
+	}
+
 	/**
 	 * Creates a user in DB
 	 * 
@@ -125,7 +145,6 @@ export class UserService
 		
 		await this.userQuery.deleteUser(id);
 
-		console.log("Delete User OK");
 		return deletedUser;
 	}
 
@@ -153,6 +172,18 @@ export class UserService
 			const check = await this.userQuery.findUserByUsername(data.username);
 			if (check)
 				throw new ConflictException(ERROR_MESSAGES.USER.USERNAME_ALREADY_EXIST);
+		}
+
+		if (data.avatar)
+		{
+			if (data.avatar != updateUser.avatar)
+			{
+				if (updateUser.avatar != DEFAULT_AVATAR)
+				{
+					if (fs.existsSync(updateUser.avatar))
+						fs.unlinkSync(updateUser.avatar);
+				}
+			}
 		}
 
 		await this.userQuery.updateUser(id, data);

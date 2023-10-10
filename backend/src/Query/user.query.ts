@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User } from '@prisma/client';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
+import { DEFAULT_AVATAR } from 'src/globalVariables';
 
 @Injectable()
 export class UserQuery
@@ -106,7 +107,7 @@ export class UserQuery
 				{
 					username,
 					email,
-					avatar: 'default',
+					avatar: DEFAULT_AVATAR,
 					points: 0,
 					isTwoFactorAuth: false,
 					id42
