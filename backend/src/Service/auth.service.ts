@@ -1,11 +1,22 @@
-// Importing necessary modules and decorators
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { FT_User } from '../Utils/42user';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../DTO/user/createUser.dto';
 import { JwtService } from '@nestjs/jwt';
 
-// Injectable AuthService class
+/**
+ * AuthService handles the authentication functionality within the application, facilitating
+ * user login and JWT (JSON Web Token) generation and validation.
+ *
+ * This service provides methods to:
+ * - Verify the validity of a JWT.
+ * - Log in a user via 42's OAuth and produce a JWT.
+ * - Find or create a user in the system, based on data retrieved from 42’s OAuth.
+ * - Sign a JWT for a user.
+ *
+ * AuthService interacts with `JwtService` for JWT-related operations and `UserService` 
+ * to manage user-related database transactions.
+ */
 @Injectable()
 export class AuthService {
 	constructor(
@@ -14,10 +25,12 @@ export class AuthService {
     ) {}
 
     /**
-   	 * Verifies a JWT token.
-   	 * @param token - The JWT token to verify.
-   	 * @returns A boolean indicating the validity of the token.
-   	 */
+     * Verifies the provided JWT token.
+     *
+     * @param token - The JWT token to verify.
+     * @returns A boolean indicating whether the token is valid or not.
+     * @throws {HttpException} - Throws an exception if the token is invalid, with a 400 status code.
+     */
     jwtVerify(token: string): boolean {
         try {
             return Boolean(this.jwtService.verify(token));
@@ -28,10 +41,14 @@ export class AuthService {
     }
 
   	/**
-   	 * Authenticates a user and returns a JWT token.
-   	 * @param data - The user data from 42's OAuth.
-   	 * @returns A JWT token.
-   	 */
+     * Authenticates a user and returns a JWT token.
+     * 
+     * This involves finding or creating a user based on the provided data 
+     * and signing a JWT for them.
+     *
+     * @param data - The user data obtained from 42's OAuth.
+     * @returns A promise resolving with a JWT token.
+     */
     async login(data: FT_User): Promise<string> {
         const userIdFrom42 = parseInt(data.id, 10);
         let user = await this.findOrCreateUser(userIdFrom42, data);
@@ -40,11 +57,15 @@ export class AuthService {
 	}
 
 	/**
-   	 * Finds an existing user or creates a new one.
-   	 * @param userIdFrom42 - The user's 42 ID.
-   	 * @param data - The user data from 42's OAuth.
-   	 * @returns The user.
-   	 */
+     * Finds an existing user or creates a new one, based on the provided 42 ID and data.
+     * 
+     * If the user does not exist in the system, a new user is created with the provided data.
+     *
+     * @param userIdFrom42 - The user's ID from 42's system.
+     * @param data - The user data obtained from 42’s OAuth.
+     * @returns A promise resolving with the user object.
+     * @throws {HttpException} - Throws an exception if user retrieval/creation fails, with a 500 status code.
+     */
 	private async findOrCreateUser(userIdFrom42: number, data: FT_User) {
 		let user;
 
@@ -70,10 +91,12 @@ export class AuthService {
 	}
 
 	/**
-   	 * Signs a JWT token for a user.
-   	 * @param userId - The user's ID.
-   	 * @returns A JWT token.
-   	 */
+     * Signs a JWT token for a specified user.
+     *
+     * @param userId - The ID of the user for whom the JWT is signed.
+     * @returns A JWT token.
+     * @throws {HttpException} - Throws an exception if token signing fails, with a 500 status code.
+     */
 	private signJwtForUser(userId: string): string {
 		try {
 		  return this.jwtService.sign({ sub: userId });
