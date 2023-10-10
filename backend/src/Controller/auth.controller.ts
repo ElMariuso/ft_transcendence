@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards } from '@nestjs/common';
 import { FT_AuthGuard } from '../Guards/42-auth.guard';
 import { FT_User } from '../Utils/42user'
 import { AuthService } from '../Service/auth.service';
+import { UserService } from '../Service/user.service';
+import { toDataURL } from 'qrcode';
+
 
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private readonly authService: AuthService,
+		private readonly userService: UserService,
 	) {}
 
 	@UseGuards(FT_AuthGuard)
@@ -33,10 +37,15 @@ export class AuthController {
 	}
 
 	
-	@Get('/2fa')
-	async loginTwoFactorAuth() {
+	@Get('/2fa/QRcode/:id')
+	async generateQRcode(@Param('id') id: string) {
 
+		let newId = parseInt(id, 10);
+
+		const user = await this.userService.findUserById(newId)
+		const res = await this.authService.generateTwoFactorAuthenticationSecret(user);
 		
-
+		// toDataURL(res.otpauthUrl)
+		return toDataURL(res.otpauthUrl);
 	}
 }

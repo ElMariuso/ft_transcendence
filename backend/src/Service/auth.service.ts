@@ -28,6 +28,11 @@ export class AuthService {
 
     async login(data: FT_User): Promise<string> {
         
+		let email42: string = data.email;
+		let login42: string = data.login;
+
+		console.log('email ' + email42)
+		console.log('data ' + login42)
 		let user42Id = parseInt(data.id, 10);
 
         let user = await this.userService
@@ -36,8 +41,9 @@ export class AuthService {
 
 		if (!user) {
 			const userDto: CreateUserDTO = {
-				username: data.username,
-				email: data.email,
+				username: login42,
+				// email: email42,
+				email: "email@email.com",
 				id42: user42Id
 			};
 
@@ -50,14 +56,14 @@ export class AuthService {
     }
 
 	async generateTwoFactorAuthenticationSecret(user: UserDTO) {
-		const secret = authenticator.generateSecret();
+		const data : any = {};
 		
+		const secret: string = authenticator.generateSecret();
 		const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
+		data.twoFactorAuthSecret = secret;
 		
-		// updateUser(id: number, userData: UpdateUserDTO)
-		let newUser: UpdateUserDTO;
-
-		await this.userService.setTwoFactorAuthenticationSecret(secret, user.userId);
+		
+		await this.userService.updateUser(user.idUser, data)
 	
 		return {
 		  secret,
@@ -69,10 +75,10 @@ export class AuthService {
 		return toDataURL(otpAuthUrl);
 	}
 
-	isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
-		return authenticator.verify({
-		  token: twoFactorAuthenticationCode,
-		  secret: user.twoFactorAuthenticationSecret,
-		});
-	}
+	// isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+	// 	return authenticator.verify({
+	// 	  token: twoFactorAuthenticationCode,
+	// 	  secret: user.twoFactorAuthenticationSecret,
+	// 	});
+	// }
 }

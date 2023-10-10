@@ -57,7 +57,7 @@ export class UserController
 	@Get('/usernames')
 	async findAllUsernames() : Promise<string []>
 	{
-		console.log("Path : /usernames");
+		
 		return this.userService.findAllUsernames();
 	}
 

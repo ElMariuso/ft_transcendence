@@ -104,7 +104,7 @@ export class UserQuery
 			data: 
 			{
 				username,
-				email: "test@test.com",
+				email,
 				id42,
 				avatar: './src/assets/default_avatar.png',
 				points: 0,

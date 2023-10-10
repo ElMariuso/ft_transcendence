@@ -9,4 +9,11 @@ front router: check JWT,
 						-> verify code w/ 2fa secret
 						-> if ok, authenticate w/ new jwt ?
 						
+						85990
 
+curl -H "Authorization: Bearer c842ffe4bad0b798a145b36ea0318622d0cae8adf41c191b9617af858eb63003" "https://api.intra.42.fr/v2/users/85990"
+
+curl -H "Authorization: Bearer c842ffe4bad0b798a145b36ea0318622d0cae8adf41c191b9617af858eb63003" https://api.intra.42.fr/oauth/token/info
+
+
+curl -X POST --data "grant_type=client_credentials&client_id=u-s4t2ud-6f8374e35853b50b7fa28e4cc538fecc0922e180b3cdfa673d397efffcd860a4&client_secret=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" https://api.intra.42.fr/oauth/token

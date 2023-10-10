@@ -135,9 +135,9 @@ export default {
       }
     });
 
-    function checkUsernameAvailability() {
+    async function checkUsernameAvailability() {
     	if (!checkButtonDisabled.value) {
-			axios.get('/users/usernames').then(res => {
+			await axios.get('/users/usernames').then(res => {
 				if (res.data.includes(newUsername.value))
 					usernameAvailable.value = false;
 				else
@@ -174,26 +174,29 @@ export default {
 			// 2. Post img to upload folder
 		// }
 
-        if (twoFactorAuth.value !== profileStore.twoFactorAuth)
-          bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
+        if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
+			bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
+
+		}
        
         const token = localStorage.getItem('token');
         let jsonToSend = JSON.stringify(bodyInfo);
 		const id = jwt_decode(token).sub;
-
-		console.log(jsonToSend);
 		
         await axios.put('/users/update/' + id, jsonToSend, {
-          headers: {
-            Authorization: 'Bearer ' + token,
-			'Content-Type': 'application/json; charset=utf-8',
-		},
+          	headers: {
+				Authorization: 'Bearer ' + token,
+				'Content-Type': 'application/json; charset=utf-8',
+			},
         });
 
 		profileStore.setupProfile();
 
         if (twoFactorAuth.value) {
-          router.push('/QRcode')
+          router.push({
+			name: 'QRcode',
+			params: { id, }
+		  });
         }
       }
     }

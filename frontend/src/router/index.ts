@@ -10,6 +10,7 @@ import LoginView from '../views/LoginView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import QRcodeView from '../views/QRcodeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
+    },
+    {
+      path: '/QRcode/:id',
+      name: 'QRcode',
+      component: QRcodeView
     }
   ]
 })
