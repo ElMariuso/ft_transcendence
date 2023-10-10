@@ -3,8 +3,6 @@ import { FT_AuthGuard } from '../Guards/42-auth.guard';
 import { FT_User } from '../Utils/42user'
 import { AuthService } from '../Service/auth.service';
 
-
-
 @Controller('auth')
 export class AuthController {
 	constructor(
@@ -34,7 +32,11 @@ export class AuthController {
 		return payload;
 	}
 
-	// @Get(/2fa)
-	// async loginTwoFactorAuth() {
-	// }
+	
+	@Get('/2fa')
+	async loginTwoFactorAuth() {
+
+		
+
+	}
 }

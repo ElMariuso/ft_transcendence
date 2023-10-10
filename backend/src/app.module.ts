@@ -4,7 +4,6 @@ import { UserModule } from './Module/user.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from 'src/Module/user.module';
 import { GameModule } from 'src/Module/game.module';
 import { ChannelModule } from 'src/Module/channel.module';
 import { MessageModule } from 'src/Module/message.module';

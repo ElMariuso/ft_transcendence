@@ -5,25 +5,26 @@ import jwt_decode from 'jwt-decode';
 
 
 export const useProfileStore = defineStore('profile', () => {
-
+	
 	const avatar = ref("./src/assets/default_avatar.png")
 	const username = ref("username")
 	const twoFactorAuth = ref(false)
-	const userID = ref(0)
+	const userID = ref('0')
 
 	async function setupProfile() {
 		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = ref(id);
-
-		await axios.get('/users/' + id, {
+		const id = jwt_decode(token).sub;		
+		
+		console.log('ID IN STORE: ' + userID.value )
+		await axios.get('/users/user/' + id, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}
 		}).then(res => {
+			console.log("Updating profile")
 			setUsername(res.data.username);
 			setAvatar(res.data.avatar);
-			setTwoFactorAuth(res.data.isTwoFactorAuth);
+			setTwoFactorAuth(res.data.isTwoFactorAuthEnabled);
 		});
 	}
 
@@ -39,5 +40,9 @@ export const useProfileStore = defineStore('profile', () => {
 		twoFactorAuth.value = val
 	}
 
-	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile}
+	function setUserID(newID: string) {
+		userID.value = newID
+	}
+
+	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
 })

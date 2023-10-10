@@ -16,18 +16,24 @@
 </template>
   
 <script>
+import { useAuthenticationStore } from '../stores/AuthenticationStore'
 import { ref } from 'vue';
-  
+import { useRouter } from 'vue-router';
+
 export default {
     setup() {
         const dropdownOpen = ref(false);
+		const router = useRouter();
+		const authStore = useAuthenticationStore()
 
         function toggleDropdown() {
             dropdownOpen.value = !dropdownOpen.value;
         }
 
         function logout() {
-            // Implement the logout logic here
+            localStorage.removeItem('token');
+			authStore.logout();
+			router.push('/login');
         }
 
         return {

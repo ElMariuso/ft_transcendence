@@ -23,9 +23,11 @@ model User {
 	// Total of points of the user
 	points              Int
 	// User use the two factor authentification or not
-	isTwoFactorAuth     Boolean
+	isTwoFactorAuthEnabled     Boolean
 	// Id from 42 API
 	id42				Int		@unique
+	// 2fa OTP
+	twoFactorAuthSecret String
 
 	// Relations with others tables
 

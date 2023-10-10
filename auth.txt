@@ -1,0 +1,12 @@
+front: 42 auth button
+			redirects to
+back:  auth controller 42/auth 42-passport, returns 42 user
+			-> generate JWT w/ 42 id + 2faENabled
+front router: check JWT, 
+				-> check JWT, if ok authenticate
+					unless..
+				-> if 2fa enabled, redirect to 2fa login ?
+						-> verify code w/ 2fa secret
+						-> if ok, authenticate w/ new jwt ?
+						
+

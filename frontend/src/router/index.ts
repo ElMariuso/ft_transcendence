@@ -59,7 +59,7 @@ async function checkJWT(authStore, profileStore) {
 		catch (error){
 			console.log("jwt decode failed");
 		}
-		await axios.get("/users/" + userID, {
+		await axios.get("/users/user/" + userID, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}

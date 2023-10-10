@@ -5,7 +5,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "avatar" TEXT NOT NULL,
     "points" INTEGER NOT NULL,
-    "isTwoFactorAuth" BOOLEAN NOT NULL,
+    "isTwoFactorAuthEnabled" BOOLEAN NOT NULL,
     "id42" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("idUser")

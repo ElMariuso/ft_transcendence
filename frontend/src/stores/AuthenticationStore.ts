@@ -4,5 +4,9 @@ import { ref } from 'vue'
 export const useAuthenticationStore = defineStore('auth', () => {
 	const authState = ref(false)
 
-	return {authState}
+	function logout() {
+		authState.value = false;
+	}
+
+	return {authState, logout}
 })

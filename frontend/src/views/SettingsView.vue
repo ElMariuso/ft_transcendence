@@ -72,6 +72,8 @@
 import { ref, watch, computed } from 'vue';
 import { useProfileStore } from '../stores/ProfileStore'
 import axios from 'axios';
+import router from '@/router';
+import jwt_decode from 'jwt-decode';
 
 export default {
 
@@ -172,6 +174,7 @@ export default {
         // username
         if (newUsername.value.trim() !== '' && usernameAvailable.value) {
           bodyInfo['username'] = newUsername.value;
+		  console.log("NEW USERNAME: " + newUsername.value)
         }
         
         // avatar
@@ -180,20 +183,27 @@ export default {
 			// 2. Post img to upload folder
 		// }
 
-        // 2fa
-        // if (twoFactorAuth.value !== profileStore.twoFactorAuth)
-        //  bodyInfo['isTwoFactorAuth'] = twoFactorAuth.value;
+        if (twoFactorAuth.value !== profileStore.twoFactorAuth)
+          bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
        
         const token = localStorage.getItem('token');
-
         let jsonToSend = JSON.stringify(bodyInfo);
-        await axios.put('/users/update/' + profileStore.userID.value, jsonToSend, {
-          headers: {
-            Authorization: 'Bearer ' + token
-          },
+		const id = jwt_decode(token).sub;
 
+		console.log(jsonToSend);
+		
+        await axios.put('/users/update/' + id, jsonToSend, {
+          headers: {
+            Authorization: 'Bearer ' + token,
+			'Content-Type': 'application/json; charset=utf-8',
+		},
         });
 
+		profileStore.setupProfile();
+
+        if (twoFactorAuth.value) {
+          router.push('/QRcode')
+        }
       }
     }
 

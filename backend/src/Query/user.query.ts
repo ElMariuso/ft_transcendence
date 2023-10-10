@@ -92,7 +92,7 @@ export class UserQuery
 	 * 
 	 * @returns New User
 	 * 
-	 * @query insert into user (username, email, avatar, points, isTwoFactorAuth, id42) values ($username, $email, 'default', 0, false, $id42)
+	 * @query insert into user (username, email, avatar, points, isTwoFactorAuthEnabled, id42) values ($username, $email, 'default', 0, false, $id42)
 	 */
 	async createUser(user: CreateUserDTO) : Promise<User>
 	{
@@ -108,7 +108,8 @@ export class UserQuery
 				id42,
 				avatar: './src/assets/default_avatar.png',
 				points: 0,
-				isTwoFactorAuth: false,
+				isTwoFactorAuthEnabled: false,
+				twoFactorAuthSecret: 'default',
 			},
 		});
 

@@ -9,7 +9,7 @@
 					<p class="text-lg mr-5" >Play</p>
 			</router-link>
 
-			<router-link :to="{name: 'community'}">
+			<router-link to="/community">
 				<nav class="text-lg mr-5">
 					<section>Community</section>
 				</nav>
@@ -40,14 +40,19 @@
 <script setup lang="ts">
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
 import { useProfileStore } from '../stores/ProfileStore'
-import SettingsDropDown from './SettingsDropDown.vue' 
+import SettingsDropDown from './SettingsDropDown.vue'
+import jwt_decode from 'jwt-decode';
 
 const authStore = useAuthenticationStore()
 const profileStore = useProfileStore()
-const name = 'Navbar'
 
 // Sets username, avatar and 2fa to correct DB values
-profileStore.setupProfile()
+const token = localStorage.getItem('token');
+if (token) {
+	const id = jwt_decode(token).sub;
+	profileStore.setupProfile();
+	profileStore.setUserID(id);
+}
 </script>
 
 <style scoped>

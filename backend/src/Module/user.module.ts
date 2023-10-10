@@ -30,6 +30,6 @@ import { PrismaClient } from '@prisma/client';
 	UserQuery,
 	UserService,
 ],
-exports: [UserService, UserQuery, CreateUserDTO]
+exports: [UserService, UserQuery, CreateUserDTO, FriendService, BlockedService]
 })
 export class UserModule {}
