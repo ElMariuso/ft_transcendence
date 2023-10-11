@@ -7,6 +7,7 @@ import { ChannelModule } from 'src/Module/channel.module';
 import { MessageModule } from 'src/Module/message.module';
 import { UserChannelModule } from 'src/Module/userchannel.module';
 import { AuthController } from './Controller/auth.controller';
+import { AchievementModule } from './Module/achievement.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthController } from './Controller/auth.controller';
     ChannelModule,
     MessageModule,
     UserChannelModule,
+    AchievementModule,
   ],
   controllers: [
     AppController,

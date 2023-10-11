@@ -10,6 +10,7 @@ import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
+import { AchievementService } from './achievement.service';
 
 @Injectable()
 export class MessageService
@@ -19,6 +20,7 @@ export class MessageService
 		private readonly userQuery: UserQuery,
 		private readonly channelQuery: ChannelQuery,
 		private readonly userchannelQuery: UserChannelQuery,
+		private readonly achievementService: AchievementService,
 		) {}
 
 	/**
@@ -107,6 +109,8 @@ export class MessageService
 
 		const newMessage = await this.messageQuery.createMessage(message);
 
+		this.achievementService.checkAchievement(message.idUser, 3);
+		
 		return this.transformToDTO(newMessage, user.username);
 	}
 

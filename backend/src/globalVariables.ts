@@ -45,6 +45,7 @@ export const ERROR_MESSAGES =
 		FILE_FORMAT_ERROR: "File must be a .jpg, a .jpeg or a .png",
 		USERNAME_ALREADY_EXIST: "Username already exists",
 
+		GETUSERBYID_FAILED: "Find user by id failed",
 		CREATION_FAILED: "User creation failed",
 		DELETION_FAILED: "User deletion failed",
 		UPDATE_FAILED: "User deletion failed",
@@ -145,7 +146,19 @@ export const ERROR_MESSAGES =
 		NOT_FOUND: "Game not found",
 
 		CREATEGAME_FAILED: "Game creation failed",
-		DELETEGAME_FAILED: "Game deletion failed"
+		DELETEGAME_FAILED: "Game deletion failed",
+		GETGAMESTATS_FAILED: "Get game datas failed",
+		GETGAME_FAILED: "Get game failed",
+		GETALLGAMEUSER_FAILED: "Get all games for a user failed",
+	},
+
+	/*	ACHIEVEMENT ERROR	*/
+
+	ACHIEVEMENT:
+	{
+		NOT_FOUND: "Achievement not found",
+
+		GETALLBYUSERID_FAILED: "Get all achievements by user's id failed",
 	}
 }
 

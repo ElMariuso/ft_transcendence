@@ -7,6 +7,18 @@ export class CreateGameDTO
 {
 	@IsNumber()
 	@IsPositive()
+	idPlayerOne: number;
+
+	@IsNumber()
+	@IsPositive()
+	idPlayerSecond: number;
+
+	@IsNumber()
+	@IsPositive()
+	idWinner: number;
+
+	@IsNumber()
+	@IsPositive()
 	scoreLeft: number;
 
 	@IsNumber()

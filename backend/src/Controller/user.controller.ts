@@ -45,9 +45,15 @@ export class UserController
 	@Get('/user/:id')
 	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
-		console.log("path :id");
-		let newId = parseInt(id, 10);
-		return this.userService.findUserById(newId);
+		try
+		{
+			let newId = parseInt(id, 10);
+			return this.userService.findUserById(newId);
+		}
+		catch (error)
+		{
+			throw new InternalServerErrorException(ERROR_MESSAGES.USER.GETUSERBYID_FAILED);
+		}
 	}
 
 	/**
@@ -58,7 +64,6 @@ export class UserController
 	@Get('/usernames')
 	async findAllUsernames() : Promise<string []>
 	{
-		console.log("Path : /usernames");
 		return this.userService.findAllUsernames();
 	}
 

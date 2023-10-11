@@ -32,9 +32,72 @@ export class GameController
 	@Get(':id')
 	async findGameById(@Param('id') id: string) : Promise<GameDTO | null>
 	{
-		let newId = parseInt(id, 10);
+		try
+		{
+			let newId = parseInt(id, 10);
 
-		return this.gameService.findGameById(newId);
+			return this.gameService.findGameById(newId);
+		}
+		catch (error)
+		{
+			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETGAME_FAILED);
+		}
+	}
+
+	/**
+	 * Gets all games for a specific user
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns GameDTO []
+	 * 
+	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if getting the list failed
+	 */
+	@Get('allGamesUser/:id')
+	async getAllGamesByUserId(@Param('id') id: string) : Promise<GameDTO[]>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+
+			return this.gameService.getAllGamesByUserId(newId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+
+			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETALLGAMEUSER_FAILED);
+		}
+	}
+
+	/**
+	 * Gets Games Stats for a specific user
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns Number of games, the number of wins, the number of looses
+	 * 
+	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if getting the stats failed
+	 */
+	@Get('stats/:id')
+	async getGameStatsByUserId(@Param('id') id: string) : Promise<{ nbGames: number, nbWin: number, nbLoose: number }>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+
+			return this.gameService.getGameStatsByUserId(newId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+
+			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETGAMESTATS_FAILED);
+		}
 	}
 
 	/**

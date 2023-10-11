@@ -11,6 +11,12 @@ import { UserChannelQuery } from 'src/Query/userchannel.query';
 
 import { PrismaClient } from '@prisma/client';
 
+import { AchievementService } from 'src/Service/achievement.service';
+import { AchievementQuery } from "src/Query/achievement.query";
+import { FriendQuery } from "src/Query/friend.query";
+import { GameQuery } from "src/Query/game.query";
+
+
 @Module({
   controllers: [MessageController],
   providers: [
@@ -22,6 +28,10 @@ import { PrismaClient } from '@prisma/client';
 	ChannelQuery,
 	UserChannelQuery,
 	MessageService,
+	AchievementService,
+	AchievementQuery,
+	FriendQuery,
+	GameQuery,
 ],
 })
 export class MessageModule {}

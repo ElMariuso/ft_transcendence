@@ -194,3 +194,8 @@ INSERT INTO "Role" ("name") VALUES ('Member');
 
 INSERT INTO "ChannelType" ("name") VALUES ('private');
 INSERT INTO "ChannelType" ("name") VALUES ('public');
+
+INSERT INTO "Achievement" ("name", "content") VALUES ('Depucelage', 'Joue ta première partie.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Mysanthrope?', 'Obtiens ton premier ami.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Moulin à parole', 'Envoie ton premier message.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Double-Face', 'Provoque ta propre chance.');
