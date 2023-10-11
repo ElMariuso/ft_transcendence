@@ -1,8 +1,6 @@
-<!-- WIP: AVATAR + BACKEND API -->
 <template>
   <div class="p-4">
     <h2 class="text-lg font-semibold mb-4">Profile Settings</h2>
-
     <div class="flex flex-col">
     
       <!-- Username Input -->
@@ -31,7 +29,7 @@
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Two-Factor Authentication:</label>
         
-		<div class="flex space-x-4 mt-1">
+		    <div class="flex space-x-4 mt-1">
           <button
             :class="{ 'bg-blue-500 text-white': twoFactorAuth, 'bg-gray-200': !twoFactorAuth }"
             @click="enableTwoFactorAuth"
@@ -63,6 +61,12 @@
         
         <button @click="" class="ml-5 text-gray-600 bg-gray-200 px-4 py-2 rounded-lg">Cancel</button>
       </div>
+
+      <TwoFactorAuthModal 
+	  	v-if="showTwoFactorAuthModal" 
+		@close="closeTwoFactorAuthModal"
+		:resolve="confirmationMessage" />
+
     </div>
   </div>
 </template>
@@ -74,20 +78,26 @@ import { useProfileStore } from '../stores/ProfileStore'
 import axios from 'axios';
 import router from '@/router';
 import jwt_decode from 'jwt-decode';
+import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
+
 
 export default {
+	components: {
+    TwoFactorAuthModal,
+  },
 
   setup() {
-  // Store
     const profileStore = useProfileStore();
-
-  // Variables
     const newUsername = ref('');
     const usernameAvailable = ref(false);
     const usernameCheckPerformed = ref(false);
     const checkButtonDisabled = ref(true);
     const twoFactorAuth = ref(profileStore.twoFactorAuth);
     const newAvatar = ref('');
+
+    const showTwoFactorAuthModal = ref(false);
+    let confirmationPromise;
+	const confirmationMessage = ref(false);
 
     const checkButtonLabel = computed(() => {
       if (usernameAvailable.value && usernameCheckPerformed.value)
@@ -137,22 +147,37 @@ export default {
 
     async function checkUsernameAvailability() {
     	if (!checkButtonDisabled.value) {
-			await axios.get('/users/usernames').then(res => {
-				if (res.data.includes(newUsername.value))
-					usernameAvailable.value = false;
-				else
-					usernameAvailable.value = true;
-				usernameCheckPerformed.value = true;
-      		});
+        await axios.get('/users/usernames').then(res => {
+          if (res.data.includes(newUsername.value))
+            usernameAvailable.value = false;
+          else
+            usernameAvailable.value = true;
+          usernameCheckPerformed.value = true;
+        });
     	}
-	}
+	  }
 
-	function enableTwoFactorAuth() {
+	  function enableTwoFactorAuth() {
       twoFactorAuth.value = true;
     }
 
     function disableTwoFactorAuth() {
       twoFactorAuth.value = false;
+    }
+
+    async function openTwoFactorAuthModal(bodyInfo) {
+    //   confirmationPromise = new Promise((resolve) => {
+        showTwoFactorAuthModal.value = true;
+        // confirmationMessage.value = resolve;
+    //   });
+
+    //   const modalRes = await confirmationPromise;
+    //   if (modalRes)
+        bodyInfo['isTwoFactorAuthEnabled'] = true;
+    }
+
+    function closeTwoFactorAuthModal() {
+      showTwoFactorAuthModal.value = false;
     }
 
     // WIP
@@ -164,45 +189,44 @@ export default {
       let bodyInfo = {};
 
       if (!saveButtonDisabled.value) {
-        // username
+        
         if (newUsername.value.trim() !== '' && usernameAvailable.value)
         	bodyInfo['username'] = newUsername.value;
         
         // avatar
         // if () {
-			// 1. bodyInfo['avatar'] = newAvatar.value;
-			// 2. Post img to upload folder
-		// }
+          // 1. bodyInfo['avatar'] = newAvatar.value;
+          // 2. Post img to upload folder
+        // }
 
         if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
-			bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
-
-		}
+          if (twoFactorAuth.value)
+			      await openTwoFactorAuthModal(bodyInfo);
+          else
+            bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
+		    }
        
         const token = localStorage.getItem('token');
         let jsonToSend = JSON.stringify(bodyInfo);
-		const id = jwt_decode(token).sub;
+		    const id = jwt_decode(token).sub;
 		
         await axios.put('/users/update/' + id, jsonToSend, {
-          	headers: {
-				Authorization: 'Bearer ' + token,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
         });
 
-		profileStore.setupProfile();
+		    profileStore.setupProfile();
 
-        if (twoFactorAuth.value) {
-          router.push({
-			name: 'QRcode',
-			params: { id, }
-		  });
-        }
+        // if (twoFactorAuth.value) {
+        //   router.push({
+        //     name: 'QRcode',
+        //     params: { id, }
+        //   });
+        // }
       }
     }
-
-   
-    
 
     return {
       // Variables
@@ -223,6 +247,10 @@ export default {
       enableTwoFactorAuth,
       disableTwoFactorAuth,
       handleAvatarChange,
+
+      showTwoFactorAuthModal,
+      openTwoFactorAuthModal,
+      closeTwoFactorAuthModal,
     };
   },
 };

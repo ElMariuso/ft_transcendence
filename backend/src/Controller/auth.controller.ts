@@ -1,6 +1,5 @@
-import { Controller, Get, Param, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { FT_AuthGuard } from '../Guards/42-auth.guard';
-import { FT_User } from '../Utils/42user'
 import { AuthService } from '../Service/auth.service';
 import { UserService } from '../Service/user.service';
 import { toDataURL } from 'qrcode';
@@ -16,7 +15,7 @@ export class AuthController {
 	@UseGuards(FT_AuthGuard)
 	@Get('/42/redirect')
 	async login(@Req() req, @Res() res) {
-		const token = await this.authService.login(req.user as FT_User);
+		const token = await this.authService.login(req.user);
 
 		const url = new URL(`${req.protocol}:${req.hostname}`);
 		url.port = "8080";
@@ -47,5 +46,12 @@ export class AuthController {
 		
 		// toDataURL(res.otpauthUrl)
 		return toDataURL(res.otpauthUrl);
+	}
+
+	@Post('/2fa/test')
+	async twoFactorAuthLogin(@Req() req, @Body() body) {
+		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.twoFactorAuthenticationCode, body.userID)
+	
+		return (isCodeValid);
 	}
 }

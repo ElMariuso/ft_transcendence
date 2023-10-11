@@ -8,5 +8,9 @@ export const useAuthenticationStore = defineStore('auth', () => {
 		authState.value = false;
 	}
 
-	return {authState, logout}
+	function authenticate() {
+		authState.value = true;
+	}
+
+	return {authState, logout, authenticate}
 })

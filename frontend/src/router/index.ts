@@ -50,21 +50,17 @@ const router = createRouter({
 
 async function checkJWT(authStore, profileStore) {
 	const status = {
-		isAuth: false,
+		// isAuth: false,
 		jwtValid: false,
 	}
 
 	const token = localStorage.getItem('token')
-  	status.isAuth = (token !== null)
-	if (token) {
-		let userID;
-		try {
 
-			userID = jwt_decode(token).sub;
-		}
-		catch (error){
-			console.log("jwt decode failed");
-		}
+  	// status.isAuth = (token !== null)
+	
+	if (token) {
+
+		let userID = jwt_decode(token).sub;
 		await axios.get("/users/user/" + userID, {
 			headers: {
 				Authorization: 'Bearer ' + token
@@ -75,14 +71,7 @@ async function checkJWT(authStore, profileStore) {
 		})
 
 		// Handle 2FA
-		let TwoFactorAuthEnabled
-		try {
-
-			TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
-		}
-		catch {
-			console.log("jwt decode failed");
-		}
+		let TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
 		if (TwoFactorAuthEnabled) {
 			await axios.get('/auth/jwt/verify', {
 				headers: {
@@ -96,7 +85,7 @@ async function checkJWT(authStore, profileStore) {
 			// redirect to auth/2fa
 			// get a new jwt token
 		}
-		authStore.authState = true;
+		authStore.authenticate();
 		return status
 	}
 	return status;
@@ -129,7 +118,7 @@ router.beforeEach((to, from, next) => {
 		}
 		
 		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !Status.isAuth)
+		else if (to.name !== 'login' && !authStore.authState)
 			return next({ name: 'login'});
 
 		next();

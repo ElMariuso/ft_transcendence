@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { FT_User } from '../Utils/42user'
 import { UserService } from './user.service'
 import { CreateUserDTO } from '../DTO/user/createUser.dto'
 import { JwtService } from '@nestjs/jwt';
@@ -26,25 +25,18 @@ export class AuthService {
 		}
 	}
 
-    async login(data: FT_User): Promise<string> {
-        
-		let email42: string = data.email;
-		let login42: string = data.login;
-
-		console.log('email ' + email42)
-		console.log('data ' + login42)
-		let user42Id = parseInt(data.id, 10);
+    async login(data): Promise<string> {
 
         let user = await this.userService
-          .findUserById42(user42Id)
+          .findUserById42(data._json.id)
           .catch(() => null);
 
 		if (!user) {
+			
 			const userDto: CreateUserDTO = {
-				username: login42,
-				// email: email42,
-				email: "email@email.com",
-				id42: user42Id
+				username: data._json.login,
+				email: data._json.email,
+				id42: data._json.id
 			};
 
 			user = await this.userService.createUser(userDto);
@@ -52,6 +44,8 @@ export class AuthService {
 
 		return this.jwtService.sign({ 
 			sub: user.idUser,
+			twoFactorAuthEnabled: user.isTwoFactorAuthEnabled,
+			twoFactorAuthSecret: user.twoFactorAuthSecret
 		});
     }
 
@@ -75,10 +69,14 @@ export class AuthService {
 		return toDataURL(otpAuthUrl);
 	}
 
-	// isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
-	// 	return authenticator.verify({
-	// 	  token: twoFactorAuthenticationCode,
-	// 	  secret: user.twoFactorAuthenticationSecret,
-	// 	});
-	// }
+	async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, userID: number) {
+
+
+		const user = await this.userService.findUserById(userID);
+
+		return authenticator.verify({
+		  token: twoFactorAuthCode,
+		  secret: user.twoFactorAuthSecret,
+		});
+	}
 }

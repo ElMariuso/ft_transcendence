@@ -8,7 +8,7 @@
         </div>
         <div v-if="dropdownOpen" class="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
             <router-link to="/settings">
-                <p class="block px-4 py-2 hover:text-blue-500">Profile Settings</p>
+                <p @click="toggleDropdown" class="block px-4 py-2 hover:text-blue-500">Profile Settings</p>
             </router-link>
             <a @click="logout" class="block px-4 py-2 cursor-pointer hover:text-red-500 ">Logout</a>
         </div>
@@ -17,7 +17,7 @@
   
 <script>
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
-import { ref } from 'vue';
+import { ref, watch, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -29,6 +29,20 @@ export default {
         function toggleDropdown() {
             dropdownOpen.value = !dropdownOpen.value;
         }
+
+		watch(dropdownOpen, (isOpen) => {
+			if (isOpen) {
+				window.addEventListener('click', closeDropdownOnClick);
+			} else {
+				window.removeEventListener('click', closeDropdownOnClick);
+			}
+		});
+
+		const closeDropdownOnClick = (event) => {
+			if (dropdownOpen.value && !event.target.closest('.relative')) {
+				dropdownOpen.value = false;
+			}
+    	};
 
         function logout() {
             localStorage.removeItem('token');

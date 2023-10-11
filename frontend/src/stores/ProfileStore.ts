@@ -15,13 +15,11 @@ export const useProfileStore = defineStore('profile', () => {
 		const token = localStorage.getItem('token')
 		const id = jwt_decode(token).sub;		
 		
-		console.log('ID IN STORE: ' + userID.value )
 		await axios.get('/users/user/' + id, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}
 		}).then(res => {
-			console.log("Updating profile")
 			setUsername(res.data.username);
 			setAvatar(res.data.avatar);
 			setTwoFactorAuth(res.data.isTwoFactorAuthEnabled);
