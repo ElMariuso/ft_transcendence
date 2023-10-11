@@ -87,6 +87,89 @@ export class UserQuery
 	}
 
 	/**
+	 * Gets the 10 top players
+	 * 
+	 * @returns User[]
+	 */
+	async getTopLadder()
+	{
+		const users = await this.prisma.user.findMany
+		(
+			{
+				take: 10,
+				orderBy:
+				{
+					points: 'desc',
+				}
+			}
+		);
+
+		return users;
+	}
+
+	/**
+	 * Gets players above the number of points provided in the ladder
+	 * 
+	 * @param nbPoints Points reference
+	 * @param take Number of player to take
+	 * 
+	 * @returns User[]
+	 */
+	async getAboveLadder(nbPoints: number, take: number)
+	{
+		const ladder = await this.prisma.user.findMany
+		(
+			{
+				where:
+				{
+					points:
+					{
+						gt: nbPoints,
+					}
+				},
+				take: take,
+				orderBy:
+				{
+					points: 'asc'
+				}
+			},
+		);
+
+		return ladder;
+	}
+
+	/**
+	 * Gets players below the number of points provided in the ladder
+	 * 
+	 * @param nbPoints Points reference
+	 * @param take Number of player to take
+	 * 
+	 * @returns User[]
+	 */
+	async getBelowLadder(nbPoints: number, take: number)
+	{
+		const ladder = await this.prisma.user.findMany
+		(
+			{
+				where:
+				{
+					points:
+					{
+						lt: nbPoints,
+					}
+				},
+				take: take,
+				orderBy:
+				{
+					points: 'desc'
+				}
+			},
+		);
+
+		return ladder;
+	}
+
+	/**
 	 * Posts a new user in DB
 	 * 
 	 * @param user CreateUserDTO

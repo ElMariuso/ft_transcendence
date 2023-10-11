@@ -100,6 +100,30 @@ export class UserController
 		}
 	}
 
+	@Get('topLadder')
+	async getTopLadder() : Promise<UserDTO[]>
+	{
+		return await this.userService.getTopLadder();
+	}
+
+	@Get('ladder/:id') 
+	async getLadderUser(@Param('id') id :string): Promise<UserDTO[]>
+	{
+		try
+		{
+			const newId = parseInt(id, 10);
+
+			return await this.userService.getLadderUser(newId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			
+				throw new InternalServerErrorException(ERROR_MESSAGES.USER.GETLADDERUSER_FAILED);
+		}
+	}
+
 	/**
 	 * Create a new user in database
 	 * 

@@ -50,6 +50,7 @@ export const ERROR_MESSAGES =
 		DELETION_FAILED: "User deletion failed",
 		UPDATE_FAILED: "User deletion failed",
 		GETAVATAR_FAILED: "Get avatar failed",
+		GETLADDERUSER_FAILED: "Get user ladder failed",
 	},
 
 	/*	FRIEND ERROR	*/

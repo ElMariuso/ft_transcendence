@@ -119,6 +119,47 @@ export class UserService
 	}
 
 	/**
+	 * Gets the top 10 players in descending orders
+	 * 
+	 * @returns UserDTO [] of the 10 best players
+	 */
+	async getTopLadder() : Promise<UserDTO[]>
+	{
+		const ladder = await this.userQuery.getTopLadder();
+
+		const users: UserDTO[] = ladder.map(user =>
+		{
+			return this.transformToDTO(user);
+		});
+
+		return users;
+	}
+
+	async getLadderUser(id: number)
+	{
+		const checkUser = await this.userQuery.findUserById(id);
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+		
+		let ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5);
+		let ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5);
+
+		if (ladderAbove.length != 5)
+			ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5 + (5 - ladderAbove.length));
+		else
+			ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5 + (5 - ladderBelow.length));
+		
+		const ladder = [...ladderAbove, checkUser, ...ladderBelow];
+		
+		const users: UserDTO[] = ladder.map(user =>
+		{
+			return this.transformToDTO(user);
+		});
+
+		return users;
+	}
+
+	/**
 	 * Creates a user in DB
 	 * 
 	 * @param user UserDTO to create
