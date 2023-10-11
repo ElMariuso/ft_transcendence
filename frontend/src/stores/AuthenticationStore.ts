@@ -15,6 +15,20 @@ export const useAuthenticationStore = defineStore('auth', () => {
 	// Define a reactive state `isAuthenticated` using `ref`, initializing it as `false`
 	const isAuthenticated = ref(false)
 
+	/**
+	 * Authenticated the user by setting `isAuthenticated` to true.
+	 */
+	const login = () => {
+		isAuthenticated.value = true
+	}
+
+	/**
+     * Unauthenticate the user by setting `isAuthenticated` to false.
+     */
+	const logout = () => {
+		isAuthenticated.value = false
+	}
+
 	// Return the state to expose it for component usage
-	return {isAuthenticated}
+	return { isAuthenticated, login, logout }
 })

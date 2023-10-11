@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import MatchmakingButton from './MatchmakingButton.vue';
+import Login from './Login.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
 
 const authStore = useAuthenticationStore();
@@ -23,27 +24,10 @@ console.log(authStore.isAuthenticated);
 			<matchmaking-button />
             <matchmaking-button v-if="isAuthenticated" :is-ranked="true" />
 		</div>
-		<router-link :to="{name: 'community'}">
-			<nav class="text-lg mr-5">
-				<section>Community</section>
-			</nav>
-		</router-link>
-		<router-link to="/profile">
-			<nav class="text-lg mr-5">
-				<section>Profile</section>
-			</nav>
-		</router-link>
-	</div>
-		
-	<div v-if="isAuthenticated" class="flex items-center">
 		<div>
-			<p>{{ profileStore.username }}</p>
+			<Login />
 		</div>
-		<div class="mr-4 text-lg">
-			<img :src="profileStore.avatar" alt="avatar" class="h-14 w-auto">
-		</div>
-		<SettingsDropDown />
-    </div>
+	</div>
 </template>
 
 <style scoped>

@@ -43,6 +43,31 @@ export const verifyJWT = async () => {
 };
 
 /**
+ * Asynchronous function to retrieve the redirect URL for 42 OAuth authentication.
+ * 
+ * This function sends a GET request to the `/auth/42/redirect` endpoint and 
+ * returns the response data, which should include the URL to which the user 
+ * needs to be redirected to initiate the OAuth authentication process with 42. 
+ * If an error occurs during the request, it logs the error message to the console 
+ * and re-throws the error to be handled by the calling function.
+ * 
+ * @returns {Promise<Object>} - A promise that resolves to the redirection data.
+ */
+export const getRedirectURL = async() => {
+	try {
+		const response = await api.get('/auth/42/redirect');
+		if (response && response.data) {
+            return response.data;
+        } else {
+            throw new Error('Unexpected format');
+        }
+	} catch (error) {
+		console.error('Error getting redirection url:', error);
+		throw error;
+	}
+};
+
+/**
  * Asynchronous function to check the JWT and update the user profile.
  * 
  * This function checks the validity of the JWT, and if valid, fetches and updates 
