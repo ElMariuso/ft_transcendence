@@ -11,6 +11,8 @@ import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 
+import { checkJWT } from '@/services/auth-helpers';
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -41,60 +43,6 @@ const router = createRouter({
     }
   ]
 })
-
-async function checkJWT(authStore, profileStore) {
-	const status = {
-		isAuth: false,
-		jwtValid: false,
-	}
-
-	const token = localStorage.getItem('token')
-  	status.isAuth = (token !== null)
-	if (token) {
-		let userID;
-		try {
-
-			userID = jwt_decode(token).sub;
-		}
-		catch (error){
-			console.log("jwt decode failed");
-		}
-		await axios.get("/users/" + userID, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			profileStore.setUsername(res.data.username);
-			profileStore.setAvatar(res.data.avatar);
-		})
-
-		// Handle 2FA
-		let TwoFactorAuthEnabled
-		try {
-
-			TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
-		}
-		catch {
-			console.log("jwt decode failed");
-		}
-		if (TwoFactorAuthEnabled) {
-			await axios.get('/auth/jwt/verify', {
-				headers: {
-					Authorization: 'Bearer ' + token
-				}
-			}).then(res => {
-				status.jwtValid = res.data;
-			});
-			if (status.jwtValid)
-				console.log(status.jwtValid)
-			// redirect to auth/2fa
-			// get a new jwt token
-		}
-		authStore.authState = true;
-		return status
-	}
-	return status;
-}
 
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore()
