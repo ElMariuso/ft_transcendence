@@ -1,3 +1,12 @@
+/**
+ * Vue Router
+ *
+ * This module initializes and exports the Vue Router instance for the application,
+ * defining the available routes and any route guards or hooks.
+ *
+ * Routes are defined with associated components, and a navigation guard (`beforeEach`)
+ * is implemented to protect routes that require authentication.
+ */
 
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
@@ -13,6 +22,7 @@ import SettingsView from '../views/SettingsView.vue';
 
 import { checkJWT } from '@/services/auth-helpers';
 
+// Define the routes for the Vue application
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,6 +54,13 @@ const router = createRouter({
   ]
 })
 
+/**
+ * Navigation Guard: `beforeEach`
+ * 
+ * The `beforeEach` navigation guard is used to check the authentication status of the user before navigating
+ * to a new route. If the user is not authenticated and trying to access a protected route,
+ * they are redirected to the login page. If they are authenticated, navigation proceeds as normal.
+ */
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore()
 	const profileStore = useProfileStore()
@@ -77,5 +94,6 @@ router.beforeEach((to, from, next) => {
 	});
 })
 
+// Export the router for use in the Vue application
 export default router
 
