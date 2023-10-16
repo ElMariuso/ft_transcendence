@@ -2,8 +2,6 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { AuthenticatedPlayer, PlayerInQueue } from 'src/Model/player.model';
 
-import { v4 as uuidv4 } from 'uuid';
-
 /**
  * The MatchmakingController handles routes associated with player matchmaking.
  * It allows players to join or leave both standard and ranked queues and provides 
