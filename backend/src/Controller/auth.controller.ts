@@ -50,8 +50,10 @@ export class AuthController {
 
 	@Post('/2fa/test')
 	async twoFactorAuthLogin(@Req() req, @Body() body) {
-		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.twoFactorAuthenticationCode, body.userID)
-	
+		console.log("Body code" + body.code);
+		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
+		
+		console.log("Check 2fa: " + isCodeValid)
 		return (isCodeValid);
 	}
 }

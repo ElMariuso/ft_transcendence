@@ -7,6 +7,7 @@ import jwt_decode from 'jwt-decode';
 
 import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
+import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
@@ -24,6 +25,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView
+    },
+    {
+      path: '/login2fa',
+      name: 'login2fa',
+      component: Login2faView
     },
     {
       path: '/community',
@@ -49,18 +55,34 @@ const router = createRouter({
 })
 
 async function checkJWT(authStore, profileStore) {
-	const status = {
-		// isAuth: false,
-		jwtValid: false,
-	}
-
-	const token = localStorage.getItem('token')
-
-  	// status.isAuth = (token !== null)
 	
+	const token = localStorage.getItem('token')
 	if (token) {
 
-		let userID = jwt_decode(token).sub;
+		let JWT = jwt_decode(token);
+		let userID = JWT['sub'];
+		let twoFactorAuthEnabled = JWT['twoFactorAuthEnabled'];
+		let twoFactorAuthOTP = JWT['twoFactorAuthOTP'];
+		
+		await axios.get('/auth/jwt/verify', {
+			headers: {
+				Authorization: 'Bearer ' + token
+			}
+		}).then(res => {
+			if (res.data)
+				authStore.validateJWT();
+		});
+		
+		console.log("auth store JWT: " + authStore.JWTisValid)
+		if (!authStore.JWTisValid)
+			return ;
+		
+		if (twoFactorAuthEnabled) {
+			if (twoFactorAuthOTP) {
+				
+			}
+		}
+		
 		await axios.get("/users/user/" + userID, {
 			headers: {
 				Authorization: 'Bearer ' + token
@@ -70,49 +92,25 @@ async function checkJWT(authStore, profileStore) {
 			profileStore.setAvatar(res.data.avatar);
 		})
 
-		// Handle 2FA
-		let TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
-		if (TwoFactorAuthEnabled) {
-			await axios.get('/auth/jwt/verify', {
-				headers: {
-					Authorization: 'Bearer ' + token
-				}
-			}).then(res => {
-				status.jwtValid = res.data;
-			});
-			if (status.jwtValid)
-				console.log(status.jwtValid)
-			// redirect to auth/2fa
-			// get a new jwt token
-		}
 		authStore.authenticate();
-		return status
 	}
-	return status;
 }
 
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore()
 	const profileStore = useProfileStore()
 
-	checkJWT(authStore, profileStore).then(Status => {
+	checkJWT(authStore, profileStore).then(() => {
 		// Detects if a token exists and verifies it + checks if 2fa enabled
 		if (to.name === 'login' && to.query.code !== undefined) {
 			localStorage.setItem('token', to.query.code.toString());
 			axios.defaults.headers.common['Authorization'] = 'Bearer ' + to.query.code.toString();
 			
-			let jwtDecoded;
-			try {
-				jwtDecoded = jwt_decode(to.query.code.toString())
-			} catch {
-				console.log("jwt decode failed");
-			}
-				
-			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
+			// let JWT = jwt_decode(to.query.code.toString())
 			
-			if (TwoFactorAuthEnabled) {
-				return next({ name: '2fa' });
-				
+			
+			if (profileStore.twoFactorAuth) {
+				return next({ name: 'login2fa' });
 			}
 			return next({ name: 'home' });
 		}
@@ -120,7 +118,6 @@ router.beforeEach((to, from, next) => {
 		// Guards all views if not authenticated
 		else if (to.name !== 'login' && !authStore.authState)
 			return next({ name: 'login'});
-
 		next();
 	});
 })

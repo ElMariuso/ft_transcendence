@@ -17,34 +17,27 @@
 						Check
 					</button>
 					
-					<button @click="() => closeModal(resolve)" class="ml-5 text-lg text-white bg-red-500 px-4 py-2 rounded-lg">Cancel</button>
+					<button @click="() => cancelModal(resolve)" class="ml-5 text-lg text-white bg-red-500 px-4 py-2 rounded-lg">Cancel</button>
 				</div>
 			</div>
 		</transition>
 	</Backdrop>
 </template>
   
-<script setup>
+<script setup lang="ts">
 	import { ref, onMounted, watch, computed, defineProps } from 'vue';
 	import axios from 'axios';
 	import jwt_decode from 'jwt-decode';
 	import Backdrop from './Backdrop.vue';
 
-	const emit = defineEmits(['closeModal']);
+	const emit = defineEmits(['closeModal', 'cancelModal']);
 	const { resolve } = defineProps(['resolve']);
 	const qrCodeDataUrl = ref('');
-	const twoFactorAuthCode = ref('');
+	const twoFactorAuthCode: ref<string> = ref('');
 	const token = localStorage.getItem('token');
 	const id = jwt_decode(token).sub;
 	const checkTwoFactorAuthDisabled = ref(true);
 	const checkTwoFactorAuthPerformed = ref(false);
-	
-	// const checkTwoFactorAuthLabel = computed(() => {
-    //   if (!checkTwoFactorAuthDisabled.value && checkTwoFactorAuthPerformed.value)
-    //     return 'Wrong';
-    //   else
-    //     return 'Check';
-    // });
 
 	const test2faClass = computed(() => {
 		if (checkTwoFactorAuthDisabled.value)
@@ -69,23 +62,25 @@
       }
     });
 
-	function closeModal(resolve) {
+	function cancelModal(resolve) {
 		resolve(false);
-		emit('closeModal')
+		emit('cancelModal')
 	}
 
   	async function twoFactorAuthTest(resolve) {
 		console.log("2fa test")
 		try {
+			console.log(twoFactorAuthCode.value)
 			const response = await axios.post('/auth/2fa/test', {
-				twoFactorAuthCode: twoFactorAuthCode.value,
+				code: twoFactorAuthCode.value,
 				userID: id,
 			})
 			console.log("resp data " + response.data)
-			if (response.data)
-      			resolve(true);
+			if (response.data) {
+				resolve(true);
+				emit('closeModal')
+			}
 			checkTwoFactorAuthPerformed.value = true;
-			// resolve(false);
 		} catch (error) {
 			console.error('Error authenticating:', error);
   		}

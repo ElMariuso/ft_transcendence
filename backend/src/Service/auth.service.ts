@@ -45,7 +45,7 @@ export class AuthService {
 		return this.jwtService.sign({ 
 			sub: user.idUser,
 			twoFactorAuthEnabled: user.isTwoFactorAuthEnabled,
-			twoFactorAuthSecret: user.twoFactorAuthSecret
+			twoFactorAuthOTP: false
 		});
     }
 
@@ -58,7 +58,7 @@ export class AuthService {
 		
 		
 		await this.userService.updateUser(user.idUser, data)
-	
+		console.log("Create 2fa " + secret)
 		return {
 		  secret,
 		  otpauthUrl
@@ -74,6 +74,8 @@ export class AuthService {
 
 		const user = await this.userService.findUserById(userID);
 
+		console.log("Check 2fa: " + user.twoFactorAuthSecret)
+		console.log("code: " + twoFactorAuthCode)
 		return authenticator.verify({
 		  token: twoFactorAuthCode,
 		  secret: user.twoFactorAuthSecret,

@@ -46,11 +46,17 @@ import jwt_decode from 'jwt-decode';
 const authStore = useAuthenticationStore()
 const profileStore = useProfileStore()
 
+// async function setupStore() {
+// 	await profileStore.setupProfile();
+// }
+
 // Sets username, avatar and 2fa to correct DB values
 const token = localStorage.getItem('token');
 if (token) {
 	const id = jwt_decode(token).sub;
-	profileStore.setupProfile();
+	// setupStore();
+
+	console.log("Navbar 2fa: " + profileStore.twoFactorAuth)
 	profileStore.setUserID(id);
 }
 </script>
