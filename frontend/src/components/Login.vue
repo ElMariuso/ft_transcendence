@@ -24,7 +24,8 @@ const url = ref<string>('');
 onMounted(async () => {
     try {
         // Attempt to fetch OAuth redirect URL and assign to local ref state
-        const tmpURL = "http://localhost:3000/auth/42/redirect";
+		
+        const tmpURL = await getRedirectURL();
         url.value = tmpURL;
     } catch (error) {
         // Log any errors that occur during fetch operation to console
