@@ -3,6 +3,7 @@ import { FT_AuthGuard } from '../Guards/42-auth.guard';
 import { AuthService } from '../Service/auth.service';
 import { UserService } from '../Service/user.service';
 import { toDataURL } from 'qrcode';
+
 /**
  * AuthController manages authentication routes and logic.
  *
@@ -12,9 +13,10 @@ import { toDataURL } from 'qrcode';
  *
  * AuthController interacts with `AuthService` to handle the business logic related to
  * user authentication and JWT management.
- */
+*/
 @Controller('auth')
 export class AuthController {
+	
 	constructor(
 		private readonly authService: AuthService,
 		private readonly userService: UserService,
@@ -32,11 +34,14 @@ export class AuthController {
 	@UseGuards(FT_AuthGuard)
 	@Get('/42/redirect')
 	async login(@Req() req, @Res() res) {
+		
+		console.log("42 AUTH")
+
 		const token = await this.authService.login(req.user);
 
 		const url = new URL(`${req.protocol}:${req.hostname}`);
 		url.port = "8080";
-		url.pathname = 'login';
+		url.pathname = '';
 		url.searchParams.set('code', token);
 
 		res.status(302).redirect(url.href);
@@ -52,41 +57,37 @@ export class AuthController {
      */
 	 @Get('/jwt/verify')
 	 jwtVerify(@Req() req, @Res() res) {
-		 if (!req.headers.authorization)
-			 return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Authorization header is missing' });
+		if (!req.headers.authorization)
+			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Authorization header is missing' });
 		 
-		 const tokenSplitted = req.headers.authorization.split(' ');
-		 if (tokenSplitted.length !== 2 || tokenSplitted[0].toLowerCase() !== 'bearer')
-			 return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Malformed authorization header' });	
-		 const token = tokenSplitted[1];
- 
-		 try {
-			 const payload = this.authService.jwtVerify(token);
-			 return res.status(HttpStatus.OK).json({ payload });
-		 } catch (error) {
-			 return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid token', error: error.message });
-		 }
+		const tokenSplitted = req.headers.authorization.split(' ');
+		if (tokenSplitted.length !== 2 || tokenSplitted[0].toLowerCase() !== 'bearer')
+			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Malformed authorization header' });	
+		const token = tokenSplitted[1];
+
+		try {
+			const payload = this.authService.jwtVerify(token);
+			return res.status(HttpStatus.OK).json({ payload });
+		} catch (error) {
+			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid token', error: error.message });
+		}
 	 }
 
-	
-	 @Get('/2fa/QRcode/:id')
-	 async generateQRcode(@Param('id') id: string) {
+	@Get('/2fa/QRcode/:id')
+	async generateQRcode(@Param('id') id: string) {
+
+		let newId = parseInt(id, 10);
+
+		const user = await this.userService.findUserById(newId)
+		const res = await this.authService.generateTwoFactorAuthenticationSecret(user);
+		
+		return toDataURL(res.otpauthUrl);
+	}
  
-		 let newId = parseInt(id, 10);
- 
-		 const user = await this.userService.findUserById(newId)
-		 const res = await this.authService.generateTwoFactorAuthenticationSecret(user);
-		 
-		 // toDataURL(res.otpauthUrl)
-		 return toDataURL(res.otpauthUrl);
-	 }
- 
-	 @Post('/2fa/test')
-	 async twoFactorAuthLogin(@Req() req, @Body() body) {
-		 console.log("Body code" + body.code);
-		 const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
-		 
-		 console.log("Check 2fa: " + isCodeValid)
-		 return (isCodeValid);
-	 }
+	@Post('/2fa/test')
+	async twoFactorAuthLogin(@Req() req, @Body() body) {
+		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
+		
+		return (isCodeValid);
+	}
  }

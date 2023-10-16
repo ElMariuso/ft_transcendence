@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './Module/auth.module';
 
+import { UserModule } from 'src/Module/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GameModule } from 'src/Module/game.module';

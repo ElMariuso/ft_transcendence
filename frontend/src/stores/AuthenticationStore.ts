@@ -16,15 +16,6 @@ export const useAuthenticationStore = defineStore('auth', () => {
 	const isAuthenticated = ref(false);
 	const JWTisValid = ref(false);
 	const twoFactorAuthState = ref(false);
-
-
-	function logout() {
-		authState.value = false;
-	}
-
-	function authenticate() {
-		authState.value = true;
-	}
 	
 	/**
 	 * Authenticated the user by setting `isAuthenticated` to true.
@@ -49,5 +40,5 @@ export const useAuthenticationStore = defineStore('auth', () => {
 		JWTisValid.value = true;
 	}
 
-	return { isAuthenticated, login, logout , JWTisValid, logout, authenticate, validateJWT, twoFactorAuthState, twoFactorAuthenticate}
+	return { isAuthenticated, login, logout , JWTisValid, validateJWT, twoFactorAuthState, twoFactorAuthenticate}
 })

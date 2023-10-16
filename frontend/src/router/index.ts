@@ -12,19 +12,18 @@
  *   the user remains authenticated, otherwise, the user is logged out.
  * - Routes that require authentication are protected and redirect unauthenticated 
  *   users to the home page.
- */
-
+*/
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthenticationStore } from '../stores/AuthenticationStore'
-import { useProfileStore } from '../stores/ProfileStore'
+import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { useProfileStore } from '@/stores/ProfileStore'
+import { checkJWT } from '@/services/auth-helpers';
 
-import HomeView from '../views/HomeView.vue';
+import HomeView from '@/views/HomeView.vue';
 import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import QRcodeView from '../views/QRcodeView.vue';
-import { checkJWT } from '@/services/auth-helpers';
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -63,63 +62,75 @@ const router = createRouter({
   ]
 })
 
-async function checkJWT(authStore, profileStore) {
+// async function checkJWT(authStore, profileStore) {
 	
-	const token = localStorage.getItem('token')
-	if (token) {
+// 	const token = localStorage.getItem('token')
+// 	if (token) {
 
-		let JWT = jwt_decode(token);
-		let userID = JWT['sub'];
-		let twoFactorAuthEnabled = JWT['twoFactorAuthEnabled'];
-		let twoFactorAuthOTP = JWT['twoFactorAuthOTP'];
+// 		let JWT = jwt_decode(token);
+// 		let userID = JWT['sub'];
+// 		let twoFactorAuthEnabled = JWT['twoFactorAuthEnabled'];
+// 		let twoFactorAuthOTP = JWT['twoFactorAuthOTP'];
 		
-		await axios.get('/auth/jwt/verify', {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			if (res.data)
-				authStore.validateJWT();
-		});
+// 		await axios.get('/auth/jwt/verify', {
+// 			headers: {
+// 				Authorization: 'Bearer ' + token
+// 			}
+// 		}).then(res => {
+// 			if (res.data)
+// 				authStore.validateJWT();
+// 		});
 		
-		console.log("auth store JWT: " + authStore.JWTisValid)
-		if (!authStore.JWTisValid)
-			return ;
+// 		console.log("auth store JWT: " + authStore.JWTisValid)
+// 		if (!authStore.JWTisValid)
+// 			return ;
 		
-		if (twoFactorAuthEnabled) {
-			if (twoFactorAuthOTP) {
+// 		if (twoFactorAuthEnabled) {
+// 			if (twoFactorAuthOTP) {
 				
-			}
-		}
+// 			}
+// 		}
 		
-		await axios.get("/users/user/" + userID, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			profileStore.setUsername(res.data.username);
-			profileStore.setAvatar(res.data.avatar);
-		})
+// 		await axios.get("/users/user/" + userID, {
+// 			headers: {
+// 				Authorization: 'Bearer ' + token
+// 			}
+// 		}).then(res => {
+// 			profileStore.setUsername(res.data.username);
+// 			profileStore.setAvatar(res.data.avatar);
+// 		})
 
-		authStore.authenticate();
-	}
-}
+// 		authStore.authenticate();
+// 	}
+// }
 
-router.beforeEach((to, from, next) => {
-	const authStore = useAuthenticationStore()
-	const profileStore = useProfileStore()
+// router.beforeEach((to, from, next) => {
+// 	const authStore = useAuthenticationStore()
+// 	const profileStore = useProfileStore()
 
-	checkJWT(authStore, profileStore).then(() => {
-		// Detects if a token exists and verifies it + checks if 2fa enabled
-		if (to.name === 'login' && to.query.code !== undefined) {
-			localStorage.setItem('token', to.query.code.toString());
-			axios.defaults.headers.common['Authorization'] = 'Bearer ' + to.query.code.toString();
+// 	checkJWT(authStore, profileStore).then(() => {
+// 		// Detects if a token exists and verifies it + checks if 2fa enabled
+// 		if (to.name === 'login' && to.query.code !== undefined) {
+// 			localStorage.setItem('token', to.query.code.toString());
+// 			axios.defaults.headers.common['Authorization'] = 'Bearer ' + to.query.code.toString();
 			
-			// let JWT = jwt_decode(to.query.code.toString())
+// 			// let JWT = jwt_decode(to.query.code.toString())
 			
 			
-			if (profileStore.twoFactorAuth) {
-				return next({ name: 'login2fa' });
+// 			if (profileStore.twoFactorAuth) {
+// 				return next({ name: 'login2fa' });
+// 			}
+// 			return next({ name: 'home' });
+// 		}
+		
+// 		// Guards all views if not authenticated
+// 		else if (to.name !== 'login' && !authStore.authState)
+// 			return next({ name: 'login'});
+// 		next();
+// 	});
+// })
+
+
 /**
  * Navigation Guard: `beforeEach`
  * 
@@ -141,16 +152,16 @@ router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
 	const profileStore = useProfileStore();
 	const actualToken = localStorage.getItem('token');
-	const urlParams = new URLSearchParams(window.location.search);
-	const tokenInURL = urlParams.get('token');
+	// const urlParams = new URLSearchParams(window.location.search);
+	// const tokenInURL = urlParams.get('token');
 
-	if (tokenInURL) {
-		// Scenario 1: Token in URL
-		localStorage.setItem('token', tokenInURL);
-    	authStore.login();
-    	window.history.replaceState({}, document.title, window.location.pathname);
-    	return next({ name: 'home' });
-	}
+	// if (tokenInURL) {
+	// 	// Scenario 1: Token in URL
+	// 	localStorage.setItem('token', tokenInURL);
+    // 	authStore.login();
+    // 	window.history.replaceState({}, document.title, window.location.pathname);
+    // 	return next({ name: 'home' });
+	// }
 
 	if (actualToken) {
 		// Scenario 2: Token in localStorage
@@ -162,13 +173,7 @@ router.beforeEach((to, from, next) => {
 			  authStore.logout();
 			  next({ name: 'home' });
 			}
-			return next({ name: 'home' });
-		}
-		
-		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !authStore.authState)
-			return next({ name: 'login'});
-		  });
+		});
 	} else if (to.meta.requiresAuth && !authStore.isAuthenticated) {
 		// Scenario 3: Route requires authentication but user is not authenticated
 		next({ name: 'home' });
@@ -179,4 +184,3 @@ router.beforeEach((to, from, next) => {
 
 // Export the router for use in the Vue application
 export default router
-

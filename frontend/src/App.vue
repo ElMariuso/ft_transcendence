@@ -19,7 +19,7 @@ if (token) {
       <Navbar />
     <div class="container mx-auto mt-8">
       <router-view />
-      <div class="text-center mt-96">TEST</div>
+      <!-- <div class="text-center mt-96">TEST</div> -->
     </div>
   </div>
 </template>

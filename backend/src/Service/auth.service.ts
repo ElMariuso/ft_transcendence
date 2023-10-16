@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { FT_User } from '../Utils/42user';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../DTO/user/createUser.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -20,9 +19,10 @@ import { toDataURL } from 'qrcode';
  *
  * AuthService interacts with `JwtService` for JWT-related operations and `UserService` 
  * to manage user-related database transactions.
- */
+*/
 @Injectable()
 export class AuthService {
+
 	constructor(
         private readonly jwtService: JwtService,
         private readonly userService: UserService,
@@ -34,7 +34,7 @@ export class AuthService {
      * @param token - The JWT token to verify.
      * @returns A boolean indicating whether the token is valid or not.
      * @throws {HttpException} - Throws an exception if the token is invalid, with a 400 status code.
-     */
+	*/
     jwtVerify(token: string): boolean {
         try {
             return Boolean(this.jwtService.verify(token));
@@ -52,24 +52,13 @@ export class AuthService {
      *
      * @param data - The user data obtained from 42's OAuth.
      * @returns A promise resolving with a JWT token.
-     */
-    async login(data: FT_User): Promise<string> {
+    */
+	async login(data): Promise<string> {
         const userIdFrom42 = parseInt(data.id, 10);
         let user = await this.findOrCreateUser(userIdFrom42, data);
 		
-		return this.signJwtForUser(user.idUser);
+		return this.signJwtForUser(user.idUser, user.isTwoFactorAuthEnabled);
 	}
-	jwtVerify(token: string): Promise<boolean> {
-		try {
-			const res =  this.jwtService.verify(token);
-			return res
-		} 
-		catch {
-			return null;
-		}
-	}
-
-    async login(data): Promise<string> {
 
 	/**
      * Finds an existing user or creates a new one, based on the provided 42 ID and data.
@@ -80,38 +69,33 @@ export class AuthService {
      * @param data - The user data obtained from 42’s OAuth.
      * @returns A promise resolving with the user object.
      * @throws {HttpException} - Throws an exception if user retrieval/creation fails, with a 500 status code.
-     */
-	private async findOrCreateUser(userIdFrom42: number, data: FT_User) {
+    */
+	private async findOrCreateUser(userIdFrom42: number, data) {
 		let user;
-        let user = await this.userService
-          .findUserById42(data._json.id)
-          .catch(() => null);
 
 		try {
 			user = await this.userService.findUserById42(userIdFrom42)
 		} catch (error){
 			throw new HttpException('Failed to find user', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
 		if (!user) {
-			
 			const userDto: CreateUserDTO = {
-			  username: data.username,
-			  email: data.email,
-			  id42: userIdFrom42,
 				username: data._json.login,
 				email: data._json.email,
 				id42: data._json.id
 			};
 			
 			try {
-
-			  user = await this.userService.createUser(userDto);
+				user = await this.userService.createUser(userDto);
 			} catch (error) {
-			  throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		return user;
 	}
+
+
 
 	/**
      * Signs a JWT token for a specified user.
@@ -119,14 +103,16 @@ export class AuthService {
      * @param userId - The ID of the user for whom the JWT is signed.
      * @returns A JWT token.
      * @throws {HttpException} - Throws an exception if token signing fails, with a 500 status code.
-     */
-	private signJwtForUser(userId: string): string {
+    */
+	private signJwtForUser(userId: string, user2fa: boolean): string {
 		try {
-		  return this.jwtService.sign({ sub: userId });
+			return this.jwtService.sign({ 
+				sub: userId,
+				twoFactorAuthEnabled: user2fa,
+				twoFactorAuthOTP: false 
+			});
 		} catch (error) {
-			twoFactorAuthEnabled: user.isTwoFactorAuthEnabled,
-			twoFactorAuthOTP: false
-		  throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -137,9 +123,7 @@ export class AuthService {
 		const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
 		data.twoFactorAuthSecret = secret;
 		
-		
 		await this.userService.updateUser(user.idUser, data)
-		console.log("Create 2fa " + secret)
 		return {
 		  secret,
 		  otpauthUrl
@@ -151,12 +135,8 @@ export class AuthService {
 	}
 
 	async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, userID: number) {
-
-
 		const user = await this.userService.findUserById(userID);
 
-		console.log("Check 2fa: " + user.twoFactorAuthSecret)
-		console.log("code: " + twoFactorAuthCode)
 		return authenticator.verify({
 		  token: twoFactorAuthCode,
 		  secret: user.twoFactorAuthSecret,
