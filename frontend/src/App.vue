@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
+import Cookies from 'js-cookie';
 import Navbar from './components/Navbar.vue';
 
 const guestUUID = ref<string>('');
 
 onMounted(() => {
-    let storedUUID = localStorage.getItem('guestUUID');
+    let storedUUID = Cookies.get('guestUUID');
     if (!storedUUID) {
         storedUUID = uuidv4();
-        localStorage.setItem('guestUUID', storedUUID);
+        Cookies.set('guestUUID', storedUUID, { expires: 365 }); // Le cookie expire après 1 an
     }
     guestUUID.value = storedUUID;
 });
 </script>
+
 
 <template>
   <div class=" bg-no-repeat min-h-screen">
