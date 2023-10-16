@@ -5,8 +5,6 @@ import { GameQuery } from 'src/Query/game.query';
 import { GameDTO } from 'src/DTO/game/game.dto';
 import { CreateGameDTO} from 'src/DTO/game/createGame.dto';
 import { PrismaClient } from '@prisma/client';
-import { MatchmakingService } from 'src/Service/matchmaking.service';
-import { QueueService } from 'src/Service/queue.service';
 import { UpdateGameDTO } from 'src/DTO/game/updateGame.dto';
 
 @Module({
@@ -17,8 +15,6 @@ import { UpdateGameDTO } from 'src/DTO/game/updateGame.dto';
 	PrismaClient,
 	GameQuery,
 	GameService,
-  MatchmakingService,
-  QueueService,
   UpdateGameDTO
 ],
 })

@@ -8,6 +8,7 @@ import { GameModule } from 'src/Module/game.module';
 import { ChannelModule } from 'src/Module/channel.module';
 import { MessageModule } from 'src/Module/message.module';
 import { UserChannelModule } from 'src/Module/userchannel.module';
+import { MatchmakingModule } from './Module/matchmaking.module';
 
 import { PrismaClient, User } from '@prisma/client';
 
@@ -19,7 +20,8 @@ import { PrismaClient, User } from '@prisma/client';
     ChannelModule,
     MessageModule,
     UserChannelModule,
-    AuthModule
+    AuthModule,
+    MatchmakingModule
   ],
   controllers: [
     AppController
