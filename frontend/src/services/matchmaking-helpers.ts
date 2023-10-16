@@ -62,5 +62,67 @@ const getQueueStatus = async () => {
     }
 };
 
+/**
+ * Asynchronous function to join a ranked matchmaking queue.
+ *
+ * This function sends a POST request to the `/matchmaking/join-ranked` endpoint
+ * along with playerData as payload. If successful, it returns the response
+ * data. In case of an error during the request, it logs the error message to
+ * the console and re-throws the error to be handled by the calling function.
+ *
+ * @param {Object} playerData - The data of the player joining the ranked queue.
+ * @returns {Promise<Object>} - A promise that resolves to the response data.
+ */
+const joinRankedQueue = async (playerData) => {
+    try {
+        const response = await api.post('/matchmaking/join-ranked', playerData);
+        return response.data;
+    } catch (error) {
+        console.error('Error joining ranked queue:', error);
+        throw error;
+    }
+};
+
+/**
+ * Asynchronous function to leave a ranked matchmaking queue.
+ *
+ * This function sends a POST request to the `/matchmaking/leave-ranked` endpoint
+ * along with playerId as payload. If successful, it returns the response
+ * data. If an error occurs during the request, it logs the error message to
+ * the console and re-throws the error to be handled by the calling function.
+ *
+ * @param {number} playerId - The unique identifier of the player.
+ * @returns {Promise<Object>} - A promise that resolves to the response data.
+ */
+const leaveRankedQueue = async (playerId) => {
+    try {
+        const response = await api.post('/matchmaking/leave-ranked', { playerId });
+        return response.data;
+    } catch (error) {
+        console.error('Error leaving ranked queue:', error);
+        throw error;
+    }
+};
+
+/**
+ * Asynchronous function to get the status of the ranked matchmaking queue.
+ *
+ * This function sends a GET request to the `/matchmaking/status-ranked` endpoint
+ * and returns the response data. If an error occurs during the request, it
+ * logs the error message to the console and re-throws the error to be handled
+ * by the calling function.
+ *
+ * @returns {Promise<Object>} - A promise that resolves to the status of the ranked queue.
+ */
+const getRankedQueueStatus = async () => {
+    try {
+        const response = await api.get('/matchmaking/status-ranked');
+        return response.data;
+    } catch (error) {
+        console.error('Error getting ranked queue status:', error);
+        throw error;
+    }
+};
+
 // Exporting the functions for use in other parts of the application.
-export { joinQueue, leaveQueue, getQueueStatus };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus };
