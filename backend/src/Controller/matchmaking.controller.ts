@@ -25,9 +25,6 @@ export class MatchmakingController {
      */
     @Post('join')
     joinQueue(@Body() player: PlayerInQueue) {
-        if (player.isGuest) {
-            player.id = uuidv4();
-        }
         this.matchmakingService.add(player);
         return { status: 'Added to standard queue', playerId: player.id };
     }
