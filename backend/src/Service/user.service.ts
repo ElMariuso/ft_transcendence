@@ -123,8 +123,6 @@ export class UserService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		await this.userQuery.deleteUser(id);
-
-		console.log("Delete User OK");
 		return deletedUser;
 	}
 
@@ -234,8 +232,9 @@ export class UserService
 			email: user.email,
 			id42: user.id42,
 			points: user.points,
-			isTwoFactorAuth: user.isTwoFactorAuth,
-			avatar: user.avatar
+			isTwoFactorAuthEnabled: user.isTwoFactorAuthEnabled,
+			avatar: user.avatar,
+			twoFactorAuthSecret: user.twoFactorAuthSecret
 		};
 
 		return userDTO;
@@ -271,8 +270,10 @@ export class UserService
 			data.points = user.points;
 		if (user.avatar !== null && user.avatar !== undefined)
 			data.avatar = user.avatar;
-		if (user.isTwoFactorAuth !== null && user.isTwoFactorAuth !== undefined)
-			data.isTwoFactorAuth = user.isTwoFactorAuth;
+		if (user.isTwoFactorAuthEnabled !== null && user.isTwoFactorAuthEnabled !== undefined)
+			data.isTwoFactorAuthEnabled = user.isTwoFactorAuthEnabled;
+		if (user.twoFactorAuthSecret !== null && user.twoFactorAuthSecret !== undefined)
+			data.twoFactorAuthSecret = user.twoFactorAuthSecret;
 		
 		return data;
 	}

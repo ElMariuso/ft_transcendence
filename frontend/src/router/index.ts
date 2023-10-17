@@ -1,16 +1,32 @@
-
+/**
+ * Vue Router
+ *
+ * This module initializes and exports the Vue Router instance for the application,
+ * defining the available routes and any route guards or hooks.
+ *
+ * Routes are defined with associated components. A navigation guard (`beforeEach`)
+ * is implemented to manage the authentication status in various scenarios:
+ * - If a JWT token is present in the URL, it is stored in localStorage and 
+ *   the user is authenticated.
+ * - If a JWT token is present in localStorage, its validity is checked. If valid, 
+ *   the user remains authenticated, otherwise, the user is logged out.
+ * - Routes that require authentication are protected and redirect unauthenticated 
+ *   users to the home page.
+*/
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthenticationStore } from '../stores/AuthenticationStore'
-import { useProfileStore } from '../stores/ProfileStore'
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
+import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { useProfileStore } from '@/stores/ProfileStore'
+import { checkJWT } from '@/services/auth-helpers';
 
-import HomeView from '../views/HomeView.vue';
+import HomeView from '@/views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
+import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import jwt_decode from 'jwt-decode';
 
+// Define the routes for the Vue application
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -19,10 +35,15 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+	{
+		path: '/login',
+		name: 'login',
+		component: LoginView
+	},
     {
-      path: '/login',
-      name: 'login',
-      component: LoginView
+      path: '/login2fa',
+      name: 'login2fa',
+      component: Login2faView
     },
     {
       path: '/community',
@@ -42,93 +63,52 @@ const router = createRouter({
   ]
 })
 
-async function checkJWT(authStore, profileStore) {
-	const status = {
-		isAuth: false,
-		jwtValid: false,
-	}
-
-	const token = localStorage.getItem('token')
-  	status.isAuth = (token !== null)
-	if (token) {
-		let userID;
-		try {
-
-			userID = jwt_decode(token).sub;
-		}
-		catch (error){
-			console.log("jwt decode failed");
-		}
-		await axios.get("/users/" + userID, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			profileStore.setUsername(res.data.username);
-			profileStore.setAvatar(res.data.avatar);
-		})
-
-		// Handle 2FA
-		let TwoFactorAuthEnabled
-		try {
-
-			TwoFactorAuthEnabled = jwt_decode(token).TwoFactorAuthEnabled;
-		}
-		catch {
-			console.log("jwt decode failed");
-		}
-		if (TwoFactorAuthEnabled) {
-			await axios.get('/auth/jwt/verify', {
-				headers: {
-					Authorization: 'Bearer ' + token
-				}
-			}).then(res => {
-				status.jwtValid = res.data;
-			});
-			if (status.jwtValid)
-				console.log(status.jwtValid)
-			// redirect to auth/2fa
-			// get a new jwt token
-		}
-		authStore.authState = true;
-		return status
-	}
-	return status;
-}
-
+/**
+ * Navigation Guard: `beforeEach`
+ * 
+ * The `beforeEach` navigation guard manages user authentication by evaluating
+ * the presence and validity of a JWT token in either the URL or localStorage.
+ *
+ * Scenarios:
+ * 1. If a token is present in the URL, it is stored, and the user is authenticated and redirected to 'home'.
+ * 2. If a token is present in localStorage, its validity is checked via `checkJWT()`.
+ *    - If valid: The user's authentication state is persisted.
+ *    - If invalid: The user is logged out and the token is removed.
+ * 3. If attempting to access a route that requires authentication without being authenticated, 
+ *    redirect to 'home'.
+ * 
+ * The guard also ensures that users are redirected appropriately based on their authentication state and 
+ * the route they are attempting to access.
+ */
 router.beforeEach((to, from, next) => {
-	const authStore = useAuthenticationStore()
-	const profileStore = useProfileStore()
+	const authStore = useAuthenticationStore();
+	const profileStore = useProfileStore();
 
-	checkJWT(authStore, profileStore).then(Status => {
-		// Detects if a token exists and verifies it + checks if 2fa enabled
-		if (to.name === 'login' && to.query.code !== undefined) {
+
+	checkJWT(authStore, profileStore).then(status => {
+		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
+			return next({ name: 'home' });
+
+		else if (to.name === 'login' && to.query.code !== undefined) {
 			localStorage.setItem('token', to.query.code.toString());
-			axios.defaults.headers.common['Authorization'] = 'Bearer ' + to.query.code.toString();
 			
-			let jwtDecoded;
-			try {
-				jwtDecoded = jwt_decode(to.query.code.toString())
-			} catch {
-				console.log("jwt decode failed");
-			}
-				
-			const TwoFactorAuthEnabled = jwtDecoded['TwoFactorAuthEnabled'];
-			
-			if (TwoFactorAuthEnabled) {
-				return next({ name: '2fa' });
-				
+			const token = localStorage.getItem('token'); 
+			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
+
+			if (twoFactorAuthEnabled) {
+				return next({ name: 'login2fa' });
 			}
 			return next({ name: 'home' });
 		}
-		
+				
 		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !Status.isAuth)
+		else if ((to.name !== 'login' && to.name !== 'login2fa') && !authStore.isAuthenticated) {
 			return next({ name: 'login'});
+		}
 
 		next();
 	});
 })
 
+// Export the router for use in the Vue application
 export default router
-

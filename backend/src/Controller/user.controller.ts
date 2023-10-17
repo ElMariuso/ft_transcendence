@@ -12,6 +12,7 @@ import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 import { ERROR_MESSAGES } from 'src/globalVariables';
 import { MESSAGES } from '../globalVariables';
 
+
 @Controller('users')
 export class UserController
 {
@@ -39,10 +40,11 @@ export class UserController
 	 * 
 	 * @returns UserDTO or null
 	 */
+
 	@Get('/user/:id')
 	async findUserById(@Param('id') id: string) : Promise<UserDTO | null>
 	{
-		console.log("path :id");
+		
 		let newId = parseInt(id, 10);
 		return this.userService.findUserById(newId);
 	}
@@ -55,7 +57,7 @@ export class UserController
 	@Get('/usernames')
 	async findAllUsernames() : Promise<string []>
 	{
-		console.log("Path : /usernames");
+		
 		return this.userService.findAllUsernames();
 	}
 

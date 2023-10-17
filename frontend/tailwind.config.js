@@ -9,11 +9,20 @@ module.exports = {
       padding: {
         '15px': '15px',
       },
+      width: {
+        '450px': '450px',
+      },
       backgroundImage: {
         'custom-gradient': "linear-gradient(to bottom, hsl(37, 12%, 16%), hsl(37, 10%, 8%) 116px)",
+        'button-gradient': 'linear-gradient(to bottom, hsl(37, 7%, 22%), hsl(37, 5%, 19%) 100%)',
       },
       backgroundColor: {
         'base-bg': '#161512',
+        'matchmaking-bg': 'rgb(32, 35, 37)',
+      },
+      colors: {
+        'button': '#999',
+        'matchmaking': '#bababa',
       }
     }
   },

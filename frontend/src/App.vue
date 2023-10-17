@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import Navbar from './components/Navbar.vue';
-</script>
+import { useProfileStore } from './stores/ProfileStore'
 
+const profileStore = useProfileStore();
+
+async function setupStore() {
+	await profileStore.setupProfile();
+}
+
+const token = localStorage.getItem('token');
+if (token) {
+	setupStore();
+}
+</script>
 
 <template>
   <div class=" bg-no-repeat min-h-screen">

@@ -15,5 +15,7 @@ export class UpdateUserDTO
 	@IsInt()
 	points: number;
 
-	isTwoFactorAuth: boolean;
+	isTwoFactorAuthEnabled: boolean;
+
+	twoFactorAuthSecret: string;
 }
