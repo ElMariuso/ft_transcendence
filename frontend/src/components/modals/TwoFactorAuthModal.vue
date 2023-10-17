@@ -25,7 +25,7 @@
 </template>
   
 <script setup lang="ts">
-	import { ref, onMounted, watch, computed, defineProps } from 'vue';
+	import { ref, onMounted, watch, computed } from 'vue';
 
 	import api from '../../services/api';
 	
