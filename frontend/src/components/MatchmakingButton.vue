@@ -2,6 +2,7 @@
 import Cookies from 'js-cookie';
 import { ref, computed } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
+import { useProfileStore } from '@/stores/ProfileStore';
 
 const props = defineProps({
     isRanked: {
@@ -19,13 +20,15 @@ const buttonText = computed(() => {
 });
 
 const handleClick = async () => {
+    const profileStore = useProfileStore();
+
     if (isSearching.value) {
         console.log('Cancelling the match search...');
         isSearching.value = false;
         try {
             let response;
             if (props.isRanked) {
-                response = await leaveRankedQueue(guestUUID.value);
+                response = await leaveRankedQueue(profileStore.userId.value);
             } else {
                 response = await leaveQueue(guestUUID.value);
             }
@@ -39,7 +42,7 @@ const handleClick = async () => {
         try {
             let response;
             if (props.isRanked) {
-                const playerData = { id: guestUUID.value, isGuest: false, points: 0};
+                const playerData = { id: profileStore.userId.value, isGuest: false, points: 0};
                 response = await joinRankedQueue(playerData);
             } else {
                 const playerData = { id: guestUUID.value, isGuest: true };
