@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
 const guestUUID = ref<string>('');
-const isSearchingValue = ref<boolean>(false);
+const matchmakingStore = useMatchmakingStore();
 
 onMounted(() => {
     let storedUUID = Cookies.get('guestUUID');
@@ -16,10 +17,10 @@ onMounted(() => {
     }
     guestUUID.value = storedUUID;
 
-    const storedIsSearching = Cookies.get('isSearching');
-    isSearchingValue.value = storedIsSearching === 'true';
-    console.log("RET:", isSearchingValue.value);
+    matchmakingStore.initializeStore();
 });
+
+const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
 

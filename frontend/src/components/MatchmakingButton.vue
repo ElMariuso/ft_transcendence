@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { ref, computed, watch } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 import { useProfileStore } from '@/stores/ProfileStore';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
 const props = defineProps({
     isRanked: {
@@ -10,26 +11,24 @@ const props = defineProps({
         default: false,
     },
 });
+const matchmakingStore = useMatchmakingStore();
+const profileStore = useProfileStore();
+
+const isSearching = computed(() => matchmakingStore.isSearching);
 const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
-const isSearching = ref<boolean>(Cookies.get('isSearching') === 'true' || false);
+
 const buttonText = computed(() => {
     return isSearching.value ? 'Cancel' : (props.isRanked ? 'Ranked' : 'Standard');
 });
 
 watch(isSearching, (newValue) => {
-    if (newValue) {
-        Cookies.set('isSearching', 'true', { expires: 1/144 });
-    } else {
-        Cookies.remove('isSearching');
-    }
+    matchmakingStore.setIsSearching(newValue);
 });
 
 const handleClick = async () => {
-    const profileStore = useProfileStore();
-
     if (isSearching.value) {
         console.log('Cancelling the match search...');
-        isSearching.value = false;
+        matchmakingStore.setIsSearching(false);
         try {
             let response;
             if (props.isRanked) {
@@ -43,11 +42,11 @@ const handleClick = async () => {
         }
     } else {
         console.log(`Joining a ${props.isRanked ? 'ranked' : 'standard'} match...`);
-        isSearching.value = true;
+        matchmakingStore.setIsSearching(true);
         try {
             let response;
             if (props.isRanked) {
-                const playerData = { id: profileStore.userId.value, isGuest: false, points: 0};
+                const playerData = { id: profileStore.userId.value, isGuest: false, points: 0 };
                 response = await joinRankedQueue(playerData);
             } else {
                 const playerData = { id: guestUUID.value, isGuest: true };
@@ -55,7 +54,7 @@ const handleClick = async () => {
             }
             console.log(response);
         } catch (error) {
-            isSearching.value = false;
+            matchmakingStore.setIsSearching(false);
             console.error(error);
         }
     }
@@ -65,6 +64,3 @@ const handleClick = async () => {
 <template>
     <button @click="handleClick">{{ buttonText }}</button>
 </template>
-
-<style scoped>
-</style>

@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 import { getQueueStatus, getRankedQueueStatus, leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
 const props = defineProps({
     isRanked: {
@@ -10,24 +11,24 @@ const props = defineProps({
         default: false,
     },
 });
-const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
-const isSearching = ref<boolean>(Cookies.get('isSearching') === 'true' || false);
-const rankedOrNot = computed(() => {
-    return props.isRanked ? 'ranked' : 'standard';
-});
+
+const matchmakingStore = useMatchmakingStore();
+
+const isSearching = computed(() => matchmakingStore.isSearching);
+const rankedOrNot = computed(() => props.isRanked ? 'ranked' : 'standard');
 const numberOfPlayers = ref(0);
 let intervalId;
 
+const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
+
 watch(isSearching, (newValue) => {
-    if (newValue) {
-        Cookies.set('isSearching', 'true', { expires: 1/144 });
-    } else {
-        Cookies.remove('isSearching');
-    }
+    matchmakingStore.setIsSearching(newValue);
 });
 
 const cancelSearch = async () => {
     const profileStore = useProfileStore();
+
+    matchmakingStore.setIsSearching(false);
     try {
         let response;
         if (props.isRanked) {
