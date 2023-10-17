@@ -10,7 +10,7 @@ onMounted(() => {
     let storedUUID = Cookies.get('guestUUID');
     if (!storedUUID) {
         storedUUID = uuidv4();
-        Cookies.set('guestUUID', storedUUID, { expires: 365 }); // Le cookie expire après 1 an
+        Cookies.set('guestUUID', storedUUID, { expires: 365 });
     }
     guestUUID.value = storedUUID;
 });

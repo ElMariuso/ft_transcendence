@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Cookies from 'js-cookie';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 import { useProfileStore } from '@/stores/ProfileStore';
 
@@ -10,13 +10,18 @@ const props = defineProps({
         default: false,
     },
 });
-
 const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
-
-const isSearching = ref(false);
-
+const isSearching = ref<boolean>(Cookies.get('isSearching') === 'true' || false);
 const buttonText = computed(() => {
     return isSearching.value ? 'Cancel' : (props.isRanked ? 'Ranked' : 'Standard');
+});
+
+watch(isSearching, (newValue) => {
+    if (newValue) {
+        Cookies.set('isSearching', 'true', { expires: 1/144 });
+    } else {
+        Cookies.remove('isSearching');
+    }
 });
 
 const handleClick = async () => {
