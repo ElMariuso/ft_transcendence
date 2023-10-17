@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useProfileStore } from '@/stores/ProfileStore';
-import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
+import { getQueueStatus, getRankedQueueStatus, leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 
 const props = defineProps({
     isRanked: {
@@ -43,9 +43,15 @@ const cancelSearch = async () => {
 
 const fetchNumberOfPlayers = async () => {
     try {
-
+        let response;
+        if (props.isRanked) {
+            response = await getRankedQueueStatus();
+        } else {
+            response = await getQueueStatus();
+        }
+        numberOfPlayers.value = response.data.playersInQueue;
     } catch (error) {
-
+        console.error('Error fetching number of players:', error);
     }
 };
 
