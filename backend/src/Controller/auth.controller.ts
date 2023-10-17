@@ -34,9 +34,6 @@ export class AuthController {
 	@UseGuards(FT_AuthGuard)
 	@Get('/42/redirect')
 	async login(@Req() req, @Res() res) {
-		
-		console.log("42 AUTH")
-
 		const token = await this.authService.login(req.user);
 
 		const url = new URL(`${req.protocol}:${req.hostname}`);
@@ -84,10 +81,25 @@ export class AuthController {
 		return toDataURL(res.otpauthUrl);
 	}
  
-	@Post('/2fa/test')
-	async twoFactorAuthLogin(@Req() req, @Body() body) {
+	@Post('/2fa/verify')
+	async twoFactorAuthVerify(@Req() req, @Body() body) {
 		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
 		
 		return (isCodeValid);
+	}
+
+	@Post('/2fa/authenticate')
+	twoFactorAuthLogin(@Req() req, @Body() body) {
+		const newJWT = this.authService.login2fa(body.id, body.twoFactorAuth)
+		
+		return newJWT;
+
+		// const url = new URL(`${req.protocol}:${req.hostname}`);
+		// url.port = "8080";
+		// url.pathname = 'login';
+		// url.searchParams.set('code', newJWT);
+
+		// res.status(302).redirect(url.href);
+		// return (newJWT);
 	}
  }

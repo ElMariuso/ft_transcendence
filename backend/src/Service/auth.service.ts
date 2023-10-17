@@ -60,6 +60,10 @@ export class AuthService {
 		return this.signJwtForUser(user.idUser, user.isTwoFactorAuthEnabled);
 	}
 
+	login2fa(userID: string, twoFactorAuthEnabled: boolean) {
+		return this.signJwtForUser(userID, twoFactorAuthEnabled, true);
+	}
+
 	/**
      * Finds an existing user or creates a new one, based on the provided 42 ID and data.
      * 
@@ -104,12 +108,12 @@ export class AuthService {
      * @returns A JWT token.
      * @throws {HttpException} - Throws an exception if token signing fails, with a 500 status code.
     */
-	private signJwtForUser(userId: string, user2fa: boolean): string {
+	private signJwtForUser(userId: string, user2fa: boolean, otp=false): string {
 		try {
 			return this.jwtService.sign({ 
 				sub: userId,
 				twoFactorAuthEnabled: user2fa,
-				twoFactorAuthOTP: false 
+				twoFactorAuthOTP: otp
 			});
 		} catch (error) {
 			throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);

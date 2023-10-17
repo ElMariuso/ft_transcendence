@@ -84,6 +84,9 @@ export const getRedirectURL = async() => {
  */
 export async function checkJWT(authStore, profileStore) {
 	
+	const status = {
+		twoFactorAuthEnabled: false,
+	}
 	// Retrieve the token from local storage.
 	const token = localStorage.getItem('token'); 
 
@@ -100,12 +103,14 @@ export async function checkJWT(authStore, profileStore) {
 			});
 
 			if (!authStore.JWTisValid)
-				return ;
-
+				return status;
+			
 			if (twoFactorAuthEnabled) {
-				if (twoFactorAuthOTP) {
-					
-				}
+				status.twoFactorAuthEnabled = true;
+				if (twoFactorAuthOTP)
+					authStore.twoFactorAuthenticate();
+				else
+					return status;
 			}
 
 			// Attempt to fetch and set the user data using the decoded userID.
@@ -123,5 +128,5 @@ export async function checkJWT(authStore, profileStore) {
 			console.error("JWT decode failed:", error);
 		}
     }
-	return ;
+	return status;
 }

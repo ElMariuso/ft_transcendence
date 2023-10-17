@@ -32,7 +32,8 @@ export const useProfileStore = defineStore('profile', () => {
 			const userData = await getUserData(id);
 			setUsername(userData.username);
             setAvatar(userData.avatar);
-            setTwoFactorAuth(userData.isTwoFactorAuth);
+            setTwoFactorAuth(userData.isTwoFactorAuthEnabled);
+			setUserID(id);
 		} catch (error) {
 			console.error("Error setting up profile:", error);
 		}

@@ -123,8 +123,6 @@ export class UserService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		await this.userQuery.deleteUser(id);
-
-		console.log("Delete User OK");
 		return deletedUser;
 	}
 

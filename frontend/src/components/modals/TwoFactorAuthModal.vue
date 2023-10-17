@@ -70,14 +70,11 @@
 	}
 
   	async function twoFactorAuthTest(resolve) {
-		console.log("2fa test")
 		try {
-			console.log(twoFactorAuthCode.value)
-			const response = await api.post('/auth/2fa/test', {
+			const response = await api.post('/auth/2fa/verify', {
 				code: twoFactorAuthCode.value,
 				userID: id,
 			})
-			console.log("resp data " + response.data)
 			if (response.data) {
 				resolve(true);
 				emit('closeModal')

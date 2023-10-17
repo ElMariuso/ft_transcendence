@@ -87,189 +87,171 @@ import { useProfileStore } from '../stores/ProfileStore'
 import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
-import { useRouter } from 'vue-router';
 
 const profileStore = useProfileStore();
-
-const router = useRouter();
 
 const newUsername = ref('');
 const usernameAvailable = ref(false);
 const usernameCheckPerformed = ref(false);
 const checkButtonDisabled = ref(true);
 
-console.log("val " + profileStore.twoFactorAuth)
+const checkButtonLabel = computed(() => {
+	if (usernameAvailable.value && usernameCheckPerformed.value)
+		return 'Available';
+	else if (usernameCheckPerformed.value)
+		return 'Not Available';
+	else
+		return 'Check Availability';
+});
+
+const checkButtonClass = computed(() => {
+	if (checkButtonDisabled.value)
+		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
+	else if (usernameAvailable.value && usernameCheckPerformed.value)
+		return {'bg-green-500 text-white': true};
+	else if (usernameCheckPerformed.value)
+		return {'bg-red-500 text-white': true};
+	else
+		return {'bg-blue-500 text-white': true};
+});
+
+
 const twoFactorAuth = ref(profileStore.twoFactorAuth);
-const showTwoFactorAuthModal = ref(false);
 const twoAuthRes = ref(false);
+const showTwoFactorAuthModal = ref(false);
 
 const newAvatar = ref('');
 
+const saveButtonDisabled = computed(() => {
+	return newUsername.value.trim() !== '' && !usernameCheckPerformed.value;
+});
+
+const saveButtonClass = computed(() => {
+	if (saveButtonDisabled.value)
+		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
+	else
+		return {'bg-blue-500 text-white': true};
+});
+
 const popupVisible = ref(false);
-const popupMessage = ref('');
+const popupMessage = ref('');	
 
+function showPopup(msg: string) {
+	popupMessage.value = msg;
+	popupVisible.value = true;
 
-		const checkButtonLabel = computed(() => {
-		if (usernameAvailable.value && usernameCheckPerformed.value)
-			return 'Available';
-		else if (usernameCheckPerformed.value)
-			return 'Not Available';
-		else
-			return 'Check Availability';
+	// Automatically hide the popup after 3 seconds
+	setTimeout(() => {
+		popupVisible.value = false;
+	}, 3000);
+}
+
+watch(newUsername, (newVal: string, oldVal: string) => {
+	newVal = newVal.trim();
+	oldVal = oldVal.trim();
+	if (newVal === '')
+		checkButtonDisabled.value = true;
+	else if (oldVal === '' && newVal !== '')
+		checkButtonDisabled.value = false;
+	else if (newVal !== '' && oldVal !== '' && newVal !== oldVal) {
+		checkButtonDisabled.value = false;
+		usernameCheckPerformed.value = false;
+	}
+});
+
+async function checkUsernameAvailability() {
+	if (!checkButtonDisabled.value) {		
+		await api.get('/users/usernames')
+		.then(res => {
+			if (res.data.includes(newUsername.value))
+				usernameAvailable.value = false;
+			else
+				usernameAvailable.value = true;
+			usernameCheckPerformed.value = true;
 		});
 
-		const checkButtonClass = computed(() => {
-		if (checkButtonDisabled.value)
-			return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
-		else if (usernameAvailable.value && usernameCheckPerformed.value)
-			return {'bg-green-500 text-white': true};
-		else if (usernameCheckPerformed.value)
-			return {'bg-red-500 text-white': true};
-		else
-			return {'bg-blue-500 text-white': true};
-		});
+	}
+}
 
-		const saveButtonDisabled = computed(() => {
-		return newUsername.value.trim() !== '' && !usernameCheckPerformed.value;
-		});
+function enableTwoFactorAuth() {
+	twoFactorAuth.value = true;
+}
 
-		const saveButtonClass = computed(() => {
-		if (saveButtonDisabled.value)
-			return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
-		else
-			return {'bg-blue-500 text-white': true};
-		});
+function disableTwoFactorAuth() {
+	twoFactorAuth.value = false;
+}
 
-  	// Methods
-	  	// async function setupProfile() {
-		// 	await profileStore.setupProfile();
-		// }
+async function openTwoFactorAuthModal() {
+	return new Promise(async (resolve) => {
+		twoAuthRes.value = resolve;
+		showTwoFactorAuthModal.value = true;
+	})
+}
 
-		function showPopup(msg) {
-			popupMessage.value = msg;
-			popupVisible.value = true;
+function cancelTwoFactorAuthModal() {
+	twoFactorAuth.value = false;
+	showTwoFactorAuthModal.value = false;
+}
 
-			// Automatically hide the popup after 3 seconds (adjust the timing as needed)
-			setTimeout(() => {
-				popupVisible.value = false;
-			}, 3000);
-		}
-
-		watch(newUsername, (newVal, oldVal) => {
-			newVal = newVal.trim();
-			oldVal = oldVal.trim();
-			if (newVal === '')
-				checkButtonDisabled.value = true;
-			else if (oldVal === '' && newVal !== '')
-				checkButtonDisabled.value = false;
-			else if (newVal !== '' && oldVal !== '' && newVal !== oldVal) {
-				checkButtonDisabled.value = false;
-				usernameCheckPerformed.value = false;
-			}
-		});
-
-		async function checkUsernameAvailability() {
-			if (!checkButtonDisabled.value) {		
-				await api.get('/users/usernames').then(res => {
-					if (res.data.includes(newUsername.value))
-						usernameAvailable.value = false;
-					else
-						usernameAvailable.value = true;
-					usernameCheckPerformed.value = true;
-				});
-
-			}
-		}
-
-		function enableTwoFactorAuth() {
-			twoFactorAuth.value = true;
-		}
-
-		function disableTwoFactorAuth() {
-			twoFactorAuth.value = false;
-		}
-
-		async function openTwoFactorAuthModal() {
-			return new Promise(async (resolve) => {
-				twoAuthRes.value = resolve;
-				showTwoFactorAuthModal.value = true;
-			})
-		
-			// bodyInfo['isTwoFactorAuthEnabled'] = true;
-		}
-
-		function cancelTwoFactorAuthModal() {
-			twoFactorAuth.value = false;
-			showTwoFactorAuthModal.value = false;
-		}
-	
-		function closeTwoFactorAuthModal() {
-			showTwoFactorAuthModal.value = false;
-		}
+function closeTwoFactorAuthModal() {
+	showTwoFactorAuthModal.value = false;
+}
 
     // WIP
     function handleAvatarChange() {
       newAvatar.value = "/newAvatarImgPath/";
     }
 
-		async function saveSettings() {
-			let bodyInfo = {};
+async function saveSettings() {
+	let bodyInfo = {};
 
-			if (!saveButtonDisabled.value) {
+	if (!saveButtonDisabled.value) {
 
-				if (newUsername.value.trim() !== '' && usernameAvailable.value)
-					bodyInfo['username'] = newUsername.value;
-				
-				// avatar
-				// if () {
-				// 1. bodyInfo['avatar'] = newAvatar.value;
-				// 2. Post img to upload folder
-				// }
+		if (newUsername.value.trim() !== '' && usernameAvailable.value)
+			bodyInfo['username'] = newUsername.value;
+		
+		// avatar
+		// if () {
+		// 1. bodyInfo['avatar'] = newAvatar.value;
+		// 2. Post img to upload folder
+		// }
 
-				if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
-					if (twoFactorAuth.value) {
-						try {
-							const modalResolve = await openTwoFactorAuthModal();
-							console.log(modalResolve)
-							// showTwoFactorAuthModal.value = false;
-							if (modalResolve)
-								bodyInfo['isTwoFactorAuthEnabled'] = true;
-							else
-								twoFactorAuth.value = false;
-							// 	else {
-							// 	// Handle if the user cancels Two-Factor Authentication setup
-							// 	return;
-							// }
-						} catch (error) {
-							console.error('Two-factor auth modal error:', error);
-							return;
-						}
-					}
+		if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
+			if (twoFactorAuth.value) {
+				try {
+					const modalResolve = await openTwoFactorAuthModal();
+					if (modalResolve)
+						bodyInfo['isTwoFactorAuthEnabled'] = true;
 					else
-						bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
-				}
-				
-				// Checks if any setting is being changed
-				if (Object.keys(bodyInfo).length !== 0) {
-
-					console.log("Changing user")
-					const token = localStorage.getItem('token');
-					let jsonToSend = JSON.stringify(bodyInfo);
-					const id = jwt_decode(token).sub;
-					
-					await api.put('/users/update/' + id, jsonToSend, {
-						headers: {
-							Authorization: 'Bearer ' + token,
-							'Content-Type': 'application/json; charset=utf-8',
-						},
-					});
-					profileStore.setupProfile();
-					newUsername.value = '';
-					showPopup('Profile changes saved');
-				}
-				else {
-					showPopup('No profile changes found');
+						twoFactorAuth.value = false;
+				} catch (error) {
+					console.error('Two-factor auth modal error:', error);
+					return;
 				}
 			}
+			else
+				bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
 		}
+		
+		// Checks if any setting is being changed
+		if (Object.keys(bodyInfo).length !== 0) {
+			const token = localStorage.getItem('token');
+			let jsonToSend = JSON.stringify(bodyInfo);
+			const id = jwt_decode(token).sub;
+			
+			await api.put('/users/update/' + id, jsonToSend, {
+				headers: {
+					Authorization: 'Bearer ' + token,
+					'Content-Type': 'application/json; charset=utf-8',
+				},
+			});
+			profileStore.setupProfile();
+			newUsername.value = '';
+			showPopup('Profile changes saved');
+		}
+		else {
+			showPopup('No profile changes found');
+		}
+	}
+}
 </script>

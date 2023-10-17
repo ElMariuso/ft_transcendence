@@ -24,7 +24,7 @@ import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
-import QRcodeView from '../views/QRcodeView.vue';
+import jwt_decode from 'jwt-decode';
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -59,11 +59,6 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
-    },
-    {
-      path: '/QRcode/:id',
-      name: 'QRcode',
-      component: QRcodeView
     }
   ]
 })
@@ -89,19 +84,37 @@ router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
 	const profileStore = useProfileStore();
 
-	checkJWT(authStore, profileStore).then(() => {
-		if (to.name === 'login' && authStore.isAuthenticated)
+
+	checkJWT(authStore, profileStore).then(status => {
+		console.log("ROUTER")
+		if ((to.name === 'login') && authStore.isAuthenticated) //|| to.name === 'login2fa'
+		{
+			console.log("ROUTER 1")
 			return next({ name: 'home' });
+		}	
+			
+
 		else if (to.name === 'login' && to.query.code !== undefined) {
+			console.log("ROUTER 2")
 			localStorage.setItem('token', to.query.code.toString());
-			if (profileStore.twoFactorAuth)
+			
+			const token = localStorage.getItem('token'); 
+			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
+
+			console.log("2FA STATE: " + twoFactorAuthEnabled)
+			if (twoFactorAuthEnabled) {
+				console.log("2FA ROUTER")
 				return next({ name: 'login2fa' });
+			}
 			return next({ name: 'home' });
 		}
 				
 		// Guards all views if not authenticated
-		else if (to.name !== 'login' && !authStore.isAuthenticated)
+		else if ((to.name !== 'login' && to.name !== 'login2fa') && !authStore.isAuthenticated) {
+			console.log("ROUTER 3")
 			return next({ name: 'login'});
+		}
+
 		next();
 	});
 	
