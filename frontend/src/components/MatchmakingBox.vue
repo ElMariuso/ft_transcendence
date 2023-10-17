@@ -50,7 +50,7 @@ const fetchNumberOfPlayers = async () => {
         } else {
             response = await getQueueStatus();
         }
-        numberOfPlayers.value = response.data.playersInQueue;
+        numberOfPlayers.value = response.playersInQueue;
     } catch (error) {
         console.error('Error fetching number of players:', error);
     }
