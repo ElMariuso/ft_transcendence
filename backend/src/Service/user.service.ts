@@ -9,9 +9,9 @@ import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
 import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
-import { ERROR_MESSAGES } from 'src/globalVariables';
+import { DEFAULT_AVATAR, DEFAULT_PATH, ERROR_MESSAGES } from 'src/globalVariables';
 
-
+const fs = require('fs');
 @Injectable()
 export class UserService
 {
@@ -88,6 +88,77 @@ export class UserService
 	}
 
 	/**
+	 * Get the absolute path of the user's avatar
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns Absolute path of the user's avatar
+	 * 
+	 * @throw NotFoundException if the user is not found
+	 * @throw NotFoundException if the avatar file is not found
+	 * @throw NotFoundException if the absolute path of the avatar don't find the avatar
+	 */
+	async getAvatarPath(id: number) : Promise<string>
+	{
+		const user = await this.userQuery.findUserBy42Id(id);
+
+		if (!user)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+		
+		if (!fs.existsSync(user.avatar))
+			throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
+		
+		let tmp = user.avatar.split('../').pop();
+		tmp = DEFAULT_PATH + tmp;
+
+		if (!fs.existsSync(tmp))
+				throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
+		
+		return tmp;
+	}
+
+	/**
+	 * Gets the top 10 players in descending orders
+	 * 
+	 * @returns UserDTO [] of the 10 best players
+	 */
+	async getTopLadder() : Promise<UserDTO[]>
+	{
+		const ladder = await this.userQuery.getTopLadder();
+
+		const users: UserDTO[] = ladder.map(user =>
+		{
+			return this.transformToDTO(user);
+		});
+
+		return users;
+	}
+
+	async getLadderUser(id: number)
+	{
+		const checkUser = await this.userQuery.findUserById(id);
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+		
+		let ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5);
+		let ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5);
+
+		if (ladderAbove.length != 5)
+			ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5 + (5 - ladderAbove.length));
+		else
+			ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5 + (5 - ladderBelow.length));
+		
+		const ladder = [...ladderAbove, checkUser, ...ladderBelow];
+		
+		const users: UserDTO[] = ladder.map(user =>
+		{
+			return this.transformToDTO(user);
+		});
+
+		return users;
+	}
+
+	/**
 	 * Creates a user in DB
 	 * 
 	 * @param user UserDTO to create
@@ -123,6 +194,7 @@ export class UserService
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		await this.userQuery.deleteUser(id);
+
 		return deletedUser;
 	}
 
@@ -150,6 +222,18 @@ export class UserService
 			const check = await this.userQuery.findUserByUsername(data.username);
 			if (check)
 				throw new ConflictException(ERROR_MESSAGES.USER.USERNAME_ALREADY_EXIST);
+		}
+
+		if (data.avatar)
+		{
+			if (data.avatar != updateUser.avatar)
+			{
+				if (updateUser.avatar != DEFAULT_AVATAR)
+				{
+					if (fs.existsSync(updateUser.avatar))
+						fs.unlinkSync(updateUser.avatar);
+				}
+			}
 		}
 
 		await this.userQuery.updateUser(id, data);

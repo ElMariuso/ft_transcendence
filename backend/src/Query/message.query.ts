@@ -36,6 +36,32 @@ export class MessageQuery
 		});
 	}
 
+	async findAllMessagesByChannelId(idChannel: number)
+	{
+		return this.prisma.message.findMany
+		(
+			{
+				where:
+				{
+					idChannel,
+				}
+			}
+		);
+	}
+
+	async findAllMessagesByUserId(idUser: number)
+	{
+		return this.prisma.message.findMany
+		(
+			{
+				where:
+				{
+					idUser,
+				}
+			}
+		);
+	}
+
 	/**
 	 * Gets all messages from a user in a channel
 	 * 

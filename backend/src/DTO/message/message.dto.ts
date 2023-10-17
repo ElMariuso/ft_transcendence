@@ -4,6 +4,9 @@
  export class MessageDTO
  {
 	 idMessage: number;
+	 idUser: number;
+	 idChannel: number;
+	 username: string;
 	 content: string;
 	 timestamps: Date;
  }

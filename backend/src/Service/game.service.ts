@@ -1,28 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Game } from '@prisma/client';
 import { GameQuery } from 'src/Query/game.query';
 import { GameDTO } from 'src/DTO/game/game.dto';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
+import { UserQuery } from 'src/Query/user.query';
+import { AchievementService } from './achievement.service';
 
 @Injectable()
 export class GameService
 {
-	constructor(private readonly GameQuery: GameQuery) {}
+	constructor(
+		private readonly gameQuery: GameQuery,
+		private readonly userQuery: UserQuery,
+		private readonly achievementService: AchievementService	
+	) {}
 
 	/**
-	 * Gets all the Games
+	 * Gets all the games
 	 * 
-	 * @returns All the Games
+	 * @returns All the games
 	 */
 	async findAllGames(): Promise<Game []>
 	{
-		return this.GameQuery.findAllGames();
+		return this.gameQuery.findAllGames();
 	}
 
 	/**
-	 * Gets a Game by his id
+	 * Gets a game by his id
 	 * 
 	 * @param id  Game's id to find
 	 * 
@@ -30,30 +36,113 @@ export class GameService
 	 */
 	async findGameById(id: number): Promise<GameDTO | null>
 	{
-		const Game = await this.GameQuery.findGameById(id);
+		const game = await this.gameQuery.findGameById(id);
 
-		if (!Game)
+		if (!game)
 			return null;
 		
-		return this.transformToDTO(Game);
+		return this.transformToDTO(game);
 	}
 
 	/**
-	 * Creates a Game in DB
+	 * Gets all games for a specific user
+	 * 
+	 * @param idUser User's id
+	 * 
+	 * @returns All games of the user
+	 */
+	async getAllGamesByUserId(idUser: number) : Promise<GameDTO[]>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const games = await this.gameQuery.findAllGamesByUserId(idUser);
+
+		const formatGames: GameDTO[] = games.map((game) =>
+		{
+			return this.transformToDTO(game);
+		});
+
+		return formatGames;
+	}
+
+	/**
+	 * Gets Games Stats for a specific user
+	 * 
+	 * @param idUser User's id
+	 * 
+	 * @returns Number of games, the number of wins, the number of looses
+	 */
+	async getGameStatsByUserId(idUser: number) : Promise<{ nbGames: number, nbWin: number, nbLoose: number }>
+	{
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const games = await this.gameQuery.findAllGamesDatasByUserId(idUser);
+		
+		if (games.length == 0)
+			return { nbGames: 0, nbWin: 0, nbLoose: 0 };
+		
+		const nbGames = games.length;
+
+		let nbWin = 0;
+
+		games.forEach(game => 
+		{
+			if (game.isWinner)
+				nbWin++;	
+		});
+
+		const nbLoose = nbGames - nbWin;
+
+		return { nbGames: nbGames, nbWin: nbWin, nbLoose: nbLoose };
+	}
+
+
+	/**
+	 * Creates a game in DB
 	 * 
 	 * @param Game GameDTO to create
 	 * 
-	 * @returns New Game
+	 * @returns New game
 	 */
-	async createGame(Game : CreateGameDTO) : Promise<GameDTO>
+	async createGame(game : CreateGameDTO) : Promise<GameDTO>
 	{
-		const newGame = await this.GameQuery.createGame(Game);
+		const checkOne = await this.userQuery.findUserById(game.idPlayerOne);
+		const checkSecond =  await this.userQuery.findUserById(game.idPlayerSecond);
 
+		if (!checkOne || !checkSecond)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const newGame = await this.gameQuery.createGame(game);
+
+		if (newGame)
+		{
+			if (game.idPlayerOne != game.idWinner && game.idPlayerSecond != game.idWinner)
+				throw new BadRequestException();
+			
+			let oneWin = false;
+
+			if (game.idPlayerOne === game.idWinner)
+				oneWin = true;
+			
+			await this.gameQuery.storeGame(game.idPlayerOne, newGame.idGame, oneWin);
+			await this.gameQuery.storeGame(game.idPlayerSecond, newGame.idGame, !oneWin);
+
+			this.achievementService.checkAchievement(game.idPlayerOne, 1);
+			this.achievementService.checkAchievement(game.idPlayerSecond, 1);
+		}
+		else
+			throw new InternalServerErrorException();
 		return this.transformToDTO(newGame);
 	}
 
 	/**
-	 * Delete a Game based on their id
+	 * Delete a game based on their id
 	 * 
 	 * @param id Game's id to delete
 	 * 
@@ -61,12 +150,12 @@ export class GameService
 	 */
 	async deleteGame(id: number)
 	{
-		const deletedGame = await this.GameQuery.findGameById(id);
+		const deletedGame = await this.gameQuery.findGameById(id);
 
 		if (!deletedGame)
 			throw new NotFoundException(ERROR_MESSAGES.GAME.NOT_FOUND);
 		
-		await this.GameQuery.deleteGame(id);
+		await this.gameQuery.deleteGame(id);
 	}
 
 	/**
@@ -76,14 +165,14 @@ export class GameService
 	 * 
 	 * @returns GameDTO
 	 */
-	private transformToDTO(Game: Game): GameDTO
+	private transformToDTO(game: Game): GameDTO
 	{
 		const GameDTO: GameDTO =
 		{
-			idGame: Game.idGame,
-			scoreLeft: Game.scoreLeft,
-			scoreRight: Game.scoreRight,
-			date: Game.date
+			idGame: game.idGame,
+			scoreLeft: game.scoreLeft,
+			scoreRight: game.scoreRight,
+			date: game.date
 		};
 
 		return GameDTO;

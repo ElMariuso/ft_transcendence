@@ -10,6 +10,7 @@ import { MessageModule } from 'src/Module/message.module';
 import { UserChannelModule } from 'src/Module/userchannel.module';
 
 import { PrismaClient, User } from '@prisma/client';
+import { AchievementModule } from './Module/achievement.module';
 
 
 @Module({
@@ -19,6 +20,7 @@ import { PrismaClient, User } from '@prisma/client';
     ChannelModule,
     MessageModule,
     UserChannelModule,
+    AchievementModule,
     AuthModule
   ],
   controllers: [
