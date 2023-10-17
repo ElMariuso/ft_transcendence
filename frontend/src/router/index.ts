@@ -86,24 +86,16 @@ router.beforeEach((to, from, next) => {
 
 
 	checkJWT(authStore, profileStore).then(status => {
-		console.log("ROUTER")
-		if ((to.name === 'login') && authStore.isAuthenticated) //|| to.name === 'login2fa'
-		{
-			console.log("ROUTER 1")
+		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
 			return next({ name: 'home' });
-		}	
-			
 
 		else if (to.name === 'login' && to.query.code !== undefined) {
-			console.log("ROUTER 2")
 			localStorage.setItem('token', to.query.code.toString());
 			
 			const token = localStorage.getItem('token'); 
 			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
 
-			console.log("2FA STATE: " + twoFactorAuthEnabled)
 			if (twoFactorAuthEnabled) {
-				console.log("2FA ROUTER")
 				return next({ name: 'login2fa' });
 			}
 			return next({ name: 'home' });
@@ -111,19 +103,11 @@ router.beforeEach((to, from, next) => {
 				
 		// Guards all views if not authenticated
 		else if ((to.name !== 'login' && to.name !== 'login2fa') && !authStore.isAuthenticated) {
-			console.log("ROUTER 3")
 			return next({ name: 'login'});
 		}
 
 		next();
 	});
-	
-	// } else if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-	// 	// Scenario 3: Route requires authentication but user is not authenticated
-	// 	next({ name: 'home' });
-	// } else {
-	// 	next();
-	// }
 })
 
 // Export the router for use in the Vue application

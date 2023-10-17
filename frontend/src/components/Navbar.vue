@@ -64,8 +64,4 @@ if (token) {
 		</div>
 
 	</div>
-
-	<!-- <div>
-		<Login />
-	</div> -->
 </template>

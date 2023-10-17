@@ -90,16 +90,6 @@ export class AuthController {
 
 	@Post('/2fa/authenticate')
 	twoFactorAuthLogin(@Req() req, @Body() body) {
-		const newJWT = this.authService.login2fa(body.id, body.twoFactorAuth)
-		
-		return newJWT;
-
-		// const url = new URL(`${req.protocol}:${req.hostname}`);
-		// url.port = "8080";
-		// url.pathname = 'login';
-		// url.searchParams.set('code', newJWT);
-
-		// res.status(302).redirect(url.href);
-		// return (newJWT);
+		return this.authService.login2fa(body.id, body.twoFactorAuth)
 	}
  }
