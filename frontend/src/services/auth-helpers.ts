@@ -1,5 +1,6 @@
 import api from './api';
 import jwt_decode from 'jwt-decode';
+// import axios from 'axios';
 
 /**
  * Asynchronous function to retrieve user data from the API.
@@ -14,7 +15,7 @@ import jwt_decode from 'jwt-decode';
  */
 export const getUserData = async (userID) => {
     try {
-        const response = await api.get('/users/' + userID);
+        const response = await api.get('/users/user/' + userID);
         return response.data;
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -82,22 +83,32 @@ export const getRedirectURL = async() => {
  * @returns {Promise<Object>} - A promise that resolves to the status object containing `isAuth` and `jwtValid` boolean flags.
  */
 export async function checkJWT(authStore, profileStore) {
-    // The status object to store and return the authentication and JWT validity status.
-	const status = {
-		isAuth: false,
-		jwtValid: false,
-	};
-	const token = localStorage.getItem('token'); // Retrieve the token from local storage.
+	
+	// Retrieve the token from local storage.
+	const token = localStorage.getItem('token'); 
 
-    // Update the isAuth status to true if the token exists.
-	status.isAuth = !!token;
     // If a token exists, further operations to fetch the user data and verify JWT are performed.
 	if (token) {
 		try {
-            // Decode the token to obtain the userID and TwoFactorAuthEnabled status.
-			const { sub: userID, TwoFactorAuthEnabled } = jwt_decode(token);
+            // Decode the token to obtain the userID, twoFactorAuthEnabled status and 2fa One Time Password.
+			const { sub: userID, twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
 			
-            // Attempt to fetch and set the user data using the decoded userID.
+			await api.get('/auth/jwt/verify', {})
+			.then(res => {
+				if (res.data)
+					authStore.validateJWT();
+			});
+
+			if (!authStore.JWTisValid)
+				return ;
+
+			if (twoFactorAuthEnabled) {
+				if (twoFactorAuthOTP) {
+					
+				}
+			}
+
+			// Attempt to fetch and set the user data using the decoded userID.
 			try {
 				const userData = await getUserData(userID);
 				profileStore.setUsername(userData.username);
@@ -105,24 +116,12 @@ export async function checkJWT(authStore, profileStore) {
 			} catch (error) {
 				console.error("Error fetching user data:", error);
 			}
-
-            // If Two Factor Authentication is enabled, verify the JWT and update the jwtValid status.
-			if (TwoFactorAuthEnabled) {
-				try {
-					status.jwtValid = await verifyJWT();
-					if (status.jwtValid) {
-						console.log(status.jwtValid);
-					}
-				} catch (error) {
-					console.error("JWT verification failed:", error);
-				}
-			}
+			
             // Update the authState in the authStore to true.
-			authStore.authState = true;
+			authStore.login();
 		} catch (error) {
 			console.error("JWT decode failed:", error);
 		}
     }
-    // Return the status object containing isAuth and jwtValid status.
-	return status;
+	return ;
 }

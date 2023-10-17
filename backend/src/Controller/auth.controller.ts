@@ -41,7 +41,7 @@ export class AuthController {
 
 		const url = new URL(`${req.protocol}:${req.hostname}`);
 		url.port = "8080";
-		url.pathname = '';
+		url.pathname = 'login';
 		url.searchParams.set('code', token);
 
 		res.status(302).redirect(url.href);

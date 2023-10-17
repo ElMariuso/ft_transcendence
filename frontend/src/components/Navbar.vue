@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import MatchmakingButton from './MatchmakingButton.vue';
-import Login from './Login.vue';
+// import Login from './Login.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
 import jwt_decode from 'jwt-decode';
 
@@ -65,7 +65,7 @@ if (token) {
 
 	</div>
 
-	<div>
+	<!-- <div>
 		<Login />
-	</div>
+	</div> -->
 </template>

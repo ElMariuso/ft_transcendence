@@ -20,14 +20,14 @@ export const useAuthenticationStore = defineStore('auth', () => {
 	/**
 	 * Authenticated the user by setting `isAuthenticated` to true.
 	 */
-	const login = () => {
+	function login() {
 		isAuthenticated.value = true
 	}
 
 	/**
      * Unauthenticate the user by setting `isAuthenticated` to false.
      */
-	const logout = () => {
+	function logout() {
 		isAuthenticated.value = false
 	}
 
