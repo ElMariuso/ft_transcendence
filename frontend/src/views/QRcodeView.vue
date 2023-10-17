@@ -10,7 +10,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../services/api';
+
 import jwt_decode from 'jwt-decode';
 
 let qrCodeDataUrl = ref('');
@@ -19,7 +20,7 @@ const token = localStorage.getItem('token');
 const id = jwt_decode(token).sub;
 
 const authenticate = () => {
-  axios.post('/auth/2fa/authenticate', {
+  api.post('/auth/2fa/authenticate', {
     twoFactorAuthenticationCode: twoFactorAuthenticationCode.value,
     userID: id,
   })
@@ -39,7 +40,7 @@ const authenticate = () => {
 
 onMounted(() => {
 
-	axios.get('/auth/2fa/QRcode/' + id, {})
+	api.get('/auth/2fa/QRcode/' + id, {})
 		.then(res => {
 			qrCodeDataUrl.value = res.data;
 		})

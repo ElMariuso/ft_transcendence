@@ -26,7 +26,9 @@
   
 <script setup lang="ts">
 	import { ref, onMounted, watch, computed, defineProps } from 'vue';
-	import axios from 'axios';
+
+	import api from '../../services/api';
+	
 	import jwt_decode from 'jwt-decode';
 	import Backdrop from './Backdrop.vue';
 
@@ -71,7 +73,7 @@
 		console.log("2fa test")
 		try {
 			console.log(twoFactorAuthCode.value)
-			const response = await axios.post('/auth/2fa/test', {
+			const response = await api.post('/auth/2fa/test', {
 				code: twoFactorAuthCode.value,
 				userID: id,
 			})
@@ -88,7 +90,7 @@
   
 	onMounted(async () => {
 		try {
-			const res = await axios.get('/auth/2fa/QRcode/' + id, {});
+			const res = await api.get('/auth/2fa/QRcode/' + id, {});
 			qrCodeDataUrl.value = res.data;
 		} catch (error) {
 			console.error('Error fetching QR code:', error);

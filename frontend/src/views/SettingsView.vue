@@ -81,10 +81,10 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import { useProfileStore } from '../stores/ProfileStore'
-import axios from 'axios';
+import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
 import { useRouter } from 'vue-router';
@@ -169,14 +169,15 @@ const popupMessage = ref('');
 		});
 
 		async function checkUsernameAvailability() {
-			if (!checkButtonDisabled.value) {
-				await axios.get('/users/usernames').then(res => {
+			if (!checkButtonDisabled.value) {		
+				await api.get('/users/usernames').then(res => {
 					if (res.data.includes(newUsername.value))
 						usernameAvailable.value = false;
 					else
 						usernameAvailable.value = true;
 					usernameCheckPerformed.value = true;
 				});
+
 			}
 		}
 
@@ -256,7 +257,7 @@ const popupMessage = ref('');
 					let jsonToSend = JSON.stringify(bodyInfo);
 					const id = jwt_decode(token).sub;
 					
-					await axios.put('/users/update/' + id, jsonToSend, {
+					await api.put('/users/update/' + id, jsonToSend, {
 						headers: {
 							Authorization: 'Bearer ' + token,
 							'Content-Type': 'application/json; charset=utf-8',
