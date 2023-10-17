@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Cookies from 'js-cookie';
 import { ref, computed } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 
@@ -9,8 +10,9 @@ const props = defineProps({
     },
 });
 
+const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
+
 const isSearching = ref(false);
-const guestUUID = ref(localStorage.getItem('guestUUID'));
 
 const buttonText = computed(() => {
     return isSearching.value ? 'Cancel' : (props.isRanked ? 'Ranked' : 'Standard');
@@ -23,9 +25,9 @@ const handleClick = async () => {
         try {
             let response;
             if (props.isRanked) {
-                response = await leaveRankedQueue(0); // TODO: Change that after
+                response = await leaveRankedQueue(guestUUID.value);
             } else {
-                response = await leaveQueue(localStorage.getItem('guestUUID'));
+                response = await leaveQueue(guestUUID.value);
             }
             console.log(response);
         } catch (error) {
@@ -37,7 +39,7 @@ const handleClick = async () => {
         try {
             let response;
             if (props.isRanked) {
-                const playerData = { id: 0, isGuest: false, points: 0};
+                const playerData = { id: guestUUID.value, isGuest: false, points: 0};
                 response = await joinRankedQueue(playerData);
             } else {
                 const playerData = { id: guestUUID.value, isGuest: true };
