@@ -1,10 +1,68 @@
-<script>
+<script setup lang="ts">
+import Cookies from 'js-cookie';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useProfileStore } from '@/stores/ProfileStore';
+import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
+
+const props = defineProps({
+    isRanked: {
+        type: Boolean,
+        default: false,
+    },
+});
+const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
+const isSearching = ref<boolean>(Cookies.get('isSearching') === 'true' || false);
+const rankedOrNot = computed(() => {
+    return props.isRanked ? 'ranked' : 'standard';
+});
+const numberOfPlayers = ref(0);
+let intervalId;
+
+watch(isSearching, (newValue) => {
+    if (newValue) {
+        Cookies.set('isSearching', 'true', { expires: 1/144 });
+    } else {
+        Cookies.remove('isSearching');
+    }
+});
+
+const cancelSearch = async () => {
+    const profileStore = useProfileStore();
+    try {
+        let response;
+        if (props.isRanked) {
+            response = await leaveRankedQueue(profileStore.userId.value);
+        } else {
+            response = await leaveQueue(guestUUID.value);
+        }
+        console.log(response);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const fetchNumberOfPlayers = async () => {
+    try {
+
+    } catch (error) {
+
+    }
+};
+
+onMounted(() => {
+    fetchNumberOfPlayers();
+    intervalId = setInterval(fetchNumberOfPlayers, 1000);
+});
+
+onUnmounted(() => {
+    clearInterval(intervalId);
+});
 </script>
 
 <template>
-    <div v-if="isOpen" class="fixed inset-x-0 inset-y-0 h-screen flex justify-center items-center bg-black bg-opacity-50">
+    <div class="fixed inset-x-0 inset-y-0 h-screen flex justify-center items-center bg-black bg-opacity-50">
         <div class="bg-matchmaking-bg border border-white rounded text-center w-450px space-y-4 text-matchmaking">
-            <h2 class="text-2xl mt-3">Finding opponent</h2>
+            <h2 class="text-2xl mt-3">Finding {{ rankedOrNot }} opponent</h2>
             <div class="spinner-wrapper">
                 <div class="lds-ring">
                     <div></div>
