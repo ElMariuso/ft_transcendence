@@ -6,7 +6,9 @@ export const useMatchmakingStore = defineStore('matchmaking', {
     state: () => ({
         guestUUID: '',
         isSearching: false,
+        matchFound: false,
         numberOfPlayers: 0,
+        opponentUUID: null,
     }),
     getters: {
         getIsSearching(state) {
@@ -24,6 +26,9 @@ export const useMatchmakingStore = defineStore('matchmaking', {
 
             const isSearchingCookie = Cookies.get('isSearching');
             this.isSearching = isSearchingCookie === 'true';
+
+            const matchFoundCookie = Cookies.get('matchFound');
+            this.matchFound = matchFoundCookie === 'true';
         },
         setGuestUUID(value) {
             this.guestUUID = value;
@@ -38,8 +43,20 @@ export const useMatchmakingStore = defineStore('matchmaking', {
                 Cookies.remove('isSearching');
             }
         },
+        setMatchFound(value) {
+            this.matchFound = value;
+
+            if (value) {
+                Cookies.set('matchFound', 'true', { expires: 365 });
+            } else {
+                Cookies.remove('matchFound');
+            }
+        },
         setNumberOfPlayers(count) {
             this.numberOfPlayers = count;
+        },
+        setOpponentUUID(uuid) {
+            this.opponentUUID = uuid;
         }
     },
 });

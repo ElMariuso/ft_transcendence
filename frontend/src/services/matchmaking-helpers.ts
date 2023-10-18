@@ -57,10 +57,40 @@ const initializeSocketListeners = (matchmakingStore) => {
 
     socket.on('match-found-standard', (response) => {
         console.log(response);
+        matchmakingStore.setMatchFound(true);
+
+        let opponentUUID;
+        if (response.player1.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player2.id;
+        } else if (response.player2.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player1.id;
+        }
+        if (opponentUUID) {
+            matchmakingStore.setOpponentUUID(opponentUUID);
+            setTimeout(() => {
+                matchmakingStore.setIsSearching(false);
+                matchmakingStore.setMatchFound(false);
+            }, 5000);
+        }
     });
 
     socket.on('match-found-ranked', (response) => {
         console.log(response);
+        matchmakingStore.setMatchFound(true);
+
+        let opponentUUID;
+        if (response.player1.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player2.id;
+        } else if (response.player2.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player1.id;
+        }
+        if (opponentUUID) {
+            matchmakingStore.setOpponentUUID(opponentUUID);
+            setTimeout(() => {
+                matchmakingStore.setIsSearching(false);
+                matchmakingStore.setMatchFound(false);
+            }, 5000);
+        }
     });
 };
 
