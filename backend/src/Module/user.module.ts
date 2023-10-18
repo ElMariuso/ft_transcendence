@@ -15,6 +15,12 @@ import { BlockedQuery } from 'src/Query/blocked.query';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 import { PrismaClient } from '@prisma/client';
 
+import { AchievementService } from 'src/Service/achievement.service';
+import { AchievementQuery } from "src/Query/achievement.query";
+import { MessageQuery } from "src/Query/message.query";
+import { GameQuery } from "src/Query/game.query";
+
+
 @Module({
   controllers: [UserController],
   providers: [
@@ -29,6 +35,10 @@ import { PrismaClient } from '@prisma/client';
 	PrismaClient,
 	UserQuery,
 	UserService,
+	AchievementService,
+	AchievementQuery,
+	MessageQuery,
+	GameQuery,
 ],
 })
 export class UserModule {}

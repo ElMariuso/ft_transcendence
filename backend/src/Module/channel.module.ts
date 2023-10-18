@@ -7,6 +7,7 @@ import { CreateChannelDTO} from 'src/DTO/channel/createChannel.dto';
 
 import { ChannelTypeQuery } from 'src/Query/type.query';
 import { UserQuery } from 'src/Query/user.query';
+import { MessageQuery } from 'src/Query/message.query';
 
 import { PrismaClient } from '@prisma/client';
 
@@ -20,6 +21,7 @@ import { PrismaClient } from '@prisma/client';
 	ChannelService,
 	ChannelTypeQuery,
 	UserQuery,
+	MessageQuery,
 ],
 })
 export class ChannelModule {}

@@ -37,22 +37,80 @@ export class GameQuery
 	}
 
 	/**
+	 * Gets all played games for a user
+	 * 
+	 * @param idUser User's id
+	 * 
+	 * @returns All played games for a user
+	 */
+	async findAllGamesByUserId(idUser: number)
+	{
+		const us_ga = await this.prisma.user_Game.findMany
+		(
+			{
+				where: { idUser },
+			}
+		);
+
+		const ids = us_ga.map(value => value.idGame);
+
+		const games = await this.prisma.game.findMany
+		(
+			{
+				where:
+				{
+					idGame:
+					{ 
+						in:ids
+					}
+				}
+			}
+		);
+
+		return games;
+	}
+
+	/**
+	 * Gets all games data from a user
+	 * 
+	 * @param idUser User's id
+	 * 
+	 * @returns Games datas
+	 * 
+	 * @query select * from User_Game inner join Game on User_Game.idGame = Game.idGame where User_Game.idUser = idUser;
+	 */
+	async findAllGamesDatasByUserId(idUser: number)
+	{
+		const games = await this.prisma.user_Game.findMany
+		(
+			{
+				where: { idUser },
+				include:
+				{
+					Game: true
+				}
+			}
+		);
+
+		return games;
+	}
+
+	/**
 	 *  ---------------------
 	 * | SUREMENT A MODIFIER |
 	 *  ---------------------
 	 * 
 	 * Posts a new Game in DB
 	 * 
-	 * @param Game CreateGameDTO
+	 * @param Game CreateGameDTO (optionnal)
 	 * 
 	 * @returns New Game
 	 * 
 	 * @query insert into game (scoreLeft, scoreRight, date) values ($scoreLeft, $scoreRight, date);
 	 */
-	async createGame(Game: CreateGameDTO) : Promise<Game>
+	async createGame(Game?: CreateGameDTO) : Promise<Game>
 	{
-		// Deconstruction de l'objet CreateGameDTO
-		const { scoreLeft, scoreRight } = Game;
+		const { scoreLeft = 0, scoreRight = 0 } = Game ?? {};
 
 		const date = new Date();
 
@@ -67,6 +125,23 @@ export class GameQuery
 		});
 
 		return newGame;
+	}
+
+	async storeGame(idUser:number, idGame:number, win: boolean)
+	{
+		const storedGame = await this.prisma.user_Game.create
+		(
+			{
+				data:
+				{
+					idUser,
+					idGame,
+					isWinner: win
+				}
+			}
+		);
+		
+		return storedGame;
 	}
 
 	/**
