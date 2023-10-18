@@ -6,7 +6,9 @@ import { AuthenticatedPlayer, PlayerInQueue } from 'src/Model/player.model';
 import { GameQuery } from 'src/Query/game.query';
 
 /**
- * Service responsible for managing player matchmaking logic.
+ * Service responsible for managing the matchmaking logic for players.
+ * It handles adding and removing players to and from standard and ranked queues,
+ * performs matchmaking, and emits events when a match is found.
  *
  * @export
  * @class MatchmakingService
@@ -19,8 +21,9 @@ export class MatchmakingService {
      * Creates an instance of MatchmakingService.
      * This service is responsible for matchmaking players for games.
      *
-     * @param {QueueService} queueService - Service for handling player queue operations.
+     * @param {QueueService} queueService - Service for managing player queue operations.
      * @param {GameQuery} gameQuery - Service for handling game-related database operations.
+     * @param {EventEmitter} eventEmitter - Event handler for emitting events within the application.
      */
     constructor(
         private readonly queueService: QueueService,
@@ -102,7 +105,7 @@ export class MatchmakingService {
      * If a match is found, it creates a new game in the database and removes the matched players from the queue.
      * If not enough players are available in the queue, null is returned.
      *
-     * @returns {Promise<Game | null>} - Returns the newly created game if a match is found, otherwise null.
+     * @returns {Promise<{ player1: AuthenticatedPlayer, player2: AuthenticatedPlayer } | null>} - Returns the matched players or null if no match is found.
      */
     async rankedMatch(): Promise<{ player1: AuthenticatedPlayer, player2: AuthenticatedPlayer } | null> {
         const sortedQueue = this.queueService.getSortedRankedQueue();
@@ -142,7 +145,8 @@ export class MatchmakingService {
     /**
      * Initiates the matchmaking interval to repeatedly attempt player matching.
      * This method sets up an interval to check the queue every 5 seconds for potential matches.
-     * If a match is found, further actions can be taken, such as starting a game.
+     * If a match is found, additional actions may be taken, such as starting a game.
+     * It also emits corresponding events when a standard or ranked match is found.
      * 
      * @private
      * @returns {void}
