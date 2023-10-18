@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import socket from '@/services/socket-helpers';
 import Cookies from 'js-cookie';
 
 import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers';
