@@ -25,21 +25,6 @@ import { BlockedQuery } from 'src/Query/blocked.query';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 @Module({
-<<<<<<< HEAD
-  imports: [JwtModule.register({ secret: process.env.jwtSecret,})],
-  providers: [FT_Strategy, AuthService, PrismaClient,
-	FriendBlockedDTO,
-	BlockedQuery,
-	BlockedService,
-	FriendQuery,
-	FriendService,
-	UserDTO,
-	CreateUserDTO,
-	UpdateUserDTO,
-	UserQuery,
-	UserService,],
-  controllers: [AuthController],
-=======
 	imports: [JwtModule.register({ secret: process.env.jwtSecret,})],
   	providers: [
 		FT_Strategy,
@@ -61,6 +46,5 @@ import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 		UserService,
 	],
   	controllers: [AuthController],
->>>>>>> master
 })
 export class AuthModule {}
