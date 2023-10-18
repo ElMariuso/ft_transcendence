@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import Cookies from 'js-cookie';
+import socket from '@/services/socket-helpers';
 
 import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers';
 
@@ -33,6 +34,22 @@ const cancelSearch = async () => {
         console.error(error);
     }
 };
+
+let statusInterval;
+
+onMounted(() => {
+    statusInterval = setInterval(() => {
+        if (props.isRanked) {
+            socket.emit('status-ranked');
+        } else {
+            socket.emit('status-standard');
+        }
+    }, 1000);
+});
+
+onUnmounted(() => {
+    clearInterval(statusInterval);
+});
 </script>
 
 <template>
