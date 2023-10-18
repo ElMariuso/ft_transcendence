@@ -5,16 +5,24 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 
-@WebSocketGateway()
+@WebSocketGateway({ 
+  cors: {
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["*"],
+    credentials: true,
+  }
+})
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly matchmakingService: MatchmakingService) {}
 
-  @WebSocketServer()
-  server: Server;
+  @WebSocketServer() server: Server;
+  private logger: Logger = new Logger('EventsGateway');
 
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);

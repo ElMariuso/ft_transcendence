@@ -9,12 +9,12 @@ import socket from './services/socket-helpers';
 const app = createApp(App);
 const pinia = createPinia();
 
-/* Config websocket client side */
-app.config.globalProperties.$socket = socket;
-
 /* Use router and store if applicable */
 app.use(router)
 app.use(pinia)
+
+/* Config websocket client side */
+app.config.globalProperties.$socket = socket;
 
 /* Mount the app to the DOM */
 app.mount('#app')
