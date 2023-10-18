@@ -27,6 +27,7 @@ import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import jwt_decode from 'jwt-decode';
 import ChannelView from '../views/ChannelView.vue';
+import SettingsView from '../views/SettingsView.vue';
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -58,14 +59,14 @@ const router = createRouter({
       component: ProfileView
     },
     {
+      path: '/channel',
+      name: 'channel',
+      component: ChannelView
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: SettingsView
-    },
-    {
-      path: '/channel/1',
-      name: 'channel',
-      component: ChannelView
     }
   ]
 })

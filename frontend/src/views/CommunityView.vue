@@ -41,31 +41,38 @@
         placeholder="Enter channel name"
         class="p-2 w-1/3 border rounded-lg mt-2"
       />
+	 
 	  <!-- <select v-model="channelType" class="p-2 w-1/6 border rounded-lg"> -->
 	  <select class="p-2 w-1/6 border rounded-lg">
         <option value="public">Public</option>
         <option value="private">Private</option>
         <option value="protected">Protected</option>
       </select>
+	   <input
+        type="text"
+        placeholder="Enter password"
+        class="p-2 w-1/3 border rounded-lg mt-2"
+      />
       <button @click="createChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Create</button>
     </div>
 
     <!-- Join Channels -->
-    <div class="mb-4">
+    <!-- <div class="mb-4">
       <h3 class="text-lg font-semibold">Join Channels</h3>
-      <!-- <select v-model="selectedChannel" class="p-2 w-1/3 border rounded-lg"> -->
 	  <select class="p-2 w-1/3 border rounded-lg">
         <option v-for="channel in channels.availableChannels" :key="channel.id" :value="channel.id">{{ channel.name }}</option>
       </select>
       <button @click="joinChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Join</button>
-    </div>
+    </div> -->
 
     <!-- Joined Channels -->
     <div>
-      <h3 class="text-lg font-semibold w-1/3">Joined Channels</h3>
+      <h3 class="text-lg font-semibold w-1/3">Available Channels</h3>
       <ul class="mt-2 w-1/3">
         <li v-for="channel in channels.joinedChannels" :key="channel.id">
-          <router-link :to="'/channel/' + channel.id">
+          <router-link :to="'/channel'">
+		  <!-- <router-link :to="'/channel/' + channel.id"> -->
+			<!-- <div>{{ channelStore.setChannelId(channel.id) }}</div> -->
             <nav class="text-lg mr-5">
               <section>{{ channel.name }}</section>
             </nav>
