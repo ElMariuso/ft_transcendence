@@ -16,15 +16,18 @@ export const useProfileStore = defineStore('profile', () => {
 		const id = jwt_decode(token).sub;
 		userID.value = ref(id);
 
-		await axios.get('/users/' + id, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			setUsername(res.data.username);
-			setAvatar(res.data.avatar);
-			setTwoFactorAuth(res.data.isTwoFactorAuth);
-		});
+		if (id) {
+
+			await axios.get('/users/user/' + id, {
+				headers: {
+					Authorization: 'Bearer ' + token
+				}
+			}).then(res => {
+				setUsername(res.data.username);
+				setAvatar(res.data.avatar);
+				setTwoFactorAuth(res.data.isTwoFactorAuth);
+			});
+		}
 	}
 
 	function setAvatar(newAvatar: string) {

@@ -10,8 +10,11 @@ import LoginView from '../views/LoginView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import ChannelView from '../views/ChannelView.vue';
+import SettingsView from '../views/SettingsView.vue';
 
 import AboutView from '../views/AboutView.vue';
+
+// let channelName = '1';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,9 +40,14 @@ const router = createRouter({
       component: ProfileView
     },
     {
-      path: '/channel/1',
+      path: '/channel',
       name: 'channel',
       component: ChannelView
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView
     }
   ]
 })
@@ -61,7 +69,7 @@ async function checkJWT(authStore, profileStore) {
 		catch (error){
 			console.log("jwt decode failed");
 		}
-		await axios.get("/users/" + userID, {
+		await axios.get("/users/user/" + userID, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}

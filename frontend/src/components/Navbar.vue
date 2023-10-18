@@ -23,7 +23,7 @@
 
 		</div>
 		
-		<div v-if="authStore.authState" class="flex items-center">
+		<div v-if="authStore.authState" class="flex z-10 items-center">
 			<div>
 				<p>{{ profileStore.username }}</p>
 			</div>
