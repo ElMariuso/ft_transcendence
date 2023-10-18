@@ -54,6 +54,14 @@ const initializeSocketListeners = (matchmakingStore) => {
         console.log(response);
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
+
+    socket.on('match-found-standard', (response) => {
+        console.log(response);
+    });
+
+    socket.on('match-found-ranked', (response) => {
+        console.log(response);
+    });
 };
 
 export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, initializeSocketListeners };

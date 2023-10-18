@@ -6,6 +6,7 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
+import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { Server, Socket } from 'socket.io';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
@@ -17,10 +18,18 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
   }
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly matchmakingService: MatchmakingService) {}
+  private onlinePlayers: Map<number | string, string> = new Map();
+
+  constructor(
+    private readonly matchmakingService: MatchmakingService,
+    private readonly eventEmitter: EventEmitter,
+  ) {
+    this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
+    this.eventEmitter.on('match-ranked', this.getRankedMatch.bind(this));
+  }
 
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('EventsGateway');
+  private logger: Logger = new Logger('MatchmakingGateway');
 
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -33,6 +42,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('join-standard')
   joinQueue(client: Socket, player: PlayerInQueue): void {
     this.matchmakingService.add(player);
+    this.onlinePlayers.set(player.id, client.id);
     client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
   }
 
@@ -51,6 +61,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('join-ranked')
   joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
     this.matchmakingService.addRanked(player);
+    this.onlinePlayers.set(player.id, client.id);
     client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
   }
 
@@ -63,5 +74,29 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('status-ranked')
   getRankedQueueStatus(client: Socket): void {
     client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
+  }
+
+  private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
+    const player1SocketId = this.onlinePlayers.get(match.player1.id);
+    const player2SocketId = this.onlinePlayers.get(match.player2.id);
+
+    if (player1SocketId) {
+      this.server.to(player1SocketId).emit('match-found-standard', match);
+    }
+    if (player2SocketId) {
+      this.server.to(player2SocketId).emit('match-found-standard', match);
+    }
+  }
+
+  private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
+    const player1SocketId = this.onlinePlayers.get(match.player1.id);
+    const player2SocketId = this.onlinePlayers.get(match.player2.id);
+
+    if (player1SocketId) {
+      this.server.to(player1SocketId).emit('match-found-ranked', match);
+    }
+    if (player2SocketId) {
+      this.server.to(player2SocketId).emit('match-found-ranked', match);
+    }
   }
 }

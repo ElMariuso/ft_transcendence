@@ -1,4 +1,5 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { Game } from '@prisma/client'
 import { QueueService } from './queue.service';
 import { AuthenticatedPlayer, PlayerInQueue } from 'src/Model/player.model';
@@ -23,7 +24,8 @@ export class MatchmakingService {
      */
     constructor(
         private readonly queueService: QueueService,
-        private readonly gameQuery: GameQuery
+        private readonly gameQuery: GameQuery,
+        private readonly eventEmitter: EventEmitter,
     ) {
         this.startMatchmakingInterval();
     }
@@ -102,7 +104,7 @@ export class MatchmakingService {
      *
      * @returns {Promise<Game | null>} - Returns the newly created game if a match is found, otherwise null.
      */
-    async rankedMatch(): Promise<Game | null> {
+    async rankedMatch(): Promise<{ player1: AuthenticatedPlayer, player2: AuthenticatedPlayer } | null> {
         const sortedQueue = this.queueService.getSortedRankedQueue();
 
         if (sortedQueue.length < 2) {
@@ -116,7 +118,7 @@ export class MatchmakingService {
 
         const newGame = await this.gameQuery.createGame();
 
-        return newGame;
+        return { player1, player2 };
     }
 
     /**
@@ -148,9 +150,14 @@ export class MatchmakingService {
     private startMatchmakingInterval(): void {
         this.matchmakingInterval = setInterval(async () => {
             let match = await this.match();
+            let ranked_match = await this.rankedMatch();
             while (match) {
-                // AAAAAH
+                this.eventEmitter.emit('match-standard', match);
                 match = await this.match();
+            }
+            while (ranked_match) {
+                this.eventEmitter.emit('match-ranked', match);
+                ranked_match = await this.rankedMatch();
             }
         }, 5000);
     }
