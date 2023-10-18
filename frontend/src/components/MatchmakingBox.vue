@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Cookies from 'js-cookie';
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import { useProfileStore } from '@/stores/ProfileStore';
-import { getQueueStatus, getRankedQueueStatus, leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
+import { ref, computed, onUnmounted } from 'vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { useProfileStore } from '@/stores/ProfileStore';
+import socket from '@/services/socket-helpers';
+import Cookies from 'js-cookie';
 
 const props = defineProps({
     isRanked: {
@@ -13,57 +13,31 @@ const props = defineProps({
 });
 
 const matchmakingStore = useMatchmakingStore();
+const profileStore = useProfileStore();
 
 const isSearching = computed(() => matchmakingStore.isSearching);
 const rankedOrNot = computed(() => props.isRanked ? 'ranked' : 'standard');
-const numberOfPlayers = ref(0);
-let intervalId;
-
 const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
 
-watch(isSearching, (newValue) => {
-    matchmakingStore.setIsSearching(newValue);
-});
+const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers); // Assurez-vous d'avoir un getter correspondant dans votre store
+
+const handleNewPlayerCount = (data) => {
+    matchmakingStore.setNumberOfPlayers(data.playersInQueue);
+};
 
 const cancelSearch = async () => {
-    const profileStore = useProfileStore();
-
     matchmakingStore.setIsSearching(false);
-    try {
-        let response;
-        if (props.isRanked) {
-            response = await leaveRankedQueue(profileStore.userId.value);
-        } else {
-            response = await leaveQueue(guestUUID.value);
-        }
-        console.log(response);
-    } catch (error) {
-        console.error(error);
-    }
+    const event = props.isRanked ? 'leave-ranked' : 'leave-standard';
+    socket.emit(event, { playerId: guestUUID.value }); // ou profileStore.userId.value pour les utilisateurs enregistrés
 };
-
-const fetchNumberOfPlayers = async () => {
-    try {
-        let response;
-        if (props.isRanked) {
-            response = await getRankedQueueStatus();
-        } else {
-            response = await getQueueStatus();
-        }
-        numberOfPlayers.value = response.playersInQueue;
-    } catch (error) {
-        console.error('Error fetching number of players:', error);
-    }
-};
-
-onMounted(() => {
-    fetchNumberOfPlayers();
-    intervalId = setInterval(fetchNumberOfPlayers, 1000);
-});
 
 onUnmounted(() => {
-    clearInterval(intervalId);
+    socket.off('status', handleNewPlayerCount);
+    socket.off('status-ranked', handleNewPlayerCount);
 });
+
+const eventToListenTo = props.isRanked ? 'status-ranked' : 'status';
+socket.on(eventToListenTo, handleNewPlayerCount);
 </script>
 
 <template>

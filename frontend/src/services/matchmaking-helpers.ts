@@ -48,7 +48,6 @@ socket.on('left-ranked', (response) => {
     console.log(response);
 });
 
-
 socket.on('status-ranked', (response) => {
     console.log(response);
     matchmakingStore.setNumberOfPlayers(response.playersInQueue);
