@@ -18,8 +18,7 @@ const matchmakingStore = useMatchmakingStore();
 const profileStore = useProfileStore();
 
 const rankedOrNot = computed(() => props.isRanked ? 'ranked' : 'standard');
-const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
-
+const guestUUID = computed(() => matchmakingStore.guestUUID);
 const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers);
 
 const cancelSearch = async () => {

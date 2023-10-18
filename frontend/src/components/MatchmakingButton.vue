@@ -16,8 +16,7 @@ const matchmakingStore = useMatchmakingStore();
 const profileStore = useProfileStore();
 
 const isSearching = computed(() => matchmakingStore.isSearching);
-const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
-
+const guestUUID = computed(() => matchmakingStore.guestUUID);
 const buttonText = computed(() => {
     return isSearching.value ? 'Cancel' : (props.isRanked ? 'Ranked' : 'Standard');
 });

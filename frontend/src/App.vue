@@ -1,28 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-import Cookies from 'js-cookie';
+import { onMounted, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { initializeSocketListeners } from './services/matchmaking-helpers';
 
-const guestUUID = ref<string>('');
 const matchmakingStore = useMatchmakingStore();
 
 onMounted(() => {
-    let storedUUID = Cookies.get('guestUUID');
-    if (!storedUUID) {
-        storedUUID = uuidv4();
-        Cookies.set('guestUUID', storedUUID, { expires: 365 });
-    }
-    guestUUID.value = storedUUID;
-
     matchmakingStore.initializeStore();
     initializeSocketListeners(matchmakingStore)
 });
 
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
+const guestUUID = computed(() => matchmakingStore.guestUUID);
 </script>
 
 
