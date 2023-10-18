@@ -14,8 +14,6 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
   cors: {
     origin: "http://localhost:8080",
     methods: ["GET", "POST"],
-    allowedHeaders: ["*"],
-    credentials: true,
   }
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {

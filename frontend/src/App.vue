@@ -3,8 +3,9 @@ import { ref, onMounted, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import Navbar from './components/Navbar.vue';
-import MatchmakingBox from './components/MatchmakingBox.vue';
+// import MatchmakingBox from './components/MatchmakingBox.vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { initializeSocketListeners } from './services/matchmaking-helpers';
 
 const guestUUID = ref<string>('');
 const matchmakingStore = useMatchmakingStore();
@@ -18,6 +19,7 @@ onMounted(() => {
     guestUUID.value = storedUUID;
 
     matchmakingStore.initializeStore();
+    initializeSocketListeners(matchmakingStore)
 });
 
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
@@ -33,5 +35,5 @@ const isSearchingValue = computed(() => matchmakingStore.isSearching);
       <div class="text-center mt-96">isSearching: {{ isSearchingValue }}</div> 
     </div>
   </div>
-  <MatchmakingBox v-if="isSearchingValue" />
+  <!-- <MatchmakingBox v-if="isSearchingValue" /> -->
 </template>
