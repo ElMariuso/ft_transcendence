@@ -8,12 +8,12 @@ import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
 
 @Module({
     providers: [
-        MatchmakingService,
+        PrismaClient,
         MatchmakingGateway,
+        MatchmakingService,
         QueueService,
         GameQuery,
-        CreateGameDTO,
-        PrismaClient
+        CreateGameDTO
     ],
 })
 
