@@ -8,6 +8,7 @@ import {
 import { Logger } from '@nestjs/common';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { Server, Socket } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 
@@ -79,24 +80,26 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
     const player1SocketId = this.onlinePlayers.get(match.player1.id);
     const player2SocketId = this.onlinePlayers.get(match.player2.id);
+    const roomId = uuidv4();
 
-    if (player1SocketId) {
-      this.server.to(player1SocketId).emit('match-found-standard', match);
-    }
-    if (player2SocketId) {
-      this.server.to(player2SocketId).emit('match-found-standard', match);
+    if (player1SocketId && player2SocketId) {
+      this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
+      this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
+
+      this.server.to(roomId).emit('match-found-standard', { ...match, roomId });
     }
   }
 
   private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
     const player1SocketId = this.onlinePlayers.get(match.player1.id);
     const player2SocketId = this.onlinePlayers.get(match.player2.id);
+    const roomId = uuidv4();
 
-    if (player1SocketId) {
-      this.server.to(player1SocketId).emit('match-found-ranked', match);
-    }
-    if (player2SocketId) {
-      this.server.to(player2SocketId).emit('match-found-ranked', match);
+    if (player1SocketId && player2SocketId) {
+      this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
+      this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
+
+      this.server.to(roomId).emit('match-found-ranked', { ...match, roomId });
     }
   }
 }

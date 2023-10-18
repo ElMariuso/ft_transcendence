@@ -9,6 +9,7 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         matchFound: false,
         numberOfPlayers: 0,
         opponentUUID: null,
+        roomID: null,
     }),
     getters: {
         getIsSearching(state) {
@@ -57,6 +58,9 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         },
         setOpponentUUID(uuid) {
             this.opponentUUID = uuid;
+        },
+        setRoomID(id) {
+            this.roomID = id;
         }
     },
 });

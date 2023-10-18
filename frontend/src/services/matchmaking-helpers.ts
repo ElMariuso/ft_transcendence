@@ -1,4 +1,5 @@
 import socket from "./socket-helpers";
+import { useRouter } from 'vue-router';
 
 const joinQueue = (playerData) => {
     socket.emit('join-standard', playerData);
@@ -25,6 +26,8 @@ const getRankedQueueStatus = () => {
 };
 
 const initializeSocketListeners = (matchmakingStore) => {
+    const router = useRouter();
+
     socket.on('joined', (response) => {
         console.log(response);
         matchmakingStore.setIsSearching(true);
@@ -67,9 +70,11 @@ const initializeSocketListeners = (matchmakingStore) => {
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setRoomID(response.roomId);
             setTimeout(() => {
                 matchmakingStore.setIsSearching(false);
                 matchmakingStore.setMatchFound(false);
+                router.push({ name: 'game', params: { roomId: response.roomId } });
             }, 5000);
         }
     });
@@ -86,9 +91,11 @@ const initializeSocketListeners = (matchmakingStore) => {
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setRoomID(response.roomId);
             setTimeout(() => {
                 matchmakingStore.setIsSearching(false);
                 matchmakingStore.setMatchFound(false);
+                router.push({ name: 'game', params: { roomId: response.roomId } });
             }, 5000);
         }
     });
