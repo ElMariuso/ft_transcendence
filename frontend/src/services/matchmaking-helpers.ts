@@ -1,128 +1,57 @@
-import api from './api';
+import socket from "./socket-helpers";
+import { useMatchmakingStore } from "@/stores/MatchmakingStore";
 
-/**
- * Asynchronous function to join a matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/join` endpoint
- * along with playerData as payload. If successful, it returns the response
- * data. In case of an error during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {Object} playerData - The data of the player joining the queue.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const joinQueue = async (playerData) => {
-    try {
-        const response = await api.post('/matchmaking/join', playerData);
-        return response.data;
-    } catch (error) {
-        console.error('Error joining queue:', error);
-        throw error;
-    }
+const matchmakingStore = useMatchmakingStore();
+
+const joinQueue = (playerData) => {
+    socket.emit('join-standard', playerData);
 };
 
-/**
- * Asynchronous function to leave a matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/leave` endpoint
- * along with playerId as payload. If successful, it returns the response
- * data. If an error occurs during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {string} playerId - The unique identifier of the player.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const leaveQueue = async (playerId) => {
-    try {
-        const response = await api.post('/matchmaking/leave', playerId);
-        return response.data;
-    } catch (error) {
-        console.error('Error leaving queue:', error);
-        throw error;
-    }
+const leaveQueue = (playerId) => {
+    socket.emit('leave-standard', { playerId });
 };
 
-/**
- * Asynchronous function to get the status of the matchmaking queue.
- *
- * This function sends a GET request to the `/matchmaking/status` endpoint
- * and returns the response data. If an error occurs during the request, it
- * logs the error message to the console and re-throws the error to be handled
- * by the calling function.
- *
- * @returns {Promise<Object>} - A promise that resolves to the status of the queue.
- */
-const getQueueStatus = async () => {
-    try {
-        const response = await api.get('/matchmaking/status');
-        return response.data;
-    } catch (error) {
-        console.error('Error getting queue status:', error);
-        throw error;
-    }
+const getQueueStatus = () => {
+    socket.emit('status-standard');
 };
 
-/**
- * Asynchronous function to join a ranked matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/join-ranked` endpoint
- * along with playerData as payload. If successful, it returns the response
- * data. In case of an error during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {Object} playerData - The data of the player joining the ranked queue.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const joinRankedQueue = async (playerData) => {
-    try {
-        const response = await api.post('/matchmaking/join-ranked', playerData);
-        return response.data;
-    } catch (error) {
-        console.error('Error joining ranked queue:', error);
-        throw error;
-    }
+const joinRankedQueue = (playerData) => {
+    socket.emit('join-ranked', playerData);
 };
 
-/**
- * Asynchronous function to leave a ranked matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/leave-ranked` endpoint
- * along with playerId as payload. If successful, it returns the response
- * data. If an error occurs during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {number} playerId - The unique identifier of the player.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const leaveRankedQueue = async (playerId) => {
-    try {
-        const response = await api.post('/matchmaking/leave-ranked', { playerId });
-        return response.data;
-    } catch (error) {
-        console.error('Error leaving ranked queue:', error);
-        throw error;
-    }
+const leaveRankedQueue = (playerId) => {
+    socket.emit('leave-ranked', playerId);
 };
 
-/**
- * Asynchronous function to get the status of the ranked matchmaking queue.
- *
- * This function sends a GET request to the `/matchmaking/status-ranked` endpoint
- * and returns the response data. If an error occurs during the request, it
- * logs the error message to the console and re-throws the error to be handled
- * by the calling function.
- *
- * @returns {Promise<Object>} - A promise that resolves to the status of the ranked queue.
- */
-const getRankedQueueStatus = async () => {
-    try {
-        const response = await api.get('/matchmaking/status-ranked');
-        return response.data;
-    } catch (error) {
-        console.error('Error getting ranked queue status:', error);
-        throw error;
-    }
+const getRankedQueueStatus = () => {
+    socket.emit('status-ranked');
 };
 
-// Exporting the functions for use in other parts of the application.
+socket.on('joined', (response) => {
+    console.log(response);
+});
+
+socket.on('left', (response) => {
+    console.log(response);
+});
+
+socket.on('status', (response) => {
+    console.log(response);
+    matchmakingStore.setNumberOfPlayers(response.playersInQueue);
+});
+
+socket.on('joined-ranked', (response) => {
+    console.log(response);
+});
+
+socket.on('left-ranked', (response) => {
+    console.log(response);
+});
+
+
+socket.on('status-ranked', (response) => {
+    console.log(response);
+    matchmakingStore.setNumberOfPlayers(response.playersInQueue);
+});
+
 export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus };

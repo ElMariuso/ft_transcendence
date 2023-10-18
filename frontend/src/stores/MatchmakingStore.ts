@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 export const useMatchmakingStore = defineStore('matchmaking', {
     state: () => ({
         isSearching: false,
+        numberOfPlayers: 0,
     }),
     getters: {
         getIsSearching(state) {
@@ -23,6 +24,9 @@ export const useMatchmakingStore = defineStore('matchmaking', {
             } else {
                 Cookies.remove('isSearching');
             }
+        },
+        setNumberOfPlayers(count) {
+            this.numberOfPlayers = count;
         }
     },
 });
