@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import socket from '@/services/socket-helpers';
 import Cookies from 'js-cookie';
+
+import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers';
 
 const props = defineProps({
     isRanked: {
@@ -15,29 +17,23 @@ const props = defineProps({
 const matchmakingStore = useMatchmakingStore();
 const profileStore = useProfileStore();
 
-const isSearching = computed(() => matchmakingStore.isSearching);
 const rankedOrNot = computed(() => props.isRanked ? 'ranked' : 'standard');
 const guestUUID = ref<string>(Cookies.get('guestUUID') || '');
 
-const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers); // Assurez-vous d'avoir un getter correspondant dans votre store
-
-const handleNewPlayerCount = (data) => {
-    matchmakingStore.setNumberOfPlayers(data.playersInQueue);
-};
+const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers);
 
 const cancelSearch = async () => {
-    matchmakingStore.setIsSearching(false);
-    const event = props.isRanked ? 'leave-ranked' : 'leave-standard';
-    socket.emit(event, { playerId: guestUUID.value }); // ou profileStore.userId.value pour les utilisateurs enregistrés
+    console.log('Cancelling the match search...');
+    try {
+        if (props.isRanked) {
+            await leaveRankedQueue(profileStore.userId.value);
+        } else {
+            await leaveQueue(guestUUID.value);
+        }
+    } catch (error) {
+        console.error(error);
+    }
 };
-
-onUnmounted(() => {
-    socket.off('status', handleNewPlayerCount);
-    socket.off('status-ranked', handleNewPlayerCount);
-});
-
-const eventToListenTo = props.isRanked ? 'status-ranked' : 'status';
-socket.on(eventToListenTo, handleNewPlayerCount);
 </script>
 
 <template>
