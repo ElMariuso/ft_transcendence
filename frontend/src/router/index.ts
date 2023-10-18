@@ -69,33 +69,6 @@ const router = createRouter({
   ]
 })
 
-<<<<<<< HEAD
-async function checkJWT(authStore, profileStore) {
-	const status = {
-		isAuth: false,
-		jwtValid: false,
-	}
-
-	const token = localStorage.getItem('token')
-  	status.isAuth = (token !== null)
-	if (token) {
-		let userID;
-		try {
-
-			userID = jwt_decode(token).sub;
-		}
-		catch (error){
-			console.log("jwt decode failed");
-		}
-		await axios.get("/users/user/" + userID, {
-			headers: {
-				Authorization: 'Bearer ' + token
-			}
-		}).then(res => {
-			profileStore.setUsername(res.data.username);
-			profileStore.setAvatar(res.data.avatar);
-		})
-=======
 /**
  * Navigation Guard: `beforeEach`
  * 
@@ -116,7 +89,6 @@ async function checkJWT(authStore, profileStore) {
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
 	const profileStore = useProfileStore();
->>>>>>> master
 
 
 	checkJWT(authStore, profileStore).then(status => {
