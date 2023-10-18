@@ -27,10 +27,12 @@ const getRankedQueueStatus = () => {
 const initializeSocketListeners = (matchmakingStore) => {
     socket.on('joined', (response) => {
         console.log(response);
+        matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left', (response) => {
         console.log(response);
+        matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status', (response) => {
@@ -40,10 +42,12 @@ const initializeSocketListeners = (matchmakingStore) => {
 
     socket.on('joined-ranked', (response) => {
         console.log(response);
+        matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left-ranked', (response) => {
         console.log(response);
+        matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status-ranked', (response) => {
