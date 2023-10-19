@@ -13,22 +13,32 @@ import { ref } from 'vue'
  */
 export const useAuthenticationStore = defineStore('auth', () => {
 	// Define a reactive state `isAuthenticated` using `ref`, initializing it as `false`
-	const isAuthenticated = ref(false)
-
+	const isAuthenticated = ref(false);
+	const JWTisValid = ref(false);
+	const twoFactorAuthState = ref(false);
+	
 	/**
 	 * Authenticated the user by setting `isAuthenticated` to true.
 	 */
-	const login = () => {
+	function login() {
 		isAuthenticated.value = true
 	}
 
 	/**
      * Unauthenticate the user by setting `isAuthenticated` to false.
      */
-	const logout = () => {
+	function logout() {
 		isAuthenticated.value = false
 	}
 
 	// Return the state to expose it for component usage
-	return { isAuthenticated, login, logout }
+	function twoFactorAuthenticate() {
+		twoFactorAuthState.value = true;
+	}
+
+	function validateJWT() {
+		JWTisValid.value = true;
+	}
+
+	return { isAuthenticated, login, logout , JWTisValid, validateJWT, twoFactorAuthState, twoFactorAuthenticate}
 })

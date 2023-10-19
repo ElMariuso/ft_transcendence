@@ -23,6 +23,13 @@ export const MESSAGES =
 	USER_CHANNEL:
 	{
 		DELETE_SUCCESS: "Userchannel deleted successfully",
+	},
+
+	UPLOAD:
+	{
+		UPLOAD_PATH: "src/../upload",
+		UPLOAD_SUCCESS: "Upload Successfully",
+		UPLOAD_FAILED: "Upload failed"
 	}
 }
 
@@ -33,11 +40,17 @@ export const ERROR_MESSAGES =
 	USER:
 	{
 		NOT_FOUND: "User not found",
+		AVATAR_NOT_FOUND: "Avatar not found",
+
+		FILE_FORMAT_ERROR: "File must be a .jpg, a .jpeg or a .png",
 		USERNAME_ALREADY_EXIST: "Username already exists",
 
+		GETUSERBYID_FAILED: "Find user by id failed",
 		CREATION_FAILED: "User creation failed",
 		DELETION_FAILED: "User deletion failed",
 		UPDATE_FAILED: "User deletion failed",
+		GETAVATAR_FAILED: "Get avatar failed",
+		GETLADDERUSER_FAILED: "Get user ladder failed",
 	},
 
 	/*	FRIEND ERROR	*/
@@ -83,6 +96,14 @@ export const ERROR_MESSAGES =
 
 		CREATECHANNEL_FAILED: "Channel creation failed",
 		DELETECHANNEL_FAILED: "Delete channel failed",
+		GETALLMESSAGESFROMCHANNEL_FAILED: "Get all messages from a channel failed",
+	},
+
+	/*	CHANNEL TYPE ERROR	*/
+
+	CHANNELTYPE:
+	{
+		NOT_FOUND: "Channel type not found",
 	},
 
 	/*	MESSAGE ERROR	*/
@@ -103,6 +124,9 @@ export const ERROR_MESSAGES =
 		WRONG_PASSWORD: "Passwords don't match",
 		WRONG_MUTETIME: "Wrong mute time",
 		ALREADY_IN: "User already in the channel",
+		FORBIDDEN_ACTION: "Forbidden action",
+		KICK_OWNER: "Can not kick the owner",
+		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
 
 		JOINCHANNEL_FAILED: "Joining channel failed",
 		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
@@ -123,7 +147,19 @@ export const ERROR_MESSAGES =
 		NOT_FOUND: "Game not found",
 
 		CREATEGAME_FAILED: "Game creation failed",
-		DELETEGAME_FAILED: "Game deletion failed"
+		DELETEGAME_FAILED: "Game deletion failed",
+		GETGAMESTATS_FAILED: "Get game datas failed",
+		GETGAME_FAILED: "Get game failed",
+		GETALLGAMEUSER_FAILED: "Get all games for a user failed",
+	},
+
+	/*	ACHIEVEMENT ERROR	*/
+
+	ACHIEVEMENT:
+	{
+		NOT_FOUND: "Achievement not found",
+
+		GETALLBYUSERID_FAILED: "Get all achievements by user's id failed",
 	}
 }
 
@@ -138,3 +174,13 @@ export const ROLE =
 	ADMIN: "Admin",
 	MEMBER: "Member"
 }
+
+export const ACCEPTED_TYPE_FILE =
+{
+	JPG: "image/jpeg",
+	PNG: "image/png"
+}
+
+export const DEFAULT_AVATAR = "src/../upload/avatar-default.jpg";
+
+export const DEFAULT_PATH = "/usr/src/app/";

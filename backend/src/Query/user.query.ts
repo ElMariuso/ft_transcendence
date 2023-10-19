@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User } from '@prisma/client';
 import { CreateUserDTO } from 'src/DTO/user/createUser.dto';
+import { DEFAULT_AVATAR } from 'src/globalVariables';
 
 @Injectable()
 export class UserQuery
@@ -86,13 +87,96 @@ export class UserQuery
 	}
 
 	/**
+	 * Gets the 10 top players
+	 * 
+	 * @returns User[]
+	 */
+	async getTopLadder()
+	{
+		const users = await this.prisma.user.findMany
+		(
+			{
+				take: 10,
+				orderBy:
+				{
+					points: 'desc',
+				}
+			}
+		);
+
+		return users;
+	}
+
+	/**
+	 * Gets players above the number of points provided in the ladder
+	 * 
+	 * @param nbPoints Points reference
+	 * @param take Number of player to take
+	 * 
+	 * @returns User[]
+	 */
+	async getAboveLadder(nbPoints: number, take: number)
+	{
+		const ladder = await this.prisma.user.findMany
+		(
+			{
+				where:
+				{
+					points:
+					{
+						gt: nbPoints,
+					}
+				},
+				take: take,
+				orderBy:
+				{
+					points: 'asc'
+				}
+			},
+		);
+
+		return ladder;
+	}
+
+	/**
+	 * Gets players below the number of points provided in the ladder
+	 * 
+	 * @param nbPoints Points reference
+	 * @param take Number of player to take
+	 * 
+	 * @returns User[]
+	 */
+	async getBelowLadder(nbPoints: number, take: number)
+	{
+		const ladder = await this.prisma.user.findMany
+		(
+			{
+				where:
+				{
+					points:
+					{
+						lt: nbPoints,
+					}
+				},
+				take: take,
+				orderBy:
+				{
+					points: 'desc'
+				}
+			},
+		);
+
+		return ladder;
+	}
+
+	/**
 	 * Posts a new user in DB
 	 * 
 	 * @param user CreateUserDTO
 	 * 
 	 * @returns New User
 	 * 
-	 * @query insert into user (username, email, avatar, points, isTwoFactorAuth, id42) values ($username, $email, 'default', 0, false, $id42)
+	 * @query insert into user (username, email, avatar, points, isTwoFactorAuthEnabled, id42) values ($username, $email, 'default', 0, false, $id42)
 	 */
 	async createUser(user: CreateUserDTO) : Promise<User>
 	{
@@ -104,11 +188,13 @@ export class UserQuery
 			data: 
 			{
 				username,
-				email: "test@test.com",
+				email,
 				id42,
 				avatar: './src/assets/default_avatar.png',
+				// avatar: DEFAULT_AVATAR,
 				points: 0,
-				isTwoFactorAuth: false,
+				isTwoFactorAuthEnabled: false,
+				twoFactorAuthSecret: 'default',
 			},
 		});
 

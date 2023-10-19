@@ -8,6 +8,7 @@ export class UserDTO
 	email: string;
 	id42: number;
 	points: number;
-	isTwoFactorAuth: boolean;
 	avatar: string;
+	isTwoFactorAuthEnabled: boolean;
+	twoFactorAuthSecret: string;
 }

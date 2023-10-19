@@ -6,11 +6,16 @@ import { UserQuery } from 'src/Query/user.query'
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
+import { AchievementService } from './achievement.service';
 
 @Injectable()
 export class FriendService
 {
-	constructor(private readonly friendQuery: FriendQuery, private readonly userQuery: UserQuery) {}
+	constructor(
+		private readonly friendQuery: FriendQuery,
+		private readonly userQuery: UserQuery,
+		private readonly achievementService: AchievementService	
+	) {}
 
 	/**
 	 * Get the friend list of the user
@@ -127,6 +132,8 @@ export class FriendService
 			throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_ACCEPTED);
 
 		const newFriendship = await this.friendQuery.acceptFriendship(bond.idFriend);
+
+		this.achievementService.checkAchievement(idUser, 2);
 
 		return this.transformToFriendBlockedDTO(checkUser);
 	}

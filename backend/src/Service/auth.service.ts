@@ -1,8 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { FT_User } from '../Utils/42user';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../DTO/user/createUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { authenticator } from 'otplib';
+import { UserDTO } from 'src/DTO/user/user.dto';
+import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
+import { toDataURL } from 'qrcode';
 
 /**
  * AuthService handles the authentication functionality within the application, facilitating
@@ -16,13 +19,14 @@ import { JwtService } from '@nestjs/jwt';
  *
  * AuthService interacts with `JwtService` for JWT-related operations and `UserService` 
  * to manage user-related database transactions.
- */
+*/
 @Injectable()
 export class AuthService {
+
 	constructor(
         private readonly jwtService: JwtService,
         private readonly userService: UserService,
-    ) {}
+	) {}
 
     /**
      * Verifies the provided JWT token.
@@ -30,7 +34,7 @@ export class AuthService {
      * @param token - The JWT token to verify.
      * @returns A boolean indicating whether the token is valid or not.
      * @throws {HttpException} - Throws an exception if the token is invalid, with a 400 status code.
-     */
+	*/
     jwtVerify(token: string): boolean {
         try {
             return Boolean(this.jwtService.verify(token));
@@ -48,12 +52,16 @@ export class AuthService {
      *
      * @param data - The user data obtained from 42's OAuth.
      * @returns A promise resolving with a JWT token.
-     */
-    async login(data: FT_User): Promise<string> {
+    */
+	async login(data): Promise<string> {
         const userIdFrom42 = parseInt(data.id, 10);
         let user = await this.findOrCreateUser(userIdFrom42, data);
 		
-		return this.signJwtForUser(user.idUser);
+		return this.signJwtForUser(user.idUser, user.isTwoFactorAuthEnabled);
+	}
+
+	login2fa(userID: string, twoFactorAuthEnabled: boolean) {
+		return this.signJwtForUser(userID, twoFactorAuthEnabled, true);
 	}
 
 	/**
@@ -65,8 +73,8 @@ export class AuthService {
      * @param data - The user data obtained from 42’s OAuth.
      * @returns A promise resolving with the user object.
      * @throws {HttpException} - Throws an exception if user retrieval/creation fails, with a 500 status code.
-     */
-	private async findOrCreateUser(userIdFrom42: number, data: FT_User) {
+    */
+	private async findOrCreateUser(userIdFrom42: number, data) {
 		let user;
 
 		try {
@@ -74,21 +82,24 @@ export class AuthService {
 		} catch (error){
 			throw new HttpException('Failed to find user', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
 		if (!user) {
 			const userDto: CreateUserDTO = {
-			  username: data.username,
-			  email: data.email,
-			  id42: userIdFrom42,
+				username: data._json.login,
+				email: data._json.email,
+				id42: data._json.id
 			};
 			
 			try {
-			  user = await this.userService.createUser(userDto);
+				user = await this.userService.createUser(userDto);
 			} catch (error) {
-			  throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
 		return user;
 	}
+
+
 
 	/**
      * Signs a JWT token for a specified user.
@@ -96,12 +107,43 @@ export class AuthService {
      * @param userId - The ID of the user for whom the JWT is signed.
      * @returns A JWT token.
      * @throws {HttpException} - Throws an exception if token signing fails, with a 500 status code.
-     */
-	private signJwtForUser(userId: string): string {
+    */
+	private signJwtForUser(userId: string, user2fa: boolean, otp=false): string {
 		try {
-		  return this.jwtService.sign({ sub: userId });
+			return this.jwtService.sign({ 
+				sub: userId,
+				twoFactorAuthEnabled: user2fa,
+				twoFactorAuthOTP: otp
+			});
 		} catch (error) {
-		  throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	async generateTwoFactorAuthenticationSecret(user: UserDTO) {
+		const data : any = {};
+		
+		const secret: string = authenticator.generateSecret();
+		const otpauthUrl = authenticator.keyuri(user.email, 'ft_transcendence', secret);
+		data.twoFactorAuthSecret = secret;
+		
+		await this.userService.updateUser(user.idUser, data)
+		return {
+		  secret,
+		  otpauthUrl
+		}
+	}
+
+	async generateQrCodeDataURL(otpAuthUrl: string) {
+		return toDataURL(otpAuthUrl);
+	}
+
+	async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, userID: number) {
+		const user = await this.userService.findUserById(userID);
+
+		return authenticator.verify({
+		  token: twoFactorAuthCode,
+		  secret: user.twoFactorAuthSecret,
+		});
 	}
 }

@@ -9,20 +9,20 @@ import { getUserData } from '@/services/auth-helpers'
  * The `useProfileStore` function is a store used to manage and interact with the user's profile data 
  * within the Vue application. Utilizing Vue's Pinia store, it allows components to reactively access 
  * and modify the user's data, ensuring a consistent state across the application.
- */
+*/
 export const useProfileStore = defineStore('profile', () => {
 	// Reactive state properties to hold user data such as avatar, username, two factor authentication status, and user ID
+	const userID = ref('0')
 	const avatar = ref("./src/assets/default_avatar.png")
 	const username = ref("username")
 	const twoFactorAuth = ref(false)
-	const userID = ref(0)
 
 	/**
      * Asynchronous function to set up the user's profile.
      * 
      * This function retrieves the JWT token from localStorage, decodes the user ID from it, and 
      * uses it to fetch and set the user's data from the API, updating the store's reactive state properties.
-     */
+	*/
 	async function setupProfile() {
 		const token = localStorage.getItem('token')
 		const id = jwt_decode(token).sub;
@@ -32,10 +32,15 @@ export const useProfileStore = defineStore('profile', () => {
 			const userData = await getUserData(id);
 			setUsername(userData.username);
             setAvatar(userData.avatar);
-            setTwoFactorAuth(userData.isTwoFactorAuth);
+            setTwoFactorAuth(userData.isTwoFactorAuthEnabled);
+			setUserID(id);
 		} catch (error) {
 			console.error("Error setting up profile:", error);
 		}
+	}
+
+	function setUserID(newID: string) {
+		userID.value = newID
 	}
 
 	/**
@@ -66,5 +71,5 @@ export const useProfileStore = defineStore('profile', () => {
 	}
 
 	// Exporting reactive properties and methods to be accessible within components
-	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile}
+	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
 })

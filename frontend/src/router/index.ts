@@ -12,19 +12,20 @@
  *   the user remains authenticated, otherwise, the user is logged out.
  * - Routes that require authentication are protected and redirect unauthenticated 
  *   users to the home page.
- */
-
+*/
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthenticationStore } from '../stores/AuthenticationStore'
-import { useProfileStore } from '../stores/ProfileStore'
+import { useAuthenticationStore } from '@/stores/AuthenticationStore'
+import { useProfileStore } from '@/stores/ProfileStore'
+import { checkJWT } from '@/services/auth-helpers';
 
-import HomeView from '../views/HomeView.vue';
+import HomeView from '@/views/HomeView.vue';
+import LoginView from '../views/LoginView.vue';
+import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import GameView from '../views/GameView.vue';
-
-import { checkJWT } from '@/services/auth-helpers';
+import jwt_decode from 'jwt-decode';
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -34,6 +35,16 @@ const router = createRouter({
       	path: '/',
       	name: 'home',
       	component: HomeView
+    },
+	{
+		path: '/login',
+		name: 'login',
+		component: LoginView
+	},
+    {
+      path: '/login2fa',
+      name: 'login2fa',
+      component: Login2faView
     },
     {
       	path: '/community',
@@ -79,37 +90,32 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
 	const profileStore = useProfileStore();
-	const actualToken = localStorage.getItem('token');
-	const urlParams = new URLSearchParams(window.location.search);
-	const tokenInURL = urlParams.get('token');
 
-	if (tokenInURL) {
-		// Scenario 1: Token in URL
-		localStorage.setItem('token', tokenInURL);
-    	authStore.login();
-    	window.history.replaceState({}, document.title, window.location.pathname);
-    	return next({ name: 'home' });
-	}
 
-	if (actualToken) {
-		// Scenario 2: Token in localStorage
-		checkJWT(actualToken, profileStore).then(isTokenValid => {
-			if (isTokenValid) {
-			  authStore.login();
-			  next();
-			} else {
-			  authStore.logout();
-			  next({ name: 'home' });
+	checkJWT(authStore, profileStore).then(status => {
+		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
+			return next({ name: 'home' });
+
+		else if (to.name === 'login' && to.query.code !== undefined) {
+			localStorage.setItem('token', to.query.code.toString());
+			
+			const token = localStorage.getItem('token'); 
+			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
+
+			if (twoFactorAuthEnabled) {
+				return next({ name: 'login2fa' });
 			}
-		  });
-	} else if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-		// Scenario 3: Route requires authentication but user is not authenticated
-		next({ name: 'home' });
-	} else {
+			return next({ name: 'home' });
+		}
+				
+		// Guards all views if not authenticated
+		else if ((to.name !== 'login' && to.name !== 'login2fa') && !authStore.isAuthenticated) {
+			return next({ name: 'login'});
+		}
+
 		next();
-	}
+	});
 })
 
 // Export the router for use in the Vue application
 export default router
-

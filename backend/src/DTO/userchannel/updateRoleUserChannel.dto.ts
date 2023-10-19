@@ -7,7 +7,7 @@ export class UpdateRoleUserChannelDTO
 {
 	@IsInt()
 	@IsPositive()
-	idUser: number;
+	idMember: number;
 
 	@IsInt()
 	@IsPositive()

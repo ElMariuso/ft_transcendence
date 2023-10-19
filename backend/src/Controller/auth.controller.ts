@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
 import { FT_AuthGuard } from '../Guards/42-auth.guard';
-import { FT_User } from '../Utils/42user'
 import { AuthService } from '../Service/auth.service';
+import { UserService } from '../Service/user.service';
+import { toDataURL } from 'qrcode';
 
 /**
  * AuthController manages authentication routes and logic.
@@ -12,10 +13,14 @@ import { AuthService } from '../Service/auth.service';
  *
  * AuthController interacts with `AuthService` to handle the business logic related to
  * user authentication and JWT management.
- */
+*/
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	
+	constructor(
+		private readonly authService: AuthService,
+		private readonly userService: UserService,
+	) {}
 
 	/**
      * Redirects to authenticate users via 42's OAuth and provide a JWT.
@@ -29,7 +34,7 @@ export class AuthController {
 	@UseGuards(FT_AuthGuard)
 	@Get('/42/redirect')
 	async login(@Req() req, @Res() res) {
-		const token = await this.authService.login(req.user as FT_User);
+		const token = await this.authService.login(req.user);
 
 		const url = new URL(`${req.protocol}:${req.hostname}`);
 		url.port = "8080";
@@ -47,11 +52,11 @@ export class AuthController {
      * @returns A JSON object containing the verification result or an error message.
      * @throws {HttpException} - Throws an exception if JWT verification fails, with a 401 status code.
      */
-	@Get('/jwt/verify')
-	jwtVerify(@Req() req, @Res() res) {
+	 @Get('/jwt/verify')
+	 jwtVerify(@Req() req, @Res() res) {
 		if (!req.headers.authorization)
 			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Authorization header is missing' });
-		
+		 
 		const tokenSplitted = req.headers.authorization.split(' ');
 		if (tokenSplitted.length !== 2 || tokenSplitted[0].toLowerCase() !== 'bearer')
 			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Malformed authorization header' });	
@@ -63,5 +68,28 @@ export class AuthController {
 		} catch (error) {
 			return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Invalid token', error: error.message });
 		}
+	 }
+
+	@Get('/2fa/QRcode/:id')
+	async generateQRcode(@Param('id') id: string) {
+
+		let newId = parseInt(id, 10);
+
+		const user = await this.userService.findUserById(newId)
+		const res = await this.authService.generateTwoFactorAuthenticationSecret(user);
+		
+		return toDataURL(res.otpauthUrl);
 	}
-}
+ 
+	@Post('/2fa/verify')
+	async twoFactorAuthVerify(@Req() req, @Body() body) {
+		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
+		
+		return (isCodeValid);
+	}
+
+	@Post('/2fa/authenticate')
+	twoFactorAuthLogin(@Req() req, @Body() body) {
+		return this.authService.login2fa(body.id, body.twoFactorAuth)
+	}
+ }

@@ -10,9 +10,21 @@ const authStore = useAuthenticationStore();
 const url = ref<string>('');
 
 // Lifecycle hook - onMounted: Triggered after the component is mounted
+// onMounted(async () => {
+//     try {
+//         // Attempt to fetch OAuth redirect URL and assign to local ref state
+//         const tmpURL = await getRedirectURL();
+//         url.value = tmpURL;
+//     } catch (error) {
+//         // Log any errors that occur during fetch operation to console
+//         console.error("Failed to fetch redirect URL:", error);
+//     }
+// });
+
 onMounted(async () => {
     try {
         // Attempt to fetch OAuth redirect URL and assign to local ref state
+		
         const tmpURL = await getRedirectURL();
         url.value = tmpURL;
     } catch (error) {
@@ -35,7 +47,7 @@ const logout = () => {
             <!-- Conditionally render: Display Login link if user is not authenticated -->
             <a v-if="!authStore.isAuthenticated" :href="url">42 Login</a>
             <!-- Conditionally render: Display Logout button if user is authenticated -->
-            <button v-else @click="logout">Logout</button>
+            <!-- <button v-else @click="logout">Logout</button> -->
         </div>
     </div>
 </template>

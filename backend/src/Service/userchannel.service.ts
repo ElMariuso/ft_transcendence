@@ -11,7 +11,7 @@ import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto'
 import { UserChannelDTO } from 'src/DTO/userchannel/userchannel.dto';
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 
-import { ERROR_MESSAGES } from 'src/globalVariables';
+import { ERROR_MESSAGES, ROLE } from 'src/globalVariables';
 
 
 @Injectable()
@@ -104,6 +104,9 @@ export class UserChannelService
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 		
+		if (user.idUser === channel.idOwner)
+			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.KICK_OWNER);
+
 		const userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 		if (!userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
@@ -116,28 +119,46 @@ export class UserChannelService
 	 * Update the role of a member of a channel
 	 * 
 	 * @param idUser User's id
+	 * @param idMember Member's id
 	 * @param idUserChannel UserChannel's id
 	 * @param idRole Role's id
 	 * 
 	 * @returns Updated record
 	 */
-	async modifyMemberRole(idUser: number, idChannel: number, idRole: number)
+	async modifyMemberRole(idUser: number, idMember: number, idChannel: number, idRole: number)
 	{
 		const user = await this.userQuery.findUserById(idUser);
-		const channel = await this.channelQuery.findChannelById(idChannel);
-		const role = await this.roleQuery.findRoleById(idRole);
+		const member = await this.userQuery.findUserById(idMember);
 
-		if (!user)
+		if (!user || !member)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const channel = await this.channelQuery.findChannelById(idChannel);	
+
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+		
+		if (channel.idOwner == member.idUser)
+			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_OWNER_ROLE);
+
+		const role = await this.roleQuery.findRoleById(idRole);
 		if (!role)
 			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
 
-		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
-		if (!userChannel)
+		const checkAdmin = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
+		if (!checkAdmin)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
 
+		const admin = await this.roleQuery.findRoleById(checkAdmin.idRole);
+		if (!admin)
+			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
+		
+		if (admin.name != ROLE.ADMIN)
+			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.FORBIDDEN_ACTION);
+
+		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idMember, idChannel);
+		if (!userChannel)
+			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
 		
 		userChannel = await this.userchannelQuery.updateRole(userChannel.idUser_Channel, idRole);
 		

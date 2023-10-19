@@ -10,6 +10,7 @@ import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
+import { AchievementService } from './achievement.service';
 
 @Injectable()
 export class MessageService
@@ -19,6 +20,7 @@ export class MessageService
 		private readonly userQuery: UserQuery,
 		private readonly channelQuery: ChannelQuery,
 		private readonly userchannelQuery: UserChannelQuery,
+		private readonly achievementService: AchievementService,
 		) {}
 
 	/**
@@ -45,8 +47,11 @@ export class MessageService
 		if (!message)
 			throw new NotFoundException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
 
-		
-		return this.transformToDTO(message);
+		const user = await this.userQuery.findUserById(message.idUser);
+		if (!user)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		return this.transformToDTO(message, user.username);
 	}
 
 	/**
@@ -75,13 +80,7 @@ export class MessageService
 
 		const formatMessages: MessageDTO[] = messages.map((message) =>
 		{
-			const {  idMessage, content, timestamps } = message;
-
-			return {
-				idMessage,
-				content,
-				timestamps
-			};
+			return this.transformToDTO(message, user.username);
 		});
 
 		return formatMessages;
@@ -96,9 +95,23 @@ export class MessageService
 	 */
 	async createMessage(message : CreateMessageDTO) : Promise<MessageDTO>
 	{
+		const user = await this.userQuery.findUserById(message.idUser);
+		if (!user)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const channel = await this.channelQuery.findChannelById(message.idChannel);
+		if(!channel)
+			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+		
+		const userchannel = this.userchannelQuery.findUserChannelByUserAndChannelIds(user.idUser, channel.idChannel);
+		if (!userchannel)
+			throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
+
 		const newMessage = await this.messageQuery.createMessage(message);
 
-		return this.transformToDTO(newMessage);
+		this.achievementService.checkAchievement(message.idUser, 3);
+		
+		return this.transformToDTO(newMessage, user.username);
 	}
 
 	/**
@@ -125,11 +138,14 @@ export class MessageService
 	 * 
 	 * @returns MessageDTO
 	 */
-	private transformToDTO(message: Message): MessageDTO
+	private transformToDTO(message: Message, username: string): MessageDTO
 	{
 		const messageDTO: MessageDTO =
 		{
 			idMessage: message.idMessage,
+			idUser: message.idUser,
+			idChannel: message.idChannel,
+			username: username,
 			content: message.content,
 			timestamps: message.timestamps,
 		};
