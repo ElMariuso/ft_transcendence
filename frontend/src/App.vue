@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Navbar from './components/Navbar.vue';
+import Cookies from 'js-cookie';
 import { useProfileStore } from './stores/ProfileStore'
 
 const profileStore = useProfileStore();
@@ -8,7 +9,7 @@ async function setupStore() {
 	await profileStore.setupProfile();
 }
 
-const token = localStorage.getItem('token');
+const token = Cookies.get('token');
 if (token) {
 	setupStore();
 }

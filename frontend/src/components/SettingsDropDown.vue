@@ -17,8 +17,9 @@
   
 <script>
 import { useAuthenticationStore } from '../stores/AuthenticationStore'
-import { ref, watch, onBeforeUnmount } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import Cookies from 'js-cookie';
 
 export default {
     setup() {
@@ -45,7 +46,7 @@ export default {
     	};
 
         function logout() {
-            localStorage.removeItem('token');
+            Cookies.remove('token');
 			authStore.logout();
 			router.push('/login');
         }

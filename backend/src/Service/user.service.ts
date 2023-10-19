@@ -100,16 +100,25 @@ export class UserService
 	 */
 	async getAvatarPath(id: number) : Promise<string>
 	{
-		const user = await this.userQuery.findUserBy42Id(id);
+		console.log("BEFORE FIND USER")
+		const user = await this.userQuery.findUserById(id);
+		// const user = await this.userQuery.findUserBy42Id(id);
 
 		if (!user)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-		
+		console.log("IF EXISTSYNC")
+		console.log("USER AVATAR " + user.avatar)
+		console.log("Current Directory:", __dirname);
+
+
 		if (!fs.existsSync(user.avatar))
 			throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
 		
+
 		let tmp = user.avatar.split('../').pop();
 		tmp = DEFAULT_PATH + tmp;
+
+		console.log("TMP " + tmp)
 
 		if (!fs.existsSync(tmp))
 				throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);

@@ -26,9 +26,8 @@
   
 <script setup lang="ts">
 	import { ref, onMounted, watch, computed } from 'vue';
-
+	import Cookies from 'js-cookie';
 	import api from '../../services/api';
-	
 	import jwt_decode from 'jwt-decode';
 	import Backdrop from './Backdrop.vue';
 
@@ -36,7 +35,7 @@
 	const { resolve } = defineProps(['resolve']);
 	const qrCodeDataUrl = ref('');
 	const twoFactorAuthCode: ref<string> = ref('');
-	const token = localStorage.getItem('token');
+	const token = Cookies.get('token');
 	const id = jwt_decode(token).sub;
 	const checkTwoFactorAuthDisabled = ref(true);
 	const checkTwoFactorAuthPerformed = ref(false);

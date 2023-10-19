@@ -1,5 +1,7 @@
 import api from './api';
 import jwt_decode from 'jwt-decode';
+import Cookies from 'js-cookie';
+
 // import axios from 'axios';
 
 /**
@@ -88,7 +90,7 @@ export async function checkJWT(authStore, profileStore) {
 		twoFactorAuthEnabled: false,
 	}
 	// Retrieve the token from local storage.
-	const token = localStorage.getItem('token'); 
+	const token = Cookies.get('token'); 
 
     // If a token exists, further operations to fetch the user data and verify JWT are performed.
 	if (token) {
