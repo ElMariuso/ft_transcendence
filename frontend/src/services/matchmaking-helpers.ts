@@ -25,6 +25,14 @@ const getRankedQueueStatus = () => {
     socket.emit('status-ranked');
 };
 
+const quitStandardMatch = () => {
+    socket.emit('quit-standard');
+};
+
+const quitRankedMatch = () => {
+    socket.emit('quit-ranked');
+};
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -100,6 +108,13 @@ const initializeSocketListeners = (matchmakingStore) => {
             }, 5000);
         }
     });
+
+    socket.on('left-room', (response) => {
+        console.log(response);
+        matchmakingStore.setRoomID(null);
+
+        router.push({ name: 'home'});
+    });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, initializeSocketListeners };

@@ -1,25 +1,26 @@
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { quitRankedMatch, quitStandardMatch } from '@/services/matchmaking-helpers';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
-const route = useRoute();
-const roomId = ref('');
+const matchmakingStore = useMatchmakingStore();
 
-onMounted(() => {
-  const routeRoomId = route.params.roomId;
-
-  if (Array.isArray(routeRoomId)) {
-    roomId.value = routeRoomId[0];
-  } else {
-    roomId.value = routeRoomId;
-  }
-  console.log(`Game room ID is: ${roomId.value}`);
-});
+const quitMatch = async () => {
+    console.log('Leaving the match...');
+    try {
+        if (matchmakingStore.isRanked) {
+            await quitRankedMatch();
+        } else {
+            await quitStandardMatch();
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 </script>
 
 <template>
     <div>
         <h1>This is the game page</h1>
-        <p>Room ID: {{ roomId }}</p>
+        <button @click="quitMatch">Salut</button>
     </div>
 </template>

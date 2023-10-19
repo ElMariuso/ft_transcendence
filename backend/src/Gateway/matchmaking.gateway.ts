@@ -20,6 +20,7 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private onlinePlayers: Map<number | string, string> = new Map();
+  private clientRooms: Map<string, string> = new Map();
 
   constructor(
     private readonly matchmakingService: MatchmakingService,
@@ -76,6 +77,28 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   getRankedQueueStatus(client: Socket): void {
     client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
   }
+  
+  @SubscribeMessage('quit-standard')
+  quitStandardMatch(client: Socket): void {
+        const roomId = this.findRoomIdByClientId(client.id);
+        if (roomId) {
+          client.leave(roomId);
+          client.emit('left-room', { status: 'You have left the standard match room', roomId });
+        } else {
+          client.emit('error', { status: 'Error leaving room or room not found' });
+        }
+  }
+
+  @SubscribeMessage('quit-ranked')
+  quitRankedMatch(client: Socket): void {
+    const roomId = this.findRoomIdByClientId(client.id);
+    if (roomId) {
+      client.leave(roomId);
+      client.emit('left-room', { status: 'You have left the ranked match room', roomId });
+    } else {
+      client.emit('error', { status: 'Error leaving room or room not found' });
+    }
+  }
 
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
     const player1SocketId = this.onlinePlayers.get(match.player1.id);
@@ -85,6 +108,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (player1SocketId && player2SocketId) {
       this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
       this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
+
+      this.clientRooms.set(player1SocketId, roomId);
+      this.clientRooms.set(player2SocketId, roomId);
 
       this.server.to(roomId).emit('match-found-standard', { ...match, roomId });
     }
@@ -99,7 +125,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
       this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
 
+      this.clientRooms.set(player1SocketId, roomId);
+      this.clientRooms.set(player2SocketId, roomId);
+
       this.server.to(roomId).emit('match-found-ranked', { ...match, roomId });
     }
+  }
+
+  private findRoomIdByClientId(clientId: string): string | undefined {
+    return this.clientRooms.get(clientId);
   }
 }
