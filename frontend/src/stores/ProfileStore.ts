@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import jwt_decode from 'jwt-decode';
 import { getUserData } from '@/services/auth-helpers'
+import api from '../services/api';
 
 /**
  * Vue Store: Profile
@@ -11,11 +12,13 @@ import { getUserData } from '@/services/auth-helpers'
  * and modify the user's data, ensuring a consistent state across the application.
 */
 export const useProfileStore = defineStore('profile', () => {
+	
 	// Reactive state properties to hold user data such as avatar, username, two factor authentication status, and user ID
 	const userID = ref('0')
-	const avatar = ref("./src/assets/default_avatar.png")
 	const username = ref("username")
+	const avatar = ref("../../upload/default_avatar.png")
 	const twoFactorAuth = ref(false)
+	const avatarUpdated = ref(false);
 
 	/**
      * Asynchronous function to set up the user's profile.
@@ -30,10 +33,11 @@ export const useProfileStore = defineStore('profile', () => {
 
 		try {
 			const userData = await getUserData(id);
+			setUserID(id);
 			setUsername(userData.username);
             setAvatar(userData.avatar);
             setTwoFactorAuth(userData.isTwoFactorAuthEnabled);
-			setUserID(id);
+			avatarUpdated.value = true;
 		} catch (error) {
 			console.error("Error setting up profile:", error);
 		}
@@ -50,6 +54,7 @@ export const useProfileStore = defineStore('profile', () => {
      */
 	function setAvatar(newAvatar: string) {
 		avatar.value = newAvatar
+		// avatarImg.value = getAvatarImg();
 	}
 
 	/**
@@ -71,5 +76,5 @@ export const useProfileStore = defineStore('profile', () => {
 	}
 
 	// Exporting reactive properties and methods to be accessible within components
-	return {avatar, username, twoFactorAuth, userID, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
+	return {avatar, username, twoFactorAuth, userID, avatarUpdated, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
 })

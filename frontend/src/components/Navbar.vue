@@ -1,23 +1,44 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch, ref, onBeforeMount } from 'vue';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import MatchmakingButton from './MatchmakingButton.vue';
-// import Login from './Login.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
 import jwt_decode from 'jwt-decode';
+import { storeToRefs } from 'pinia'
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
 const isAuthenticated = computed(() => authStore.isAuthenticated);
+const { username, avatarUpdated } = storeToRefs(profileStore)
+const avatarImg = ref(getAvatarImg());
+const updateAvatarKey = ref(0);
 
-// Sets username, avatar and 2fa to correct DB values
-const token = localStorage.getItem('token');
-if (token) {
-	const id = jwt_decode(token).sub;
-	profileStore.setupProfile();
-	profileStore.setUserID(id);
+const refreshNavbar = () => {
+  avatarImg.value = getAvatarImg();
+  updateAvatarKey.value++;
 }
+
+watch(avatarUpdated, () => {
+	if (avatarUpdated.value) {
+		refreshNavbar();
+		avatarUpdated.value = false;
+	}
+})
+
+watch(isAuthenticated, () => {
+  if (isAuthenticated) {
+    refreshNavbar();
+  }
+});
+
+function getAvatarImg() {
+  const token = localStorage.getItem('token');
+  if (token) {
+    return "http://localhost:3000/users/avatar/" + jwt_decode(token).sub;
+  }
+}
+
 </script>
 
 <template>
@@ -53,11 +74,11 @@ if (token) {
 		
 		<div v-if="isAuthenticated" class="flex items-center">
 			<div>
-				<p>{{ profileStore.username }}</p>
+				<p>{{ username }}</p>
 			</div>
 			
-			<div class="mr-4 text-lg">
-				<img :src="profileStore.avatar" alt="avatar" class="h-14 w-auto">
+			<div class="mr-4 text-lg" :key="updateAvatarKey">
+				<img :src="avatarImg" alt="avatar" class="ml-3 h-14 w-auto rounded-full">
 			</div>
 
 			<SettingsDropDown />

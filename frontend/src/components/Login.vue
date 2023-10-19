@@ -33,11 +33,6 @@ onMounted(async () => {
     }
 });
 
-// Define logout function to clear authentication token and update auth state
-const logout = () => {
-    localStorage.removeItem('token');  // Remove authentication token from localStorage
-    authStore.logout();  // Update the authentication state in the store
-};
 </script>
 
 <template>
@@ -46,8 +41,6 @@ const logout = () => {
         <div class="mt-28 text-black-500 font-bold text-2xl py-2 px-4 rounded border-2 border-black hover:bg-blue-400">
             <!-- Conditionally render: Display Login link if user is not authenticated -->
             <a v-if="!authStore.isAuthenticated" :href="url">42 Login</a>
-            <!-- Conditionally render: Display Logout button if user is authenticated -->
-            <!-- <button v-else @click="logout">Logout</button> -->
         </div>
     </div>
 </template>

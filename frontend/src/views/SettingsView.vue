@@ -1,6 +1,6 @@
 <template>
+<div class="p-4">
 
-  <div class="p-4">
 	<!-- Popup -->
 	<div v-if="popupVisible" class="fixed right-4 top-20 border p-4 bg-white rounded-lg shadow-lg">
 		{{ popupMessage }}
@@ -9,86 +9,97 @@
     <h2 class="text-lg font-semibold mb-4">Profile Settings</h2>
     <div class="flex flex-col">
     
-      <!-- Username Input -->
-      <div class="mb-4">
-        <label  class="block text-sm font-medium text-gray-700 mr-5">Change username:</label>
-        <div class="flex items-baseline">
-          <input v-model="newUsername" type="text" class="mt-1 p-2 w-1/3 border rounded-lg mr-5">
-          <button
-            @click="checkUsernameAvailability" 
-            :disabled="checkButtonDisabled"
-            :class="checkButtonClass"
-            class="ml-2 px-4 py-2 rounded-lg"
-          >
-            {{ checkButtonLabel }}
-          </button>
-        </div>
-      </div>
+		<!-- Username Input -->
+		<div class="mb-4">
+			<label  class="block text-sm font-medium text-gray-700 mr-5">Change username:</label>
+			<div class="flex items-baseline">
+			<input v-model="newUsername" type="text" class="mt-1 p-2 w-1/3 border rounded-lg mr-5">
+			<button
+				@click="checkUsernameAvailability" 
+				:disabled="checkButtonDisabled"
+				:class="checkButtonClass"
+				class="ml-2 px-4 py-2 rounded-lg"
+			>
+				{{ checkButtonLabel }}
+			</button>
+			</div>
+		</div>
 
-      <!-- Avatar Input -->
-      <div class="mb-4">
-        <label  class="block text-sm font-medium text-gray-700">Upload new avatar image:</label>
-        <input @change="handleAvatarChange" type="file" accept="image/*" class="mt-1 p-2 w-1/3 border rounded-lg">
-      </div>
+		<!-- Avatar Input -->
+		<div class="mb-4">
+			<label  class="block text-sm font-medium text-gray-700">Upload new avatar image:</label>
+			<input @change="handleAvatarChange" type="file" accept="image/*" class="mt-1 p-2 w-1/3 border rounded-lg mr-5" ref="fileInput">
+			<button 
+				@click="clearAvatarInput"
+				class="ml-2 px-4 py-2 rounded-lg bg-red-500 text-white"
+			>
+				Clear Input
+			</button>
+		</div>
 
-      <!-- Two-Factor Authentication Toggle -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700">Two-Factor Authentication:</label>
-        
-		    <div class="flex space-x-4 mt-1">
-          <button
-            :class="{ 'bg-blue-500 text-white': twoFactorAuth, 'bg-gray-200': !twoFactorAuth }"
-            @click="enableTwoFactorAuth"
-            class="px-4 py-2 rounded-lg"
-          >
-            Enabled
-          </button>
+		<!-- Two-Factor Authentication Toggle -->
+		<div class="mb-4">
+			<label class="block text-sm font-medium text-gray-700">Two-Factor Authentication:</label>
+			
+				<div class="flex space-x-4 mt-1">
+			<button
+				:class="{ 'bg-blue-500 text-white': twoFactorAuth, 'bg-gray-200': !twoFactorAuth }"
+				@click="enableTwoFactorAuth"
+				class="px-4 py-2 rounded-lg"
+			>
+				Enabled
+			</button>
 
-          <button
-            :class="{ 'bg-blue-500 text-white': !twoFactorAuth, 'bg-gray-200': twoFactorAuth }"
-            @click="disableTwoFactorAuth"
-            class="px-4 py-2 rounded-lg"
-          >
-            Disabled
-          </button>
-        </div>
-      </div>
+			<button
+				:class="{ 'bg-blue-500 text-white': !twoFactorAuth, 'bg-gray-200': twoFactorAuth }"
+				@click="disableTwoFactorAuth"
+				class="px-4 py-2 rounded-lg"
+			>
+				Disabled
+			</button>
+			</div>
+		</div>
 
-      <!-- Save and Cancel Buttons -->
-      <div class="flex mt-6">
-        <button 
-          @click="saveSettings" 
-          :disabled="saveButtonDisabled" 
-          :class="saveButtonClass"
-          class="px-4 py-2 rounded-lg"
-        >
-          Save
-        </button>
-        
-        <button @click="" class="ml-5 text-gray-600 bg-gray-200 px-4 py-2 rounded-lg">Cancel</button>
-      </div>
-
-      <TwoFactorAuthModal 
-	  	v-if="showTwoFactorAuthModal" 
-		@closeModal="closeTwoFactorAuthModal"
-		@cancelModal="cancelTwoFactorAuthModal"
-		:resolve="twoAuthRes"
+		<TwoFactorAuthModal 
+			v-if="showTwoFactorAuthModal" 
+			@closeModal="closeTwoFactorAuthModal"
+			@cancelModal="cancelTwoFactorAuthModal"
+			:resolve="twoAuthRes"
 		/>
 
-    </div>
-  </div>
 
+		<!-- Save and Cancel Buttons -->
+		<div class="flex mt-6">
+			<button 
+			@click="saveSettings" 
+			:disabled="saveButtonDisabled" 
+			:class="saveButtonClass"
+			class="px-4 py-2 rounded-lg"
+			>
+			Save
+			</button>
+        	<button @click="" class="ml-5 text-gray-600 bg-gray-200 px-4 py-2 rounded-lg">Cancel</button>
+      	</div>
+
+    </div>
+</div>
 </template>
 
-
 <script setup lang="ts">
+
 import { ref, watch, computed } from 'vue';
 import { useProfileStore } from '../stores/ProfileStore'
 import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
+import { storeToRefs } from 'pinia'
+
+// Store ***************************************************************************
 
 const profileStore = useProfileStore();
+const { username, avatar, avatarUpdated } = storeToRefs(profileStore)
+
+// Username ***************************************************************************
 
 const newUsername = ref('');
 const usernameAvailable = ref(false);
@@ -114,37 +125,6 @@ const checkButtonClass = computed(() => {
 	else
 		return {'bg-blue-500 text-white': true};
 });
-
-
-const twoFactorAuth = ref(profileStore.twoFactorAuth);
-const twoAuthRes = ref(false);
-const showTwoFactorAuthModal = ref(false);
-
-const newAvatar = ref('');
-
-const saveButtonDisabled = computed(() => {
-	return newUsername.value.trim() !== '' && !usernameCheckPerformed.value;
-});
-
-const saveButtonClass = computed(() => {
-	if (saveButtonDisabled.value)
-		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
-	else
-		return {'bg-blue-500 text-white': true};
-});
-
-const popupVisible = ref(false);
-const popupMessage = ref('');	
-
-function showPopup(msg: string) {
-	popupMessage.value = msg;
-	popupVisible.value = true;
-
-	// Automatically hide the popup after 3 seconds
-	setTimeout(() => {
-		popupVisible.value = false;
-	}, 3000);
-}
 
 watch(newUsername, (newVal: string, oldVal: string) => {
 	newVal = newVal.trim();
@@ -173,6 +153,27 @@ async function checkUsernameAvailability() {
 	}
 }
 
+// Avatar ***************************************************************************
+
+const fileInput = ref<HTMLInputElement | null>(null);
+const avatarImgChanged = ref(false);
+
+function handleAvatarChange() {
+	avatarImgChanged.value = true;
+}
+
+function clearAvatarInput() {
+      // Use the ref to access the input element and reset its value
+    fileInput.value.value = '';
+	avatarImgChanged.value = false;
+}
+
+// Two Factor Auth ***************************************************************************
+
+const twoFactorAuth = ref(profileStore.twoFactorAuth);
+const twoAuthRes = ref(false);
+const showTwoFactorAuthModal = ref(false);
+
 function enableTwoFactorAuth() {
 	twoFactorAuth.value = true;
 }
@@ -197,25 +198,64 @@ function closeTwoFactorAuthModal() {
 	showTwoFactorAuthModal.value = false;
 }
 
-    // WIP
-    function handleAvatarChange() {
-      newAvatar.value = "/newAvatarImgPath/";
-    }
+// Save && Popups ***************************************************************************
+
+const saveButtonDisabled = computed(() => {
+	return newUsername.value.trim() !== '' && !usernameCheckPerformed.value;
+});
+
+const saveButtonClass = computed(() => {
+	if (saveButtonDisabled.value)
+		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
+	else
+		return {'bg-blue-500 text-white': true};
+});
+
+const popupVisible = ref(false);
+const popupMessage = ref('');	
+
+function showPopup(msg: string) {
+	popupMessage.value = msg;
+	popupVisible.value = true;
+
+	// Automatically hide the popup after 3 seconds
+	setTimeout(() => {
+		popupVisible.value = false;
+	}, 3000);
+}
 
 async function saveSettings() {
 	let bodyInfo = {};
 
 	if (!saveButtonDisabled.value) {
 
+		// Username
 		if (newUsername.value.trim() !== '' && usernameAvailable.value)
 			bodyInfo['username'] = newUsername.value;
 		
-		// avatar
-		// if () {
-		// 1. bodyInfo['avatar'] = newAvatar.value;
-		// 2. Post img to upload folder
-		// }
+		// Avatar
+		if (avatarImgChanged.value) {
+			const formData = new FormData();
+      		formData.append('file', fileInput.value?.files[0] || '');
 
+			try {
+				const response = await api.post('/users/uploadAvatar/' + profileStore.userID, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+						
+					}
+				})
+				console.log('Avatar upload response:', response.data);
+				if (response.data.message === 'Upload Successfully') {
+					bodyInfo['avatar'] = response.data.path;
+				}
+			} catch (error) {
+				console.error('Avatar upload error:', error);
+				return;
+      		}
+		}
+
+		// Two Factor Auth
 		if (twoFactorAuth.value !== profileStore.twoFactorAuth) {
 			if (twoFactorAuth.value) {
 				try {
@@ -233,7 +273,7 @@ async function saveSettings() {
 				bodyInfo['isTwoFactorAuthEnabled'] = twoFactorAuth.value;
 		}
 		
-		// Checks if any setting is being changed
+		// Saving changes, checks if any setting is being changed
 		if (Object.keys(bodyInfo).length !== 0) {
 			const token = localStorage.getItem('token');
 			let jsonToSend = JSON.stringify(bodyInfo);
@@ -244,9 +284,18 @@ async function saveSettings() {
 					Authorization: 'Bearer ' + token,
 					'Content-Type': 'application/json; charset=utf-8',
 				},
-			});
-			profileStore.setupProfile();
+			}).then(() => {
+				// if (bodyInfo['username'])
+				// 	username.value = bodyInfo['username'];
+				if (bodyInfo['avatar']) {
+					// avatar.value = bodyInfo['avatar'];
+					avatarUpdated.value = true;
+				}
+			})
+			// await profileStore.setupProfile();
 			newUsername.value = '';
+			clearAvatarInput();
+			
 			showPopup('Profile changes saved');
 		}
 		else {

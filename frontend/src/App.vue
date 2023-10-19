@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Navbar from './components/Navbar.vue';
+import Cookies from 'js-cookie';
 import { useProfileStore } from './stores/ProfileStore'
 
 const profileStore = useProfileStore();

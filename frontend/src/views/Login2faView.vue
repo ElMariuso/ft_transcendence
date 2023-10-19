@@ -42,13 +42,13 @@ watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
 	}
 });
 
-async function setupStore() {
-	await profileStore.setupProfile();
-}
+// async function setupStore() {
+// 	await profileStore.setupProfile();
+// }
 
 
 async function authenticate() {
-	setupStore();
+	// setupStore();
 	try {
 		const response = await api.post('/auth/2fa/verify', {
 			code: twoFactorAuthCode.value,

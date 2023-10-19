@@ -38,9 +38,9 @@
 				and clean up to minimize image size.dumb-init is included for handling process signals.
 
 			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
-														RUN mkdir -p logs uploads"
+														RUN mkdir -p logs upload"
 				This sets the working directory to /usr/src/app,
-				where the application will run, and creates folders for logs and uploads.
+				where the application will run, and creates folders for logs and upload.
 
 			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 									COPY --chown=node:node --from=build /usr/src/app/.env .env
@@ -105,9 +105,9 @@
 				included for handling process signals.
 			
 			.Set Working Directory and Create Folders: "WORKDIR /usr/src/app
-														RUN mkdir -p logs uploads"
+														RUN mkdir -p logs upload"
 				This sets the working directory to /usr/src/app, where the application will run, 
-				and creates folders for logs and uploads.
+				and creates folders for logs and upload.
 			
 			.Copy Necessary Files: "COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 									COPY --chown=node:node --from=build /usr/src/app/.env .env

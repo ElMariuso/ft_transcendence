@@ -1,4 +1,5 @@
 import { IsEmail, IsInt } from 'class-validator';
+import { getRandomValues } from 'crypto';
 
 /**
  * DTO used for updating a new user
