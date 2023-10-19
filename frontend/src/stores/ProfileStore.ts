@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import jwt_decode from 'jwt-decode';
 import { getUserData } from '@/services/auth-helpers'
-import api from '../services/api';
+import Cookies from 'js-cookie';
 
 /**
  * Vue Store: Profile
@@ -27,7 +27,7 @@ export const useProfileStore = defineStore('profile', () => {
      * uses it to fetch and set the user's data from the API, updating the store's reactive state properties.
 	*/
 	async function setupProfile() {
-		const token = localStorage.getItem('token')
+		const token = Cookies.get('token')
 		const id = jwt_decode(token).sub;
 		userID.value = id;
 

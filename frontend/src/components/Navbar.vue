@@ -6,6 +6,7 @@ import MatchmakingButton from './MatchmakingButton.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
 import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
+import Cookies from 'js-cookie';
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
@@ -33,7 +34,7 @@ watch(isAuthenticated, () => {
 });
 
 function getAvatarImg() {
-  const token = localStorage.getItem('token');
+  const token = Cookies.get('token');
   if (token) {
     return "http://localhost:3000/users/avatar/" + jwt_decode(token).sub;
   }

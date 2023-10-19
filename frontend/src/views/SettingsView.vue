@@ -93,6 +93,7 @@ import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
 import { storeToRefs } from 'pinia'
+import Cookies from 'js-cookie';
 
 // Store ***************************************************************************
 
@@ -275,7 +276,7 @@ async function saveSettings() {
 		
 		// Saving changes, checks if any setting is being changed
 		if (Object.keys(bodyInfo).length !== 0) {
-			const token = localStorage.getItem('token');
+			const token = Cookies.get('token');
 			let jsonToSend = JSON.stringify(bodyInfo);
 			const id = jwt_decode(token).sub;
 			

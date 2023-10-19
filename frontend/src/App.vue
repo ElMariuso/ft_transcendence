@@ -9,7 +9,7 @@ async function setupStore() {
 	await profileStore.setupProfile();
 }
 
-const token = localStorage.getItem('token');
+const token = Cookies.get('token');
 if (token) {
 	setupStore();
 }
