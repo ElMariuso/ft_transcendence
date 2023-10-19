@@ -22,9 +22,7 @@ onMounted(() => {
       setupStore();
     }
 });
-
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
-const guestUUID = computed(() => matchmakingStore.guestUUID);
 </script>
 
 <template>
@@ -32,8 +30,6 @@ const guestUUID = computed(() => matchmakingStore.guestUUID);
       <Navbar />
     <div class="container mx-auto mt-8">
       <router-view />
-      <div class="text-center mt-96">UUID: {{ guestUUID }}</div> 
-      <div class="text-center mt-96">isSearching: {{ isSearchingValue }}</div> 
     </div>
   </div>
   <MatchmakingBox v-if="isSearchingValue" />
