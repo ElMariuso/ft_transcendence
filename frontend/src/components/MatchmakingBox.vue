@@ -19,7 +19,7 @@ const cancelSearch = async () => {
     console.log('Cancelling the match search...');
     try {
         if (matchmakingStore.isRanked) {
-            await leaveRankedQueue(profileStore.userId.value);
+            await leaveRankedQueue(profileStore.userID.value);
         } else {
             await leaveQueue(guestUUID.value);
         }

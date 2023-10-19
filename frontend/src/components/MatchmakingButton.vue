@@ -38,7 +38,7 @@ const handleClick = async () => {
         console.log(`Joining a ${props.isRanked ? 'ranked' : 'standard'} match...`);
         try {
             if (props.isRanked) {
-                const playerData = { id: profileStore.userId.value, isGuest: false, points: 0 };
+                const playerData = { id: profileStore.userID.value, isGuest: false, points: 0 };
                 await joinRankedQueue(playerData);
             } else {
                 const playerData = { id: guestUUID.value, isGuest: true };
