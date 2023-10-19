@@ -6,16 +6,12 @@ export const useMatchmakingStore = defineStore('matchmaking', {
     state: () => ({
         guestUUID: '',
         isSearching: false,
+        isRanked: false,
         matchFound: false,
         numberOfPlayers: 0,
         opponentUUID: null,
         roomID: null,
     }),
-    getters: {
-        getIsSearching(state) {
-            return state.isSearching;
-        },
-    },
     actions: {
         initializeStore() {
             let guestUUIDCookie = Cookies.get('guestUUID');
@@ -27,6 +23,9 @@ export const useMatchmakingStore = defineStore('matchmaking', {
 
             const isSearchingCookie = Cookies.get('isSearching');
             this.isSearching = isSearchingCookie === 'true';
+
+            const isRankedCookie = Cookies.get('isRanked');
+            this.isRanked = isRankedCookie === 'true';
 
             const matchFoundCookie = Cookies.get('matchFound');
             this.matchFound = matchFoundCookie === 'true';
@@ -42,6 +41,15 @@ export const useMatchmakingStore = defineStore('matchmaking', {
                 Cookies.set('isSearching', 'true', { expires: 1/144 });
             } else {
                 Cookies.remove('isSearching');
+            }
+        },
+        setIsRanked(value) {
+            this.isRanked = value;
+
+            if (value) {
+                Cookies.set('isRanked', 'true', { expires: 1/144 });
+            } else {
+                Cookies.remove('isRanked');
             }
         },
         setMatchFound(value) {

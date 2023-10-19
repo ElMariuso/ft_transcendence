@@ -27,15 +27,11 @@ if (token) {
 			<router-link to="/">
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 			</router-link>
-		
-			<router-link to="">
-					<p class="text-lg mr-5" >Play</p>
-			</router-link>
 
-			<!-- <div class="flex space-x-4">
+			<div class="flex space-x-4">
 				<matchmaking-button />
 				<matchmaking-button v-if="isAuthenticated" :is-ranked="true" />
-			</div> -->
+			</div>
 
 			<router-link to="/community">
 				<nav class="text-lg mr-5">

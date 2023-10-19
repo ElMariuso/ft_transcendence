@@ -95,6 +95,7 @@ const initializeSocketListeners = (matchmakingStore) => {
             setTimeout(() => {
                 matchmakingStore.setIsSearching(false);
                 matchmakingStore.setMatchFound(false);
+                matchmakingStore.setIsRanked(false);
                 router.push({ name: 'game', params: { roomId: response.roomId } });
             }, 5000);
         }

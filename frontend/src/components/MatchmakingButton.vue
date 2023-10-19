@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import Cookies from 'js-cookie';
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 import { useProfileStore } from '@/stores/ProfileStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
@@ -22,6 +21,8 @@ const buttonText = computed(() => {
 });
 
 const handleClick = async () => {
+    matchmakingStore.setIsRanked(props.isRanked);
+
     if (isSearching.value) {
         console.log('Cancelling the match search...');
         try {

@@ -6,17 +6,10 @@ import socket from '@/services/socket-helpers';
 
 import { leaveQueue, leaveRankedQueue } from '@/services/matchmaking-helpers';
 
-const props = defineProps({
-    isRanked: {
-        type: Boolean,
-        default: false,
-    },
-});
-
 const matchmakingStore = useMatchmakingStore();
 const profileStore = useProfileStore();
 
-const rankedOrNot = computed(() => props.isRanked ? 'ranked' : 'standard');
+const rankedOrNot = computed(() => matchmakingStore.isRanked ? 'ranked' : 'standard');
 const guestUUID = computed(() => matchmakingStore.guestUUID);
 const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers);
 const matchFound = computed(() => matchmakingStore.matchFound);
@@ -25,7 +18,7 @@ const opponentUUID = computed(() => matchmakingStore.opponentUUID);
 const cancelSearch = async () => {
     console.log('Cancelling the match search...');
     try {
-        if (props.isRanked) {
+        if (matchmakingStore.isRanked) {
             await leaveRankedQueue(profileStore.userId.value);
         } else {
             await leaveQueue(guestUUID.value);
@@ -39,7 +32,7 @@ let statusInterval;
 
 onMounted(() => {
     statusInterval = setInterval(() => {
-        if (props.isRanked) {
+        if (matchmakingStore.isRanked) {
             socket.emit('status-ranked');
         } else {
             socket.emit('status-standard');
