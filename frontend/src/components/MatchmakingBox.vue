@@ -61,7 +61,7 @@ onUnmounted(() => {
             </div>
             <p v-if="!matchFound">Player(s) in queue: {{ numberOfPlayers }}</p>
             <p v-else>{{ opponentUUID }}</p>
-            <button class="bg-button-gradient hover:brightness-125 transition rounded uppercase text-lg py-2 px-3 !text-button !mb-3" @click="cancelSearch">Cancel</button>
+            <button v-if="!matchFound" class="bg-button-gradient hover:brightness-125 transition rounded uppercase text-lg py-2 px-3 !text-button !mb-3" @click="cancelSearch">Cancel</button>
         </div>
     </div>
 </template>
