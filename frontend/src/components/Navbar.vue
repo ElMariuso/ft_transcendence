@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import MatchmakingButton from './MatchmakingButton.vue';
-// import Login from './Login.vue';
-import SettingsDropDown from './SettingsDropDown.vue';
 import jwt_decode from 'jwt-decode';
+import MatchmakingButton from './MatchmakingButton.vue';
+import LeaveMatch from './LeaveMatch.vue';
+import SettingsDropDown from './SettingsDropDown.vue';
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
+const route = useRoute();
+
 const isAuthenticated = computed(() => authStore.isAuthenticated);
+const showButtons = computed(() => route.path.startsWith('/game/'));
 
 // Sets username, avatar and 2fa to correct DB values
 const token = localStorage.getItem('token');
@@ -28,11 +32,6 @@ if (token) {
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 			</router-link>
 
-			<div class="flex space-x-4">
-				<matchmaking-button />
-				<matchmaking-button v-if="isAuthenticated" :is-ranked="true" />
-			</div>
-
 			<router-link to="/community">
 				<nav class="text-lg mr-5">
 					<section>Community</section>
@@ -45,6 +44,11 @@ if (token) {
 				</nav>
 			</router-link>
 
+			<div class="flex space-x-4">
+				<matchmaking-button v-if="!showButtons" />
+				<matchmaking-button v-if="!showButtons && isAuthenticated" :is-ranked="true" />
+				<LeaveMatch v-if="showButtons" />
+			</div>
 		</div>
 		
 		<div v-if="isAuthenticated" class="flex items-center">

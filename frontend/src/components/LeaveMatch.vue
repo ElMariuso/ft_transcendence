@@ -1,8 +1,18 @@
 <script setup lang='ts'>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { quitRankedMatch, quitStandardMatch } from '@/services/matchmaking-helpers';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
+const route = useRoute();
 const matchmakingStore = useMatchmakingStore();
+
+const buttonText = computed(() => {
+    if (route.path.startsWith('/game/')) {
+        return 'Forfeit';
+    }
+    return 'Leave';
+});
 
 const quitMatch = async () => {
     console.log('Leaving the match...');
@@ -19,5 +29,5 @@ const quitMatch = async () => {
 </script>
 
 <template>
-    <button @click="quitMatch">Leave</button>
+    <button @click="quitMatch">{{ buttonText }}</button>
 </template>
