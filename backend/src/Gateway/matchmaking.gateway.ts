@@ -19,7 +19,7 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
   }
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  private onlinePlayers: Map<number | string, string> = new Map();
+  private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
   private clientRooms: Map<string, string> = new Map();
 
   constructor(
@@ -44,7 +44,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('join-standard')
   joinQueue(client: Socket, player: PlayerInQueue): void {
     this.matchmakingService.add(player);
-    this.onlinePlayers.set(player.id, client.id);
+    this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
     client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
   }
 
@@ -63,7 +63,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('join-ranked')
   joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
     this.matchmakingService.addRanked(player);
-    this.onlinePlayers.set(player.id, client.id);
+    this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
     client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
   }
 
@@ -101,34 +101,42 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   }
 
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
-    const player1SocketId = this.onlinePlayers.get(match.player1.id);
-    const player2SocketId = this.onlinePlayers.get(match.player2.id);
+    const player1Info = this.onlinePlayers.get(match.player1.id);
+    const player2Info = this.onlinePlayers.get(match.player2.id);
     const roomId = uuidv4();
 
-    if (player1SocketId && player2SocketId) {
-      this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
-      this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
+    if (player1Info && player2Info) {
+      this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
+      this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
-      this.clientRooms.set(player1SocketId, roomId);
-      this.clientRooms.set(player2SocketId, roomId);
+      this.clientRooms.set(player1Info.socketId, roomId);
+      this.clientRooms.set(player2Info.socketId, roomId);
 
-      this.server.to(roomId).emit('match-found-standard', { ...match, roomId });
+      this.server.to(roomId).emit('match-found-standard', { 
+        player1: { id: match.player1.id, username: player1Info.username }, 
+        player2: { id: match.player2.id, username: player2Info.username }, 
+        roomId 
+      });
     }
   }
 
   private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
-    const player1SocketId = this.onlinePlayers.get(match.player1.id);
-    const player2SocketId = this.onlinePlayers.get(match.player2.id);
+    const player1Info = this.onlinePlayers.get(match.player1.id);
+    const player2Info = this.onlinePlayers.get(match.player2.id);
     const roomId = uuidv4();
 
-    if (player1SocketId && player2SocketId) {
-      this.server.sockets.sockets.get(player1SocketId)?.join(roomId);
-      this.server.sockets.sockets.get(player2SocketId)?.join(roomId);
+    if (player1Info && player2Info) {
+      this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
+      this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
-      this.clientRooms.set(player1SocketId, roomId);
-      this.clientRooms.set(player2SocketId, roomId);
+      this.clientRooms.set(player1Info.socketId, roomId);
+      this.clientRooms.set(player2Info.socketId, roomId);
 
-      this.server.to(roomId).emit('match-found-ranked', { ...match, roomId });
+      this.server.to(roomId).emit('match-found-ranked', { 
+        player1: { id: match.player1.id, username: player1Info.username }, 
+        player2: { id: match.player2.id, username: player2Info.username }, 
+        roomId 
+      });
     }
   }
 

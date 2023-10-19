@@ -71,13 +71,17 @@ const initializeSocketListeners = (matchmakingStore) => {
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
+        let opponentUsername;
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
+            opponentUsername = response.player2.username;
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
+            opponentUsername = response.player1.username;
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
             setTimeout(() => {
                 matchmakingStore.setIsSearching(false);
@@ -92,13 +96,17 @@ const initializeSocketListeners = (matchmakingStore) => {
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
+        let opponentUsername;
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
+            opponentUsername = response.player2.username;
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
+            opponentUsername = response.player1.username;
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
             setTimeout(() => {
                 matchmakingStore.setIsSearching(false);
@@ -111,6 +119,8 @@ const initializeSocketListeners = (matchmakingStore) => {
 
     socket.on('left-room', (response) => {
         console.log(response);
+        matchmakingStore.setOpponentUUID(null);
+        matchmakingStore.setOpponentUsername(null);
         matchmakingStore.setRoomID(null);
 
         router.push({ name: 'home'});

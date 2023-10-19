@@ -13,7 +13,7 @@ const rankedOrNot = computed(() => matchmakingStore.isRanked ? 'ranked' : 'stand
 const guestUUID = computed(() => matchmakingStore.guestUUID);
 const numberOfPlayers = computed(() => matchmakingStore.numberOfPlayers);
 const matchFound = computed(() => matchmakingStore.matchFound);
-const opponentUUID = computed(() => matchmakingStore.opponentUUID);
+const opponentUsername = computed(() => matchmakingStore.opponentUsername);
 
 const cancelSearch = async () => {
     console.log('Cancelling the match search...');
@@ -60,7 +60,7 @@ onUnmounted(() => {
                 <div class="spinner"></div>
             </div>
             <p v-if="!matchFound">Player(s) in queue: {{ numberOfPlayers }}</p>
-            <p v-else>{{ opponentUUID }}</p>
+            <p v-else>{{ opponentUsername }}</p>
             <button v-if="!matchFound" class="bg-button-gradient hover:brightness-125 transition rounded uppercase text-lg py-2 px-3 !text-button !mb-3" @click="cancelSearch">Cancel</button>
         </div>
     </div>

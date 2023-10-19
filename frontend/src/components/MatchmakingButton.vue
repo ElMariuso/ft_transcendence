@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/services/matchmaking-helpers'
 import { useProfileStore } from '@/stores/ProfileStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 
 const props = defineProps({
     isRanked: {
@@ -13,12 +14,14 @@ const props = defineProps({
 
 const matchmakingStore = useMatchmakingStore();
 const profileStore = useProfileStore();
+const authenticationStore = useAuthenticationStore();
 
 const isSearching = computed(() => matchmakingStore.isSearching);
 const guestUUID = computed(() => matchmakingStore.guestUUID);
 const buttonText = computed(() => {
     return isSearching.value ? 'Cancel' : (props.isRanked ? 'Ranked' : 'Standard');
 });
+const isAuthenticated = computed(() => authenticationStore.isAuthenticated);
 
 const handleClick = async () => {
     matchmakingStore.setIsRanked(props.isRanked);
@@ -38,10 +41,28 @@ const handleClick = async () => {
         console.log(`Joining a ${props.isRanked ? 'ranked' : 'standard'} match...`);
         try {
             if (props.isRanked) {
-                const playerData = { id: profileStore.userID.value, isGuest: false, points: 0 };
+                const playerData = { 
+                    id: profileStore.userID.value,
+                    isGuest: false,
+                    points: 0,
+                    username: profileStore.username
+                };
                 await joinRankedQueue(playerData);
             } else {
-                const playerData = { id: guestUUID.value, isGuest: true };
+                let playerData;
+                if (isAuthenticated.value) {
+                    playerData = {
+                        id: guestUUID.value,
+                        isGuest: false,
+                        username: profileStore.username
+                    };
+                } else {
+                    playerData = {
+                        id: guestUUID.value,
+                        isGuest: true,
+                        username: 'Guest' + guestUUID.value.substring(0, 8)
+                    };
+                }
                 await joinQueue(playerData);
             }
         } catch (error) {

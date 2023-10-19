@@ -11,6 +11,7 @@ export type AuthenticatedPlayer = {
     id: number;
     isGuest: false;
     points: number;
+    username: string;
 };
 
 /**
@@ -24,6 +25,7 @@ export type AuthenticatedPlayer = {
 export type GuestPlayer = {
     id: string;
     isGuest: true;
+    username: string;
 };
 
 /**
