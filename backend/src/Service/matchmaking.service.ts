@@ -119,8 +119,6 @@ export class MatchmakingService {
         this.queueService.removeRanked(player1.id);
         this.queueService.removeRanked(player2.id);
 
-        const newGame = await this.gameQuery.createGame();
-
         return { player1, player2 };
     }
 
