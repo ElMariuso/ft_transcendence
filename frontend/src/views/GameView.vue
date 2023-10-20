@@ -1,5 +1,10 @@
+<script setup lang="ts">
+import Pong from '@/components/Pong.vue';
+
+</script>
+
 <template>
     <div>
-        <h1>This is the game page</h1>
+        <Pong />
     </div>
 </template>
