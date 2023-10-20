@@ -17,6 +17,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 import { useProfileStore } from '@/stores/ProfileStore'
 import { checkJWT } from '@/services/auth-helpers';
+import Cookies from 'js-cookie';
 
 import HomeView from '@/views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
@@ -101,9 +102,9 @@ router.beforeEach((to, from, next) => {
 			return next({ name: 'home' });
 
 		else if (to.name === 'login' && to.query.code !== undefined) {
-			localStorage.setItem('token', to.query.code.toString());
+			Cookies.set('token', to.query.code.toString(), { expires: 7 });
 			
-			const token = localStorage.getItem('token'); 
+			const token = Cookies.get('token'); 
 			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
 
 			if (twoFactorAuthEnabled) {

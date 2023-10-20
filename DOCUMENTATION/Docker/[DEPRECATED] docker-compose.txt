@@ -30,7 +30,7 @@ how they interact with each other, and provides a management script for common t
 		.Ports: The container's port 3000 is mapped to the host's port 3000.
 		.Volumes:
 			* Logs are stored in ./logs-back.
-			* Uploads/downloads are stored in ./uploads.
+			* Upload/downloads are stored in ./upload.
 			* In DEV mode, the local backend directory is mounted into the container for live code updates,
 			  allowing changes in the host directory to be reflected live in the container
 
@@ -82,7 +82,7 @@ If an unrecognized command is provided, the script will output a usage guide.
 			./transcendence.sh dev|prod restart
 
 		.clean-volumes: Deletes the directories used for persistent storage 
-						(database, logs-front, logs-back, and uploads). 
+						(database, logs-front, logs-back, and upload). 
 						Use this with caution as it removes data!
 			./transcendence.sh dev|prod clean-volumes
 

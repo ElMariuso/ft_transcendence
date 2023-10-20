@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 /**
  * Axios instance for API calls.
@@ -25,7 +26,7 @@ const instance = axios.create({
  */
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    const token = Cookies.get('token'); // Retrieve token from localStorage
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`; // Set Authorization header
     }

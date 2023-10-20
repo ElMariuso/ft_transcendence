@@ -80,15 +80,19 @@ export class UserController
 	 * @throw HTTPException with status NOT_FOUND if the absolute path of the avatar don't find the avatar
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the user failed
 	 */
-	@Get('avatar/:id')
+	@Get('/avatar/:id')
 	async getAvatar(@Param('id') id: string, @Res() res: Response)
 	{
+		console.log("AVATAR GET")
 		try
 		{
-			const newId = parseInt(id, 10);
 
+			const newId = parseInt(id, 10);
+			console.log("BEFORE GETAVATARPATH")
 			let filePath = await this.userService.getAvatarPath(newId);
 			
+			console.log("FILE PATH" + filePath)
+
 			res.sendFile(filePath);
 
 		}
@@ -101,13 +105,13 @@ export class UserController
 		}
 	}
 
-	@Get('topLadder')
+	@Get('/topLadder')
 	async getTopLadder() : Promise<UserDTO[]>
 	{
 		return await this.userService.getTopLadder();
 	}
 
-	@Get('ladder/:id') 
+	@Get('/ladder/:id') 
 	async getLadderUser(@Param('id') id :string): Promise<UserDTO[]>
 	{
 		try
@@ -162,8 +166,8 @@ export class UserController
 	 * @returns Message and uploaded's file path
 	 * 
 	 * @throw HTTPException with status BAD_REQUEST if file extension is not supported
-	 */
-	@Post('uploadAvatar/:id')
+	*/
+	@Post('/uploadAvatar/:id')
 	@UseInterceptors
 	(
 		FileInterceptor('file', 
@@ -179,7 +183,10 @@ export class UserController
 						const filename = file.originalname;
 						const extension = filename.split('.').pop();
 						const idUser = req.params.id;
-						cb(null, 'avatar' + '-' + idUser + '.' + extension);
+
+						const timestamp = Date.now();
+
+						cb(null, 'avatar' + '-' + idUser + timestamp + '.' + extension);
 					}
 				}
 			),

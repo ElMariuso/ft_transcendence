@@ -2,6 +2,7 @@
 import { onMounted, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
+import Cookies from 'js-cookie';
 import { useProfileStore } from './stores/ProfileStore'
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { initializeSocketListeners } from './services/matchmaking-helpers';
@@ -17,7 +18,7 @@ onMounted(() => {
     matchmakingStore.initializeStore(profileStore);
     initializeSocketListeners(matchmakingStore);
 
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     if (token) {
       setupStore();
     }

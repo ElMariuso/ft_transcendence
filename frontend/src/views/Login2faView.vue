@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import api from '../services/api';
 import { useProfileStore } from '../stores/ProfileStore'
 import { useRouter } from 'vue-router';
+import Cookies from 'js-cookie';
 
 const profileStore = useProfileStore();
 const router = useRouter();
@@ -42,13 +43,13 @@ watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
 	}
 });
 
-async function setupStore() {
-	await profileStore.setupProfile();
-}
+// async function setupStore() {
+// 	await profileStore.setupProfile();
+// }
 
 
 async function authenticate() {
-	setupStore();
+	// setupStore();
 	try {
 		const response = await api.post('/auth/2fa/verify', {
 			code: twoFactorAuthCode.value,
@@ -61,7 +62,7 @@ async function authenticate() {
 				twoFactorAuth: profileStore.twoFactorAuth
 			})
 			.then(res => {
-				localStorage.setItem('token', res.data);
+				Cookies.set('token', res.data, { expires: 7 });
 			})
 			router.push('/login');
 		}
