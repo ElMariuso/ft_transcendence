@@ -30,6 +30,11 @@ export const useMatchmakingStore = defineStore('matchmaking', {
 
             const matchFoundCookie = Cookies.get('matchFound');
             this.matchFound = matchFoundCookie === 'true';
+
+            const roomIDCookie = Cookies.get('roomID');
+            if (roomIDCookie) {
+                this.roomID = roomIDCookie;
+            }
         },
         setGuestUUID(value) {
             this.guestUUID = value;
@@ -73,6 +78,12 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         },
         setRoomID(id) {
             this.roomID = id;
+
+            if (id) {
+                Cookies.set('roomID', id, { expires: 365} );
+            } else {
+                Cookies.remove('roomID');
+            }
         }
     },
 });
