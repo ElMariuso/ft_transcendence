@@ -14,7 +14,7 @@ async function setupStore() {
 }
 
 onMounted(() => {
-    matchmakingStore.initializeStore();
+    matchmakingStore.initializeStore(profileStore);
     initializeSocketListeners(matchmakingStore);
 
     const token = localStorage.getItem('token');

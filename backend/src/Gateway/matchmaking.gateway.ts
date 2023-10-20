@@ -39,6 +39,16 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
   async handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
+
+    const roomId = this.findRoomIdByClientId(client.id);
+
+    if (roomId) {
+      client.leave(roomId);
+      console.log(`Client ${client.id} removed from room ${roomId}`);
+      this.server.to(roomId).emit('user-disconnected', { clientId: client.id, roomId });
+    }
+    this.onlinePlayers.delete(client.id);
+    this.clientRooms.delete(client.id);
   }
 
   @SubscribeMessage('join-standard')
@@ -97,6 +107,23 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       client.emit('left-room', { status: 'You have left the ranked match room', roomId });
     } else {
       client.emit('error', { status: 'Error leaving room or room not found' });
+    }
+  }
+
+  @SubscribeMessage('rejoin-room')
+  rejoinRoom(client: Socket, data: { roomId: string, username: string}): void {
+    const roomId = data.roomId;
+    const username = data.username;
+    const room = this.server.sockets.adapter.rooms.get(roomId);
+    
+    if (room) {
+      client.join(roomId);
+      client.emit('rejoined-room', { status: 'Rejoined the room', roomId });
+
+      this.clientRooms.set(client.id, roomId);
+      this.onlinePlayers.set(client.id, { socketId: client.id, username: username });
+    } else {
+      client.emit('rejoin-failed', { status: 'Failed to rejoin the room', roomId });
     }
   }
 

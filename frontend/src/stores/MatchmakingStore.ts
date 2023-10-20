@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
+import { rejoinRoom } from '@/services/matchmaking-helpers';
 
 export const useMatchmakingStore = defineStore('matchmaking', {
     state: () => ({
@@ -14,7 +15,7 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         roomID: null,
     }),
     actions: {
-        initializeStore() {
+        initializeStore(profileStore) {
             let guestUUIDCookie = Cookies.get('guestUUID');
             if (!guestUUIDCookie) {
                 guestUUIDCookie = uuidv4();
@@ -34,6 +35,17 @@ export const useMatchmakingStore = defineStore('matchmaking', {
             const roomIDCookie = Cookies.get('roomID');
             if (roomIDCookie) {
                 this.roomID = roomIDCookie;
+                let username;
+                if (profileStore.isAuthenticated) {
+                    username = profileStore.username;
+                } else {
+                    username = 'Guest' + this.guestUUID.substring(0, 8);
+                }
+                const data = { 
+                    roomId: this.roomID, 
+                    username: username
+                };
+                rejoinRoom(data);
             }
         },
         setGuestUUID(value) {
@@ -80,7 +92,7 @@ export const useMatchmakingStore = defineStore('matchmaking', {
             this.roomID = id;
 
             if (id) {
-                Cookies.set('roomID', id, { expires: 365} );
+                Cookies.set('roomID', id, { expires: 1} );
             } else {
                 Cookies.remove('roomID');
             }

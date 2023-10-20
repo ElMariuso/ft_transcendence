@@ -33,6 +33,10 @@ const quitRankedMatch = () => {
     socket.emit('quit-ranked');
 };
 
+const rejoinRoom = (data) => {
+    socket.emit('rejoin-room', data);
+};
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -125,6 +129,11 @@ const initializeSocketListeners = (matchmakingStore) => {
 
         router.push({ name: 'home'});
     });
+
+    socket.on('rejoin-failed', (response) => {
+        console.log(response);
+        matchmakingStore.setRoomID(null);
+    });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, initializeSocketListeners };
