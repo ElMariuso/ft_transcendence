@@ -1,7 +1,13 @@
-export function gameLoop(context, canvas, gameStore) {
+export function gameLoop(context, canvas, gameStore, movingUp, movingDown) {
     function loop() {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (movingUp.value) {
+            gameStore.isFirstPlayer ? gameStore.racket1Up(true) : gameStore.racket2Up(true);
+        } else if (movingDown.value) {
+            gameStore.isFirstPlayer ? gameStore.racket1Down(true) : gameStore.racket2Down(true);
+        }
 
         drawGame(context, canvas, gameStore.racket1Size, gameStore.racket2Size, gameStore.racket1Position, gameStore.racket2Position, gameStore.score1, gameStore.score2);
 

@@ -127,6 +127,17 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
   }
 
+  @SubscribeMessage('update-racket')
+  updateRacket(client: Socket, data: string): void {
+    const roomId = this.findRoomIdByClientId(client.id);
+
+    if (roomId) {
+      client.broadcast.to(roomId).emit('racket-update', data);
+    } else {
+      client.emit('error', { status: 'Error finding room or room not found' });
+    }
+  }
+
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
     const player1Info = this.onlinePlayers.get(match.player1.id);
     const player2Info = this.onlinePlayers.get(match.player2.id);

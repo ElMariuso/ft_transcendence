@@ -1,3 +1,4 @@
+import { useGameStore } from "@/stores/GameStore";
 import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
 
@@ -37,6 +38,10 @@ const rejoinRoom = (data) => {
     socket.emit('rejoin-room', data);
 };
 
+const updateGame = (action) => {
+    socket.emit('update-racket', action);
+};
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -71,6 +76,7 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('match-found-standard', (response) => {
+        const gameStore = useGameStore();
         console.log(response);
         matchmakingStore.setMatchFound(true);
 
@@ -79,9 +85,11 @@ const initializeSocketListeners = (matchmakingStore) => {
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
+            gameStore.setIsFirstPlayer(true);
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
+            gameStore.setIsFirstPlayer(false);
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
@@ -96,6 +104,7 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('match-found-ranked', (response) => {
+        const gameStore = useGameStore();
         console.log(response);
         matchmakingStore.setMatchFound(true);
 
@@ -104,9 +113,11 @@ const initializeSocketListeners = (matchmakingStore) => {
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
+            gameStore.setIsFirstPlayer(true);
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
+            gameStore.setIsFirstPlayer(false);
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
@@ -134,6 +145,28 @@ const initializeSocketListeners = (matchmakingStore) => {
         console.log(response);
         matchmakingStore.setRoomID(null);
     });
+
+    socket.on('racket-update', (response) => {
+        const gameStore = useGameStore();
+
+        console.log(response);
+        switch (response) {
+            case 'racket1-up':
+                gameStore.racket1Up(false);
+                break;
+            case 'racket1-down':
+                gameStore.racket1Down(false);
+                break;
+            case 'racket2-up':
+                gameStore.racket2Up(false);
+                break;
+            case 'racket2-down':
+                gameStore.racket2Down(false);
+                break;
+            default:
+                console.error('Unknown action:', response);
+        }
+    });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, updateGame, initializeSocketListeners };
