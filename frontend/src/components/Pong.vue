@@ -2,8 +2,11 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { gameLoop } from '@/services/game-helpers';
 import { useGameStore } from '@/stores/GameStore';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { askGamesInformations } from '@/services/matchmaking-helpers';
 
 const gameStore = useGameStore();
+const matchmakingStore = useMatchmakingStore();
 
 const movingUp = ref(false);
 const movingDown = ref(false);
@@ -47,8 +50,10 @@ onMounted(() => {
     const context = canvas.getContext('2d');
 
     if (context) {
-        gameStore.initializeGame(canvas);
-        gameLoop(context, canvas, gameStore, movingUp, movingDown);
+        const roomID = matchmakingStore.roomID;
+
+        askGamesInformations(roomID);
+        gameLoop(context, canvas, gameStore, roomID, movingUp, movingDown);
     }
 });
 

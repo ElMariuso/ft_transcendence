@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
+import { GameState } from 'src/Model/gamestate.model';
 
 @WebSocketGateway({ 
   cors: {
@@ -21,6 +22,7 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
   private clientRooms: Map<string, string> = new Map();
+  private gameStates: Map<string, GameState> = new Map();
 
   constructor(
     private readonly matchmakingService: MatchmakingService,
@@ -127,14 +129,23 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
   }
 
-  @SubscribeMessage('update-racket')
-  updateRacket(client: Socket, data: string): void {
-    const roomId = this.findRoomIdByClientId(client.id);
+  @SubscribeMessage('ask-games-informations')
+  updateGame(client: Socket, roomId: string): void {
+    const gameState = this.gameStates.get(roomId);
 
-    if (roomId) {
-      client.broadcast.to(roomId).emit('racket-update', data);
+    if (gameState) {
+      const informations = {
+        score1: gameState.score1,
+        score2: gameState.score2,
+        racket1Size: gameState.racket1Size,
+        racket2Size: gameState.racket2Size,
+        racket1Position: gameState.racket1Position,
+        racket2Position: gameState.racket2Position,
+        ballPosition: gameState.ballPosition,
+      };
+      client.emit('games-informations', informations)
     } else {
-      client.emit('error', { status: 'Error finding room or room not found' });
+      client.emit('cant-found-games-informations', { message: 'Game s information not available for provided room ID.' });
     }
   }
 
@@ -144,11 +155,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
+      const newGameState = new GameState();
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
       this.clientRooms.set(player1Info.socketId, roomId);
       this.clientRooms.set(player2Info.socketId, roomId);
+
+      this.gameStates.set(roomId, newGameState);
 
       this.server.to(roomId).emit('match-found-standard', { 
         player1: { id: match.player1.id, username: player1Info.username }, 
@@ -164,11 +178,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
+      const newGameState = new GameState();
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
       this.clientRooms.set(player1Info.socketId, roomId);
       this.clientRooms.set(player2Info.socketId, roomId);
+
+      this.gameStates.set(roomId, newGameState);
 
       this.server.to(roomId).emit('match-found-ranked', { 
         player1: { id: match.player1.id, username: player1Info.username }, 
@@ -180,5 +197,27 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
   private findRoomIdByClientId(clientId: string): string | undefined {
     return this.clientRooms.get(clientId);
+  }
+
+  private endMatch(roomId: string, wasRanked: boolean): void {
+    const gameState = this.gameStates.get(roomId);
+
+    if (gameState) {
+      this.server.to(roomId).emit('match-ended');
+
+      this.gameStates.delete(roomId);
+
+      const room = this.server.sockets.adapter.rooms.get(roomId);
+      if (room) {
+        for (const clientId of room) {
+          const clientSocket = this.server.sockets.sockets.get(clientId);
+          if (clientSocket) {
+            clientSocket.leave(roomId);
+            this.clientRooms.delete(clientId);
+            this.onlinePlayers.delete(clientId);
+          }
+        }
+      }
+    }
   }
 }

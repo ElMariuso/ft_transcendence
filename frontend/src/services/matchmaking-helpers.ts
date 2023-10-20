@@ -38,8 +38,8 @@ const rejoinRoom = (data) => {
     socket.emit('rejoin-room', data);
 };
 
-const updateGame = (action) => {
-    socket.emit('update-racket', action);
+const askGamesInformations = (roomId) => {
+    socket.emit('ask-games-informations', roomId);
 };
 
 const initializeSocketListeners = (matchmakingStore) => {
@@ -146,27 +146,11 @@ const initializeSocketListeners = (matchmakingStore) => {
         matchmakingStore.setRoomID(null);
     });
 
-    socket.on('racket-update', (response) => {
+    socket.on('games-informations', (gameState) => {
         const gameStore = useGameStore();
-
-        console.log(response);
-        switch (response) {
-            case 'racket1-up':
-                gameStore.racket1Up(false);
-                break;
-            case 'racket1-down':
-                gameStore.racket1Down(false);
-                break;
-            case 'racket2-up':
-                gameStore.racket2Up(false);
-                break;
-            case 'racket2-down':
-                gameStore.racket2Down(false);
-                break;
-            default:
-                console.error('Unknown action:', response);
-        }
+        
+        gameStore.updateGameState(gameState);
     });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, updateGame, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, askGamesInformations, initializeSocketListeners };
