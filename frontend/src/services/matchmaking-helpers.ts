@@ -42,6 +42,10 @@ const askGamesInformations = (roomId) => {
     socket.emit('ask-games-informations', roomId);
 };
 
+const updateRacket = (roomId, action) => {
+    socket.emit('update-racket', roomId, action);
+};
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -153,4 +157,4 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, askGamesInformations, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, askGamesInformations, updateRacket, initializeSocketListeners };

@@ -33,18 +33,26 @@ export class GameState {
     }
 
     racket1Up() {
-        this.racket1Position.y -= 3;
+        if (this.racket1Position.y > 0) {
+            this.racket1Position.y -= 3;
+        }
     }
 
     racket1Down() {
-        this.racket1Position.y += 3;
+        if (this.racket1Position.y < this.canvasSize.height - this.racket1Size.height) {
+            this.racket1Position.y += 3;
+        }
     }
 
     racket2Up() {
-        this.racket2Position.y -= 3;
+        if (this.racket2Position.y > 0) {
+            this.racket2Position.y -= 3;
+        }
     }
 
     racket2Down() {
-        this.racket2Position.y += 3;
+        if (this.racket2Position.y < this.canvasSize.height - this.racket2Size.height) {
+            this.racket2Position.y += 3;
+        }
     }
 }

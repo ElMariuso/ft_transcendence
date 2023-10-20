@@ -1,4 +1,4 @@
-import { askGamesInformations } from "./matchmaking-helpers";
+import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
 
 export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDown) {
     function loop() {
@@ -7,6 +7,11 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
         const gameState = gameStore.gameState;
 
         if (gameState) {
+            if (movingUp.value) {
+                gameStore.isFirstPlayer ? updateRacket(roomId, 'racket1-up') : updateRacket(roomId, 'racket2-up');
+            } else if (movingDown.value) {
+                gameStore.isFirstPlayer ? updateRacket(roomId, 'racket1-down') : updateRacket(roomId, 'racket2-down');
+            }
             drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.score1, gameState.score2);
         }
 

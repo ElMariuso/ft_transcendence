@@ -149,6 +149,33 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
   }
 
+  @SubscribeMessage('update-racket')
+  updateRacket(client: Socket, [roomId, action]: [string, string]): void {
+    const gameState = this.gameStates.get(roomId);
+    
+    if (gameState) {
+      switch (action) {
+        case 'racket1-up':
+          gameState.racket1Up();
+          break;
+        case 'racket1-down':
+          gameState.racket1Down();
+          break;
+        case 'racket2-up':
+          gameState.racket2Up();
+          break;
+        case 'racket2-down':
+          gameState.racket2Down();
+          break;
+        default:
+          client.emit('cant-update-racket', { message: 'Can t update racket' });
+          break;
+      }
+    } else {
+      client.emit('cant-update-racket', { message: 'Can t update racket' });
+    }
+  }
+
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
     const player1Info = this.onlinePlayers.get(match.player1.id);
     const player2Info = this.onlinePlayers.get(match.player2.id);
