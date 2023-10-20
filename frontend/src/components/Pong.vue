@@ -1,19 +1,17 @@
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue';
-import { gameLoop, paddleHeight, paddleWidth } from '@/services/game-helpers';
+import { onMounted } from 'vue';
+import { gameLoop } from '@/services/game-helpers';
+import { useGameStore } from '@/stores/GameStore';
 
-const leftPaddle = ref({ x: 0, y: 0 });
-const rightPaddle = ref({ x: 0, y: 0 });
+const gameStore = useGameStore();
 
 onMounted(() => {
     const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
     const context = canvas.getContext('2d');
 
     if (context) {
-        leftPaddle.value = { x: 30, y: canvas.height / 2 - paddleHeight / 2 };
-        rightPaddle.value = { x: canvas.width - paddleWidth - 30, y: canvas.height / 2 - paddleHeight / 2 };
-
-        gameLoop(context, canvas, leftPaddle.value, rightPaddle.value);
+        gameStore.initializeGame(canvas);
+        gameLoop(context, canvas, gameStore);
     }
 });
 </script>

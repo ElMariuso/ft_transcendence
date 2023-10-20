@@ -1,20 +1,19 @@
-export const paddleWidth = 6;
-export const paddleHeight = 42;
+export function gameLoop(context, canvas, gameStore) {
+    function loop() {
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
-export function gameLoop(context, canvas, leftPaddle, rightPaddle, player1Score = 0, player2Score = 0) {
-    context.fillStyle = 'black';
-    context.fillRect(0, 0, canvas.width, canvas.height);
+        drawGame(context, canvas, gameStore.racket1Size, gameStore.racket2Size, gameStore.racket1Position, gameStore.racket2Position, gameStore.score1, gameStore.score2);
 
-    drawGame(context, canvas, leftPaddle, rightPaddle, player1Score, player2Score);
-
-    requestAnimationFrame(() => gameLoop(context, canvas, leftPaddle, rightPaddle, player1Score, player2Score));
+        requestAnimationFrame(loop);
+    }
+    loop();
 }
 
-function drawGame(context, canvas, leftPaddle, rightPaddle, player1Score = 0, player2Score = 0) {
+function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, score1, score2) {
     drawNet(context, canvas);
-
-    drawPaddle(context, leftPaddle.x, leftPaddle.y);
-    drawPaddle(context, rightPaddle.x, rightPaddle.y);
+    drawPaddle(context, racket1Position.x, racket1Position.y, racket1Size.width, racket1Size.height);
+    drawPaddle(context, racket2Position.x, racket2Position.y, racket2Size.width, racket2Size.height);
 
     context.fillStyle = 'white';
     context.font = '35px Arial';
@@ -23,13 +22,13 @@ function drawGame(context, canvas, leftPaddle, rightPaddle, player1Score = 0, pl
     const player2ScoreX = (canvas.width / 4) * 3;
     const scoreY = 50;
 
-    context.fillText(String(player1Score), player1ScoreX, scoreY);
-    context.fillText(String(player2Score), player2ScoreX, scoreY);
+    context.fillText(String(score1), player1ScoreX, scoreY);
+    context.fillText(String(score2), player2ScoreX, scoreY);
 }
 
-function drawPaddle(context, x, y) {
+function drawPaddle(context, x, y, width, height) {
     context.fillStyle = 'white';
-    context.fillRect(x, y, paddleWidth, paddleHeight);
+    context.fillRect(x, y, width, height);
 }
 
 function drawNet(context, canvas) {
