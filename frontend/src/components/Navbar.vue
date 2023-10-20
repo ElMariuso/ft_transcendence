@@ -7,13 +7,17 @@ import jwt_decode from 'jwt-decode';
 import MatchmakingButton from './MatchmakingButton.vue';
 import LeaveMatch from './LeaveMatch.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import JoinMatch from './JoinMatch.vue';
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
+const matchmakingStore = useMatchmakingStore();
 const route = useRoute();
 
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const showButtons = computed(() => route.path.startsWith('/game/'));
+const isInGame = computed(() => (matchmakingStore.roomID !== null));
 
 // Sets username, avatar and 2fa to correct DB values
 const token = localStorage.getItem('token');
@@ -45,9 +49,10 @@ if (token) {
 			</router-link>
 
 			<div class="flex space-x-4">
-				<matchmaking-button v-if="!showButtons" />
-				<matchmaking-button v-if="!showButtons && isAuthenticated" :is-ranked="true" />
-				<LeaveMatch v-if="showButtons" />
+				<matchmaking-button v-if="!showButtons && !isInGame" />
+				<matchmaking-button v-if="!showButtons && isAuthenticated && !isInGame" :is-ranked="true" />
+				<LeaveMatch v-if="showButtons && isInGame" />
+				<JoinMatch v-if="!showButtons && isInGame" />
 			</div>
 		</div>
 		
