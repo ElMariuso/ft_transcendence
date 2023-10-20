@@ -6,6 +6,7 @@ export class GameState {
     racket2Size: { width: number; height: number; };
     racket1Position: { x: number; y: number; };
     racket2Position: { x: number; y: number; };
+    ballSize: { width: number; height: number; };
     ballPosition: { x: number; y: number; };
 
     constructor() {
@@ -22,6 +23,11 @@ export class GameState {
             x: this.canvasSize.width - this.racket2Size.width - 30,
             y: this.canvasSize.height / 2 - this.racket2Size.height / 2
         };
+        this.ballSize = { width: 10, height: 10 };
+        this.ballPosition = {
+            x: 60,
+            y: 60
+        };
     }
 
     updateScore1(value) {
@@ -34,25 +40,25 @@ export class GameState {
 
     racket1Up() {
         if (this.racket1Position.y > 0) {
-            this.racket1Position.y -= 3;
+            this.racket1Position.y -= 6;
         }
     }
 
     racket1Down() {
         if (this.racket1Position.y < this.canvasSize.height - this.racket1Size.height) {
-            this.racket1Position.y += 3;
+            this.racket1Position.y += 6;
         }
     }
 
     racket2Up() {
         if (this.racket2Position.y > 0) {
-            this.racket2Position.y -= 3;
+            this.racket2Position.y -= 6;
         }
     }
 
     racket2Down() {
         if (this.racket2Position.y < this.canvasSize.height - this.racket2Size.height) {
-            this.racket2Position.y += 3;
+            this.racket2Position.y += 6;
         }
     }
 }

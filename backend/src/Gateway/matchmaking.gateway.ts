@@ -141,6 +141,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         racket2Size: gameState.racket2Size,
         racket1Position: gameState.racket1Position,
         racket2Position: gameState.racket2Position,
+        ballSize: gameState.ballSize,
         ballPosition: gameState.ballPosition,
       };
       client.emit('games-informations', informations)
@@ -152,7 +153,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   @SubscribeMessage('update-racket')
   updateRacket(client: Socket, [roomId, action]: [string, string]): void {
     const gameState = this.gameStates.get(roomId);
-    
+
     if (gameState) {
       switch (action) {
         case 'racket1-up':

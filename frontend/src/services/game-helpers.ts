@@ -2,9 +2,9 @@ import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
 
 export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDown) {
     function loop() {
+        const gameState = gameStore.gameState;
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        const gameState = gameStore.gameState;
 
         if (gameState) {
             if (movingUp.value) {
@@ -12,25 +12,19 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
             } else if (movingDown.value) {
                 gameStore.isFirstPlayer ? updateRacket(roomId, 'racket1-down') : updateRacket(roomId, 'racket2-down');
             }
-            drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.score1, gameState.score2);
+            drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
         }
-
-        // if (movingUp.value) {
-        //     gameStore.isFirstPlayer ? gameStore.racket1Up(true) : gameStore.racket2Up(true);
-        // } else if (movingDown.value) {
-        //     gameStore.isFirstPlayer ? gameStore.racket1Down(true) : gameStore.racket2Down(true);
-        // }
-
         askGamesInformations(roomId);
         requestAnimationFrame(loop);
     }
     loop();
 }
 
-function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, score1, score2) {
+function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, ballSize, ballPosition, score1, score2) {
     drawNet(context, canvas);
-    drawPaddle(context, racket1Position.x, racket1Position.y, racket1Size.width, racket1Size.height);
-    drawPaddle(context, racket2Position.x, racket2Position.y, racket2Size.width, racket2Size.height);
+    drawSquare(context, racket1Position.x, racket1Position.y, racket1Size.width, racket1Size.height);
+    drawSquare(context, racket2Position.x, racket2Position.y, racket2Size.width, racket2Size.height);
+    drawSquareFromCenter(context, ballPosition.x, ballPosition.y, ballSize.width, ballSize.height);
 
     context.fillStyle = 'white';
     context.font = '35px Arial';
@@ -43,9 +37,14 @@ function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, ra
     context.fillText(String(score2), player2ScoreX, scoreY);
 }
 
-function drawPaddle(context, x, y, width, height) {
+function drawSquare(context, x, y, width, height) {
     context.fillStyle = 'white';
     context.fillRect(x, y, width, height);
+}
+
+function drawSquareFromCenter(context, x, y, width, height) {
+    context.fillStyle = 'white';
+    context.fillRect(x - width / 2, y - height / 2, width, height);
 }
 
 function drawNet(context, canvas) {
