@@ -1,4 +1,8 @@
 export class GameState {
+    player1ID: number | string;
+    player2ID: number | string;
+    player1Username: string;
+    player2Username: string;
     canvasSize: { width: number; height: number; };
     score1: number;
     score2: number;
@@ -12,7 +16,17 @@ export class GameState {
     ballSpeed: number;
 
     private endMatchCallback: (winner: string) => void;
-    constructor(endMatchCallback: (winner: string) => void) {
+    constructor(
+        player1ID: number | string,
+        player2ID: number | string,
+        player1Username: string,
+        player2Username: string,
+        endMatchCallback: (winner: string) => void
+    ) {
+        this.player1ID = player1ID;
+        this.player2ID = player2ID;
+        this.player1Username = player1Username;
+        this.player2Username = player2Username;
         this.endMatchCallback = endMatchCallback;
         this.canvasSize = { width: 858, height: 525 };
         this.score1 = 0;

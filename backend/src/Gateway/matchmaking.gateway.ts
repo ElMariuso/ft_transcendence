@@ -173,9 +173,15 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
-      const newGameState = new GameState((winner) => {
-        this.endMatch(roomId, false);
-      });
+      const newGameState = new GameState(
+        match.player1.id,
+        match.player2.id,
+        player1Info.username,
+        player2Info.username,
+        (winner) => {
+            console.log(`${winner} has won the match!`);
+        }
+      );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
@@ -198,9 +204,15 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
-      const newGameState = new GameState((winner) => {
-        this.endMatch(roomId, true);
-      });
+      const newGameState = new GameState(
+        match.player1.id,
+        match.player2.id,
+        player1Info.username,
+        player2Info.username,
+        (winner) => {
+            console.log(`${winner} has won the match!`);
+        }
+      );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 

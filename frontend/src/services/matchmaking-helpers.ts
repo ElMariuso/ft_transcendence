@@ -35,7 +35,13 @@ const rejoinRoom = (data) => {
 };
 
 const askGamesInformations = (roomId) => {
-    socket.emit('ask-games-informations', roomId);
+    return new Promise((resolve) => {
+        socket.once('games-informations', (data) => {
+            resolve(data);
+        });
+
+        socket.emit('ask-games-informations', roomId);
+    });
 };
 
 const updateRacket = (roomId, action) => {
@@ -76,7 +82,6 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('match-found-standard', (response) => {
-        const gameStore = useGameStore();
         console.log(response);
         matchmakingStore.setMatchFound(true);
 
@@ -85,11 +90,9 @@ const initializeSocketListeners = (matchmakingStore) => {
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-            gameStore.setIsFirstPlayer(true);
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
-            gameStore.setIsFirstPlayer(false);
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
@@ -104,7 +107,6 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('match-found-ranked', (response) => {
-        const gameStore = useGameStore();
         console.log(response);
         matchmakingStore.setMatchFound(true);
 
@@ -113,11 +115,9 @@ const initializeSocketListeners = (matchmakingStore) => {
         if (response.player1.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-            gameStore.setIsFirstPlayer(true);
         } else if (response.player2.id == matchmakingStore.guestUUID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
-            gameStore.setIsFirstPlayer(false);
         }
         if (opponentUUID) {
             matchmakingStore.setOpponentUUID(opponentUUID);
