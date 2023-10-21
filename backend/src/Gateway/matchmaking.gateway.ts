@@ -184,6 +184,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         player2Info.username,
         (winner) => {
             console.log(`${winner} has won the match!`);
+            this.endMatch(roomId, false);
         }
       );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
@@ -215,6 +216,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         player2Info.username,
         (winner) => {
             console.log(`${winner} has won the match!`);
+            this.endMatch(roomId, true);
         }
       );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
