@@ -158,7 +158,9 @@ const initializeSocketListeners = (matchmakingStore) => {
         matchmakingStore.setOpponentUsername(null);
         matchmakingStore.setRoomID(null);
 
-        router.push({ name: 'home'});
+        setTimeout(() => {
+            router.push({ name: 'home'});
+        }, 10000);
     });
 };
 

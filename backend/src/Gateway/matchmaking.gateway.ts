@@ -238,7 +238,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
           }
         }
       }
-      this.gameStates.delete(roomId);
+      setTimeout(() => {
+        this.gameStates.delete(roomId);
+      },  15000);
     }
   }
 }
