@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 import { GameState } from 'src/Model/gamestate.model';
+import { GameService } from 'src/Service/game.service';
+import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
 
 @WebSocketGateway({ 
   cors: {
@@ -26,6 +28,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
   constructor(
     private readonly matchmakingService: MatchmakingService,
+    private readonly gameService: GameService,
     private readonly eventEmitter: EventEmitter,
   ) {
     this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
@@ -245,7 +248,22 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (gameState) {
       this.server.to(roomId).emit('match-ended', { status: 'You have finished the match room', roomId });  
       const room = this.server.sockets.adapter.rooms.get(roomId);
-      if (room) {
+      if (room) {        
+        if (wasRanked) {
+          let id1: number = parseInt(gameState.player1ID as string, 10);
+          let id2: number = parseInt(gameState.player2ID as string, 10);;
+          const createGameDto = new CreateGameDTO();
+
+          createGameDto.idPlayerOne = id1;
+          createGameDto.idPlayerSecond = id2;
+          if (gameState.score1 === 5)
+            createGameDto.idWinner = id1;
+          else
+            createGameDto.idWinner = id2;
+          createGameDto.scoreLeft = gameState.score1;
+          createGameDto.scoreRight = gameState.score2;
+          this.gameService.createGame(createGameDto);
+        }
         for (const clientId of room) {
           const clientSocket = this.server.sockets.sockets.get(clientId);
           if (clientSocket) {

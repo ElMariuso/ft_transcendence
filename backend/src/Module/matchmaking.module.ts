@@ -6,6 +6,7 @@ import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { QueueService } from 'src/Service/queue.service';
 import { GameQuery } from 'src/Query/game.query';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
+import { GameService } from 'src/Service/game.service';
 
 @Module({
     imports: [EventEmitterModule.forRoot()],
@@ -13,6 +14,7 @@ import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
         PrismaClient,
         MatchmakingGateway,
         MatchmakingService,
+        GameService,
         QueueService,
         GameQuery,
         CreateGameDTO
