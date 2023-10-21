@@ -11,7 +11,9 @@ export class GameState {
     ballVelocity: { x: number; y: number; };
     ballSpeed: number;
 
-    constructor() {
+    private endMatchCallback: (winner: string) => void;
+    constructor(endMatchCallback: (winner: string) => void) {
+        this.endMatchCallback = endMatchCallback;
         this.canvasSize = { width: 858, height: 525 };
         this.score1 = 0;
         this.score2 = 0;
@@ -33,10 +35,20 @@ export class GameState {
 
     updateScore1(value) {
         this.score1 += value;
+        this.checkEndMatch();
     }
 
     updateScore2(value) {
         this.score2 += value;
+        this.checkEndMatch();
+    }
+
+    private checkEndMatch() {
+        if (this.score1 === 5) {
+            this.endMatchCallback('player1');
+        } else if (this.score2 === 5) {
+            this.endMatchCallback('player2');
+        }
     }
 
     racket1Up() {
@@ -103,7 +115,6 @@ export class GameState {
             this.resetBall();
         }
     }
-    
 
     resetBall() {
         this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };

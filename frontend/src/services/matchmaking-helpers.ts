@@ -155,6 +155,10 @@ const initializeSocketListeners = (matchmakingStore) => {
         
         gameStore.updateGameState(gameState);
     });
+
+    socket.on('match-ended', (response) => {
+        console.log(response);
+    });
 };
 
 export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, askGamesInformations, updateRacket, initializeSocketListeners };

@@ -184,7 +184,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
-      const newGameState = new GameState();
+      const newGameState = new GameState((winner) => {
+        this.endMatch(roomId, false);
+      });
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
@@ -207,7 +209,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const roomId = uuidv4();
 
     if (player1Info && player2Info) {
-      const newGameState = new GameState();
+      const newGameState = new GameState((winner) => {
+        this.endMatch(roomId, true);
+      });
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
       this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
 
@@ -232,21 +236,20 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const gameState = this.gameStates.get(roomId);
 
     if (gameState) {
-      this.server.to(roomId).emit('match-ended');
-
-      this.gameStates.delete(roomId);
-
+      this.server.to(roomId).emit('match-ended', { status: 'You have finished the match room', roomId });  
       const room = this.server.sockets.adapter.rooms.get(roomId);
       if (room) {
         for (const clientId of room) {
           const clientSocket = this.server.sockets.sockets.get(clientId);
           if (clientSocket) {
+            this.updateGame(clientSocket, roomId);
             clientSocket.leave(roomId);
             this.clientRooms.delete(clientId);
             this.onlinePlayers.delete(clientId);
           }
         }
       }
+      this.gameStates.delete(roomId);
     }
   }
 }
