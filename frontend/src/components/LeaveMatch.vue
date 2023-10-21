@@ -14,7 +14,7 @@ const buttonText = computed(() => {
     return 'Leave';
 });
 
-const quitMatch = async () => {
+const quitMatchFront = async () => {
     console.log('Leaving the match...');
     try {
         await quitMatch();
@@ -25,5 +25,5 @@ const quitMatch = async () => {
 </script>
 
 <template>
-    <button @click="quitMatch">{{ buttonText }}</button>
+    <button @click="quitMatchFront">{{ buttonText }}</button>
 </template>
