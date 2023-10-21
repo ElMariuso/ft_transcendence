@@ -154,6 +154,11 @@ const initializeSocketListeners = (matchmakingStore) => {
 
     socket.on('match-ended', (response) => {
         console.log(response);
+        matchmakingStore.setOpponentUUID(null);
+        matchmakingStore.setOpponentUsername(null);
+        matchmakingStore.setRoomID(null);
+
+        router.push({ name: 'home'});
     });
 };
 
