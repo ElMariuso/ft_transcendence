@@ -134,6 +134,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     const gameState = this.gameStates.get(roomId);
 
     if (gameState) {
+      gameState.updateBallPosition();
       const informations = {
         score1: gameState.score1,
         score2: gameState.score2,
