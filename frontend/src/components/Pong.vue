@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { gameLoop } from '@/services/game-helpers';
 import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
@@ -9,6 +9,9 @@ import { useProfileStore } from '@/stores/ProfileStore';
 const gameStore = useGameStore();
 const profileStore = useProfileStore();
 const matchmakingStore = useMatchmakingStore();
+
+const player1Username = computed(() => gameStore.player1Username);
+const player2Username = computed(() => gameStore.player2Username);
 
 const movingUp = ref(false);
 const movingDown = ref(false);
@@ -82,6 +85,12 @@ onUnmounted(() => {
 <template>
     <div class="flex justify-center items-center">
         <canvas id="gameCanvas" class="absolute transform -translate-x-1/2 -translate-y-1/2" width="858" height="525"></canvas>
+        <div class="absolute left-0 top-0 flex justify-center items-center">
+            {{ player1Username }}
+        </div>
+        <div class="absolute right-0 top-0 flex justify-center items-center">
+            {{ player2Username }}
+        </div>
     </div>
 </template>
   

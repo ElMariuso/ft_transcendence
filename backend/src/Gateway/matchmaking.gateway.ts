@@ -125,6 +125,10 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (gameState) {
       gameState.updateBallPosition();
       const informations = {
+        player1ID: gameState.player1ID,
+        player2ID: gameState.player2ID,
+        player1Username: gameState.player1Username,
+        player2Username: gameState.player2Username,
         score1: gameState.score1,
         score2: gameState.score2,
         racket1Size: gameState.racket1Size,
