@@ -90,23 +90,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
   }
   
-  @SubscribeMessage('quit-standard')
-  quitStandardMatch(client: Socket): void {
-        const roomId = this.findRoomIdByClientId(client.id);
-        if (roomId) {
-          client.leave(roomId);
-          client.emit('left-room', { status: 'You have left the standard match room', roomId });
-        } else {
-          client.emit('error', { status: 'Error leaving room or room not found' });
-        }
-  }
-
-  @SubscribeMessage('quit-ranked')
-  quitRankedMatch(client: Socket): void {
+  @SubscribeMessage('quit-match')
+  quitMatch(client: Socket): void {
     const roomId = this.findRoomIdByClientId(client.id);
     if (roomId) {
       client.leave(roomId);
-      client.emit('left-room', { status: 'You have left the ranked match room', roomId });
+      client.emit('left-room', { status: 'You have left the match room', roomId });
     } else {
       client.emit('error', { status: 'Error leaving room or room not found' });
     }

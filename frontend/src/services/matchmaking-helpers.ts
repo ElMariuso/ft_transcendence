@@ -26,12 +26,8 @@ const getRankedQueueStatus = () => {
     socket.emit('status-ranked');
 };
 
-const quitStandardMatch = () => {
-    socket.emit('quit-standard');
-};
-
-const quitRankedMatch = () => {
-    socket.emit('quit-ranked');
+const quitMatch = () => {
+    socket.emit('quit-match');
 };
 
 const rejoinRoom = (data) => {
@@ -161,4 +157,4 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, askGamesInformations, updateRacket, initializeSocketListeners };
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitMatch, rejoinRoom, askGamesInformations, updateRacket, initializeSocketListeners };

@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { quitRankedMatch, quitStandardMatch } from '@/services/matchmaking-helpers';
+import { quitMatch  } from '@/services/matchmaking-helpers';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
 const route = useRoute();
@@ -17,11 +17,7 @@ const buttonText = computed(() => {
 const quitMatch = async () => {
     console.log('Leaving the match...');
     try {
-        if (matchmakingStore.isRanked) {
-            await quitRankedMatch();
-        } else {
-            await quitStandardMatch();
-        }
+        await quitMatch();
     } catch (error) {
         console.error(error);
     }
