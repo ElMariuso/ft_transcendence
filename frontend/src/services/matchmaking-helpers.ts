@@ -153,7 +153,9 @@ const initializeSocketListeners = (matchmakingStore) => {
         matchmakingStore.setRoomID(null);
     
         setTimeout(() => {
-            router.push({ name: 'home'});
+            if (router.currentRoute.value.path.startsWith('/game')) {
+                router.push({ name: 'home' });
+            }
             gameStore.setMatchResult(null);
         }, 10000);
     });    
