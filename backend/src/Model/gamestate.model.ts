@@ -96,6 +96,7 @@ export class GameState {
             this.checkCollisions();
         } else {
             this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+            this.ballSize = { width: 0, height: 0 };
         }
     }
 

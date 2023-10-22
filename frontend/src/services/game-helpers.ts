@@ -12,7 +12,13 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
             } else if (movingDown.value) {
                 gameStore.isFirstPlayer ? updateRacket(roomId, 'racket1-down') : updateRacket(roomId, 'racket2-down');
             }
-            drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
+            if (gameState.score1 >= 5) {
+                drawWinner(context, canvas, gameState.player1Username);
+            } else if (gameState.score2 >= 5) {
+                drawWinner(context, canvas, gameState.player2Username);
+            } else {
+                drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
+            }
         }
         askGamesInformations(roomId);
         requestAnimationFrame(loop);
@@ -57,4 +63,14 @@ function drawNet(context, canvas) {
     for (let y = netHeight; y < canvas.height; y += (netHeight + spaceBetween)) {
         context.fillRect(canvas.width / 2 - netWidth / 2, y, netWidth, netHeight);
     }
+}
+
+function drawWinner(context, canvas, winnerUsername) {
+    context.fillStyle = 'white';
+    context.font = '50px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle'; 
+
+    const text = `${winnerUsername} has won!`;
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
 }
