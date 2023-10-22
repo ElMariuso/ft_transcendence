@@ -138,4 +138,13 @@ export class GameState {
             y: Math.sin(angle) * this.ballSpeed
         };
     }
+
+    setForfeit(playerID: string | number) {
+        if (playerID == this.player1ID)
+            this.endMatchCallback('player2');
+        else if (playerID == this.player2ID)
+            this.endMatchCallback('player1');
+        else
+            console.error('BadTargetForfeit');
+    }
 }

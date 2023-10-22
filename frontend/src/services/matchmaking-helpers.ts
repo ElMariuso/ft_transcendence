@@ -132,15 +132,6 @@ const initializeSocketListeners = (matchmakingStore) => {
         }
     });
 
-    socket.on('left-room', (response) => {
-        console.log(response);
-        matchmakingStore.setOpponentUUID(null);
-        matchmakingStore.setOpponentUsername(null);
-        matchmakingStore.setRoomID(null);
-
-        router.push({ name: 'home'});
-    });
-
     socket.on('rejoin-failed', (response) => {
         console.log(response);
         matchmakingStore.setRoomID(null);

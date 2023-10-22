@@ -94,13 +94,24 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   }
   
   @SubscribeMessage('quit-match')
-  quitMatch(client: Socket): void {
+  quitMatch(client: Socket, playerId: number | string): void {
     const roomId = this.findRoomIdByClientId(client.id);
     if (roomId) {
-      client.leave(roomId);
-      client.emit('left-room', { status: 'You have left the match room', roomId });
+      const gameState = this.gameStates.get(roomId);
+      if (gameState) {
+        const playerLeaving = Array.from(this.onlinePlayers.entries()).find(([, value]) => value.socketId === client.id);
+
+        if (playerLeaving) {
+          const [playerId] = playerLeaving;
+          gameState.setForfeit(playerId);
+        } else {
+          client.emit('error-quit-match', { status: 'Player not found.' });
+        }
+      } else {
+        client.emit('error-quit-match', { status: 'Error gameState not found' });
+      }
     } else {
-      client.emit('error', { status: 'Error leaving room or room not found' });
+      client.emit('error-quit-match', { status: 'Error leaving room or room not found' });
     }
   }
 
@@ -256,7 +267,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
           createGameDto.idPlayerOne = id1;
           createGameDto.idPlayerSecond = id2;
-          if (gameState.score1 === 5)
+          if (gameState.score1 > gameState.score2)
             createGameDto.idWinner = id1;
           else
             createGameDto.idWinner = id2;
