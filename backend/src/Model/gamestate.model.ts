@@ -69,14 +69,6 @@ export class GameState {
         this.resetBall();
     }
 
-    updateScore(value, target: Player) {
-        if (target === Player.Player1)
-            this.score1 += value;
-        else
-            this.score2 += value;
-        this.checkEndMatch();
-    }
-
     moveRacket(player: Player, direction: Direction): void {
         const movement = 6;
         let racketPosition: position;
@@ -182,6 +174,14 @@ export class GameState {
             this.endMatchCallback('player1');
         else
             console.error('BadTargetForfeit');
+    }
+
+    private updateScore(value, target: Player) {
+        if (target === Player.Player1)
+            this.score1 += value;
+        else
+            this.score2 += value;
+        this.checkEndMatch();
     }
 
     private checkEndMatch() {
