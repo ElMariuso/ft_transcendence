@@ -85,12 +85,12 @@ onUnmounted(() => {
 <template>
     <div class="relative flex justify-center items-center h-screen">
         <canvas id="gameCanvas" class="absolute transform -translate-x-1/2 -translate-y-1/2" width="858" height="525"></canvas>
-        <div class="absolute top-0 left-0">
+        <!-- <div class="absolute top-0 left-0">
             {{ player1Username }}
         </div>
         <div class="absolute top-0 right-0">
             {{ player2Username }}
-        </div>
+        </div> -->
     </div>
 </template>
 
