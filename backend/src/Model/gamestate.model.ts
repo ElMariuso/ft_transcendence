@@ -90,9 +90,13 @@ export class GameState {
     }
 
     updateBallPosition() {
-        this.ballPosition.x += this.ballVelocity.x;
-        this.ballPosition.y += this.ballVelocity.y;
-        this.checkCollisions();
+        if (this.score1 !== 5 && this.score2 !== 5) {
+            this.ballPosition.x += this.ballVelocity.x;
+            this.ballPosition.y += this.ballVelocity.y;
+            this.checkCollisions();
+        } else {
+            this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        }
     }
 
     checkCollisions() {
