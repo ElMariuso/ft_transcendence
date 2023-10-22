@@ -1,18 +1,40 @@
+export enum Player {
+    Player1 = 'player1',
+    Player2 = 'player2'
+}
+
+export enum Direction {
+    Up = 'up',
+    Down = 'down'
+}
+
+interface size {
+    width: number;
+    height: number;
+}
+
+interface position {
+    x: number;
+    y: number;
+}
+
+type EndMatchCallback = (winner: string) => void;
+
 export class GameState {
     player1ID: number | string;
     player2ID: number | string;
     player1Username: string;
     player2Username: string;
-    canvasSize: { width: number; height: number; };
+    canvasSize: size;
     score1: number;
     score2: number;
-    racket1Size: { width: number; height: number; };
-    racket2Size: { width: number; height: number; };
-    racket1Position: { x: number; y: number; };
-    racket2Position: { x: number; y: number; };
-    ballSize: { width: number; height: number; };
-    ballPosition: { x: number; y: number; };
-    ballVelocity: { x: number; y: number; };
+    racket1Size: size;
+    racket2Size: size;
+    racket1Position: position;
+    racket2Position: position;
+    ballSize: size;
+    ballPosition: position;
+    ballVelocity: position;
     ballSpeed: number;
 
     private endMatchCallback: (winner: string) => void;
@@ -21,7 +43,7 @@ export class GameState {
         player2ID: number | string,
         player1Username: string,
         player2Username: string,
-        endMatchCallback: (winner: string) => void
+        endMatchCallback: EndMatchCallback
     ) {
         this.player1ID = player1ID;
         this.player2ID = player2ID;
@@ -65,27 +87,23 @@ export class GameState {
         }
     }
 
-    racket1Up() {
-        if (this.racket1Position.y > 0) {
-            this.racket1Position.y -= 6;
+    moveRacket(player: Player, direction: Direction): void {
+        const movement = 6;
+        let racketPosition: position;
+        let racketSize: size;
+    
+        if (player === Player.Player1) {
+            racketPosition = this.racket1Position;
+            racketSize = this.racket1Size;
+        } else {
+            racketPosition = this.racket2Position;
+            racketSize = this.racket2Size;
         }
-    }
-
-    racket1Down() {
-        if (this.racket1Position.y < this.canvasSize.height - this.racket1Size.height) {
-            this.racket1Position.y += 6;
-        }
-    }
-
-    racket2Up() {
-        if (this.racket2Position.y > 0) {
-            this.racket2Position.y -= 6;
-        }
-    }
-
-    racket2Down() {
-        if (this.racket2Position.y < this.canvasSize.height - this.racket2Size.height) {
-            this.racket2Position.y += 6;
+    
+        if (direction === Direction.Up && racketPosition.y > 0) {
+            racketPosition.y -= movement;
+        } else if (direction === Direction.Down && racketPosition.y < this.canvasSize.height - racketSize.height) {
+            racketPosition.y += movement;
         }
     }
 

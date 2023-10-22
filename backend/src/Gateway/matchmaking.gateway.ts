@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
-import { GameState } from 'src/Model/gamestate.model';
+import { GameState, Player, Direction } from 'src/Model/gamestate.model';
 import { GameService } from 'src/Service/game.service';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
 
@@ -165,23 +165,23 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     if (gameState) {
       switch (action) {
         case 'racket1-up':
-          gameState.racket1Up();
+          gameState.moveRacket(Player.Player1, Direction.Up);
           break;
         case 'racket1-down':
-          gameState.racket1Down();
+          gameState.moveRacket(Player.Player1, Direction.Down);
           break;
         case 'racket2-up':
-          gameState.racket2Up();
+          gameState.moveRacket(Player.Player2, Direction.Up);
           break;
         case 'racket2-down':
-          gameState.racket2Down();
+          gameState.moveRacket(Player.Player2, Direction.Down);
           break;
         default:
-          client.emit('cant-update-racket', { message: 'Can t update racket' });
+          client.emit('cant-update-racket', { message: 'Can\'t update racket' });
           break;
       }
     } else {
-      client.emit('cant-update-racket', { message: 'Can t update racket' });
+      client.emit('cant-update-racket', { message: 'Can\'t update racket' });
     }
   }
 
