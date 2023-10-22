@@ -131,14 +131,29 @@ export class GameState {
     }
 
     resetBall() {
-        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
-        const angle = Math.random() * Math.PI * 2;
+        const isTopPosition = Math.random() < 0.5;
+      
+        let newYPosition;
+        if (isTopPosition) {
+          newYPosition = this.canvasSize.height / 6 + Math.random() * (this.canvasSize.height / 6);
+        } else {
+          newYPosition = this.canvasSize.height * 4/6 + Math.random() * (this.canvasSize.height / 6);
+        }
+        this.ballPosition = { x: this.canvasSize.width / 2, y: newYPosition };
+
+        const isGoingRight = Math.random() < 0.5;
+        let angle;
+        if (isGoingRight) {
+          angle = isTopPosition ? 3 * Math.PI / 4 : Math.PI / 4;
+        } else {
+          angle = isTopPosition ? Math.PI / 4 : 3 * Math.PI / 4;
+        }
         this.ballVelocity = {
             x: Math.cos(angle) * this.ballSpeed,
             y: Math.sin(angle) * this.ballSpeed
         };
     }
-
+    
     setForfeit(playerID: string | number) {
         if (playerID == this.player1ID)
             this.endMatchCallback('player2');
