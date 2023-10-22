@@ -135,10 +135,10 @@ export class GameState {
             this.ballVelocity.x *= -1;
         }
         if (ballLeft <= 0) {
-            this.updateScore(1, Player.Player1);
+            this.updateScore(1, Player.Player2);
             this.resetBall();
         } else if (ballRight >= this.canvasSize.width) {
-            this.updateScore(1, Player.Player2);
+            this.updateScore(1, Player.Player1);
             this.resetBall();
         }
     }
