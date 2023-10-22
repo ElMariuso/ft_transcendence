@@ -69,22 +69,12 @@ export class GameState {
         this.resetBall();
     }
 
-    updateScore1(value) {
-        this.score1 += value;
+    updateScore(value, target: Player) {
+        if (target === Player.Player1)
+            this.score1 += value;
+        else
+            this.score2 += value;
         this.checkEndMatch();
-    }
-
-    updateScore2(value) {
-        this.score2 += value;
-        this.checkEndMatch();
-    }
-
-    private checkEndMatch() {
-        if (this.score1 === 5) {
-            this.endMatchCallback('player1');
-        } else if (this.score2 === 5) {
-            this.endMatchCallback('player2');
-        }
     }
 
     moveRacket(player: Player, direction: Direction): void {
@@ -145,10 +135,10 @@ export class GameState {
             this.ballVelocity.x *= -1;
         }
         if (ballLeft <= 0) {
-            this.updateScore2(1);
+            this.updateScore(1, Player.Player1);
             this.resetBall();
         } else if (ballRight >= this.canvasSize.width) {
-            this.updateScore1(1);
+            this.updateScore(1, Player.Player2);
             this.resetBall();
         }
     }
@@ -192,5 +182,13 @@ export class GameState {
             this.endMatchCallback('player1');
         else
             console.error('BadTargetForfeit');
+    }
+
+    private checkEndMatch() {
+        if (this.score1 === 5) {
+            this.endMatchCallback('player1');
+        } else if (this.score2 === 5) {
+            this.endMatchCallback('player2');
+        }
     }
 }
