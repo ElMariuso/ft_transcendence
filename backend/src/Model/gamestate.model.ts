@@ -136,28 +136,36 @@ export class GameState {
     }
 
     resetBall() {
-        const isTopPosition = Math.random() < 0.5;
-      
-        let newYPosition;
-        if (isTopPosition) {
-          newYPosition = this.canvasSize.height / 6 + Math.random() * (this.canvasSize.height / 6);
-        } else {
-          newYPosition = this.canvasSize.height * 4/6 + Math.random() * (this.canvasSize.height / 6);
-        }
-        this.ballPosition = { x: this.canvasSize.width / 2, y: newYPosition };
+        this.ballSize = { width: 0, height: 0 };
+        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        this.ballVelocity = { x: 0, y: 0 };
 
-        const isGoingRight = Math.random() < 0.5;
-        let angle;
-        if (isGoingRight) {
-          angle = isTopPosition ? 3 * Math.PI / 4 : Math.PI / 4;
-        } else {
-          angle = isTopPosition ? Math.PI / 4 : 3 * Math.PI / 4;
-        }
-        this.ballVelocity = {
-            x: Math.cos(angle) * this.ballSpeed,
-            y: Math.sin(angle) * this.ballSpeed
+        const launchBall = () => {
+            const isTopPosition = Math.random() < 0.5;
+          
+            let newYPosition;
+            if (isTopPosition) {
+                newYPosition = this.canvasSize.height / 6 + Math.random() * (this.canvasSize.height / 6);
+            } else {
+                newYPosition = this.canvasSize.height * 4/6 + Math.random() * (this.canvasSize.height / 6);
+            }
+            this.ballPosition = { x: this.canvasSize.width / 2, y: newYPosition };
+    
+            const isGoingRight = Math.random() < 0.5;
+            let angle;
+            if (isGoingRight) {
+                angle = isTopPosition ? 3 * Math.PI / 4 : Math.PI / 4;
+            } else {
+                angle = isTopPosition ? Math.PI / 4 : 3 * Math.PI / 4;
+            }
+            this.ballVelocity = {
+                x: Math.cos(angle) * this.ballSpeed,
+                y: Math.sin(angle) * this.ballSpeed
+            };
+            this.ballSize = { width: 10, height: 10 };
         };
-    }
+        setTimeout(launchBall, 3000);
+    }    
     
     setForfeit(playerID: string | number) {
         if (playerID == this.player1ID)
