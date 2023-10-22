@@ -182,7 +182,7 @@ export class GameState {
             };
             this.ballSize = { width: 10, height: 10 };
         };
-        setTimeout(launchBall, 3000);
+        setTimeout(launchBall, 1500);
     }    
     
     setForfeit(playerID: string | number) {
