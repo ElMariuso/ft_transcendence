@@ -11,7 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
-import { GameState, Player, Direction } from 'src/Model/gamestate.model';
+import { GameState, Player, Direction, EndMatchResult } from 'src/Model/gamestate.model';
 import { GameService } from 'src/Service/game.service';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
 
@@ -196,9 +196,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         match.player2.id,
         player1Info.username,
         player2Info.username,
-        (winner) => {
-            console.log(`${winner} has won the match!`);
-            this.endMatch(roomId, false);
+        (result) => {
+            console.log(`${result.winner} has won the match for reason: ${result.reason}!`);
+            this.endMatch(roomId, false, result);
         }
       );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
@@ -228,9 +228,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         match.player2.id,
         player1Info.username,
         player2Info.username,
-        (winner) => {
-            console.log(`${winner} has won the match!`);
-            this.endMatch(roomId, true);
+        (result) => {
+            console.log(`${result.winner} has won the match for reason: ${result.reason}!`);
+            this.endMatch(roomId, true, result);
         }
       );
       this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
@@ -253,11 +253,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     return this.clientRooms.get(clientId);
   }
 
-  private endMatch(roomId: string, wasRanked: boolean): void {
+  private endMatch(roomId: string, wasRanked: boolean, matchResult: EndMatchResult): void {
     const gameState = this.gameStates.get(roomId);
 
     if (gameState) {
-      this.server.to(roomId).emit('match-ended', { status: 'You have finished the match room', roomId });  
+      this.server.to(roomId).emit('match-ended', matchResult);  
       const room = this.server.sockets.adapter.rooms.get(roomId);
       if (room) {        
         if (wasRanked) {

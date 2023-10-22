@@ -6,6 +6,7 @@ export const useGameStore = defineStore('game', {
         player1Username: 'Loading...',
         player2Username: 'Loading...',
         isFirstPlayer: true,
+        matchResult: null,
     }),
     actions: {
         updateGameState(newGameState) {
@@ -15,6 +16,9 @@ export const useGameStore = defineStore('game', {
         },
         setIsFirstPlayer(value) {
             this.isFirstPlayer = value;
+        },
+        setMatchResult(result) {
+            this.matchResult = result;
         },
     },
 });

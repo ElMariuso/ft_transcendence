@@ -3,6 +3,7 @@ import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
 export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDown) {
     function loop() {
         const gameState = gameStore.gameState;
+        const matchResult = gameStore.matchResult;
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -12,10 +13,14 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
             } else if (movingDown.value) {
                 gameStore.isFirstPlayer ? updateRacket(roomId, 'racket1-down') : updateRacket(roomId, 'racket2-down');
             }
-            if (gameState.score1 >= 5) {
-                drawWinner(context, canvas, gameState.player1Username);
-            } else if (gameState.score2 >= 5) {
-                drawWinner(context, canvas, gameState.player2Username);
+            if (matchResult) {
+                let username;
+
+                if (matchResult.winner === 'player1')
+                    username = gameState.player1Username;
+                else
+                    username = gameState.player2Username;
+                drawWinner(context, canvas, username, matchResult.reason);
             } else {
                 drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
             }
@@ -65,12 +70,17 @@ function drawNet(context, canvas) {
     }
 }
 
-function drawWinner(context, canvas, winnerUsername) {
+function drawWinner(context, canvas, winner, reason) {
     context.fillStyle = 'white';
     context.font = '50px Arial';
     context.textAlign = 'center';
-    context.textBaseline = 'middle'; 
+    context.textBaseline = 'middle';
 
-    const text = `${winnerUsername} has won!`;
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
+    const reasonText = reason === 'forfeit' ? 'Opponent forfeited' : 'Score done';
+    const winnerText = `${winner} has won!`;
+    const centerY = canvas.height / 2;
+
+    context.fillText(winnerText, canvas.width / 2, centerY - 30);
+    context.font = '40px Arial';
+    context.fillText(reasonText, canvas.width / 2, centerY + 40);
 }

@@ -8,6 +8,11 @@ export enum Direction {
     Down = 'down'
 }
 
+export enum EndReason {
+    Forfeit = 'forfeit',
+    Score = 'score'
+}
+
 interface size {
     width: number;
     height: number;
@@ -18,7 +23,10 @@ interface position {
     y: number;
 }
 
-type EndMatchCallback = (winner: string) => void;
+export interface EndMatchResult {
+    winner: Player;
+    reason: EndReason;
+}
 
 export class GameState {
     player1ID: number | string;
@@ -37,13 +45,13 @@ export class GameState {
     ballVelocity: position;
     ballSpeed: number;
 
-    private endMatchCallback: (winner: string) => void;
+    private endMatchCallback: (result: EndMatchResult) => void;
     constructor(
         player1ID: number | string,
         player2ID: number | string,
         player1Username: string,
         player2Username: string,
-        endMatchCallback: EndMatchCallback
+        endMatchCallback: (result: EndMatchResult) => void
     ) {
         this.player1ID = player1ID;
         this.player2ID = player2ID;
@@ -169,9 +177,9 @@ export class GameState {
     
     setForfeit(playerID: string | number) {
         if (playerID == this.player1ID)
-            this.endMatchCallback('player2');
+            this.endMatch(Player.Player2, EndReason.Forfeit);
         else if (playerID == this.player2ID)
-            this.endMatchCallback('player1');
+            this.endMatch(Player.Player1, EndReason.Forfeit);
         else
             console.error('BadTargetForfeit');
     }
@@ -186,9 +194,17 @@ export class GameState {
 
     private checkEndMatch() {
         if (this.score1 === 5) {
-            this.endMatchCallback('player1');
+            this.endMatch(Player.Player1, EndReason.Score);
         } else if (this.score2 === 5) {
-            this.endMatchCallback('player2');
+            this.endMatch(Player.Player2, EndReason.Score);
         }
+    }
+
+    private endMatch(winner: Player, reason: EndReason): void {
+        const result: EndMatchResult = {
+            winner: winner,
+            reason: reason
+        };
+        this.endMatchCallback(result);
     }
 }

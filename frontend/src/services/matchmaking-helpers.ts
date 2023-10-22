@@ -145,14 +145,18 @@ const initializeSocketListeners = (matchmakingStore) => {
 
     socket.on('match-ended', (response) => {
         console.log(response);
+        const gameStore = useGameStore();
+        gameStore.setMatchResult(response);
+    
         matchmakingStore.setOpponentUUID(null);
         matchmakingStore.setOpponentUsername(null);
         matchmakingStore.setRoomID(null);
-
+    
         setTimeout(() => {
             router.push({ name: 'home'});
+            gameStore.setMatchResult(null);
         }, 10000);
-    });
+    });    
 };
 
 export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitMatch, rejoinRoom, askGamesInformations, updateRacket, initializeSocketListeners };
