@@ -1,72 +1,108 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from 'axios';
+// import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+
+import { getMessageData } from '@/services/Channel-helpers'
+import { getChannelData } from '@/services/Channel-helpers'
+import { postNewMessageData } from '@/services/Channel-helpers'
 
 
 export const useChannelStore = defineStore('channel', () => {
 
-	// const userID = ref(0)
-	// const usernames = ref(['test', 'retest']);
-	// const friends = ref(['test', 'retest']);
-	const channelID = ref(0)
+	const channelID = ref("-1");
+	const message = ref(['test', 'retest']);
+	const channelName = ref("defaultchannelname");
+	const idOwner = ref(0);
+	const userID = ref(0)
 
-	// async function setupChannel() : Promise<null>{
-	// 	const token = localStorage.getItem('token')
-	// 	const id = jwt_decode(token).sub;
-	// 	userID.value = ref(id);
-
-	// 	await axios.get('/users/usernames', {
-	// 		headers: {
-	// 			Authorization: 'Bearer ' + token
-	// 		}
-	// 	}).then(res => {
-	// 		setList(res.data);
-	// 	});
-	// 	return null;
-	// }
-
-	// async function setupFriends() : Promise<null>{
-	// 	const token = localStorage.getItem('token')
-	// 	const id = jwt_decode(token).sub;
-	// 	userID.value = ref(id);
-
-	// 	if (id) {
-
-	// 		await axios.get('/users/' + id + '/friends', {
-	// 			headers: {
-	// 				Authorization: 'Bearer ' + token
-	// 			}
-	// 		}).then(res => {
-	// 			setFriends(res.data);
-	// 		});
-	// 	}
-	// 	return null;
-	// }
+	/////////////////// CHANNEL ID ////////////////////////
 
 	function setChannelId(newId: Number) {
-		channelID.value = newId;
+		channelID.value = newId.toString();
 	}
 
 	function getChannelId() {
-		return channelID.values;
+		return channelID.value;
 	}
 
-	// function setFriends(newList: string[]) {
-	// 	friends.values = newList;
-	// }
+	/////////////////// GET MESSAGE ////////////////////////
 
-	// function getFriends() {
-	// 	return friends.values;
-	// }
+	async function setupMessage() {
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
-	// function setList(newList: string[]) {
-	// 	usernames.values = newList;
-	// }
+		// console.log (channelID.value);
+		if (channelID != "-1")
+		{
+			try {
+				const userData = await getMessageData(channelID.value);
+				setMessage(userData);
+			} catch (error) {
+				console.error("Error setting up message:", error);
+			}
+		}
+	}
 
-	// function getUsernames() {
-	// 	return usernames.values;
-	// }
+	function setMessage(newList : any) {
+		message.values = newList;
+	}
 
-	return {setChannelId, getChannelId}
+	function getMessage() {
+		return message.values;
+	}
+
+	/////////////////// POST MESSAGE ////////////////////////
+
+	async function sendNewMessage(content : string) {
+		const token = localStorage.getItem('token')
+		const id = jwt_decode(token).sub;
+		userID.value = id;
+
+		try {
+			const userData = await postNewMessageData(id, content, channelID.value);
+		} catch (error) {
+			console.error("Error creating a new message:", error);
+		}
+	}
+
+	/////////////////// CHANNEL ////////////////////////
+
+	async function setupChannel() {
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
+
+		// console.log (channelID.value);
+
+		
+		if (channelID != "-1")
+		{
+			console.log("Setup channel value != -1")
+			console.log(channelID.value)
+			try {
+				const userData = await getChannelData(channelID.value);
+				setChannelName(userData.name);
+				setChannelidOwner(userData.idOwner);
+			} catch (error) {
+				console.error("Error setting up Channel:", error);
+			}
+		}
+	}
+
+	function setChannelName(newChannelname: string) {
+		// console.log ("newChannelname");
+		channelName.value = newChannelname;
+		// console.log (channelName.value);
+	}
+
+	function setChannelidOwner(newChannelidOwner: number) {
+		// console.log ("newChannelidOwner");
+		idOwner.value = newChannelidOwner;
+		// console.log (idOwner.value);
+	}
+
+
+	return {channelName, setChannelId, getChannelId, setupMessage, getMessage, sendNewMessage, setupChannel}
 })
