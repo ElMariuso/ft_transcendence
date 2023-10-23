@@ -10,7 +10,7 @@
  -->
 
 <template>
-<div v-if="showmessages, showchannel">
+<div v-if="showmessages, showchannel, showmembers">
 
 	<div class="flex gap-2 justify-around">
 		<div class="col-3 fixed inset-0 top-[5.5rem] bottom-[4.5rem] w-5/6 pb-10 pl-8 pr-6 overflow-y-auto">
@@ -31,18 +31,14 @@
 	  	  <h1 class="text-3xl m-0 leading-none mb-8">{{ channelStore.channelName }}</h1>
 	  	  <!-- <h1 class="text-3xl m-0 leading-none mb-8">{{ channelStore.getChannelId() }}</h1> -->
 	  	  <div class="mt-2">
-		  <!-- <ul class="list-disc ml-3">
-			<h1 class="font-bold">Owner</h1>
-			<li>
-		  		<span class="font-semibold">{{ channel.owner }}</span>
+			<li v-for="members in channelStore.getMembers()" class="mb-2 list-none hover:bg-gray-100">
+			  <h1 v-if="members.owner" class="font-bold">Owner</h1>
+			  <span class="font-semibold ml-3">{{ members.username }}</span>
 			</li>
+		  <!-- <ul class="list-disc ml-3">
 			<h1 class="mt-3 font-bold">Administrators</h1>
 			<li v-for="Admin in channel.channelAdmin" :key="Admin.id">
 		  		<span class="font-semibold">{{ Admin.name }}</span>
-			</li>
-			<h1 class="mt-3 font-bold">Members</h1>
-			<li v-for="member in channel.channelMembers" :key="member.id">
-		  		<span class="font-semibold">{{ member.name }}</span>
 			</li>
 		  </ul> -->
 	      </div>
@@ -69,6 +65,7 @@ import { useChannelStore } from '../stores/ChannelStore'
 const channelStore = useChannelStore()
 const showmessages = ref(false);
 const showchannel = ref(false);
+const showmembers = ref(false);
 
 const noMessage = ref(false);
 const newMessage = ref('');
@@ -78,6 +75,12 @@ const setupMessage = async () => {
   showmessages.value = true // Set a flag to indicate that data is loaded
 }
 setupMessage()
+
+const setupMembers = async () => {
+  await channelStore.setupMembers()
+  showmembers.value = true // Set a flag to indicate that data is loaded
+}
+setupMembers()
 
 const setupChannel = async () => {
   await channelStore.setupChannel()

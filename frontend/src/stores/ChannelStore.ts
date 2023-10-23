@@ -6,12 +6,14 @@ import jwt_decode from 'jwt-decode';
 import { getMessageData } from '@/services/Channel-helpers'
 import { getChannelData } from '@/services/Channel-helpers'
 import { postNewMessageData } from '@/services/Channel-helpers'
+import { getMembersData } from '@/services/Channel-helpers'
 
 
 export const useChannelStore = defineStore('channel', () => {
 
 	const channelID = ref("-1");
 	const message = ref(['test', 'retest']);
+	const members = ref(['test', 'retest']);
 	const channelName = ref("defaultchannelname");
 	const idOwner = ref(0);
 	const userID = ref(0)
@@ -103,6 +105,33 @@ export const useChannelStore = defineStore('channel', () => {
 		// console.log (idOwner.value);
 	}
 
+		/////////////////// GET MEMBERS ////////////////////////
 
-	return {channelName, setChannelId, getChannelId, setupMessage, getMessage, sendNewMessage, setupChannel}
+		async function setupMembers() {
+			// const token = localStorage.getItem('token')
+			// const id = jwt_decode(token).sub;
+			// userID.value = id;
+	
+			// console.log (channelID.value);
+			if (channelID != "-1")
+			{
+				try {
+					const userData = await getMembersData(channelID.value);
+					setMembers(userData);
+				} catch (error) {
+					console.error("Error setting up members:", error);
+				}
+			}
+		}
+	
+		function setMembers(newList : any) {
+			members.values = newList;
+		}
+	
+		function getMembers() {
+			return members.values;
+		}
+
+
+	return {channelName, setChannelId, getChannelId, setupMessage, getMessage, sendNewMessage, setupChannel, setupMembers, getMembers}
 })
