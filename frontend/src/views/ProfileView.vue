@@ -1,5 +1,5 @@
 <template>
-<div v-if="showUsers">
+<div v-if="showUsers, showAchievements">
 
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg"> 
 	  <div class="text-center">
@@ -38,7 +38,8 @@
 		  <h3 class="text-lg font-semibold">Achievements</h3>
 		  <div class="mt-2">
             <li v-for="Achievements in ladderStore.getAchievements()" class="mb-2">
-			  <span class="font-semibold">{{ Achievements }}</span>
+			  <span class="font-semibold">{{ Achievements.name }} : </span>
+			  <div class="ml-2">{{ Achievements.content }}</div>
             </li>
           </div>
 		</div>
@@ -81,6 +82,7 @@ import { useLadderStore } from '../stores/UserProfileStore'
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
 const showUsers = ref(false);
+const showAchievements = ref(false);
 
 const setupLadder = async () => {
   await ladderStore.setupLadder()
@@ -102,7 +104,7 @@ setupStats()
 
 const setupAchievements = async () => {
   await ladderStore.setupAchievements()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
+  showAchievements.value = true // Set a flag to indicate that data is loaded
 }
 setupAchievements()
 
