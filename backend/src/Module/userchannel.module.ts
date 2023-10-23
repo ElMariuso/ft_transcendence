@@ -8,6 +8,7 @@ import { UserQuery } from 'src/Query/user.query';
 import { ChannelQuery } from 'src/Query/channel.query';
 import { UserChannelQuery } from 'src/Query/userchannel.query';
 import { RoleQuery } from 'src/Query/role.query';
+import { ChannelTypeQuery } from 'src/Query/type.query';
 
 import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto';
 import { UpdateRoleUserChannelDTO } from 'src/DTO/userchannel/updateRoleUserChannel.dto';
@@ -27,6 +28,7 @@ import { PrismaClient } from '@prisma/client';
 	ChannelQuery,
 	UserChannelQuery,
 	RoleQuery,
+	ChannelTypeQuery,
 	CreateUserChannelDTO,
 	UpdateRoleUserChannelDTO,
 	UserInChannelDTO,

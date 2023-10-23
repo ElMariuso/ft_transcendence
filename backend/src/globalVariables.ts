@@ -126,7 +126,10 @@ export const ERROR_MESSAGES =
 		ALREADY_IN: "User already in the channel",
 		FORBIDDEN_ACTION: "Forbidden action",
 		KICK_OWNER: "Can not kick the owner",
+		KICK_DM: "Can not kick anyone in DM",
 		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
+		CHANGE_DM_ROLE: "Can not change role in DM",
+		CANTREJOINDM: "Can not join a Direct Message Channel",
 
 		JOINCHANNEL_FAILED: "Joining channel failed",
 		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
@@ -166,7 +169,8 @@ export const ERROR_MESSAGES =
 export const TYPE =
 {
 	PUBLIC: "public",
-	PRIVATE: "private"
+	PRIVATE: "private",
+	DM: "dm",
 }
 
 export const ROLE =

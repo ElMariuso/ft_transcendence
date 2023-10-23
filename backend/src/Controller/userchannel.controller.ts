@@ -57,6 +57,7 @@ export class UserChannelController
 	 * 
 	 * @throws HTTPException NOT_FOUND if the user or the channel is not found
 	 * @throws HTTPException CONFLICT if the user don't belong to the channel
+	 * @throws HTTPException CONFLICT if the user try to join a DM chat
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
 	 */
 	@Post()
@@ -86,6 +87,8 @@ export class UserChannelController
 	 * 
 	 * @throws HTTPException NOT_FOUND if the user or the channel is not found
 	 * @throws HTTPException CONFLICT if the user don't belong to the channel
+	 * @throws HTTPException FORBIDDEN if the user try to kick the owner
+	 * @throws HTTPException FORBIDDEN if the user try to kick someone in DM channel
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the deletion of the channel failed
 	 */
 	@Delete('/delete/:idUser/:idChannel')
@@ -124,6 +127,7 @@ export class UserChannelController
 	 * @throw HTTPException with status CONFLICT if user or member is not in the channel
 	 * @throw HTTPException with status FORBIDDEN if the user is not a admin of the channel
 	 * @throw HTTPException with status FORBIDDEN if trying to change the owner's role
+	 * @throw HTTPException with status FORBIDDEN if trying to change a role in DM channel
 	 */
 	@Put('/modifyRole/:id')
 	async modifyMemberRole(@Body() updateRoleUserChannelDTO : UpdateRoleUserChannelDTO, @Param('id') id : string): Promise<UserChannelDTO>
