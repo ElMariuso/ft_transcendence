@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import { Channel, Message } from '@prisma/client';
+import { Channel, Message, User } from '@prisma/client';
 
 import { ChannelQuery } from 'src/Query/channel.query';
 import { ChannelTypeQuery } from 'src/Query/type.query';
@@ -13,6 +13,8 @@ import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
 import { ERROR_MESSAGES, TYPE } from 'src/globalVariables';
 
 import { MessageDTO } from 'src/DTO/message/message.dto';
+import { UserChannelQuery } from 'src/Query/userchannel.query';
+import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
 
 @Injectable()
 export class ChannelService
@@ -21,7 +23,8 @@ export class ChannelService
 		private readonly channelQuery: ChannelQuery,
 		private readonly typeQuery: ChannelTypeQuery,
 		private readonly userQuery: UserQuery,
-		private readonly messageQuery: MessageQuery
+		private readonly messageQuery: MessageQuery,
+		private readonly userChannelQuery: UserChannelQuery,
 		) {}
 
 	/**
@@ -52,7 +55,7 @@ export class ChannelService
 	}
 
 	/**
-	 * Gets a channel by his id
+	 * Gets all messages in a channel from a specific channel id
 	 * 
 	 * @param id channel's id to find
 	 * 
@@ -81,10 +84,37 @@ export class ChannelService
 		
 		const messagesDTO: MessageDTO[] = messages.map((message) =>
 		{
-			return this.transformtoMessageDTO(message, users[message.idUser]);
+			return this.transformToMessageDTO(message, users[message.idUser]);
 		});
 
 		return messagesDTO;
+	}
+
+	/**
+	 * Gets all users in a channel from a specific channel id
+	 * 
+	 * @param id channel's id to find
+	 * 
+	 * @returns List of users
+	 */
+	async findAllUsersByChannelId(id: number) : Promise<UserInChannelDTO[]>
+	{
+		const channel = await this.channelQuery.findChannelById(id);
+
+		if (!channel)
+			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+
+		const users = await this.userChannelQuery.findAllUsersByChannelId(id);
+
+		if (!users)
+			return [];
+
+		const usersDTO: UserInChannelDTO[] = users.map((user) =>
+		{
+			return this.transformToUserInChannelDTO(user, channel.idOwner === user.idUser ? true : false);
+		});
+
+		return usersDTO;
 	}
 
 	/**
@@ -150,7 +180,7 @@ export class ChannelService
 		return channelDTO;
 	}
 
-	private transformtoMessageDTO(message: Message, username: string) : MessageDTO
+	private transformToMessageDTO(message: Message, username: string) : MessageDTO
 	{
 		const messageDTO: MessageDTO =
 		{
@@ -163,5 +193,17 @@ export class ChannelService
 		};
 
 		return messageDTO;
+	}
+
+	private transformToUserInChannelDTO(user: User, owner: boolean) : UserInChannelDTO
+	{
+		const dto: UserInChannelDTO = 
+		{
+			idUser: user.idUser,
+			username: user.username,
+			email: user.email,
+			owner: owner
+		}
+		return dto;
 	}
 }

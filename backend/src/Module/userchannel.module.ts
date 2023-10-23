@@ -13,6 +13,7 @@ import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto'
 import { UpdateRoleUserChannelDTO } from 'src/DTO/userchannel/updateRoleUserChannel.dto';
 import { UserChannelDTO } from 'src/DTO/userchannel/userchannel.dto';
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
+import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
 
 
 import { PrismaClient } from '@prisma/client';
@@ -28,6 +29,7 @@ import { PrismaClient } from '@prisma/client';
 	RoleQuery,
 	CreateUserChannelDTO,
 	UpdateRoleUserChannelDTO,
+	UserInChannelDTO,
 	UserChannelDTO,
 	ChannelDTO,
 ],
