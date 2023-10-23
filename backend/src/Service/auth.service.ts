@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../DTO/user/createUser.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -61,7 +61,22 @@ export class AuthService {
 	}
 
 	login2fa(userID: string, twoFactorAuthEnabled: boolean) {
-		return this.signJwtForUser(userID, twoFactorAuthEnabled, true);
+		try
+		{
+			let id = parseInt(userID, 10);
+
+			let user = this.userService.findUserById(id);
+			if (!user)
+				throw new NotFoundException("klk");
+			return this.signJwtForUser(userID, twoFactorAuthEnabled, true);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			throw new InternalServerErrorException("kkk");
+		}
+		
 	}
 
 	/**
@@ -141,9 +156,42 @@ export class AuthService {
 	async isTwoFactorAuthenticationCodeValid(twoFactorAuthCode: string, userID: number) {
 		const user = await this.userService.findUserById(userID);
 
-		return authenticator.verify({
+		if (!user)
+			throw new NotFoundException("FDP");
+
+		const attempts = this.failedAttempts[user.idUser] || 0;
+		if (attempts >= this.maxAttempts)
+			throw new ForbiddenException("AL BATOR");
+
+		const verification =  authenticator.verify({
 		  token: twoFactorAuthCode,
 		  secret: user.twoFactorAuthSecret,
 		});
+
+		if (!verification)
+		{
+			this.failedAttempts[user.idUser] = attempts + 1;
+
+			if (this.failedAttempts[user.idUser] === this.maxAttempts)
+				setTimeout(() =>
+					{	this.resetAttempts(user.idUser) },
+					this.timeout
+				);
+		}
+		else
+		{
+			this.resetAttempts(user.idUser);
+		}
+
+		return verification;
+	}
+
+	private failedAttempts: { [userId: number]: number } = {}
+	private maxAttempts = 3;
+	private timeout = 60000; // 1 minutes
+
+	private resetAttempts(id: number)
+	{
+		this.failedAttempts[id] = 0;
 	}
 }

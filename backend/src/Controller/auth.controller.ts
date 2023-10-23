@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, HttpStatus, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { FT_AuthGuard } from '../Guards/42-auth.guard';
 import { AuthService } from '../Service/auth.service';
 import { UserService } from '../Service/user.service';
 import { toDataURL } from 'qrcode';
+import { TwoFactorAuthVerifyDTO } from 'src/DTO/auth/twoFactorAuthVerify.dto';
+import { TwoFactorAuthLoginDTO } from 'src/DTO/auth/twoFactorAuthLogin.dto';
 
 /**
  * AuthController manages authentication routes and logic.
@@ -82,14 +84,38 @@ export class AuthController {
 	}
  
 	@Post('/2fa/verify')
-	async twoFactorAuthVerify(@Req() req, @Body() body) {
-		const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID)
-		
-		return (isCodeValid);
+	async twoFactorAuthVerify(@Body() body : TwoFactorAuthVerifyDTO) {
+		try
+		{
+			const isCodeValid = await this.authService.isTwoFactorAuthenticationCodeValid(body.code, body.userID);
+
+			return (isCodeValid);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			if (error instanceof ForbiddenException)
+				throw new ForbiddenException(error.message);
+			
+			throw new InternalServerErrorException();
+		}
 	}
 
 	@Post('/2fa/authenticate')
-	twoFactorAuthLogin(@Req() req, @Body() body) {
-		return this.authService.login2fa(body.id, body.twoFactorAuth)
+	twoFactorAuthLogin(@Body() body : TwoFactorAuthLoginDTO) {
+		try
+		{
+			return this.authService.login2fa(body.id, body.twoFactorAuth);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			if (error instanceof InternalServerErrorException)
+				throw new InternalServerErrorException(error.message);
+			throw new InternalServerErrorException();
+		}
 	}
+
  }
