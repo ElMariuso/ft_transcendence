@@ -10,26 +10,26 @@
  -->
 
 <template>
+<div v-if="showUsers">
+
+  <h2 class="text-lg font-semibold">Community</h2>
+
   <div class="p-4">
-    <!-- Search for Other People's Profile -->
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold">Search for Profiles</h3>
-      <input
-        type="text"
-        placeholder="Enter username to search"
-        class="p-2 w-1/3 border rounded-lg"
-      />
-      <button @click="searchProfile" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Search</button>
-    </div>
+	<!-- Find Users -->
+    <!-- <div class="mb-4">
+      <h3 class="text-lg font-semibold">Find users</h3>
+	  <select class="p-2 w-1/3 border rounded-lg">
+        <option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
+      </select>
+      <button @click="findUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
+    </div> -->
 
 	<!-- Send Private Message -->
     <div class="mb-4">
-      <h3 class="text-lg font-semibold">Send Private Message</h3>
-      <input
-        type="text"
-        placeholder="Enter recipient's username"
-        class="p-2 w-1/3 border rounded-lg"
-      />
+      <h3 class="text-lg font-semibold">Send Private Message To</h3>
+	  <select class="p-2 w-1/3 border rounded-lg">
+        <option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
+      </select>
       <button @click="sendPrivateMessage" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send</button>
     </div>
 
@@ -37,75 +37,116 @@
     <div  class="mb-4">
       <h3 class="text-lg font-semibold">Create Channels</h3>
       <input
+	    v-model="newChannelname"
         type="text"
         placeholder="Enter channel name"
         class="p-2 w-1/3 border rounded-lg mt-2"
       />
-	 
-	  <!-- <select v-model="channelType" class="p-2 w-1/6 border rounded-lg"> -->
-	  <select class="p-2 w-1/6 border rounded-lg">
+	  <select v-model="newChannelType" class="p-2 w-1/6 border rounded-lg">
         <option value="public">Public</option>
         <option value="private">Private</option>
-        <option value="protected">Protected</option>
       </select>
 	   <input
+	    v-model="newChannelPassword"
         type="text"
         placeholder="Enter password"
         class="p-2 w-1/3 border rounded-lg mt-2"
       />
-      <button @click="createChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Create</button>
-    </div>
-
-    <!-- Join Channels -->
-    <!-- <div class="mb-4">
-      <h3 class="text-lg font-semibold">Join Channels</h3>
-	  <select class="p-2 w-1/3 border rounded-lg">
-        <option v-for="channel in channels.availableChannels" :key="channel.id" :value="channel.id">{{ channel.name }}</option>
-      </select>
-      <button @click="joinChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Join</button>
-    </div> -->
+      <button @click="createChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">
+		Create
+      </button>
+	  <div v-if="noChannelName">
+		<h3 class="text-lg text-red-600 font-semibold">You need to enter a name to create a channel</h3>
+	  </div>
+	  <div v-if="noChannelType">
+		<h3 class="text-lg text-red-600 font-semibold">You need to select a type to create a channel</h3>
+	  </div>
+	  <div v-if="noChannelPassword">
+		<h3 class="text-lg text-red-600 font-semibold">Private channel need a password</h3>
+	  </div>
+	</div>
 
     <!-- Joined Channels -->
     <div>
       <h3 class="text-lg font-semibold w-1/3">Available Channels</h3>
       <ul class="mt-2 w-1/3">
-        <li v-for="channel in channels.joinedChannels" :key="channel.id">
-          <router-link :to="'/channel'">
-		  <!-- <router-link :to="'/channel/' + channel.id"> -->
-			<!-- <div>{{ channelStore.setChannelId(channel.id) }}</div> -->
-            <nav class="text-lg mr-5">
+		<li v-for="channel in communityStore.getAvailableChannels()" class="mb-2">
+		  <router-link @click="boop(channel.idChannel)" :to="'/channel'">
+			<nav class="text-lg mr-5">
               <section>{{ channel.name }}</section>
             </nav>
-          </router-link>
+		  </router-link>
         </li>
       </ul>
     </div>
   </div>
+
+</div>
 </template>
 
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup>
+import { ref } from 'vue'
+import { useCommunityStore } from '../stores/CommunityStore'
+import { useChannelStore } from '../stores/ChannelStore'
 
-export default defineComponent({
-	 data() {
-    return {
-	channels: {
-    joinedChannels: [
-      { id: 1, name: 'General' },
-      { id: 2, name: 'Random' },
-      { id: 3, name: 'Meme' },
-    ],
-    availableChannels: [
-      { id: 1, name: 'Public Channel 1' },
-      { id: 2, name: 'Public Channel 2' },
-      { id: 3, name: 'Private Channel 1' },
-	  { id: 3, name: 'Protected Channel 1' },
-    ],
-    },
-    };
-  },
-});
+const communityStore = useCommunityStore()
+const channelStore = useChannelStore()
+const showUsers = ref(false);
+
+const noChannelName = ref(false);
+const noChannelType = ref(false);
+const noChannelPassword = ref(false);
+const newChannelname = ref('');
+const newChannelPassword = ref('');
+const newChannelType = ref('');
+
+
+const setupUsernames = async () => {
+  await communityStore.setupUsernames()
+//   showUsers.value = true // Set a flag to indicate that data is loaded
+}
+setupUsernames()
+
+const setupAvailableChannels = async () => {
+  await communityStore.setupAvailableChannels()
+  showUsers.value = true // Set a flag to indicate that data is loaded
+}
+setupAvailableChannels()
+
+async function createChannel() {
+	let bodyInfo = {};
+	noChannelName.value = false;
+	noChannelType.value = false;
+	noChannelPassword.value = false;
+
+	if (newChannelname.value.trim() == '')
+		noChannelName.value = true;
+	else if (newChannelType.value.trim() == '')
+		noChannelType.value = true;
+	else if (newChannelPassword.value.trim() == '' && newChannelType.value.trim() == 'private')
+		noChannelPassword.value = true;
+	else if (newChannelType.value.trim() == 'public')
+		await communityStore.setupNewChannel(newChannelname.value, 2, newChannelPassword.value)
+	else if (newChannelType.value.trim() == 'private')
+		await communityStore.setupNewChannel(newChannelname.value, 1, newChannelPassword.value)
+}
+
+// const setupChannel = async () => {
+//   await channelStore.setupChannel()
+//   showchannel.value = true // Set a flag to indicate that data is loaded
+// }
+
+////////////////
+async function boop(test) {
+	console.log("booped")
+	// console.log(test)
+	channelStore.setChannelId(test)
+	// await setupChannel()
+	// console.log("bop")
+}
+////////////////
+
 </script>
 
 
