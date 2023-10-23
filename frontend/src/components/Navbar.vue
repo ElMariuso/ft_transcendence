@@ -43,7 +43,7 @@ function getAvatarImg() {
 </script>
 
 <template>
-   <div class="w-full h-20 flex justify-between border-b border-gray-400 p-4">
+   <div class="h-20 flex justify-between border-b border-gray-400 p-4">
         <div class="ml-30px flex items-baseline">
 		
 			<router-link to="/">

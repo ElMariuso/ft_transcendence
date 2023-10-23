@@ -60,12 +60,12 @@ export const getUsernamesData = async (userID) => {
  export const postNewChannelsData = async (userID, newName, newType, newPassword) => {
     try {
 		var id: number = +userID;
-		// console.log(newName);
-		// console.log(newPassword);
-		// console.log(userID);
-		// console.log(id);
-		// console.log(newType);
-        const response = await api.post('/channels', {
+		console.log(newName);
+		console.log(newPassword);
+		console.log(userID);
+		console.log(id);
+		console.log(newType);
+        const response = await api.post('channels', {
 			"name": newName,
 			"password": newPassword,
 			"idOwner": id,

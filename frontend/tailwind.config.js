@@ -23,6 +23,9 @@ module.exports = {
       colors: {
         'button': '#999',
         'matchmaking': '#bababa',
+      },
+	  maxWidth: {
+        'tab': '30%',
       }
     }
   },

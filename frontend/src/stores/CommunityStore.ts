@@ -92,10 +92,10 @@ export const useCommunityStore = defineStore('community', () => {
 
 		try {
 			const userData = await postNewChannelsData(id, name, type, password);
-			// console.log(name);
-			// console.log(type);
-			// console.log(password);
-			// setAvailableChannels(userData);
+			console.log(name);
+			console.log(type);
+			console.log(password);
+			setAvailableChannels(userData);
 		} catch (error) {
 			console.error("Error creating a new channel:", error);
 		}
