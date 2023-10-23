@@ -85,7 +85,7 @@
 </template>
 
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useChannelStore } from '../stores/ChannelStore'
@@ -130,14 +130,12 @@ async function createChannel() {
 		await communityStore.setupNewChannel(newChannelname.value, 2, newChannelPassword.value)
 	else if (newChannelType.value.trim() == 'private')
 		await communityStore.setupNewChannel(newChannelname.value, 1, newChannelPassword.value)
+	newChannelname.value = '';
+	newChannelType.value = '';
+	newChannelPassword.value = '';
 }
 
-// const setupChannel = async () => {
-//   await channelStore.setupChannel()
-//   showchannel.value = true // Set a flag to indicate that data is loaded
-// }
 
-////////////////
 async function boop(test) {
 	console.log("booped")
 	// console.log(test)
@@ -145,7 +143,10 @@ async function boop(test) {
 	// await setupChannel()
 	// console.log("bop")
 }
+
 ////////////////
+////////////////
+
 
 </script>
 

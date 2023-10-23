@@ -93,6 +93,7 @@ async function sendMessage() {
 		noMessage.value = true;
 	else
 		await channelStore.sendNewMessage(newMessage.value)
+	newMessage.value = '';
 }
 
 </script>
