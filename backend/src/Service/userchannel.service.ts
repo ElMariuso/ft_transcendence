@@ -11,7 +11,8 @@ import { CreateUserChannelDTO } from 'src/DTO/userchannel/createUserChannel.dto'
 import { UserChannelDTO } from 'src/DTO/userchannel/userchannel.dto';
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 
-import { ERROR_MESSAGES, ROLE } from 'src/globalVariables';
+import { ERROR_MESSAGES, ROLE, TYPE } from 'src/globalVariables';
+import { ChannelTypeQuery } from 'src/Query/type.query';
 
 
 @Injectable()
@@ -21,7 +22,8 @@ export class UserChannelService
 		private readonly userchannelQuery: UserChannelQuery,
 		private readonly userQuery: UserQuery,
 		private readonly channelQuery: ChannelQuery,
-		private readonly roleQuery: RoleQuery ) {}
+		private readonly roleQuery: RoleQuery,
+		private readonly typeQuery: ChannelTypeQuery ) {}
 
 
 	/**
@@ -75,7 +77,7 @@ export class UserChannelService
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
-		if (channel.idType === 1)
+		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.PRIVATE))
 		{
 			if (newUser.password != channel.password)
 				throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
@@ -84,6 +86,13 @@ export class UserChannelService
 		if (userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.ALREADY_IN);
 
+		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
+		{
+			const users = await this.userchannelQuery.findAllUsersByChannelId(channel.idChannel);
+			
+			if (users.length == 2)
+				throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.CANTREJOINDM);
+		}
 		const newMember = await this.userchannelQuery.addMember(newUser.idUser, newUser.idChannel);
 
 		return this.transformToUserChannelDTO(newMember);
@@ -106,12 +115,13 @@ export class UserChannelService
 		
 		if (user.idUser === channel.idOwner)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.KICK_OWNER);
+		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
+			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.KICK_DM);
 
 		const userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 		if (!userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
-
-
+			
 		await this.userchannelQuery.deleteMember(userChannel.idUser_Channel);
 	}
 
@@ -140,6 +150,8 @@ export class UserChannelService
 		
 		if (channel.idOwner == member.idUser)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_OWNER_ROLE);
+		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
+			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_DM_ROLE);
 
 		const role = await this.roleQuery.findRoleById(idRole);
 		if (!role)
