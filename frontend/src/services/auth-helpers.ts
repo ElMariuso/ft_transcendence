@@ -58,19 +58,6 @@ export const verifyJWT = async () => {
  */
 export const getRedirectURL = async() => {
 	return "http://localhost:3000/auth/42/redirect";
-
-	// try {
-	// 	const response = await api.get('/auth/42/redirect');
-	// 	console.log(response)
-	// 	if (response && response.data) {
-    //         return response.data;
-    //     } else {
-    //         throw new Error('Unexpected format');
-    //     }
-	// } catch (error) {
-	// 	console.error('Error getting redirection url:', error);
-	// 	throw error;
-	// }
 };
 
 /**

@@ -1,66 +1,139 @@
-import api from './api';
+import socket from "./socket-helpers";
+import { useRouter } from 'vue-router';
 
-/**
- * Asynchronous function to join a matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/join` endpoint
- * along with playerData as payload. If successful, it returns the response
- * data. In case of an error during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {Object} playerData - The data of the player joining the queue.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const joinQueue = async (playerData) => {
-    try {
-        const response = await api.post('/matchmaking/join', playerData);
-        return response.data;
-    } catch (error) {
-        console.error('Error joining queue:', error);
-        throw error;
-    }
+const joinQueue = (playerData) => {
+    socket.emit('join-standard', playerData);
 };
 
-/**
- * Asynchronous function to leave a matchmaking queue.
- *
- * This function sends a POST request to the `/matchmaking/leave` endpoint
- * along with playerId as payload. If successful, it returns the response
- * data. If an error occurs during the request, it logs the error message to
- * the console and re-throws the error to be handled by the calling function.
- *
- * @param {string} playerId - The unique identifier of the player.
- * @returns {Promise<Object>} - A promise that resolves to the response data.
- */
-const leaveQueue = async (playerId) => {
-    try {
-        const response = await api.post('/matchmaking/leave', playerId);
-        return response.data;
-    } catch (error) {
-        console.error('Error leaving queue:', error);
-        throw error;
-    }
+const leaveQueue = (playerId) => {
+    socket.emit('leave-standard', { playerId });
 };
 
-/**
- * Asynchronous function to get the status of the matchmaking queue.
- *
- * This function sends a GET request to the `/matchmaking/status` endpoint
- * and returns the response data. If an error occurs during the request, it
- * logs the error message to the console and re-throws the error to be handled
- * by the calling function.
- *
- * @returns {Promise<Object>} - A promise that resolves to the status of the queue.
- */
-const getQueueStatus = async () => {
-    try {
-        const response = await api.get('/matchmaking/status');
-        return response.data;
-    } catch (error) {
-        console.error('Error getting queue status:', error);
-        throw error;
-    }
+const getQueueStatus = () => {
+    socket.emit('status-standard');
 };
 
-// Exporting the functions for use in other parts of the application.
-export { joinQueue, leaveQueue, getQueueStatus };
+const joinRankedQueue = (playerData) => {
+    socket.emit('join-ranked', playerData);
+};
+
+const leaveRankedQueue = (playerId) => {
+    socket.emit('leave-ranked', playerId);
+};
+
+const getRankedQueueStatus = () => {
+    socket.emit('status-ranked');
+};
+
+const quitStandardMatch = () => {
+    socket.emit('quit-standard');
+};
+
+const quitRankedMatch = () => {
+    socket.emit('quit-ranked');
+};
+
+const rejoinRoom = (data) => {
+    socket.emit('rejoin-room', data);
+};
+
+const initializeSocketListeners = (matchmakingStore) => {
+    const router = useRouter();
+
+    socket.on('joined', (response) => {
+        console.log(response);
+        matchmakingStore.setIsSearching(true);
+    });
+
+    socket.on('left', (response) => {
+        console.log(response);
+        matchmakingStore.setIsSearching(false);
+    });
+
+    socket.on('status', (response) => {
+        console.log(response);
+        matchmakingStore.setNumberOfPlayers(response.playersInQueue);
+    });
+
+    socket.on('joined-ranked', (response) => {
+        console.log(response);
+        matchmakingStore.setIsSearching(true);
+    });
+
+    socket.on('left-ranked', (response) => {
+        console.log(response);
+        matchmakingStore.setIsSearching(false);
+    });
+
+    socket.on('status-ranked', (response) => {
+        console.log(response);
+        matchmakingStore.setNumberOfPlayers(response.playersInQueue);
+    });
+
+    socket.on('match-found-standard', (response) => {
+        console.log(response);
+        matchmakingStore.setMatchFound(true);
+
+        let opponentUUID;
+        let opponentUsername;
+        if (response.player1.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player2.id;
+            opponentUsername = response.player2.username;
+        } else if (response.player2.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player1.id;
+            opponentUsername = response.player1.username;
+        }
+        if (opponentUUID) {
+            matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setOpponentUsername(opponentUsername);
+            matchmakingStore.setRoomID(response.roomId);
+            setTimeout(() => {
+                matchmakingStore.setIsSearching(false);
+                matchmakingStore.setMatchFound(false);
+                router.push({ name: 'game', params: { roomId: response.roomId } });
+            }, 5000);
+        }
+    });
+
+    socket.on('match-found-ranked', (response) => {
+        console.log(response);
+        matchmakingStore.setMatchFound(true);
+
+        let opponentUUID;
+        let opponentUsername;
+        if (response.player1.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player2.id;
+            opponentUsername = response.player2.username;
+        } else if (response.player2.id == matchmakingStore.guestUUID) {
+            opponentUUID = response.player1.id;
+            opponentUsername = response.player1.username;
+        }
+        if (opponentUUID) {
+            matchmakingStore.setOpponentUUID(opponentUUID);
+            matchmakingStore.setOpponentUsername(opponentUsername);
+            matchmakingStore.setRoomID(response.roomId);
+            setTimeout(() => {
+                matchmakingStore.setIsSearching(false);
+                matchmakingStore.setMatchFound(false);
+                matchmakingStore.setIsRanked(false);
+                router.push({ name: 'game', params: { roomId: response.roomId } });
+            }, 5000);
+        }
+    });
+
+    socket.on('left-room', (response) => {
+        console.log(response);
+        matchmakingStore.setOpponentUUID(null);
+        matchmakingStore.setOpponentUsername(null);
+        matchmakingStore.setRoomID(null);
+
+        router.push({ name: 'home'});
+    });
+
+    socket.on('rejoin-failed', (response) => {
+        console.log(response);
+        matchmakingStore.setRoomID(null);
+    });
+};
+
+export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, initializeSocketListeners };

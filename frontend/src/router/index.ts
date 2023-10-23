@@ -25,6 +25,7 @@ import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import GameView from '../views/GameView.vue';
 import jwt_decode from 'jwt-decode';
 
 // Define the routes for the Vue application
@@ -32,9 +33,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView
+      	path: '/',
+      	name: 'home',
+      	component: HomeView,
+		meta: { requiresAuth: true }
     },
 	{
 		path: '/login',
@@ -42,25 +44,34 @@ const router = createRouter({
 		component: LoginView
 	},
     {
-      path: '/login2fa',
-      name: 'login2fa',
-      component: Login2faView
+      	path: '/login2fa',
+      	name: 'login2fa',
+      	component: Login2faView
     },
     {
-      path: '/community',
-      name: 'community',
-      component: CommunityView
+      	path: '/community',
+      	name: 'community',
+      	component: CommunityView,
+		meta: { requiresAuth: true }
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView
+      	path: '/profile',
+      	name: 'profile',
+      	component: ProfileView,
+		meta: { requiresAuth: true }
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView
-    }
+      	path: '/settings',
+      	name: 'settings',
+      	component: SettingsView,
+		meta: { requiresAuth: true }
+    },
+	{
+		path: '/game/:roomId',
+		name: 'game',
+		component: GameView,
+		props: true
+	}
   ]
 })
 
@@ -103,7 +114,7 @@ router.beforeEach((to, from, next) => {
 		}
 				
 		// Guards all views if not authenticated
-		else if ((to.name !== 'login' && to.name !== 'login2fa') && !authStore.isAuthenticated) {
+		else if (to.matched.some(record => record.meta.requiresAuth) && !authStore.isAuthenticated) {
 			return next({ name: 'login'});
 		}
 

@@ -6,8 +6,6 @@ import { UserQuery } from 'src/Query/user.query';
 import { GameDTO } from 'src/DTO/game/game.dto';
 import { CreateGameDTO} from 'src/DTO/game/createGame.dto';
 import { PrismaClient } from '@prisma/client';
-import { MatchmakingService } from 'src/Service/matchmaking.service';
-import { QueueService } from 'src/Service/queue.service';
 import { UpdateGameDTO } from 'src/DTO/game/updateGame.dto';
 import { AchievementService } from 'src/Service/achievement.service';
 import { AchievementQuery } from "src/Query/achievement.query";
@@ -28,8 +26,6 @@ import { MessageQuery } from "src/Query/message.query";
 	AchievementQuery,
 	FriendQuery,
 	MessageQuery,
-  	MatchmakingService,
-  	QueueService,
   	UpdateGameDTO
 ],
 })

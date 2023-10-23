@@ -11,10 +11,7 @@ import Cookies from 'js-cookie';
  * automatically included in the authorization header of all requests.
  */
 const instance = axios.create({
-    baseURL: 'http://localhost:3000', // Base URL for all requests
-    headers: {
-        'Content-Type': 'application/json', // Specify the content type as JSON
-      },
+    baseURL: 'http://localhost:3000' // Base URL for all requests
 });
 
 /**

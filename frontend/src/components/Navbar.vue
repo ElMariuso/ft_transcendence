@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { computed, watch, ref, onBeforeMount } from 'vue';
+import { computed, watch, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import MatchmakingButton from './MatchmakingButton.vue';
-import SettingsDropDown from './SettingsDropDown.vue';
 import jwt_decode from 'jwt-decode';
+import MatchmakingButton from './MatchmakingButton.vue';
+import LeaveMatch from './LeaveMatch.vue';
+import SettingsDropDown from './SettingsDropDown.vue';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import JoinMatch from './JoinMatch.vue';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
+const matchmakingStore = useMatchmakingStore();
+const route = useRoute();
+
 const isAuthenticated = computed(() => authStore.isAuthenticated);
+const showButtons = computed(() => route.path.startsWith('/game/'));
+const isInGame = computed(() => (matchmakingStore.roomID !== null));
 const { username, avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
@@ -49,15 +58,6 @@ function getAvatarImg() {
 			<router-link to="/">
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 			</router-link>
-		
-			<router-link to="">
-					<p class="text-lg mr-5" >Play</p>
-			</router-link>
-
-			<!-- <div class="flex space-x-4">
-				<matchmaking-button />
-				<matchmaking-button v-if="isAuthenticated" :is-ranked="true" />
-			</div> -->
 
 			<router-link to="/community">
 				<nav class="text-lg mr-5">
@@ -71,6 +71,12 @@ function getAvatarImg() {
 				</nav>
 			</router-link>
 
+			<div class="flex space-x-4">
+				<matchmaking-button v-if="!showButtons && !isInGame" />
+				<matchmaking-button v-if="!showButtons && isAuthenticated && !isInGame" :is-ranked="true" />
+				<LeaveMatch v-if="showButtons && isInGame" />
+				<JoinMatch v-if="!showButtons && isInGame" />
+			</div>
 		</div>
 		
 		<div v-if="isAuthenticated" class="flex items-center">

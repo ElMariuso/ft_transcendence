@@ -1,18 +1,29 @@
 <script setup lang="ts">
+import { onMounted, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
+import MatchmakingBox from './components/MatchmakingBox.vue';
 import Cookies from 'js-cookie';
 import { useProfileStore } from './stores/ProfileStore'
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { initializeSocketListeners } from './services/matchmaking-helpers';
 
 const profileStore = useProfileStore();
+const matchmakingStore = useMatchmakingStore();
 
 async function setupStore() {
 	await profileStore.setupProfile();
 }
 
-const token = Cookies.get('token');
-if (token) {
-	setupStore();
-}
+onMounted(() => {
+    matchmakingStore.initializeStore(profileStore);
+    initializeSocketListeners(matchmakingStore);
+
+    const token = Cookies.get('token');
+    if (token) {
+      setupStore();
+    }
+});
+const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
 <template>
@@ -22,7 +33,5 @@ if (token) {
       <router-view />
     </div>
   </div>
+  <MatchmakingBox v-if="isSearchingValue" />
 </template>
-
-<style scoped>
-</style>
