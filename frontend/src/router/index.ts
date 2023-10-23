@@ -24,6 +24,7 @@ import LoginView from '../views/LoginView.vue';
 import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import ChannelView from '../views/ChannelView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import jwt_decode from 'jwt-decode';
 import ChannelView from '../views/ChannelView.vue';

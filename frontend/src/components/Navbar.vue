@@ -73,7 +73,7 @@ function getAvatarImg() {
 
 		</div>
 		
-		<div v-if="isAuthenticated" class="flex items-center">
+		<div v-if="isAuthenticated" class="flex z-10 items-center">
 			<div>
 				<p>{{ username }}</p>
 			</div>
