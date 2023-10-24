@@ -209,6 +209,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(roomId).emit('match-ended', matchResult);
             const room = this.server.sockets.adapter.rooms.get(roomId);
             if (room) {
+                this.gameStates.get(roomId).stopGameLoop();
                 if (wasRanked) {
                     let id1: number = parseInt(gameState.player1ID as string, 10);
                     let id2: number = parseInt(gameState.player2ID as string, 10);;
@@ -241,7 +242,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     clearInterval(gameStateUpdateInterval);
                     this.gameStateUpdateIntervals.delete(roomId);
                 }
-                this.gameStates.get(roomId).stopGameLoop();
                 this.gameStates.delete(roomId);
             },  15000);
         }
