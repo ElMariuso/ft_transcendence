@@ -3,7 +3,10 @@
 
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg"> 
 	  <div class="text-center">
-		<img :src="profileStore.avatar" alt="avatar error" class="w-20 h-20 mx-auto rounded-full">
+		<!-- <img :src="profileStore.avatar" alt="avatar error" class="w-20 h-20 mx-auto rounded-full"> -->
+		<div class="mr-4 text-lg" :key="updateAvatarKey">
+			<img :src="avatarImg" alt="avatar" class="w-20 h-20 mx-auto rounded-full">
+		</div>
 		<h2 class="text-2xl font-semibold mt-4 mb-3">{{ profileStore.username }}</h2>
 	  </div>
 	</div>
@@ -78,11 +81,18 @@
 import { ref } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
+import jwt_decode from 'jwt-decode';
+import { storeToRefs } from 'pinia'
+import Cookies from 'js-cookie';
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
 const showUsers = ref(false);
 const showAchievements = ref(false);
+
+const { avatarUpdated } = storeToRefs(profileStore)
+const avatarImg = ref(getAvatarImg());
+const updateAvatarKey = ref(0);
 
 const setupLadder = async () => {
   await ladderStore.setupLadder()
@@ -113,6 +123,13 @@ const setupGamesHistory = async () => {
 //   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setupGamesHistory()
+
+function getAvatarImg() {
+  const token = Cookies.get('token');
+  if (token) {
+    return "http://localhost:3000/users/avatar/" + jwt_decode(token).sub;
+  }
+}
 
 
 </script>
