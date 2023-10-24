@@ -241,6 +241,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     clearInterval(gameStateUpdateInterval);
                     this.gameStateUpdateIntervals.delete(roomId);
                 }
+                this.gameStates.get(roomId).stopGameLoop();
                 this.gameStates.delete(roomId);
             },  15000);
         }
