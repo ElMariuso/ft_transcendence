@@ -11,6 +11,9 @@ import { AchievementService } from 'src/Service/achievement.service';
 import { AchievementQuery } from "src/Query/achievement.query";
 import { FriendQuery } from "src/Query/friend.query";
 import { MessageQuery } from "src/Query/message.query";
+import { GameGateway } from 'src/Gateway/game.gateway';
+import { GameLoopService } from 'src/Service/gameloop.service';
+import { GameStateService } from 'src/Service/gamestate.service';
 
 
 @Module({
@@ -26,8 +29,11 @@ import { MessageQuery } from "src/Query/message.query";
 		AchievementQuery,
 		FriendQuery,
 		MessageQuery,
-		UpdateGameDTO
+		UpdateGameDTO,
+		GameGateway,
+		GameLoopService,
+		GameStateService
 	],
-	exports: [GameService, UserQuery, AchievementService, AchievementQuery, FriendQuery, MessageQuery, GameQuery, GameDTO],
+	exports: [GameService, UserQuery, AchievementService, AchievementQuery, FriendQuery, MessageQuery, GameQuery, GameDTO, GameGateway],
 })
 export class GameModule {}

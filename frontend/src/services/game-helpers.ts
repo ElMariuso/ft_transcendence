@@ -25,7 +25,6 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
                 drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
             }
         }
-        askGamesInformations(roomId);
         requestAnimationFrame(loop);
     }
     loop();

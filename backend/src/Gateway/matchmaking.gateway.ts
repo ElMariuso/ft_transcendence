@@ -1,34 +1,23 @@
-import {
-  WebSocketGateway,
-  WebSocketServer,
-  SubscribeMessage,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
-import { GameState, Player, Direction, EndMatchResult } from 'src/Model/gamestate.model';
-import { GameService } from 'src/Service/game.service';
-import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
+import { GameGateway } from './game.gateway';
 
 @WebSocketGateway({ 
-  cors: {
-    origin: "http://localhost:8080",
-    methods: ["GET", "POST"],
-  }
+    cors: {
+      origin: "http://localhost:8080",
+      methods: ["GET", "POST"],
+    }
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
-  private clientRooms: Map<string, string> = new Map();
-  private gameStates: Map<string, GameState> = new Map();
 
   constructor(
     private readonly matchmakingService: MatchmakingService,
-    private readonly gameService: GameService,
+    private readonly gameGateway: GameGateway,
     private readonly eventEmitter: EventEmitter,
   ) {
     this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
@@ -39,21 +28,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   private logger: Logger = new Logger('MatchmakingGateway');
 
   async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    this.logger.log(`Client connected: ${client.id}`);
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
-
-    const roomId = this.findRoomIdByClientId(client.id);
-
-    if (roomId) {
-      client.leave(roomId);
-      console.log(`Client ${client.id} removed from room ${roomId}`);
-      this.server.to(roomId).emit('user-disconnected', { clientId: client.id, roomId });
-    }
+    this.logger.log(`Client disconnected: ${client.id}`);
     this.onlinePlayers.delete(client.id);
-    this.clientRooms.delete(client.id);
   }
 
   @SubscribeMessage('join-standard')
@@ -92,202 +72,26 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
   getRankedQueueStatus(client: Socket): void {
     client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
   }
-  
-  @SubscribeMessage('quit-match')
-  quitMatch(client: Socket, playerId: number | string): void {
-    const roomId = this.findRoomIdByClientId(client.id);
-    if (roomId) {
-      const gameState = this.gameStates.get(roomId);
-      if (gameState) {
-        const playerLeaving = Array.from(this.onlinePlayers.entries()).find(([, value]) => value.socketId === client.id);
-
-        if (playerLeaving) {
-          const [playerId] = playerLeaving;
-          gameState.setForfeit(playerId);
-        } else {
-          client.emit('error-quit-match', { status: 'Player not found.' });
-        }
-      } else {
-        client.emit('error-quit-match', { status: 'Error gameState not found' });
-      }
-    } else {
-      client.emit('error-quit-match', { status: 'Error leaving room or room not found' });
-    }
-  }
-
-  @SubscribeMessage('rejoin-room')
-  rejoinRoom(client: Socket, data: { roomId: string, username: string}): void {
-    const roomId = data.roomId;
-    const username = data.username;
-    const room = this.server.sockets.adapter.rooms.get(roomId);
-    
-    if (room) {
-      client.join(roomId);
-      client.emit('rejoined-room', { status: 'Rejoined the room', roomId });
-
-      this.clientRooms.set(client.id, roomId);
-      this.onlinePlayers.set(client.id, { socketId: client.id, username: username });
-    } else {
-      client.emit('rejoin-failed', { status: 'Failed to rejoin the room', roomId });
-    }
-  }
-
-  @SubscribeMessage('ask-games-informations')
-  updateGame(client: Socket, roomId: string): void {
-    const gameState = this.gameStates.get(roomId);
-
-    if (gameState) {
-      gameState.updateBallPosition();
-      const informations = {
-        player1ID: gameState.player1ID,
-        player2ID: gameState.player2ID,
-        player1Username: gameState.player1Username,
-        player2Username: gameState.player2Username,
-        score1: gameState.score1,
-        score2: gameState.score2,
-        racket1Size: gameState.racket1Size,
-        racket2Size: gameState.racket2Size,
-        racket1Position: gameState.racket1Position,
-        racket2Position: gameState.racket2Position,
-        ballSize: gameState.ballSize,
-        ballPosition: gameState.ballPosition,
-      };
-      client.emit('games-informations', informations)
-    } else {
-      client.emit('cant-found-games-informations', { message: 'Game s information not available for provided room ID.' });
-    }
-  }
-
-  @SubscribeMessage('update-racket')
-  updateRacket(client: Socket, [roomId, action]: [string, string]): void {
-    const gameState = this.gameStates.get(roomId);
-
-    if (gameState) {
-      switch (action) {
-        case 'racket1-up':
-          gameState.moveRacket(Player.Player1, Direction.Up);
-          break;
-        case 'racket1-down':
-          gameState.moveRacket(Player.Player1, Direction.Down);
-          break;
-        case 'racket2-up':
-          gameState.moveRacket(Player.Player2, Direction.Up);
-          break;
-        case 'racket2-down':
-          gameState.moveRacket(Player.Player2, Direction.Down);
-          break;
-        default:
-          client.emit('cant-update-racket', { message: 'Can\'t update racket' });
-          break;
-      }
-    } else {
-      client.emit('cant-update-racket', { message: 'Can\'t update racket' });
-    }
-  }
 
   private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
-    const player1Info = this.onlinePlayers.get(match.player1.id);
-    const player2Info = this.onlinePlayers.get(match.player2.id);
-    const roomId = uuidv4();
-
-    if (player1Info && player2Info) {
-      const newGameState = new GameState(
-        match.player1.id,
-        match.player2.id,
-        player1Info.username,
-        player2Info.username,
-        (result) => {
-            console.log(`${result.winner} has won the match for reason: ${result.reason}!`);
-            this.endMatch(roomId, false, result);
-        }
-      );
-      this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
-      this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
-
-      this.clientRooms.set(player1Info.socketId, roomId);
-      this.clientRooms.set(player2Info.socketId, roomId);
-
-      this.gameStates.set(roomId, newGameState);
-
-      this.server.to(roomId).emit('match-found-standard', { 
-        player1: { id: match.player1.id, username: player1Info.username }, 
-        player2: { id: match.player2.id, username: player2Info.username }, 
-        roomId 
-      });
-    }
+    this.transferPlayerToGame(match.player1.id);
+    this.transferPlayerToGame(match.player2.id);
+    this.gameGateway.createMatch(match, false);
   }
 
   private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
-    const player1Info = this.onlinePlayers.get(match.player1.id);
-    const player2Info = this.onlinePlayers.get(match.player2.id);
-    const roomId = uuidv4();
+    this.transferPlayerToGame(match.player1.id);
+    this.transferPlayerToGame(match.player2.id);
+    this.gameGateway.createMatch(match, true);
+  }
 
-    if (player1Info && player2Info) {
-      const newGameState = new GameState(
-        match.player1.id,
-        match.player2.id,
-        player1Info.username,
-        player2Info.username,
-        (result) => {
-            console.log(`${result.winner} has won the match for reason: ${result.reason}!`);
-            this.endMatch(roomId, true, result);
-        }
-      );
-      this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
-      this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
-
-      this.clientRooms.set(player1Info.socketId, roomId);
-      this.clientRooms.set(player2Info.socketId, roomId);
-
-      this.gameStates.set(roomId, newGameState);
-
-      this.server.to(roomId).emit('match-found-ranked', { 
-        player1: { id: match.player1.id, username: player1Info.username }, 
-        player2: { id: match.player2.id, username: player2Info.username }, 
-        roomId 
-      });
+  private transferPlayerToGame(playerId: number | string): void {
+    const playerInfo = this.onlinePlayers.get(playerId);
+    if (playerInfo) {
+        this.gameGateway.addOnlinePlayer(playerId, playerInfo);
+        this.onlinePlayers.delete(playerId);
+    } else {
+        this.logger.error(`Player with ID ${playerId} not found in online players map.`);
     }
-  }
-
-  private findRoomIdByClientId(clientId: string): string | undefined {
-    return this.clientRooms.get(clientId);
-  }
-
-  private endMatch(roomId: string, wasRanked: boolean, matchResult: EndMatchResult): void {
-    const gameState = this.gameStates.get(roomId);
-
-    if (gameState) {
-      this.server.to(roomId).emit('match-ended', matchResult);  
-      const room = this.server.sockets.adapter.rooms.get(roomId);
-      if (room) {        
-        if (wasRanked) {
-          let id1: number = parseInt(gameState.player1ID as string, 10);
-          let id2: number = parseInt(gameState.player2ID as string, 10);;
-          const createGameDto = new CreateGameDTO();
-
-          createGameDto.idPlayerOne = id1;
-          createGameDto.idPlayerSecond = id2;
-          if (gameState.score1 > gameState.score2)
-            createGameDto.idWinner = id1;
-          else
-            createGameDto.idWinner = id2;
-          createGameDto.scoreLeft = gameState.score1;
-          createGameDto.scoreRight = gameState.score2;
-          this.gameService.createGame(createGameDto);
-        }
-        for (const clientId of room) {
-          const clientSocket = this.server.sockets.sockets.get(clientId);
-          if (clientSocket) {
-            this.updateGame(clientSocket, roomId);
-            clientSocket.leave(roomId);
-            this.clientRooms.delete(clientId);
-            this.onlinePlayers.delete(clientId);
-          }
-        }
-      }
-      setTimeout(() => {
-        this.gameStates.delete(roomId);
-      },  15000);
-    }
-  }
+}
 }
