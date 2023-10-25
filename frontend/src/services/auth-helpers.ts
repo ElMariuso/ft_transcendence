@@ -114,15 +114,6 @@ export async function checkJWT(authStore, profileStore) {
 				else
 					return status;
 			}
-
-			// Attempt to fetch and set the user data using the decoded userID.
-			try {
-				const userData = await getUserData(userID);
-				profileStore.setUsername(userData.username);
-				profileStore.setAvatar(userData.avatar);
-			} catch (error) {
-				console.error("Error fetching user data:", error);
-			}
 			
             // Update the authState in the authStore to true.
 			authStore.login();

@@ -43,6 +43,16 @@ export const useProfileStore = defineStore('profile', () => {
 		}
 	}
 
+	function updateProfile(bodyInfo: []) {
+		if (bodyInfo['username'])
+			username.value = bodyInfo['username'];
+		if (bodyInfo['isTwoFactorAuthEnabled'])
+			twoFactorAuth.value = bodyInfo['isTwoFactorAuthEnabled'];
+		if (bodyInfo['avatar']) {
+			avatarUpdated.value = true;
+		}
+	}
+
 	function setUserID(newID: string) {
 		userID.value = newID
 	}
@@ -76,5 +86,8 @@ export const useProfileStore = defineStore('profile', () => {
 	}
 
 	// Exporting reactive properties and methods to be accessible within components
-	return {avatar, username, twoFactorAuth, userID, avatarUpdated, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
+	return {
+		avatar, username, twoFactorAuth, userID, avatarUpdated, 
+		setupProfile, updateProfile
+	}
 })

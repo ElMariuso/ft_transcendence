@@ -150,7 +150,6 @@ async function checkUsernameAvailability() {
 				usernameAvailable.value = true;
 			usernameCheckPerformed.value = true;
 		});
-
 	}
 }
 
@@ -241,15 +240,11 @@ async function saveSettings() {
 
 			try {
 				const response = await api.post('/users/uploadAvatar/' + profileStore.userID, formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
-						
-					}
+					headers: { 'Content-Type': 'multipart/form-data', }
 				})
-				console.log('Avatar upload response:', response.data);
-				if (response.data.message === 'Upload Successfully') {
+				if (response.data.message === 'Upload Successfully')
 					bodyInfo['avatar'] = response.data.path;
-				}
+
 			} catch (error) {
 				console.error('Avatar upload error:', error);
 				return;
@@ -286,22 +281,16 @@ async function saveSettings() {
 					'Content-Type': 'application/json; charset=utf-8',
 				},
 			}).then(() => {
-				if (bodyInfo['username'])
-					username.value = bodyInfo['username'];
-				if (bodyInfo['avatar']) {
-					// avatar.value = bodyInfo['avatar'];
-					avatarUpdated.value = true;
-				}
+				profileStore.updateProfile(bodyInfo);
 			})
-			// await profileStore.setupProfile();
+
 			newUsername.value = '';
 			clearAvatarInput();
-			
+
 			showPopup('Profile changes saved');
 		}
-		else {
+		else
 			showPopup('No profile changes found');
-		}
 	}
 }
 </script>
