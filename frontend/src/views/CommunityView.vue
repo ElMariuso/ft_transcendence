@@ -38,34 +38,27 @@
 					<option value="private">Private</option>
 				</select>
 
-				<!-- :disabled=!twoFactorAuth
-				:class="{ 'bg-blue-500 text-white': twoFactorAuth, 'bg-gray-200 cursor-not-allowed': !twoFactorAuth }" -->
 				<input
 					v-model="newChannelPassword"
 					type="text"
 					placeholder="Enter password"
-					
+					:disabled="newChannelType==='public'"
 					class="p-2  border rounded-lg mt-2 w-full"
 				/>
 
-				<!-- <div class="w-1/2 mx-auto"> -->
+				<div class="flex items-baseline">
 
 					<button 
-					@click="createChannel"
-					class="mt-4 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg"
+						@click="createChannel"
+						class="mt-4 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg mr-5"
 					>
 						Create
 					</button>
-				<!-- </div> -->
+					
+					<div v-if="noChannelName"> <h3 class="text-lg text-red-600 font-semibold">Name required</h3> </div>
+					<!-- <div v-if="noChannelType"> <h3 class="text-lg text-red-600 font-semibold">You need to select a type to create a channel</h3> </div> -->
+					<div v-if="noChannelPassword"> <h3 class="text-lg text-red-600 font-semibold">Password required</h3> </div>
 
-				<div v-if="noChannelName">
-					<h3 class="text-lg text-red-600 font-semibold">You need to enter a name to create a channel</h3>
-				</div>
-				<div v-if="noChannelType">
-					<h3 class="text-lg text-red-600 font-semibold">You need to select a type to create a channel</h3>
-				</div>
-				<div v-if="noChannelPassword">
-					<h3 class="text-lg text-red-600 font-semibold">Private channel need a password</h3>
 				</div>
 			</div>
 
@@ -97,12 +90,6 @@
 							<button class="flex w-1/3 text-red-600">Quit</button>
 						</div>
 					</li>
-
-
-
-
-				
-
 				</ul>
 
 			</div>
@@ -160,7 +147,7 @@
 						</div>
 
 						
-				<div class=" mt-auto">
+				<div class="mt-auto">
 					<input
 						v-model="newMessage"
 						type="text"
@@ -179,10 +166,13 @@
 					<h3 class="text-lg font-semibold border-b border-gray-400">Players</h3>
 	
 					<ul class="mt-2 h-96 overflow-y-auto">
-						<!-- DM -->
+						<!-- PLAY -->
+						<!-- PROFILE -->
+						
+						<!-- 'Settings' -->
+							<!-- DM -->
+							<!-- add friend -->
 							<!-- BLOCK -->
-							<!-- PLAY -->
-							<!-- PROFILE -->
 
 							<!-- IF ADMIN -->
 							<!-- KICK/BAN/MUTE -->
