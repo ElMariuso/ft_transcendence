@@ -2,6 +2,7 @@
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
 import Cookies from 'js-cookie';
+
 import { useProfileStore } from './stores/ProfileStore'
 
 const profileStore = useProfileStore();

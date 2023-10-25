@@ -43,6 +43,17 @@ export const getUsernamesData = async (userID) => {
     }
 };
 
+
+export const getAllChannels = async () => {
+    try {
+        const response = await api.get('/channels/');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching channels:', error);
+        throw error;
+    }
+};
+
 /**
  * Asynchronous function to create a new channel data from the API.
  * 
@@ -60,12 +71,12 @@ export const getUsernamesData = async (userID) => {
  export const postNewChannelsData = async (userID, newName, newType, newPassword) => {
     try {
 		var id: number = +userID;
-		console.log(newName);
-		console.log(newPassword);
-		console.log(userID);
-		console.log(id);
-		console.log(newType);
-        const response = await api.post('channels', {
+		console.log(userID)
+		console.log(newName)
+		console.log(newType)
+		console.log(newPassword)
+
+        const response = await api.post('/channels', {
 			"name": newName,
 			"password": newPassword,
 			"idOwner": id,
