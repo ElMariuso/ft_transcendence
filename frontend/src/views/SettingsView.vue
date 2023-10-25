@@ -286,8 +286,8 @@ async function saveSettings() {
 					'Content-Type': 'application/json; charset=utf-8',
 				},
 			}).then(() => {
-				// if (bodyInfo['username'])
-				// 	username.value = bodyInfo['username'];
+				if (bodyInfo['username'])
+					username.value = bodyInfo['username'];
 				if (bodyInfo['avatar']) {
 					// avatar.value = bodyInfo['avatar'];
 					avatarUpdated.value = true;
