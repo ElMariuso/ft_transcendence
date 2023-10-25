@@ -53,7 +53,7 @@ const router = createRouter({
       component: CommunityView
     },
     {
-      path: '/profile',
+      path: '/profile/id=:id',
       name: 'profile',
       component: ProfileView
     },

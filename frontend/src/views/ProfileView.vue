@@ -94,6 +94,13 @@ const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
 
+const setId = async () => {
+	let uri = window.location.href.split('id=');
+	await ladderStore.setId(uri[1])
+//   showUsers.value = true // Set a flag to indicate that data is loaded
+}
+setId()
+
 const setupLadder = async () => {
   await ladderStore.setupLadder()
   showUsers.value = true // Set a flag to indicate that data is loaded

@@ -19,15 +19,33 @@ export const useLadderStore = defineStore('ladder', () => {
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
 
+	/////////////////// ID ////////////////////////
+
+	function setId(newId : number) {
+
+		console.log(newId);
+		if (newId == 0)
+		{
+			// console.log("YOOOOOO");
+			const token = localStorage.getItem('token')
+			const id = jwt_decode(token).sub;
+			userID.value = id;
+		}
+		else
+		{
+			userID.value = newId;
+		}
+	}
+
 	/////////////////// LADDER ////////////////////////
 
 	async function setupLadder() {
-		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = id;
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
 		try {
-			const userData = await getLadderData(id);
+			const userData = await getLadderData(userID.value);
 			setLadder(userData);
 		} catch (error) {
 			console.error("Error setting up Ladder:", error);
@@ -45,12 +63,12 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// ACHIEVEMENTS ////////////////////////
 
 	async function setupAchievements() {
-		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = id;
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
 		try {
-			const userData = await getAchievementsData(id);
+			const userData = await getAchievementsData(userID.value);
 			setAchievements(userData);
 		} catch (error) {
 			console.error("Error setting up achievements:", error);
@@ -68,12 +86,12 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// STATS ////////////////////////
 
 	async function setupStats() {
-		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = id;
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
 		try {
-			const userData = await getStatsData(id);
+			const userData = await getStatsData(userID.value);
 			setStats(userData);
 		} catch (error) {
 			console.error("Error setting up Stats:", error);
@@ -88,12 +106,12 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// GAMES HISTORY ////////////////////////
 
 	async function setupGamesHistory() {
-		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = id;
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
 		try {
-			const userData = await getGamesData(id);
+			const userData = await getGamesData(userID.value);
 			setGamesHistory(userData);
 		} catch (error) {
 			console.error("Error setting up match history:", error);
@@ -112,12 +130,12 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// FRIENDS ////////////////////////
 
 	async function setupFriends() {
-		const token = localStorage.getItem('token')
-		const id = jwt_decode(token).sub;
-		userID.value = id;
+		// const token = localStorage.getItem('token')
+		// const id = jwt_decode(token).sub;
+		// userID.value = id;
 
 		try {
-			const userData = await getFriendsData(id);
+			const userData = await getFriendsData(userID.value);
 			setFriends(userData);
 		} catch (error) {
 			console.error("Error setting up Friends:", error);
@@ -135,5 +153,5 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	// console.log(ladder.value[0])
 
-	return {history, ladder, friends, nbWin, nbLoose, achievements, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements}
+	return {history, ladder, friends, nbWin, nbLoose, achievements, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements}
 })

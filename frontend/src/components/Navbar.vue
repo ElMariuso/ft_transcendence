@@ -65,7 +65,7 @@ function getAvatarImg() {
 				</nav>
 			</router-link>
 
-			<router-link to="/profile">
+			<router-link to="/profile/id=0">
 				<nav class="text-lg mr-5">
 					<section>Profile</section>
 				</nav>
