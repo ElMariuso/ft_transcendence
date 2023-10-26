@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import jwt_decode from 'jwt-decode';
 
 import { getLadderData } from '@/services/UserProfile-helpers'
+import { getAllUserData } from '@/services/UserProfile-helpers'
 import { getStatsData } from '@/services/UserProfile-helpers'
 import { getAchievementsData } from '@/services/UserProfile-helpers'
 import { getGamesData } from '@/services/UserProfile-helpers'
@@ -13,6 +14,7 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	const userID = ref(0)
 	const ladder = ref(['test', 'retest']);
+	const users = ref(['test', 'retest']);
 	const achievements = ref(['test', 'retest']);
 	const history = ref(['test', 'retest']);
 	const friends = ref(['test', 'retest']);
@@ -23,7 +25,7 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	function setId(newId : number) {
 
-		console.log(newId);
+		// console.log(newId);
 		if (newId == 0)
 		{
 			// console.log("YOOOOOO");
@@ -58,6 +60,26 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	function getLadder() {
 		return ladder.values;
+	}
+
+	/////////////////// ALL USERS ////////////////////////
+
+	async function setupAllUsers() {
+
+		try {
+			const userData = await getAllUserData();
+			setUsers(userData);
+		} catch (error) {
+			console.error("Error setting up all users:", error);
+		}
+	}
+
+	function setUsers(newList : any) {
+		users.values = newList;
+	}
+
+	function getUsers() {
+		return users.values;
 	}
 	
 	/////////////////// ACHIEVEMENTS ////////////////////////
@@ -153,5 +175,5 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	// console.log(ladder.value[0])
 
-	return {history, ladder, friends, nbWin, nbLoose, achievements, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements}
+	return {history, ladder, friends, nbWin, nbLoose, achievements, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers}
 })

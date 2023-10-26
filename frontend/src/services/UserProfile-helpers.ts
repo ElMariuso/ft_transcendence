@@ -23,6 +23,26 @@ export const getLadderData = async (userID) => {
 };
 
 /**
+ * Asynchronous function to retrieve all user data from the API.
+ * 
+ * This function sends a GET request to the `/users` endpoint and 
+ * returns the response data. If an error occurs during the request, it logs 
+ * the error message to the console and re-throws the error to be handled by 
+ * the calling function.
+ *
+ * @returns {Promise<Object>} - A promise that resolves to all the users data.
+ */
+ export const getAllUserData = async () => {
+    try {
+        const response = await api.get('/users/');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all users data:', error);
+        throw error;
+    }
+};
+
+/**
  * Asynchronous function to retrieve stats data from the API.
  * 
  * This function sends a GET request to the `/games/stats/{userID}` endpoint and 

@@ -1,7 +1,7 @@
 <template>
-<div v-if="showUsers, showAchievements">
+<div v-if="showUsers, showAchievements, showUsersList">
 
-	<div class="col-3 bg-white p-4 rounded-lg shadow-lg"> 
+	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
 	  <div class="text-center">
 		<!-- <img :src="profileStore.avatar" alt="avatar error" class="w-20 h-20 mx-auto rounded-full"> -->
 		<div class="mr-4 text-lg" :key="updateAvatarKey">
@@ -70,6 +70,29 @@
             </li>
           </div>
 		</div>
+		<!-- Search Users -->
+		<div>
+    	  <h3 class="text-lg font-semibold">Search User</h3>
+    	  <ul class="mt-2">
+			<input
+		      v-model="searchUsername"
+    	      type="text"
+    	      placeholder="Enter username"
+    	      class="p-2 border rounded-lg mt-2"
+    		/>
+			<button @click="FindUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
+    	  </ul>
+		  <div v-if="userNotFound">
+			<h3 class="text-lg text-red-600 font-semibold">User not found</h3>
+		  </div>
+		  <div v-if="userFound">
+			<router-link :to="'/profile/id=' + searchIdUser">
+			  <nav class="text-lg text-green-600 mr-5">
+    	        <section>Click here to view profile</section>
+    	      </nav>
+			</router-link>
+		  </div>
+    	</div>
 	</div>
 
 </div>
@@ -81,6 +104,7 @@
 import { ref } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
+import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
@@ -89,10 +113,15 @@ const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
 const showUsers = ref(false);
 const showAchievements = ref(false);
+const showUsersList = ref(true);
 
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
+const searchIdUser = ref(0);
+const userNotFound = ref(false);
+const userFound = ref(false);
+const searchUsername = ref('');
 
 const setId = async () => {
 	let uri = window.location.href.split('id=');
@@ -106,6 +135,13 @@ const setupLadder = async () => {
   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setupLadder()
+
+const setupAllUsers = async () => {
+  await ladderStore.setupAllUsers()
+  showUsersList.value = true // Set a flag to indicate that data is loaded
+}
+setupAllUsers()
+
 
 const setupFriends = async () => {
   await ladderStore.setupFriends()
@@ -136,6 +172,24 @@ function getAvatarImg() {
   if (token) {
     return "http://localhost:3000/users/avatar/" + jwt_decode(token).sub;
   }
+}
+
+async function FindUser() {
+
+	userNotFound.value = false;
+	userFound.value = false;
+	await api.get('/users')
+	.then(res => {
+		for (let i = 0; res.data[i]; i++) {
+			if (searchUsername.value == res.data[i].username)
+			{
+				searchIdUser.value = res.data[i].idUser;
+				userFound.value = true;
+			}
+			else
+				userNotFound.value = true;
+		}
+	});
 }
 
 
