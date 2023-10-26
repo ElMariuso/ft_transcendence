@@ -12,6 +12,9 @@ const matchmakingStore = useMatchmakingStore();
 
 const player1Username = computed(() => gameStore.player1Username);
 const player2Username = computed(() => gameStore.player2Username);
+const isPlayer1Ready = computed(() => gameStore.gameState.playerReady.first);
+const isPlayer2Ready = computed(() => gameStore.gameState.playerReady.second);
+const areBothPlayersReady = computed(() => isPlayer1Ready.value && isPlayer2Ready.value);
 
 const movingUp = ref(false);
 const movingDown = ref(false);
@@ -95,15 +98,14 @@ onUnmounted(() => {
         <canvas id="gameCanvas" class="absolute transform -translate-x-1/2 -translate-y-1/2" width="858" height="525"></canvas>
         <div>
             <div>
-                {{ player1Username }}
+                {{ player1Username }} <span v-if="isPlayer1Ready && !areBothPlayersReady"> is ready</span>
             </div>
             <div>
-                {{ player2Username }}
+                {{ player2Username }} <span v-if="isPlayer2Ready && !areBothPlayersReady"> is ready</span>
             </div>
         </div>        
     </div>
 </template>
-
   
 <style>
 #gameCanvas {
