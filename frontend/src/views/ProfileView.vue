@@ -1,9 +1,9 @@
 <template>
 <div v-if="showUsers, showAchievements, showUsersList">
 
+	<!-- Profile Header -->
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
 	  <div class="text-center">
-		<!-- <img :src="profileStore.avatar" alt="avatar error" class="w-20 h-20 mx-auto rounded-full"> -->
 		<div class="mr-4 text-lg" :key="updateAvatarKey">
 			<img :src="avatarImg" alt="avatar" class="w-20 h-20 mx-auto rounded-full">
 		</div>
@@ -14,6 +14,8 @@
 <div class="flex gap-2 justify-around">
 	
 	<div class="mt-6 col-3">
+
+		<!-- Player Ladder -->
     	<h3 class="text-lg font-semibold">Player Ladder</h3>
 		<div class="mt-2 flex w- pr-4">
           <ul>
@@ -29,6 +31,7 @@
 
 	<div class="col-3">
 
+		<!-- Stats -->
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Stats</h3>
 		  <div class="mt-2">
@@ -37,6 +40,7 @@
 		  </div>
 		</div>
 	
+		<!-- Achievements -->
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Achievements</h3>
 		  <div class="mt-2">
@@ -47,7 +51,7 @@
           </div>
 		</div>
 	
-
+		<!-- Match History -->
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Match History</h3>
 		  <div class="mt-2">
@@ -59,19 +63,9 @@
 	</div>
 
 	<div class="col-3">
-		<div class="mt-6">
-		  <h3 class="text-lg font-semibold">Friend list</h3>
-		  <div class="mt-2">
-            <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
-			  <span class="font-semibold">{{ Friends.username }}</span>
-			  <!-- <span :class="{ 'text-green-600 ': friend.status === user.online, 'text-yellow-600 ': friend.status === user.playing, 'text-red-600 ': friend.status === user.offline }">
-				  <div class="ml-1">{{ friend.status }}</div>
-				</span> -->
-            </li>
-          </div>
-		</div>
+
 		<!-- Search Users -->
-		<div>
+		<div class="mt-6">
     	  <h3 class="text-lg font-semibold">Search User</h3>
     	  <ul class="mt-2">
 			<input
@@ -93,6 +87,20 @@
 			</router-link>
 		  </div>
     	</div>
+
+		<!-- Friend list -->
+		<div class="mt-6">
+		  <h3 class="text-lg font-semibold">Friend list</h3>
+		  <div class="mt-2">
+            <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
+			  <span class="font-semibold">{{ Friends.username }}</span>
+			  <!-- <span :class="{ 'text-green-600 ': friend.status === user.online, 'text-yellow-600 ': friend.status === user.playing, 'text-red-600 ': friend.status === user.offline }">
+				  <div class="ml-1">{{ friend.status }}</div>
+				</span> -->
+            </li>
+          </div>
+		</div>
+
 	</div>
 
 </div>
@@ -126,7 +134,6 @@ const searchUsername = ref('');
 const setId = async () => {
 	let uri = window.location.href.split('id=');
 	await ladderStore.setId(uri[1])
-//   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setId()
 
@@ -145,13 +152,11 @@ setupAllUsers()
 
 const setupFriends = async () => {
   await ladderStore.setupFriends()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setupFriends()
 
 const setupStats = async () => {
   await ladderStore.setupStats()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setupStats()
 
@@ -163,7 +168,6 @@ setupAchievements()
 
 const setupGamesHistory = async () => {
   await ladderStore.setupGamesHistory()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
 }
 setupGamesHistory()
 
