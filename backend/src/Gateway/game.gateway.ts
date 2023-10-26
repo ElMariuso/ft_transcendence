@@ -156,7 +156,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     break;
             }
             if (gameState.playerReady.first && gameState.playerReady.second) {
-                gameLoop.startGameLoop();
+                setTimeout(() => {
+                    gameLoop.startGameLoop();
+                }, 3000);
             }
         } else {
             client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
