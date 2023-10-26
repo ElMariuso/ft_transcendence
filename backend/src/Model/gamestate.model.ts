@@ -44,4 +44,5 @@ export interface GameState {
     ballPosition: position;
     ballVelocity: position;
     ballSpeed: number;
+    playerReady: { first: boolean, second: boolean };
 }

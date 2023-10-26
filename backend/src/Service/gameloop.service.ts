@@ -4,16 +4,18 @@ import { GameStateService } from './gamestate.service';
 @Injectable()
 export class GameLoopService {
     private readonly logger = new Logger(GameLoopService.name);
-    private gameLoopInterval: NodeJS.Timeout;
+    private gameLoopInterval: NodeJS.Timeout | null = null;
     private readonly TICK_RATE = 1000 / 120;
 
     constructor(private readonly gameStateService: GameStateService) {}
 
     startGameLoop(): void {
-        this.gameLoopInterval = setInterval(() => {
-            this.gameTick();
-        }, this.TICK_RATE);
-        this.logger.log('Game loop started');
+        if (this.gameStateService.playerReady.first && this.gameStateService.playerReady.second) {
+            this.gameLoopInterval = setInterval(() => {
+                this.gameTick();
+            }, this.TICK_RATE);
+            this.logger.log('Game loop started');
+        }
     }
 
     stopGameLoop(): void {

@@ -130,6 +130,39 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    @SubscribeMessage('set-ready')
+    setReady(client: Socket, [roomId, action]: [string, string]): void {
+        const gameLoop = this.gameStates.get(roomId);
+        const gameState = gameLoop.getGameState();
+
+        if (gameState) {
+            switch (action) {
+                case 'player1':
+                    if (gameState.playerReady.first) {
+                        gameState.setReady(false, 'player1');
+                    } else {
+                        gameState.setReady(true, 'player1');
+                    }
+                    break;
+                case 'player2':
+                    if (gameState.playerReady.second) {
+                        gameState.setReady(false, 'player2');
+                    } else {
+                        gameState.setReady(true, 'player2');
+                    }
+                    break;
+                default:
+                    client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
+                    break;
+            }
+            if (gameState.playerReady.first && gameState.playerReady.second) {
+                gameLoop.startGameLoop();
+            }
+        } else {
+            client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
+        }
+    }
+
     public addOnlinePlayer(playerId: number | string, playerInfo: { socketId: string; username: string }) {
         this.onlinePlayers.set(playerId, playerInfo);
     }
@@ -168,8 +201,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             this.gameStates.set(roomId, newGameLoop);
 
-            newGameLoop.startGameLoop();
-
             const gameStateUpdateInterval = setInterval(() => {
                 const gameState = this.gameStates.get(roomId)?.getGameState();
                 if (gameState) {
@@ -198,6 +229,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             racket2Position: gameState.racket2Position,
             ballSize: gameState.ballSize,
             ballPosition: gameState.ballPosition,
+            playerReady: gameState.playerReady,
         };
         this.server.to(roomId).emit('games-informations', informations);
     }

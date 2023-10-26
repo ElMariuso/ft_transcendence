@@ -23,6 +23,7 @@ export class GameStateService {
     ballPosition: position;
     ballVelocity: position;
     ballSpeed: number;
+    playerReady: { first: boolean, second: boolean };
 
     private endMatchCallback: (result: EndMatchResult) => void;
     public initialize(
@@ -55,10 +56,13 @@ export class GameStateService {
             y: this.canvasSize.height / 2 - this.racket2Size.height / 2
         };
         this.ballSpeed = GameStateService.INITIAL_BALL_SPEED;
+        this.playerReady = { first: false, second: false };
         this.resetBall();
     }
 
     moveRacket(player: Player, direction: Direction): void {
+        if (!this.playerReady.first && !this.playerReady.second)
+            return ;
         let racketPosition = player === Player.Player1 ? this.racket1Position : this.racket2Position;
         let racketSize = player === Player.Player1 ? this.racket1Size : this.racket2Size;
 
@@ -182,5 +186,14 @@ export class GameStateService {
             reason: reason
         };
         this.endMatchCallback(result);
+    }
+
+    setReady(value: boolean, target: string) {
+        if (target === 'player1') {
+            this.playerReady.first = value;
+        }
+        else {
+            this.playerReady.second = value;
+        }
     }
 }

@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { gameLoop } from '@/services/game-helpers';
 import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
-import { askGamesInformations } from '@/services/matchmaking-helpers';
+import { askGamesInformations, setReady } from '@/services/matchmaking-helpers';
 import { useProfileStore } from '@/stores/ProfileStore';
 
 const gameStore = useGameStore();
@@ -15,6 +15,7 @@ const player2Username = computed(() => gameStore.player2Username);
 
 const movingUp = ref(false);
 const movingDown = ref(false);
+const isGameStateUpdated = ref(false);
 
 const startMoving = (direction: 'up' | 'down') => {
     if (direction === 'up') movingUp.value = true;
@@ -27,6 +28,7 @@ const stopMoving = (direction: 'up' | 'down') => {
 };
 
 const eventDown = (event: KeyboardEvent) => {
+    if (!isGameStateUpdated.value) return;
     switch (event.code) {
         case 'ArrowUp':
             startMoving('up');
@@ -34,10 +36,15 @@ const eventDown = (event: KeyboardEvent) => {
         case 'ArrowDown':
             startMoving('down');
             break;
+        case 'Space':
+            const roomId = matchmakingStore.roomID;
+            gameStore.isFirstPlayer ? setReady(roomId, 'player1'): setReady(roomId, 'player2');
+            break;
     }
 };
 
 const eventUp = (event: KeyboardEvent) => {
+    if (!isGameStateUpdated.value) return;
     switch (event.code) {
         case 'ArrowUp':
             stopMoving('up');
@@ -60,6 +67,7 @@ onMounted(async () => {
         try {
             const gameInfo = await askGamesInformations(roomID);
             gameStore.updateGameState(gameInfo);
+            isGameStateUpdated.value = true;
 
             if (gameStore.gameState.player1ID === matchmakingStore.guestUUID)
                 gameStore.setIsFirstPlayer(true);
