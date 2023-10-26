@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import jwt_decode from 'jwt-decode';
-import { useProfileStore } from '../stores/ProfileStore'
+import Cookies from 'js-cookie';
+
+// import { useProfileStore } from '../stores/ProfileStore'
 
 import { getUsernamesData } from '@/services/Community-helpers'
 // import { getAvailableChannelsData } from '@/services/Community-helpers'
-import { getAllChannels } from '@/services/Community-helpers'
-import { postNewChannelsData } from '@/services/Community-helpers'
+import { 
+	getAllChannels, 
+	getSubscribedChannels, 
+	postNewChannelsData, 
+	getChannelMsg } from '@/services/Community-helpers'
 
 /*
 
@@ -30,14 +35,10 @@ V-list of all available channel
 */
 
 export const useCommunityStore = defineStore('community', () => {
-
-	const profileStore = useProfileStore();
-	const channelsList = ref([]);
-	const channelsLoaded = ref(false);
-	const getChannels = computed(() => channelsList);
 	
-	
-	// const getChannelsList = computed(() => channelsList.values);
+	const openChannels = ref([]);
+	const joinedChannels = ref([]);
+	const selectedChannelMsg = ref([]);
 
 	// const usernamesList = ref(['test', 'retest']);
 	// const getChannels = computed(() => availableChannels.values)
@@ -45,16 +46,51 @@ export const useCommunityStore = defineStore('community', () => {
 
 
 	async function setupCommunity() {
+		// TESTING
+
+		// try {
+		// 	const allChannels = await getAllChannels();
+			
+		// 	openChannels.value = allChannels;
+		// } catch (error) {
+		// 	console.error("Error setting up available channels:", error);
+		// }
+
+	// ******* CORRECT VERSION
+		const token = Cookies.get('token');
+		const id = jwt_decode(token).sub;
+
 		try {
-			const channels = await getAllChannels();
-			// console.log(channels)
-			channelsList.value = channels;
-			channelsLoaded.value = true;
+				const allChannels = await getAllChannels();
+				const channelsJoined = await getSubscribedChannels(id);
+
+				console.log(channelsJoined)
+				joinedChannels.value = channelsJoined;
+				console.log(joinedChannels)
+					
+				const resChannels = allChannels.filter((channel) => {
+					return !channelsJoined.some((joinedChannel) => channel.idChannel === joinedChannel.idChannel);
+				});
+
+				console.log(joinedChannels)
+				openChannels.value = resChannels;
+			} catch (error) {
+					console.error("Error setting up available channels:", error);
+			}
+		// ***********************
+	}
+
+	async function updateSelectedChannelMsg(channelID) {
+		try {
+			const messages = await getChannelMsg(channelID);
+
+			selectedChannelMsg.value = messages;
 		} catch (error) {
-			console.error("Error setting up available channels:", error);
+			console.error("Error fetching channel's messages:", error);
 		}
 	}
 
+	
 
 	/////////////////// USERNAMES ////////////////////////
 
@@ -106,28 +142,19 @@ export const useCommunityStore = defineStore('community', () => {
 	/////////////////// CREATE CHANNEL ////////////////////////
 
 	async function setupNewChannel(name : string, type :number, password : string) {
-		const token = localStorage.getItem('token')
+		const token = Cookies.get('token');
 		const id = jwt_decode(token).sub;
-		channelsLoaded.value = false;
-		try {
-			const newChannelsList = await postNewChannelsData(id, name, type, password);
-			// console.log(name);
-			// console.log(type);
-			// console.log(password);
 
-			// availableChannels.values = userData;
-			channelsList.value = newChannelsList;
-			// setAvailableChannels(userData);
-			channelsLoaded.value = true;
-			
+		try {
+			await postNewChannelsData(id, name, type, password);
 		} catch (error) {
 			console.error("Error creating a new channel:", error);
 		}
 	}
 
 	return {
-		channelsList, channelsLoaded, getChannels,
-		setupNewChannel, setupCommunity
+		openChannels, joinedChannels, selectedChannelMsg,
+		setupNewChannel, setupCommunity, updateSelectedChannelMsg
 		// getUsernames, getAvailableChannels, setupUsernames, setupAvailableChannels, setupNewChannel
 	}
 })
