@@ -79,10 +79,20 @@ export const joinChannel = async (userID: number, channelID: number, pw: string=
 
 export const getChannelMsg = async (channelID) => {
 	try {
-		const res = await api.get('channels/allMessages/' + channelID);
+		const res = await api.get('/channels/allMessages/' + channelID);
 		return res.data;
 	} catch (error) {
 		console.error('Error fetching messages', error);
+		throw error;
+	}
+}
+
+export const sendMessageTo = async (body) => {
+	try {
+		const res = await api.post('/messages', body);
+		return res;
+	} catch (error) {
+		console.error('Error posting message', error);
 		throw error;
 	}
 }

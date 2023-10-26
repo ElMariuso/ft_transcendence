@@ -46,8 +46,8 @@ export const useCommunityStore = defineStore('community', () => {
 
 
 	async function setupCommunity() {
-		// TESTING
-
+	
+	// ****** TESTING
 		// try {
 		// 	const allChannels = await getAllChannels();
 			
@@ -55,6 +55,7 @@ export const useCommunityStore = defineStore('community', () => {
 		// } catch (error) {
 		// 	console.error("Error setting up available channels:", error);
 		// }
+	// **********
 
 	// ******* CORRECT VERSION
 		const token = Cookies.get('token');
@@ -83,6 +84,8 @@ export const useCommunityStore = defineStore('community', () => {
 	async function updateSelectedChannelMsg(channelID) {
 		try {
 			const messages = await getChannelMsg(channelID);
+
+			// Order by timestamp ?
 
 			selectedChannelMsg.value = messages;
 		} catch (error) {

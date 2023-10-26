@@ -139,6 +139,8 @@
 
 
 						</ul>
+
+
 					</div>
 						<div v-if="selectedChannelID" class="mt-auto">
 							<input
@@ -205,7 +207,7 @@ import { useProfileStore } from '../stores/ProfileStore'
 
 import { useChannelStore } from '../stores/ChannelStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -227,6 +229,8 @@ const newChannelType = ref('public');
 
 const selectedChannelID = ref(null);
 const scrollContainer = ref(null);
+
+const newMessage = ref('');
 
 
 async function btnJoinChannel(event) {
@@ -260,6 +264,9 @@ async function createChannel() {
 }
 
 async function selectChannel(channelID: string) {
+
+	// Websocket connect here ?
+
 	selectedChannelID.value = channelID;
 
 	await communityStore.updateSelectedChannelMsg(channelID);
@@ -273,20 +280,22 @@ async function selectChannel(channelID: string) {
 //   };
 // };
 
+async function sendMessage() {
+	// Also websocket pb, ping all connected users ?
+	let body = {
+		content: newMessage,
+		idUser: userID,
+		idChannel: selectedChannelID.value,
+	}
+	try {
+		const res = await sendMessageTo(body);
+		// update msg UI
+	} catch (error) {
+		console.error('Error sending message', error);
+	}
+}
 
-// const {openChannels, getopenChannels} = storeToRefs(communityStore);
 
-// console.log(getopenChannels);
-
-
-// const { availableChannels, getChannels } = storeToRefs(communityStore)
-
-// const updateopenChannels = ref(0);
-
-// const renderedChannels = computed(() => {
-// 	availableChannels;
-// } 
-// );
 
 const channelStore = useChannelStore()
 const showUsers = ref(false);
