@@ -191,6 +191,7 @@ export class UserQuery
 				username,
 				email,
 				id42,
+				//avatar: './src/assets/default_avatar.png',
 				avatar: DEFAULT_AVATAR,
 				points: 0,
 				isTwoFactorAuthEnabled: false,

@@ -1,10 +1,11 @@
-import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 /**
  * DTO used for creating a new message
  */
 export class CreateMessageDTO
 {
+	@IsString()
 	@IsNotEmpty()
 	content: string;
 

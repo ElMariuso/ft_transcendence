@@ -9,6 +9,7 @@ import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
 
 import { MessageDTO } from 'src/DTO/message/message.dto';
+import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
 
 @Controller('channels')
 export class ChannelController
@@ -60,6 +61,33 @@ export class ChannelController
 			let newId = parseInt(id, 10);
 
 			return this.channelService.findAllMessageByChannelId(newId);
+		}
+		catch (error)
+		{
+			if (error instanceof NotFoundException)
+				throw new NotFoundException(error.message);
+			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.GETALLMESSAGESFROMCHANNEL_FAILED);
+		}
+	}
+
+	/**
+	 * Gets all users in a channel from a specific channel id
+	 * 
+	 * @param id Channel's id
+	 * 
+	 * @returns List of users
+	 * 
+	 * @throw HTTPException with status NOT_FOUND if the channel is not found
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the list failed
+	 */
+	@Get('/allUsers/:id')
+	async getAllUsersFromChannel(@Param('id') id:string) : Promise<UserInChannelDTO[]>
+	{
+		try
+		{
+			let newId = parseInt(id, 10);
+
+			return this.channelService.findAllUsersByChannelId(newId);
 		}
 		catch (error)
 		{
