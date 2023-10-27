@@ -34,7 +34,8 @@ export const useProfileStore = defineStore('profile', () => {
 		try {
 			const userData = await getUserData(id);
 			setUserID(id);
-			setUsername(userData.username);
+			username.value = userData.username;
+			// setUsername(userData.username);
             setAvatar(userData.avatar);
             setTwoFactorAuth(userData.isTwoFactorAuthEnabled);
 			avatarUpdated.value = true;

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref, computed } from 'vue'
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
@@ -11,7 +11,8 @@ import {
 	getAllChannels, 
 	getSubscribedChannels, 
 	postNewChannelsData, 
-	getChannelMsg } from '@/services/Community-helpers'
+	getChannelMsg,
+	getChannelUsers } from '@/services/Community-helpers'
 
 /*
 
@@ -36,9 +37,14 @@ V-list of all available channel
 
 export const useCommunityStore = defineStore('community', () => {
 	
+	// const profileStore = useProfileStore();
 	const openChannels = ref([]);
 	const joinedChannels = ref([]);
 	const selectedChannelMsg = ref([]);
+	const selectedChannelUsers = ref([]);
+	const roleInChannel = ref('Member');
+
+	// const { userID } = storeToRefs(profileStore);
 
 	// const usernamesList = ref(['test', 'retest']);
 	// const getChannels = computed(() => availableChannels.values)
@@ -81,13 +87,24 @@ export const useCommunityStore = defineStore('community', () => {
 		// ***********************
 	}
 
-	async function updateSelectedChannelMsg(channelID) {
+	async function updateSelectedChannel(channelID) {
+		const token = Cookies.get('token');
+		const id = jwt_decode(token).sub;
+
 		try {
 			const messages = await getChannelMsg(channelID);
-
-			// Order by timestamp ?
-
 			selectedChannelMsg.value = messages;
+			
+			const users = await getChannelUsers(channelID);
+			const user = users.find(user => user.idUser === id);
+			if (user.owner)
+				roleInChannel.value = "Owner";
+			else
+				roleInChannel.value = user.role;
+
+			// TODO: Filter and remove user from list
+			selectedChannelUsers.value = users;
+
 		} catch (error) {
 			console.error("Error fetching channel's messages:", error);
 		}
@@ -156,8 +173,8 @@ export const useCommunityStore = defineStore('community', () => {
 	}
 
 	return {
-		openChannels, joinedChannels, selectedChannelMsg,
-		setupNewChannel, setupCommunity, updateSelectedChannelMsg
+		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel,
+		setupNewChannel, setupCommunity, updateSelectedChannel
 		// getUsernames, getAvailableChannels, setupUsernames, setupAvailableChannels, setupNewChannel
 	}
 })

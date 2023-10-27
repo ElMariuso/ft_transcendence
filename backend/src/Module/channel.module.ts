@@ -10,6 +10,7 @@ import { ChannelTypeQuery } from 'src/Query/type.query';
 import { UserQuery } from 'src/Query/user.query';
 import { MessageQuery } from 'src/Query/message.query';
 import { UserChannelQuery } from 'src/Query/userchannel.query';
+import { RoleQuery } from 'src/Query/role.query';
 
 import { PrismaClient } from '@prisma/client';
 
@@ -26,6 +27,7 @@ import { PrismaClient } from '@prisma/client';
 	UserQuery,
 	MessageQuery,
 	UserChannelQuery,
+	RoleQuery,
 ],
 })
 export class ChannelModule {}

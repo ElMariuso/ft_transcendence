@@ -1,6 +1,26 @@
+<!-- 
+	TO DO
+
+	- Create private channel: encrypt pw
+	- Join private channel (pw)
+	- Websocket msg
+	- Online / offline players
+	- players buttons functionnality:
+		* PLAY
+		* PROFILE
+		* DM
+		* add friend
+		* BLOCK
+
+		IF ADMIN
+		* KICK/BAN/MUTE
+
+ -->
+
+
+
 <template>
-<!-- <div v-if="showUsers"> -->
-	<div class="flex ">
+	<div class="flex">
 
 		<!-- Find Users -->
 		<!-- <div class="mb-4">
@@ -42,7 +62,7 @@
 
 				<input
 					v-model="newChannelPassword"
-					type="text"
+					type="password"
 					placeholder="Enter password"
 					:disabled="newChannelType==='public'"
 					class="p-2 border rounded-lg mt-2 w-full"
@@ -72,7 +92,8 @@
 						<div class="text-lg flex flex-row border px-2 py-1 rounded-lg">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button :id="channel.idChannel" @click="btnJoinChannel" class="flex w-1/3 text-blue-600">Join</button>
-						</div>	
+							<img :src="getChannelTypeImg(channel.idType)" alt="channType">
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -112,35 +133,11 @@
 						
 					<div v-if="selectedChannelID" class="">
 						<ul class="h-96 mt-10 overflow-y-auto">
-							<li 
-								class="flex flex-row"
-								v-for="msg in selectedChannelMsg"
-							>
-								<p>{{ msg.timestamps }}</p>
-
-								<!-- :class="{ 
-										'text-red-500': msg.idUser === channelOwner,
-										'text-green-600': msg.idUser === searchArrayFunction(channelAdmin), 
-										'text-blue-500': if all else fails,
-									}" -->
-								<p 
-									class="mr-2 text-lg text-red-500"
-									
-								> 
-									{{ msg.username }}:
-								</p>
-
+							<li v-for="msg in selectedChannelMsg" class="flex flex-row">
+								<p class="mr-2 text-lg text-blue-500"> {{ msg.username }}:</p>
 								<p class="text-lg overflow-x-auto"> {{ msg.content }}</p>
 							</li>
-
-							
-				
-						
-
-
 						</ul>
-
-
 					</div>
 						<div v-if="selectedChannelID" class="mt-auto">
 							<input
@@ -150,51 +147,67 @@
 							class="p-2 w-5/6 border rounded-lg"
 							/>
 							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
-						</div>	
-					
-						
+						</div>			
 				</div>
 			</div>
 			
 
 			<!-- PLAYER LIST -->
-
-				<!-- BUTTONS PER NAME: -->
-					<!-- PLAY -->
-					<!-- PROFILE -->
-
-					<!-- 'Settings' -->
-						<!-- DM -->
-						<!-- add friend -->
-						<!-- BLOCK -->
-
-						<!-- IF ADMIN -->
-						<!-- KICK/BAN/MUTE -->
 			<div class="mb-4 flex flex-col w-1/3">
 				<div class="border-2 border-blue-500 px-4 py-2 rounded-lg ml-5">
 					<h3 class="text-lg font-semibold border-b border-gray-400">Players</h3>
-	
-					<ul class="mt-2 h-96 overflow-y-auto">
-						
-						<li class="mb-2">
-							<div class="text-lg flex flex-row border px-2 py-1 rounded-lg">
-								<button @click="toggleStuff" class="w-2/3">User 1</button>	
-							</div>
-						</li>
-						<li class="mb-2">
-							<div class="text-lg flex flex-row border px-2 py-1 rounded-lg">
-								<button @click="toggleStuff" class="w-2/3">User 1</button>	
-							</div>
-						</li>
-					</ul>
+					
+					<div class="mt-2 h-96 overflow-y-auto">
+
+						<ul v-if="selectedChannelID">
+							
+							<li 
+								v-for="user in selectedChannelUsers" 
+								class="text-lg  border px-2 py-1 rounded-lg "
+								
+								:id="user.idUser"
+							>
+								<div class="flex flex-row justify-between">
+
+									<p 
+										:class="{ 
+											'text-green-600': user.role === 'Admin',
+											'text-red-500': user.owner,
+										}"	
+									>
+										{{ user.username }}
+									</p>
+
+									<button @click="toggleDropDown(user.idUser)">
+										<img src="../assets/elipsis-h.svg" alt="options">
+									</button>
+								</div>
+								<div 
+									v-if="dropDownOpen === user.idUser"
+									class="border-t pt-2"
+								>
+									<div class="flex justify-between">
+										<img @click="" class="cursor-pointer" src="../assets/player/play.svg" alt="play">
+										<img @click="" class="cursor-pointer" src="../assets/player/profile.svg" alt="profile">
+										<img @click="" class="cursor-pointer" src="../assets/player/message.svg" alt="message">
+										<img @click="" class="cursor-pointer" src="../assets/player/friend.svg" alt="friend">
+										<img @click="" class="cursor-pointer" src="../assets/player/block.svg" alt="block">
+									</div>
+									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-around mt-2 border-t pt-1">
+
+										<img @click="" class="cursor-pointer" src="../assets/player/mute.svg" alt="mute">
+										<img @click="" class="cursor-pointer" src="../assets/player/kick.svg" alt="kick">
+										<img @click="" class="cursor-pointer" src="../assets/player/ban.svg" alt="ban">
+									</div>
+								</div>
+									
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
-
 		</div>
-
-		
 	</div>
-<!-- </div> -->
 </template>
 
 
@@ -215,7 +228,7 @@ onBeforeMount(async () => {
 
 
 const communityStore = useCommunityStore();
-const { openChannels, joinedChannels, selectedChannelMsg } = storeToRefs(communityStore);
+const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
 
 const profileStore = useProfileStore();
 const { userID } = storeToRefs(profileStore);
@@ -232,6 +245,9 @@ const scrollContainer = ref(null);
 
 const newMessage = ref('');
 
+const selectedUserID = ref(null);
+const dropDownOpen = ref(null);
+
 
 async function btnJoinChannel(event) {
 
@@ -239,7 +255,7 @@ async function btnJoinChannel(event) {
 	console.log('Clicked button with id:', idChannel + typeof idChannel);
 
 	// UNTESTED + needs to add PW for private channel join
-	await joinChannel(userID, idChannel)
+	await joinChannel(userID.value, idChannel)
 
 	await communityStore.setupCommunity();
 }
@@ -269,7 +285,7 @@ async function selectChannel(channelID: string) {
 
 	selectedChannelID.value = channelID;
 
-	await communityStore.updateSelectedChannelMsg(channelID);
+	await communityStore.updateSelectedChannel(channelID);
 
 	// scrollToSelectedTab();
 }
@@ -283,8 +299,8 @@ async function selectChannel(channelID: string) {
 async function sendMessage() {
 	// Also websocket pb, ping all connected users ?
 	let body = {
-		content: newMessage,
-		idUser: userID,
+		content: newMessage.value,
+		idUser: userID.value,
 		idChannel: selectedChannelID.value,
 	}
 	try {
@@ -293,9 +309,27 @@ async function sendMessage() {
 	} catch (error) {
 		console.error('Error sending message', error);
 	}
+
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
+function toggleDropDown(playerID) {
+	selectedUserID.value = playerID;
+	if (dropDownOpen.value != playerID)
+		dropDownOpen.value = playerID;
+	else
+		dropDownOpen.value = null;
+}
+
+function getChannelTypeImg(channType) {
+	if (channType === 2)
+		return "src/assets/public.svg";
+	else if (channType === 1)
+		return "src/assets/private.svg";
 }
 
 
+// **************************************************
 
 const channelStore = useChannelStore()
 const showUsers = ref(false);

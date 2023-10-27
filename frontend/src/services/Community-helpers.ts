@@ -64,12 +64,11 @@ export const getSubscribedChannels = async (userID) => {
     }
 }
 
-export const joinChannel = async (userID: number, channelID: number, pw: string="") => {
+export const joinChannel = async (userID: number, channelID: number) => {
 	try {
-		const res = await api.post('/userchannels', {
+		const res = await api.post('/userchannels/', {
 			idUser: userID,
 			idChannel: channelID,
-			password: pw,
 		})
 	} catch (error) {
 		console.error('Error joining channel: ', error);
@@ -87,6 +86,17 @@ export const getChannelMsg = async (channelID) => {
 	}
 }
 
+export const getChannelUsers = async (channelID) => {
+	try {
+		const res = await api.get('/channels/allUsers/' + channelID);
+		console.log(res)
+		return res.data;
+	} catch (error) {
+		console.error('Error fetching channel users', error);
+		throw error;
+	}
+}
+
 export const sendMessageTo = async (body) => {
 	try {
 		const res = await api.post('/messages', body);
@@ -96,6 +106,8 @@ export const sendMessageTo = async (body) => {
 		throw error;
 	}
 }
+
+
 
 /**
  * Asynchronous function to create a new channel data from the API.

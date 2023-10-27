@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch, ref, onBeforeMount } from 'vue';
+import { computed, watch, ref, onActivated } from 'vue';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
 import MatchmakingButton from './MatchmakingButton.vue';
@@ -14,6 +14,11 @@ const isAuthenticated = computed(() => authStore.isAuthenticated);
 const { username, avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
+
+watch(isAuthenticated, async () => {
+	if (isAuthenticated)
+		await profileStore.setupProfile();
+})
 
 const refreshNavbar = () => {
   avatarImg.value = getAvatarImg();

@@ -7,4 +7,5 @@
 	 username: string;
 	 email: string;
 	 owner: boolean;
+	 role: string;
  }
