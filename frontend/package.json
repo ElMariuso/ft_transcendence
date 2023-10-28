@@ -11,9 +11,13 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "aws-sdk": "^2.1483.0",
     "axios": "^1.5.0",
+    "bcrypt": "^5.1.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^3.1.2",
+    "mock-aws-s3": "^4.0.2",
+    "nock": "^13.3.6",
     "pinia": "^2.1.6",
     "serve": "^14.2.1",
     "socket.io-client": "^4.7.2",

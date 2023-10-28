@@ -77,20 +77,23 @@ export class UserChannelService
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
-		console.log("user & channel OK")
-
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.PRIVATE))
 		{
-			if (newUser.password != channel.password)
+			const bcrypt = require('bcryptjs');
+			const pwIsCorrect = bcrypt.compareSync(newUser.password, channel.password);
+			
+			if (!pwIsCorrect)
 				throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
+			
+
+			// if (newUser.password != channel.password)
+			// 	throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
 		}
-		console.log("Channel type OK")
 
 		const userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(newUser.idUser, newUser.idChannel);
 		if (userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.ALREADY_IN);
 
-		console.log("userchannel OK")
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
 		{
 			const users = await this.userchannelQuery.findAllUsersByChannelId(channel.idChannel);
@@ -98,9 +101,7 @@ export class UserChannelService
 			if (users.length == 2)
 				throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.CANTREJOINDM);
 		}
-		console.log("Not DM")
 		const newMember = await this.userchannelQuery.addMember(newUser.idUser, newUser.idChannel);
-		console.log("newmember ok")
 		return this.transformToUserChannelDTO(newMember);
 	}
 

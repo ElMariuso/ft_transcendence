@@ -88,11 +88,33 @@
 				<h3 class="text-lg font-semibold border-b border-gray-400">Open Channels</h3>
 
 				<ul class="mt-2 h-96 overflow-y-auto">
-					<li v-for="channel in openChannels" class="mb-2" >		
-						<div class="text-lg flex flex-row border px-2 py-1 rounded-lg">
+					<li v-for="channel in openChannels" class="mb-2 border px-2 py-1 rounded-lg" >		
+						<div class="text-lg flex flex-row ">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
-							<button :id="channel.idChannel" @click="btnJoinChannel" class="flex w-1/3 text-blue-600">Join</button>
+							<button 
+								:id="channel.idChannel" 
+								:channType="channel.idType" 
+								@click="btnJoinChannel" 
+								class="flex w-1/3"
+								:class="{
+									'text-blue-600': pwInput[channel.idChannel] || channel.idType !== 1,
+									'text-gray-600': !pwInput[channel.idChannel] && channel.idType === 1,
+								}"
+								:disabled="!pwInput[channel.idChannel] && channel.idType === 1"
+								
+							>
+								Join
+							</button>
 							<img :src="getChannelTypeImg(channel.idType)" alt="channType">
+						</div>
+						<div class="flex justify-end">
+							<input
+								v-if="channel.idType === 1"
+								v-model="pwInput[channel.idChannel]"
+								type="text"
+								placeholder="Enter password"
+								class="px-2 border rounded-lg"
+							/>
 						</div>
 					</li>
 				</ul>
@@ -178,7 +200,7 @@
 										{{ user.username }}
 									</p>
 
-									<button @click="toggleDropDown(user.idUser)">
+									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
 									</button>
 								</div>
@@ -240,6 +262,8 @@ const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
 
+const pwInput = ref([]);
+
 const selectedChannelID = ref(null);
 const scrollContainer = ref(null);
 
@@ -252,11 +276,16 @@ const dropDownOpen = ref(null);
 async function btnJoinChannel(event) {
 
 	const idChannel = +event.target.id;
-	console.log('Clicked button with id:', idChannel + typeof idChannel);
+	const type = +event.target.getAttribute('channType');
 
-	// UNTESTED + needs to add PW for private channel join
-	await joinChannel(userID.value, idChannel)
+	if (type === 1) {// Private
 
+		console.log(pwInput._value[idChannel]);
+		console.log((pwInput[idChannel]))
+		await joinChannel(userID.value, idChannel, pwInput._value[idChannel]);
+	}
+	else
+		await joinChannel(userID.value, idChannel);
 	await communityStore.setupCommunity();
 }
 

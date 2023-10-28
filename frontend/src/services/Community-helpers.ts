@@ -1,5 +1,6 @@
 import api from './api';
-
+// import bcrypt from 'bcrypt';
+// const bcrypt = require("bcrypt")
 
 /**
  * Asynchronous function to retrieve usernames data from the API.
@@ -64,12 +65,21 @@ export const getSubscribedChannels = async (userID) => {
     }
 }
 
-export const joinChannel = async (userID: number, channelID: number) => {
+export const joinChannel = async (userID: number, channelID: number, pw: string="") => {
 	try {
-		const res = await api.post('/userchannels/', {
-			idUser: userID,
-			idChannel: channelID,
-		})
+
+		let body = {
+			"idUser": userID,
+			"idChannel": channelID,
+			...(pw !== "" ? { "password": pw } : {}),
+		}
+
+		// if (pw != "")
+		// 	body.password = pw;
+
+		console.log("body")
+		console.log(body)
+		const res = await api.post('/userchannels/', body)
 	} catch (error) {
 		console.error('Error joining channel: ', error);
 		throw error;
@@ -127,6 +137,7 @@ export const sendMessageTo = async (body) => {
     try {
 		var id: number = +userID;
 
+		console.log("newType: " + newType)
         const response = await api.post('/channels', {
 			"name": newName,
 			"password": newPassword,

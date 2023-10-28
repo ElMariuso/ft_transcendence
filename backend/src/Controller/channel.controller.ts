@@ -110,6 +110,13 @@ export class ChannelController
 	@Post()
 	async createChannel(@Body() createchannelDTO : CreateChannelDTO): Promise<ChannelDTO>
 	{
+		if (createchannelDTO.idType === 1) {
+			const bcrypt = require('bcryptjs');
+			const salt = bcrypt.genSaltSync(10);
+			const hash = bcrypt.hashSync(createchannelDTO.password, salt);
+			createchannelDTO.password = hash;
+		}
+
 		try
 		{
 			return this.channelService.createChannel(createchannelDTO);
