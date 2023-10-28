@@ -117,7 +117,26 @@ export const sendMessageTo = async (body) => {
 	}
 }
 
+export const leaveCurrentChannel = async (idUser, idChannel) => {
+	try {
 
+		const res = await api.delete('/userchannels/delete/' + idUser + '/' + idChannel);
+		return res;
+	} catch (error) {
+		console.error('Error leaving channel', error);
+		throw error;
+	}
+}
+
+export const deleteCurrentChannel = async (idChannel) => {
+	try {
+		const res = await api.delete('/channels/delete/' + idChannel);
+		return res;
+	} catch (error) {
+		console.error('Error leaving channel', error);
+		throw error;
+	}
+}
 
 /**
  * Asynchronous function to create a new channel data from the API.
@@ -151,3 +170,41 @@ export const sendMessageTo = async (body) => {
     }
 };
 
+
+// Player actions
+
+export const play = async () => {
+	console.log("play");
+	// Need game implementation
+}
+export const profile = async () => {
+	console.log("profile");
+	// Need profile implementation
+}
+export const message = async () => {
+	console.log("message");
+	// Need websocket I believe
+}
+export const friend = async () => {
+	console.log("friend");
+}
+export const block = async (id, blockId) => {
+	const res = await api.post('users/' + id + "/blockUser", {
+		idBlock: blockId,
+	});
+	console.log(res);
+}
+export const mute = async (user, channel, time) => {
+	await api.put('/userchannels/addMuteTime', {
+		idUser: user,
+		idChannel: channel,
+		muteTime: time
+	});
+}
+
+export const kick = async () => {
+	console.log("kick");
+}
+export const ban = async () => {
+	console.log("ban");
+}

@@ -1,3 +1,6 @@
+// DELETE THIS STORE, NOT USED ANYMORE
+
+
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 // import axios from 'axios';

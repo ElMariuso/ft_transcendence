@@ -25,7 +25,13 @@ module.exports = {
         'matchmaking': '#bababa',
       },
 	  maxWidth: {
-        'tab': '30%',
+        'tab': '5rem',
+      },
+	  minWidth: {
+        'tab': '5rem',
+      },
+	  spacing: {
+        '128': '34rem',
       }
     }
   },

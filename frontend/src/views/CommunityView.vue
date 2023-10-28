@@ -1,8 +1,6 @@
 <!-- 
 	TO DO
 
-	- Create private channel: encrypt pw
-	- Join private channel (pw)
 	- Websocket msg
 	- Online / offline players
 	- players buttons functionnality:
@@ -83,7 +81,7 @@
 				</div>
 			</div>
 
-		<!-- Joined Channels -->
+		<!-- Open Channels -->
 			<div class="mt-5 border-2 border-blue-500 px-4 py-2 rounded-lg ">
 				<h3 class="text-lg font-semibold border-b border-gray-400">Open Channels</h3>
 
@@ -128,7 +126,7 @@
 			<div class="mb-4 flex flex-col w-2/3">
 				<div class="border-2 border-blue-500 px-4 py-2 rounded-lg h-full">
 					
-					<div class="h-14 flex flex-row border-b border-gray-400">
+					<div class="flex flex-row border-b border-gray-400">
 						<div class="w-1/6 mr-5">
 							<h3 class="text-lg font-semibold ">Rooms</h3>
 						</div>
@@ -139,7 +137,7 @@
 								<button 
 									:id="channel.idChannel"
 									v-for="channel in joinedChannels"
-									class="mx-1 border rounded-lg px-2 py-1 max-w-tab"
+									class="mx-1 border rounded-lg px-2 py-1 max-w-tab min-w-tab truncate"
 									:class="{ 
 										'bg-blue-500 text-white': channel.idChannel === selectedChannelID,
 										'bg-gray-300 text-black': !(channel.idChannel === selectedChannelID),
@@ -152,9 +150,21 @@
 						</div>
 					
 					</div>
+
+					<div v-if="selectedChannelID" class="h-12 border-b px-2">
+						<div class="flex justify-end py-2">
+
+							<button
+								@click="leaveOrDeleteChannel"
+								class="border rounded-lg px-2 py-1 bg-red-200"
+							>
+								{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }}
+							</button>
+						</div>
+					</div>
 						
 					<div v-if="selectedChannelID" class="">
-						<ul class="h-96 mt-10 overflow-y-auto">
+						<ul class="h-128 overflow-y-auto">
 							<li v-for="msg in selectedChannelMsg" class="flex flex-row">
 								<p class="mr-2 text-lg text-blue-500"> {{ msg.username }}:</p>
 								<p class="text-lg overflow-x-auto"> {{ msg.content }}</p>
@@ -163,10 +173,10 @@
 					</div>
 						<div v-if="selectedChannelID" class="mt-auto">
 							<input
-							v-model="newMessage"
-							type="text"
-							placeholder="Send a message"
-							class="p-2 w-5/6 border rounded-lg"
+								v-model="newMessage"
+								type="text"
+								placeholder="Send a message"
+								class="p-2 w-5/6 border rounded-lg"
 							/>
 							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
 						</div>			
@@ -209,17 +219,29 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<img @click="" class="cursor-pointer" src="../assets/player/play.svg" alt="play">
-										<img @click="" class="cursor-pointer" src="../assets/player/profile.svg" alt="profile">
-										<img @click="" class="cursor-pointer" src="../assets/player/message.svg" alt="message">
-										<img @click="" class="cursor-pointer" src="../assets/player/friend.svg" alt="friend">
-										<img @click="" class="cursor-pointer" src="../assets/player/block.svg" alt="block">
+										<img @click="playerPlay" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+										<img @click="playerProfile" class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
+										<img @click="playerFriend" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+										<img @click="playerBlock" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
-									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-around mt-2 border-t pt-1">
+									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
 
-										<img @click="" class="cursor-pointer" src="../assets/player/mute.svg" alt="mute">
-										<img @click="" class="cursor-pointer" src="../assets/player/kick.svg" alt="kick">
-										<img @click="" class="cursor-pointer" src="../assets/player/ban.svg" alt="ban">
+										<div class="flex flex-row">
+
+											<input
+												v-model="muteTime"
+												type="text"
+												placeholder="seconds"
+												class="p-1 w-16 border rounded-lg text-sm mr-2"
+											/>
+								
+											<button @click="playerMute" :disabled="!muteTime">
+												<img title="mute" src="../assets/player/mute.svg" alt="mute">
+											</button>
+										</div>
+										<img @click="playerKick" class="cursor-pointer" title="kick" src="../assets/player/kick.svg" alt="kick">
+										<img @click="playerBan" class="cursor-pointer" title="ban" src="../assets/player/ban.svg" alt="ban">
 									</div>
 								</div>
 									
@@ -236,18 +258,17 @@
 
 
 <script setup lang="ts">
-import { ref, watch, onBeforeMount, getCurrentInstance } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
-
-import { useChannelStore } from '../stores/ChannelStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, mute, block } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
-}) 
 
+	console.log(joinedChannels.value);
+}) 
 
 const communityStore = useCommunityStore();
 const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
@@ -255,39 +276,14 @@ const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, 
 const profileStore = useProfileStore();
 const { userID } = storeToRefs(profileStore);
 
+// ******** Create Channel
+
 const noChannelName = ref(false);
 const noChannelType = ref(false);
 const noChannelPassword = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
-
-const pwInput = ref([]);
-
-const selectedChannelID = ref(null);
-const scrollContainer = ref(null);
-
-const newMessage = ref('');
-
-const selectedUserID = ref(null);
-const dropDownOpen = ref(null);
-
-
-async function btnJoinChannel(event) {
-
-	const idChannel = +event.target.id;
-	const type = +event.target.getAttribute('channType');
-
-	if (type === 1) {// Private
-
-		console.log(pwInput._value[idChannel]);
-		console.log((pwInput[idChannel]))
-		await joinChannel(userID.value, idChannel, pwInput._value[idChannel]);
-	}
-	else
-		await joinChannel(userID.value, idChannel);
-	await communityStore.setupCommunity();
-}
 
 async function createChannel() {
 	noChannelName.value = false;
@@ -305,15 +301,43 @@ async function createChannel() {
 	else if (newChannelType.value.trim() == 'private')
 		await communityStore.setupNewChannel(newChannelname.value, 1, newChannelPassword.value)
 
+	newChannelname.value = "";
+	newChannelType.value = "public";
+	newChannelPassword.value = "";
 	await communityStore.setupCommunity();
 }
+
+// *************************************************
+
+// *********** Open Channels
+
+const pwInput = ref([]);
+
+async function btnJoinChannel(event) {
+
+	const idChannel = +event.target.id;
+	const type = +event.target.getAttribute('channType');
+
+	// if Private, send PW
+	if (type === 1)
+		await joinChannel(userID.value, idChannel, pwInput._value[idChannel]);
+	else
+		await joinChannel(userID.value, idChannel);
+	await communityStore.setupCommunity();
+}
+
+// *************************************************
+
+// *********** CHAT ROOM
+
+const selectedChannelID = ref(null);
+const scrollContainer = ref(null);
+const newMessage = ref('');
 
 async function selectChannel(channelID: string) {
 
 	// Websocket connect here ?
-
 	selectedChannelID.value = channelID;
-
 	await communityStore.updateSelectedChannel(channelID);
 
 	// scrollToSelectedTab();
@@ -342,6 +366,32 @@ async function sendMessage() {
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
+async function leaveOrDeleteChannel() {
+
+	if (roleInChannel.value === "Owner") {
+		// Confirmation popup, then
+		const res = await deleteCurrentChannel(selectedChannelID.value);
+		console.log(res);
+		console.log("OWNER")
+	}
+	else {
+		console.log("NOT OWNER")
+		// roleInChannel IF OWNER, DO SMTH ELSE (delete? ADD popup are you sure ?)
+		const res = await leaveCurrentChannel(userID.value, selectedChannelID.value);
+		console.log(res);
+	}
+	selectedChannelID.value = null;
+	await communityStore.setupCommunity();
+}
+
+// *************************************************
+
+// *********** PLAYER LIST
+
+const selectedUserID = ref(null);
+const dropDownOpen = ref(null);
+const muteTime = ref(null);
+
 function toggleDropDown(playerID) {
 	selectedUserID.value = playerID;
 	if (dropDownOpen.value != playerID)
@@ -357,54 +407,45 @@ function getChannelTypeImg(channType) {
 		return "src/assets/private.svg";
 }
 
-
-// **************************************************
-
-const channelStore = useChannelStore()
-const showUsers = ref(false);
-
-// watch(availableChannels,() => {
-// 	updateopenChannels++;
-// })
-
-
-// const setupUsernames = async () => {
-//   await communityStore.setupUsernames()
-// //   showUsers.value = true // Set a flag to indicate that data is loaded
+// async function playerPlay() {
+// 	console.log("play");
+// 	// Need game implementation
 // }
-// setupUsernames()
-
-// const setupAvailableChannels = async () => {
-//   await communityStore.setupAvailableChannels()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
+// async function playerProfile() {
+// 	console.log("profile");
+// 	// Need profile implementation
 // }
-// setupAvailableChannels()
+// async function playerMessage() {
+// 	console.log("message");
+// 	// Need websocket I believe
+// }
+// async function playerFriend() {
+// 	console.log("friend");
+// }
 
-// async function renderChannels() {
-// 	let res = await communityStore.getAvailableChannels();
+// async function playerBlock() {
+// 	console.log("block");
+
+// 	await block(userID.value, selectedUserID.value);
 	
-// 	// while(!(res = communityStore.getAvailableChannels())) {
-// 	// 	console.log("undef")
-// 	// }
-
-// 	return res;
 // }
 
+async function playerMute() {
+	console.log("mute");
 
+	// Adds to DB but doesnt mute ... (:
+	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
+}
+async function playerKick() {
+	console.log("kick");
 
-// const setupChannel = async () => {
-//   await channelStore.setupChannel()
-//   showchannel.value = true // Set a flag to indicate that data is loaded
+	const res = await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	console.log(res);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
+// async function playerBan() {
+// 	console.log("ban");
 // }
-
-////////////////
-// async function boop(test) {
-// 	console.log("booped")
-// 	// console.log(test)
-// 	channelStore.setChannelId(test)
-// 	// await setupChannel()
-// 	// console.log("bop")
-// }
-////////////////
 
 </script>
