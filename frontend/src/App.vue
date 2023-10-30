@@ -11,7 +11,11 @@ const profileStore = useProfileStore();
 const matchmakingStore = useMatchmakingStore();
 
 async function setupStore() {
-	await profileStore.setupProfile();
+	let uri = window.location.href.split('id=');
+	if (uri[1])
+		await profileStore.setupProfile(uri[1]);
+	else
+		await profileStore.setupProfile(0);
 }
 
 onMounted(() => {

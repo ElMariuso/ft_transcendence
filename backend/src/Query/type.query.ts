@@ -24,4 +24,25 @@ export class ChannelTypeQuery
 		
 		return type;
 	}
+
+	/**
+	 * Get a channel type by his name 
+	 * 
+	 * @param name Channel type's name
+	 * 
+	 * @returns ChannelType or null
+	 * 
+	 * @query select * from channeltype where channeltype.name = $name;
+	 */
+	async findChannelTypeIdByName(name: string) : Promise<number>
+	{
+		const type = await this.prisma.channelType.findFirst
+		(
+			{
+				where: { name },
+			}
+		);
+
+		return type.idChannelType;
+	}
 }

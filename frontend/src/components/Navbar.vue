@@ -65,7 +65,7 @@ function getAvatarImg() {
 				</nav>
 			</router-link>
 
-			<router-link to="/profile">
+			<router-link to="/profile/id=0">
 				<nav class="text-lg mr-5">
 					<section>Profile</section>
 				</nav>
@@ -79,7 +79,7 @@ function getAvatarImg() {
 			</div>
 		</div>
 		
-		<div v-if="isAuthenticated" class="flex items-center">
+		<div v-if="isAuthenticated" class="flex z-10 items-center">
 			<div>
 				<p>{{ username }}</p>
 			</div>

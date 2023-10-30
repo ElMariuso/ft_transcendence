@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, User_Channel } from '@prisma/client';
+import { PrismaClient, User_Channel, User } from '@prisma/client';
 
 @Injectable()
 export class UserChannelQuery
@@ -19,7 +19,6 @@ export class UserChannelQuery
 	async findUserChannelByUserAndChannelIds(idUser: number, idChannel: number) : Promise<User_Channel | null>
 	{
 		const userchannel = await this.prisma.user_Channel.findFirst
-
 		(
 			{
 				where: { idUser, idChannel },
@@ -27,6 +26,43 @@ export class UserChannelQuery
 		);
 
 		return userchannel;
+	}
+
+	/**
+	 * Get all User for a specific channel
+	 * 
+	 * @param idChannel Channel's id
+	 * 
+	 * @returns User[]
+	 */
+	async findAllUsersByChannelId(idChannel: number) : Promise<User[]>
+	{
+		const us_ch = await this.prisma.user_Channel.findMany
+		(
+			{
+				where:
+				{
+					idChannel: idChannel
+				}
+			}
+		);
+
+		const idUsers = us_ch.map(value => value.idUser);
+
+		const users = this.prisma.user.findMany
+		(
+			{
+				where:
+				{
+					idUser:
+					{
+						in: idUsers
+					}
+				}
+			}
+		);
+
+		return users;
 	}
 
 	/**

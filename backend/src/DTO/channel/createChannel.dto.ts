@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
 
 /**
  * DTO used for creating a new game
@@ -6,8 +6,11 @@ import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 export class CreateChannelDTO
 {
 	@IsNotEmpty()
+	@IsString()
 	name: string;
 
+	@IsString()
+	@IsOptional()
 	password: string;
 
 	@IsNumber()
