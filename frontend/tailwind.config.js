@@ -21,6 +21,7 @@ module.exports = {
         'matchmaking-bg': 'rgb(32, 35, 37)',
       },
       colors: {
+        'base-text': '#999',
         'button': '#999',
         'matchmaking': '#bababa',
       }

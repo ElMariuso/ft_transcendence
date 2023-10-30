@@ -94,16 +94,24 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div>
-        <canvas id="gameCanvas" class="absolute transform -translate-x-1/2 -translate-y-1/2" width="858" height="525"></canvas>
-        <div>
-            <div>
-                {{ player1Username }} <span v-if="isPlayer1Ready && !areBothPlayersReady"> is ready</span>
+    <div class="flex flex-col items-center justify-center">
+        <!-- Players' Usernames -->
+        <div class="flex justify-between w-full mb-5">
+            <!-- Player 1 Username -->
+            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
+                <span>{{ player1Username }}</span>
+                <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
             </div>
-            <div>
-                {{ player2Username }} <span v-if="isPlayer2Ready && !areBothPlayersReady"> is ready</span>
+
+            <!-- Player 2 Username -->
+            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
+                <span>{{ player2Username }}</span>
+                <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
             </div>
-        </div>        
+        </div>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas" width="858" height="525" class="border-4 border-white"></canvas>
     </div>
 </template>
   
