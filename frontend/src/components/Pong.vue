@@ -108,23 +108,43 @@ onUnmounted(() => {
 
 <template>
     <div class="flex flex-col items-center justify-center">
-        <!-- Players' Usernames -->
-        <div class="flex justify-between w-full mb-5">
-            <!-- Player 1-->
-            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
-                <span>{{ truncateUsername(player1Username) }}</span>
-                <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
+        <!-- Canvas and Players' Usernames/Options Container -->
+        <div class="flex items-start justify-center">
+            <!-- Player 1 -->
+            <div class="flex flex-col mr-5 space-y-2">
+                <!-- Player 1's Username -->
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>{{ truncateUsername(player1Username) }}</span>
+                    <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
+                </div>
+                <!-- Player 1's Options -->
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Small racket</span>
+                </div>
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Obstacle</span>
+                </div>
             </div>
+
+            <!-- Game Canvas -->
+            <canvas id="gameCanvas" width="858" height="525" class="border-4 border-white"></canvas>
 
             <!-- Player 2 -->
-            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
-                <span>{{ truncateUsername(player2Username) }}</span>
-                <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
+            <div class="flex flex-col ml-5 space-y-2">
+                <!-- Player 2's Username -->
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>{{ truncateUsername(player2Username) }}</span>
+                    <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
+                </div>
+                <!-- Player 2's Options -->
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Small racket</span>
+                </div>
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Obstacle</span>
+                </div>
             </div>
         </div>
-
-        <!-- Game Canvas -->
-        <canvas id="gameCanvas" width="858" height="525" class="border-4 border-white"></canvas>
     </div>
 </template>
   
