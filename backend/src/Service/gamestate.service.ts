@@ -24,6 +24,8 @@ export class GameStateService {
     ballVelocity: position;
     ballSpeed: number;
     playerReady: { first: boolean, second: boolean };
+    smallRacket: { first: boolean, second: boolean };
+    obstacle: { first: boolean, second: boolean };
 
     private endMatchCallback: (result: EndMatchResult) => void;
     public initialize(
@@ -57,6 +59,8 @@ export class GameStateService {
         };
         this.ballSpeed = GameStateService.INITIAL_BALL_SPEED;
         this.playerReady = { first: false, second: false };
+        this.smallRacket = { first: false, second: false };
+        this.obstacle = { first: false, second: false };
         this.resetBall();
     }
 
@@ -191,9 +195,34 @@ export class GameStateService {
     setReady(value: boolean, target: string) {
         if (target === 'player1') {
             this.playerReady.first = value;
-        }
-        else {
+        } else {
             this.playerReady.second = value;
+        }
+    }
+
+    setSmallRacket(value: boolean, target: string) {
+        if (target === 'player1') {
+            this.smallRacket.first = value;
+            if (this.smallRacket.first) {
+                this.racket1Size = { width: 6, height: 21 };
+            } else {
+                this.racket1Size = { width: 6, height: 42 };
+            }
+        } else {
+            this.smallRacket.second = value;
+            if (this.smallRacket.second) {
+                this.racket2Size = { width: 6, height: 21 };
+            } else {
+                this.racket2Size = { width: 6, height: 42 };
+            }
+        }
+    }
+
+    setObstacle(value: boolean, target: string) {
+        if (target === 'player1') {
+            this.obstacle.first = value;
+        } else {
+            this.obstacle.second = value;
         }
     }
 }

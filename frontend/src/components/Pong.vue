@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { gameLoop } from '@/services/game-helpers';
 import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
-import { askGamesInformations, setReady } from '@/services/matchmaking-helpers';
+import { askGamesInformations, setReady, setSmallRacket } from '@/services/matchmaking-helpers';
 import { useProfileStore } from '@/stores/ProfileStore';
 
 const gameStore = useGameStore();
@@ -14,6 +14,8 @@ const player1Username = computed(() => gameStore.player1Username);
 const player2Username = computed(() => gameStore.player2Username);
 const isPlayer1Ready = computed(() => gameStore.gameState.playerReady.first);
 const isPlayer2Ready = computed(() => gameStore.gameState.playerReady.second);
+const isPlayer1SmallRacket = computed(() => gameStore.gameState.smallRacket.first);
+const isPlayer2SmallRacket = computed(() => gameStore.gameState.smallRacket.second);
 const areBothPlayersReady = computed(() => isPlayer1Ready.value && isPlayer2Ready.value);
 
 const movingUp = ref(false);
@@ -43,6 +45,12 @@ const eventDown = (event: KeyboardEvent) => {
             if (!areBothPlayersReady.value) {
                 const roomId = matchmakingStore.roomID;
                 gameStore.isFirstPlayer ? setReady(roomId, 'player1'): setReady(roomId, 'player2');
+            }
+            break;
+        case 'Numpad1':
+            if (!areBothPlayersReady.value) {
+                const roomId = matchmakingStore.roomID;
+                gameStore.isFirstPlayer ? setSmallRacket(roomId, 'player1'): setSmallRacket(roomId, 'player2');
             }
             break;
     }
@@ -120,6 +128,7 @@ onUnmounted(() => {
                 <!-- Player 1's Options -->
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Small racket</span>
+                    <span v-if="isPlayer1SmallRacket" class="ml-3 text-green-400">🟢</span>
                 </div>
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Obstacle</span>
@@ -139,6 +148,7 @@ onUnmounted(() => {
                 <!-- Player 2's Options -->
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Small racket</span>
+                    <span v-if="isPlayer2SmallRacket" class="ml-3 text-green-400">🟢</span>
                 </div>
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Obstacle</span>

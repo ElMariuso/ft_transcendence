@@ -45,4 +45,6 @@ export interface GameState {
     ballVelocity: position;
     ballSpeed: number;
     playerReady: { first: boolean, second: boolean };
+    smallRacket: { first: boolean, second: boolean };
+    obstacle: { first: boolean, second: boolean };
 }

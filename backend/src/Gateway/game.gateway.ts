@@ -165,6 +165,36 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    @SubscribeMessage('set-small-racket')
+    setSmallRacket(client: Socket, [roomId, action]: [string, string]): void {
+        const gameLoop = this.gameStates.get(roomId);
+        const gameState = gameLoop.getGameState();
+
+        if (gameState) {
+            switch (action) {
+                case 'player1':
+                    if (gameState.smallRacket.first) {
+                        gameState.setSmallRacket(false, 'player1');
+                    } else {
+                        gameState.setSmallRacket(true, 'player1');
+                    }
+                    break;
+                case 'player2':
+                    if (gameState.smallRacket.second) {
+                        gameState.setSmallRacket(false, 'player2');
+                    } else {
+                        gameState.setSmallRacket(true, 'player2');
+                    }
+                    break;
+                default:
+                    client.emit('error-set-small-racket', { message: 'Can\'t set small racket' });
+                    break;
+            }
+        } else {
+            client.emit('error-set-small-racket', { message: 'Can\'t set small racket' });
+        }
+    }
+
     public addOnlinePlayer(playerId: number | string, playerInfo: { socketId: string; username: string }) {
         this.onlinePlayers.set(playerId, playerInfo);
     }
@@ -232,6 +262,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             ballSize: gameState.ballSize,
             ballPosition: gameState.ballPosition,
             playerReady: gameState.playerReady,
+            smallRacket: gameState.smallRacket,
+            obstacle: gameState.obstacle,
         };
         this.server.to(roomId).emit('games-informations', informations);
     }
