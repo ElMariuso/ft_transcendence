@@ -40,8 +40,10 @@ const eventDown = (event: KeyboardEvent) => {
             startMoving('down');
             break;
         case 'Space':
-            const roomId = matchmakingStore.roomID;
-            gameStore.isFirstPlayer ? setReady(roomId, 'player1'): setReady(roomId, 'player2');
+            if (!areBothPlayersReady.value) {
+                const roomId = matchmakingStore.roomID;
+                gameStore.isFirstPlayer ? setReady(roomId, 'player1'): setReady(roomId, 'player2');
+            }
             break;
     }
 };
@@ -97,13 +99,13 @@ onUnmounted(() => {
     <div class="flex flex-col items-center justify-center">
         <!-- Players' Usernames -->
         <div class="flex justify-between w-full mb-5">
-            <!-- Player 1 Username -->
+            <!-- Player 1-->
             <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
                 <span>{{ player1Username }}</span>
                 <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
             </div>
 
-            <!-- Player 2 Username -->
+            <!-- Player 2 -->
             <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
                 <span>{{ player2Username }}</span>
                 <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
