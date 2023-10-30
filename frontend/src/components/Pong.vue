@@ -60,6 +60,17 @@ const eventUp = (event: KeyboardEvent) => {
     }
 };
 
+const truncateUsername = (username: string) => {
+    const maxLength = 13;
+    if (username.length > maxLength) {
+        return username.slice(0, 12) + ".";
+    }
+    while (username.length < maxLength) {
+        username += '\u00A0';
+    }
+    return username;
+}
+
 onMounted(async () => {
     window.addEventListener('keydown', eventDown);
     window.addEventListener('keyup', eventUp);
@@ -100,14 +111,14 @@ onUnmounted(() => {
         <!-- Players' Usernames -->
         <div class="flex justify-between w-full mb-5">
             <!-- Player 1-->
-            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
-                <span>{{ player1Username }}</span>
+            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <span>{{ truncateUsername(player1Username) }}</span>
                 <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
             </div>
 
             <!-- Player 2 -->
-            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl">
-                <span>{{ player2Username }}</span>
+            <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <span>{{ truncateUsername(player2Username) }}</span>
                 <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
             </div>
         </div>
@@ -121,6 +132,14 @@ onUnmounted(() => {
 #gameCanvas {
     top: 50%;
     left: 50%;
+}
+
+.username-box {
+    display: flex;
+    justify-content: space-between;
+    min-width: calc(13ch + 64.95px);
+    overflow: hidden; 
+    white-space: nowrap; 
 }
 </style>
   
