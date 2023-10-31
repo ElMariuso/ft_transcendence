@@ -1,6 +1,4 @@
 import api from './api';
-// import bcrypt from 'bcrypt';
-// const bcrypt = require("bcrypt")
 
 /**
  * Asynchronous function to retrieve usernames data from the API.
