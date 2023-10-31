@@ -183,6 +183,28 @@ onUnmounted(() => {
             </div>
         </div>
     </div>
+
+    <!-- Game Commands Reminder -->
+    <div class="mt-5 flex justify-center flex-wrap gap-5">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">⬆️</span> Move Up
+        </div>
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">⬇️</span> Move Down
+        </div>
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">Space</span> Ready
+        </div>
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">Num 0</span> Base Game
+        </div>
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">Num 1</span> Small Racket
+        </div>
+        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+            <span class="bg-gray-800 p-2 rounded mr-2">Num 2</span> Obstacle
+        </div>
+    </div>
 </template>
   
 <style>
