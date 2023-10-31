@@ -135,6 +135,10 @@ onUnmounted(() => {
                 </div>
                 <!-- Player 1's Options -->
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Base game</span>
+                    <span class="ml-3 text-green-400">🟢</span>
+                </div>
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Small racket</span>
                     <span v-if="isPlayer1SmallRacket" class="ml-3 text-green-400">🟢</span>
                 </div>
@@ -155,6 +159,10 @@ onUnmounted(() => {
                     <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
                 </div>
                 <!-- Player 2's Options -->
+                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                    <span>Base game</span>
+                    <span class="ml-3 text-green-400">🟢</span>
+                </div>
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Small racket</span>
                     <span v-if="isPlayer2SmallRacket" class="ml-3 text-green-400">🟢</span>
