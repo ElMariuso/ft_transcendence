@@ -24,6 +24,7 @@ export class GameStateService {
     ballVelocity: position;
     ballSpeed: number;
     playerReady: { first: boolean, second: boolean };
+    wantBaseGame: { first: boolean, second: boolean };
     smallRacket: { first: boolean, second: boolean };
     obstacle: { first: boolean, second: boolean };
     obstacle1Size: size;
@@ -62,6 +63,7 @@ export class GameStateService {
             y: this.canvasSize.height / 2 - this.racket2Size.height / 2
         };
         this.ballSpeed = GameStateService.INITIAL_BALL_SPEED;
+        this.wantBaseGame = { first: false, second: false };
         this.playerReady = { first: false, second: false };
         this.smallRacket = { first: false, second: false };
         this.obstacle = { first: false, second: false };
@@ -218,6 +220,20 @@ export class GameStateService {
             this.playerReady.first = value;
         } else {
             this.playerReady.second = value;
+        }
+    }
+
+    setWantBaseGame(value: boolean, target: string) {
+        if (target === 'player1') {
+            this.wantBaseGame.first = value;
+        } else {
+            this.wantBaseGame.second = value;
+        }
+        if (this.wantBaseGame.first || this.wantBaseGame.second) {
+            this.setSmallRacket(false, 'player1');
+            this.setSmallRacket(false, 'player2');
+            this.setObstacle(false, 'player1');
+            this.setObstacle(false, 'player2');
         }
     }
 

@@ -52,6 +52,10 @@ const setReady = (roomId, action) => {
     socket.emit('set-ready', roomId, action);
 };
 
+const setWantBaseGame = (roomId, action) => {
+    socket.emit('set-want-base-game', roomId, action);
+};
+
 const setSmallRacket = (roomId, action) => {
     socket.emit('set-small-racket', roomId, action);
 };
@@ -183,7 +187,8 @@ export { joinQueue,
     rejoinRoom, 
     askGamesInformations, 
     updateRacket, 
-    setReady, 
+    setReady,
+    setWantBaseGame,
     setSmallRacket,
     setObstacle,
     initializeSocketListeners

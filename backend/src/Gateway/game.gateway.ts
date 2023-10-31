@@ -165,6 +165,36 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    @SubscribeMessage('set-want-base-game')
+    setWantBaseGame(client: Socket, [roomId, action]: [string, string]): void {
+        const gameLoop = this.gameStates.get(roomId);
+        const gameState = gameLoop.getGameState();
+
+        if (gameState) {
+            switch (action) {
+                case 'player1':
+                    if (gameState.wantBaseGame.first) {
+                        gameState.setWantBaseGame(false, 'player1');
+                    } else {
+                        gameState.setWantBaseGame(true, 'player1');
+                    }
+                    break;
+                case 'player2':
+                    if (gameState.wantBaseGame.second) {
+                        gameState.setWantBaseGame(false, 'player2');
+                    } else {
+                        gameState.setWantBaseGame(true, 'player2');
+                    }
+                    break;
+                default:
+                    client.emit('error-set-want-base-game', { message: 'Can\'t set want base game' });
+                    break;
+            }
+        } else {
+            client.emit('error-set-want-base-game', { message: 'Can\'t set want base game' });
+        }
+    }
+
     @SubscribeMessage('set-small-racket')
     setSmallRacket(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
@@ -292,6 +322,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             ballSize: gameState.ballSize,
             ballPosition: gameState.ballPosition,
             playerReady: gameState.playerReady,
+            wantBaseGame: gameState.wantBaseGame,
             smallRacket: gameState.smallRacket,
             obstacle: gameState.obstacle,
             obstacle1Size: gameState.obstacle1Size,
