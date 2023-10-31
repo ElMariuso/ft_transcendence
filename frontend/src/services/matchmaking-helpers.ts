@@ -56,6 +56,10 @@ const setSmallRacket = (roomId, action) => {
     socket.emit('set-small-racket', roomId, action);
 };
 
+const setObstacle = (roomId, action) => {
+    socket.emit('set-obstacle', roomId, action);
+};
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -180,6 +184,7 @@ export { joinQueue,
     askGamesInformations, 
     updateRacket, 
     setReady, 
-    setSmallRacket, 
+    setSmallRacket,
+    setObstacle,
     initializeSocketListeners
 };

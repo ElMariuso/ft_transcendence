@@ -47,4 +47,8 @@ export interface GameState {
     playerReady: { first: boolean, second: boolean };
     smallRacket: { first: boolean, second: boolean };
     obstacle: { first: boolean, second: boolean };
+    obstacle1Size: size;
+    obstacle2Size: size;
+    obstacle1Position: position;
+    obstacle2Position: position;
 }

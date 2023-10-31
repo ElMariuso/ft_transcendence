@@ -26,6 +26,10 @@ export class GameStateService {
     playerReady: { first: boolean, second: boolean };
     smallRacket: { first: boolean, second: boolean };
     obstacle: { first: boolean, second: boolean };
+    obstacle1Size: size;
+    obstacle2Size: size;
+    obstacle1Position: position;
+    obstacle2Position: position;
 
     private endMatchCallback: (result: EndMatchResult) => void;
     public initialize(
@@ -61,6 +65,10 @@ export class GameStateService {
         this.playerReady = { first: false, second: false };
         this.smallRacket = { first: false, second: false };
         this.obstacle = { first: false, second: false };
+        this.obstacle1Size = { width: 0, height: 0 };
+        this.obstacle2Size = { width: 0, height: 0 };
+        this.obstacle1Position = { x: 0, y: 0 };
+        this.obstacle2Position = { x: 0, y: 0 };
         this.resetBall();
     }
 
@@ -100,7 +108,7 @@ export class GameStateService {
         if (ballTop <= 0 || ballBottom >= this.canvasSize.height) {
             this.ballVelocity.y *= -1;
         }
-
+    
         let intersectsWithRacket1 = ballLeft <= this.racket1Position.x + this.racket1Size.width &&
             ballRight >= this.racket1Position.x &&
             ballBottom >= this.racket1Position.y &&
@@ -110,10 +118,23 @@ export class GameStateService {
             ballLeft <= this.racket2Position.x + this.racket2Size.width &&
             ballBottom >= this.racket2Position.y &&
             ballTop <= this.racket2Position.y + this.racket2Size.height;
+            
+        let intersectsWithObstacle1 = this.obstacle.first && 
+            ballLeft <= this.obstacle1Position.x + this.obstacle1Size.width &&
+            ballRight >= this.obstacle1Position.x &&
+            ballBottom >= this.obstacle1Position.y &&
+            ballTop <= this.obstacle1Position.y + this.obstacle1Size.height;
     
-        if (intersectsWithRacket1 || intersectsWithRacket2) {
+        let intersectsWithObstacle2 = this.obstacle.second && 
+            ballRight >= this.obstacle2Position.x &&
+            ballLeft <= this.obstacle2Position.x + this.obstacle2Size.width &&
+            ballBottom >= this.obstacle2Position.y &&
+            ballTop <= this.obstacle2Position.y + this.obstacle2Size.height;
+    
+        if (intersectsWithRacket1 || intersectsWithRacket2 || intersectsWithObstacle1 || intersectsWithObstacle2) {
             this.ballVelocity.x *= -1;
         }
+    
         if (ballLeft <= 0) {
             this.updateScore(1, Player.Player2);
             this.resetBall();
@@ -121,7 +142,7 @@ export class GameStateService {
             this.updateScore(1, Player.Player1);
             this.resetBall();
         }
-    } 
+    }    
 
     private resetBall() {
         this.ballSize = { width: 0, height: 0 };
@@ -221,8 +242,28 @@ export class GameStateService {
     setObstacle(value: boolean, target: string) {
         if (target === 'player1') {
             this.obstacle.first = value;
+            if (this.obstacle.first) {
+                this.obstacle1Size = { width: 6, height: 42 };
+                this.obstacle1Position = {
+                    x: this.canvasSize.width / 3 - this.obstacle1Size.width / 2,
+                    y: this.canvasSize.height / 2 - this.obstacle1Size.height / 2
+                };
+            } else {
+                this.obstacle1Size = { width: 0, height: 0 };
+                this.obstacle1Position = { x: 0, y: 0 };
+            }
         } else {
             this.obstacle.second = value;
+            if (this.obstacle.second)  {
+                this.obstacle2Size = { width: 6, height: 42 };
+                this.obstacle2Position = {
+                    x: this.canvasSize.width * 2/3 - this.obstacle2Size.width / 2,
+                    y: this.canvasSize.height / 2 - this.obstacle2Size.height / 2
+                };
+            } else {
+                this.obstacle2Size = { width: 0, height: 0 };
+                this.obstacle2Position = { x: 0, y: 0 };
+            }
         }
     }
 }

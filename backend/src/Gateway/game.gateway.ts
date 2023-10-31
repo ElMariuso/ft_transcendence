@@ -195,6 +195,36 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    @SubscribeMessage('set-obstacle')
+    setObstacle(client: Socket, [roomId, action]: [string, string]): void {
+        const gameLoop = this.gameStates.get(roomId);
+        const gameState = gameLoop.getGameState();
+
+        if (gameState) {
+            switch (action) {
+                case 'player1':
+                    if (gameState.obstacle.first) {
+                        gameState.setObstacle(false, 'player1');
+                    } else {
+                        gameState.setObstacle(true, 'player1');
+                    }
+                    break;
+                case 'player2':
+                    if (gameState.obstacle.second) {
+                        gameState.setObstacle(false, 'player2');
+                    } else {
+                        gameState.setObstacle(true, 'player2');
+                    }
+                    break;
+                default:
+                    client.emit('error-set-obstacle', { message: 'Can\'t set obstacle' });
+                    break;
+            }
+        } else {
+            client.emit('error-set-obstacle', { message: 'Can\'t set small obstacle' });
+        }
+    }
+
     public addOnlinePlayer(playerId: number | string, playerInfo: { socketId: string; username: string }) {
         this.onlinePlayers.set(playerId, playerInfo);
     }
@@ -264,6 +294,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             playerReady: gameState.playerReady,
             smallRacket: gameState.smallRacket,
             obstacle: gameState.obstacle,
+            obstacle1Size: gameState.obstacle1Size,
+            obstacle2Size: gameState.obstacle2Size,
+            obstacle1Position: gameState.obstacle1Position,
+            obstacle2Position: gameState.obstacle2Position,
         };
         this.server.to(roomId).emit('games-informations', informations);
     }

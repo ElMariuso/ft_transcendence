@@ -22,7 +22,7 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
                     username = gameState.player2Username;
                 drawWinner(context, canvas, username, matchResult.reason);
             } else {
-                drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2);
+                drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2, gameState.obstacle1Size, gameState.obstacle1Position, gameState.obstacle2Size, gameState.obstacle2Position);
             }
         }
         requestAnimationFrame(loop);
@@ -30,10 +30,12 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
     loop();
 }
 
-function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, ballSize, ballPosition, score1, score2) {
+function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, ballSize, ballPosition, score1, score2, obstacle1Size, obstacle1Position, obstacle2Size, obstacle2Position) {
     drawNet(context, canvas);
     drawSquare(context, racket1Position.x, racket1Position.y, racket1Size.width, racket1Size.height);
     drawSquare(context, racket2Position.x, racket2Position.y, racket2Size.width, racket2Size.height);
+    drawSquare(context, obstacle1Position.x, obstacle1Position.y, obstacle1Size.width, obstacle1Size.height);
+    drawSquare(context, obstacle2Position.x, obstacle2Position.y, obstacle2Size.width, obstacle2Size.height);
     drawSquareFromCenter(context, ballPosition.x, ballPosition.y, ballSize.width, ballSize.height);
 
     context.fillStyle = 'white';

@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { gameLoop } from '@/services/game-helpers';
 import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
-import { askGamesInformations, setReady, setSmallRacket } from '@/services/matchmaking-helpers';
+import { askGamesInformations, setObstacle, setReady, setSmallRacket } from '@/services/matchmaking-helpers';
 import { useProfileStore } from '@/stores/ProfileStore';
 
 const gameStore = useGameStore();
@@ -16,6 +16,8 @@ const isPlayer1Ready = computed(() => gameStore.gameState.playerReady.first);
 const isPlayer2Ready = computed(() => gameStore.gameState.playerReady.second);
 const isPlayer1SmallRacket = computed(() => gameStore.gameState.smallRacket.first);
 const isPlayer2SmallRacket = computed(() => gameStore.gameState.smallRacket.second);
+const isPlayer1Obstacle = computed(() => gameStore.gameState.obstacle.first);
+const isPlayer2Obstacle= computed(() => gameStore.gameState.obstacle.second);
 const areBothPlayersReady = computed(() => isPlayer1Ready.value && isPlayer2Ready.value);
 
 const movingUp = ref(false);
@@ -51,6 +53,12 @@ const eventDown = (event: KeyboardEvent) => {
             if (!areBothPlayersReady.value) {
                 const roomId = matchmakingStore.roomID;
                 gameStore.isFirstPlayer ? setSmallRacket(roomId, 'player1'): setSmallRacket(roomId, 'player2');
+            }
+            break;
+        case 'Numpad2':
+            if (!areBothPlayersReady.value) {
+                const roomId = matchmakingStore.roomID;
+                gameStore.isFirstPlayer ? setObstacle(roomId, 'player1'): setObstacle(roomId, 'player2');
             }
             break;
     }
@@ -132,6 +140,7 @@ onUnmounted(() => {
                 </div>
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Obstacle</span>
+                    <span v-if="isPlayer1Obstacle" class="ml-3 text-green-400">🟢</span>
                 </div>
             </div>
 
@@ -152,6 +161,7 @@ onUnmounted(() => {
                 </div>
                 <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
                     <span>Obstacle</span>
+                    <span v-if="isPlayer2Obstacle" class="ml-3 text-green-400">🟢</span>
                 </div>
             </div>
         </div>
