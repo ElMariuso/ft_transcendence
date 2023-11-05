@@ -33,7 +33,7 @@ const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
 <template>
-  <div class="bg-no-repeat min-h-screen flex flex-col">
+  <div class="bg-base-bg bg-no-repeat min-h-screen text-base-text">
       <Navbar />
     <div class="container mx-auto mt-8">
       <router-view />

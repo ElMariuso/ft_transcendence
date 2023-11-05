@@ -1,3 +1,4 @@
+import { useGameStore } from "@/stores/GameStore";
 import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
 
@@ -25,16 +26,42 @@ const getRankedQueueStatus = () => {
     socket.emit('status-ranked');
 };
 
-const quitStandardMatch = () => {
-    socket.emit('quit-standard');
-};
-
-const quitRankedMatch = () => {
-    socket.emit('quit-ranked');
+const quitMatch = () => {
+    socket.emit('quit-match');
 };
 
 const rejoinRoom = (data) => {
     socket.emit('rejoin-room', data);
+};
+
+const askGamesInformations = (roomId) => {
+    return new Promise((resolve) => {
+        socket.once('games-informations', (data) => {
+            resolve(data);
+        });
+
+        socket.emit('ask-games-informations', roomId);
+    });
+};
+
+const updateRacket = (roomId, action) => {
+    socket.emit('update-racket', roomId, action);
+};
+
+const setReady = (roomId, action) => {
+    socket.emit('set-ready', roomId, action);
+};
+
+const setWantBaseGame = (roomId, action) => {
+    socket.emit('set-want-base-game', roomId, action);
+};
+
+const setSmallRacket = (roomId, action) => {
+    socket.emit('set-small-racket', roomId, action);
+};
+
+const setObstacle = (roomId, action) => {
+    socket.emit('set-obstacle', roomId, action);
 };
 
 const initializeSocketListeners = (matchmakingStore) => {
@@ -121,19 +148,48 @@ const initializeSocketListeners = (matchmakingStore) => {
         }
     });
 
-    socket.on('left-room', (response) => {
-        console.log(response);
-        matchmakingStore.setOpponentUUID(null);
-        matchmakingStore.setOpponentUsername(null);
-        matchmakingStore.setRoomID(null);
-
-        router.push({ name: 'home'});
-    });
-
     socket.on('rejoin-failed', (response) => {
         console.log(response);
         matchmakingStore.setRoomID(null);
     });
+
+    socket.on('games-informations', (gameState) => {
+        const gameStore = useGameStore();
+        
+        gameStore.updateGameState(gameState);
+    });
+
+    socket.on('match-ended', (response) => {
+        console.log(response);
+        const gameStore = useGameStore();
+        gameStore.setMatchResult(response);
+    
+        matchmakingStore.setOpponentUUID(null);
+        matchmakingStore.setOpponentUsername(null);
+        matchmakingStore.setRoomID(null);
+    
+        setTimeout(() => {
+            if (router.currentRoute.value.path.startsWith('/game')) {
+                router.push({ name: 'home' });
+            }
+            gameStore.setMatchResult(null);
+        }, 10000);
+    });    
 };
 
-export { joinQueue, leaveQueue, getQueueStatus, joinRankedQueue, leaveRankedQueue, getRankedQueueStatus, quitStandardMatch, quitRankedMatch, rejoinRoom, initializeSocketListeners };
+export { joinQueue, 
+    leaveQueue, 
+    getQueueStatus, 
+    joinRankedQueue, 
+    leaveRankedQueue, 
+    getRankedQueueStatus, 
+    quitMatch, 
+    rejoinRoom, 
+    askGamesInformations, 
+    updateRacket, 
+    setReady,
+    setWantBaseGame,
+    setSmallRacket,
+    setObstacle,
+    initializeSocketListeners
+};

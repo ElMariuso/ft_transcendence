@@ -1,9 +1,7 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
-import { Game } from '@prisma/client'
 import { QueueService } from './queue.service';
 import { AuthenticatedPlayer, PlayerInQueue } from 'src/Model/player.model';
-import { GameQuery } from 'src/Query/game.query';
 
 /**
  * Service responsible for managing the matchmaking logic for players.
@@ -27,7 +25,6 @@ export class MatchmakingService {
      */
     constructor(
         private readonly queueService: QueueService,
-        private readonly gameQuery: GameQuery,
         private readonly eventEmitter: EventEmitter,
     ) {
         this.startMatchmakingInterval();
