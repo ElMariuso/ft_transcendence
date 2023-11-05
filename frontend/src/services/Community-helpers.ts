@@ -1,5 +1,6 @@
 import api from './api';
-
+// import bcrypt from 'bcrypt';
+// const bcrypt = require("bcrypt")
 
 /**
  * Asynchronous function to retrieve usernames data from the API.
@@ -43,6 +44,100 @@ export const getUsernamesData = async (userID) => {
     }
 };
 
+
+export const getAllChannels = async () => {
+    try {
+        const response = await api.get('/channels/');
+        return response.data;
+	} catch (error) {
+        console.error('Error fetching channels:', error);
+        throw error;
+    }
+};
+
+export const getSubscribedChannels = async (userID) => {
+	try {
+        const response = await api.get('/userchannels/' + userID);
+        return response.data;
+	} catch (error) {
+        console.error('Error fetching channels:', error);
+        throw error;
+    }
+}
+
+export const joinChannel = async (userID: number, channelID: number, pw: string="") => {
+	try {
+
+		let body = {
+			"idUser": userID,
+			"idChannel": channelID,
+			...(pw !== "" ? { "password": pw } : {}),
+		}
+
+		// if (pw != "")
+		// 	body.password = pw;
+
+		console.log("body")
+		console.log(body)
+		const res = await api.post('/userchannels/', body)
+	} catch (error) {
+		console.error('Error joining channel: ', error);
+		throw error;
+	}
+}
+
+export const getChannelMsg = async (channelID) => {
+	try {
+		const res = await api.get('/channels/allMessages/' + channelID);
+		return res.data;
+	} catch (error) {
+		console.error('Error fetching messages', error);
+		throw error;
+	}
+}
+
+export const getChannelUsers = async (channelID) => {
+	try {
+		const res = await api.get('/channels/allUsers/' + channelID);
+		console.log(res)
+		return res.data;
+	} catch (error) {
+		console.error('Error fetching channel users', error);
+		throw error;
+	}
+}
+
+export const sendMessageTo = async (body) => {
+	try {
+		const res = await api.post('/messages', body);
+		return res;
+	} catch (error) {
+		console.error('Error posting message', error);
+		throw error;
+	}
+}
+
+export const leaveCurrentChannel = async (idUser, idChannel) => {
+	try {
+
+		const res = await api.delete('/userchannels/delete/' + idUser + '/' + idChannel);
+		return res;
+	} catch (error) {
+		console.error('Error leaving channel', error);
+		throw error;
+	}
+}
+
+export const deleteCurrentChannel = async (idChannel) => {
+	try {
+		const res = await api.delete('/channels/delete/' + idChannel);
+		return res;
+	} catch (error) {
+		console.error('Error leaving channel', error);
+		throw error;
+	}
+}
+
 /**
  * Asynchronous function to create a new channel data from the API.
  * 
@@ -60,17 +155,14 @@ export const getUsernamesData = async (userID) => {
  export const postNewChannelsData = async (userID, newName, newType, newPassword) => {
     try {
 		var id: number = +userID;
-		// console.log(newName);
-		// console.log(newPassword);
-		// console.log(userID);
-		// console.log(id);
-		// console.log(newType);
+
+		console.log("newType: " + newType)
         const response = await api.post('/channels', {
 			"name": newName,
 			"password": newPassword,
 			"idOwner": id,
 			"idType": newType
-				})
+		})
         return response.data;
     } catch (error) {
         console.error('Error creating a new channel data:', error);
@@ -78,3 +170,41 @@ export const getUsernamesData = async (userID) => {
     }
 };
 
+
+// Player actions
+
+export const play = async () => {
+	console.log("play");
+	// Need game implementation
+}
+export const profile = async () => {
+	console.log("profile");
+	// Need profile implementation
+}
+export const message = async () => {
+	console.log("message");
+	// Need websocket I believe
+}
+export const friend = async () => {
+	console.log("friend");
+}
+export const block = async (id, blockId) => {
+	const res = await api.post('users/' + id + "/blockUser", {
+		idBlock: blockId,
+	});
+	console.log(res);
+}
+export const mute = async (user, channel, time) => {
+	await api.put('/userchannels/addMuteTime', {
+		idUser: user,
+		idChannel: channel,
+		muteTime: time
+	});
+}
+
+export const kick = async () => {
+	console.log("kick");
+}
+export const ban = async () => {
+	console.log("ban");
+}

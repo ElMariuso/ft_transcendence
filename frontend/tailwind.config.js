@@ -24,6 +24,15 @@ module.exports = {
         'base-text': '#999',
         'button': '#999',
         'matchmaking': '#bababa',
+      },
+	  maxWidth: {
+        'tab': '5rem',
+      },
+	  minWidth: {
+        'tab': '5rem',
+      },
+	  spacing: {
+        '128': '34rem',
       }
     }
   },

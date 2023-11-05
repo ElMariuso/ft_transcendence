@@ -62,7 +62,23 @@ export class UserChannelQuery
 			}
 		);
 
-		return users;
+		const idRoles = us_ch.reduce((acc, value) =>
+		{
+			acc[value.idUser] = value.idRole;
+			return acc;
+		}, {});
+
+		const idAdmin = 1;
+
+		const fullUsers = (await users).map(user => 
+			(
+				{
+					...user,
+					role: idRoles[user.idUser] === idAdmin ? "Admin" : "Member",
+				}
+			));
+
+		return fullUsers;;
 	}
 
 	/**

@@ -2,7 +2,9 @@
 import { onMounted, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
+import Footer from './components/Footer.vue';
 import Cookies from 'js-cookie';
+
 import { useProfileStore } from './stores/ProfileStore'
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { initializeSocketListeners } from './services/matchmaking-helpers';
@@ -36,6 +38,7 @@ const isSearchingValue = computed(() => matchmakingStore.isSearching);
     <div class="container mx-auto mt-8">
       <router-view />
     </div>
+	  <Footer />
   </div>
   <MatchmakingBox v-if="isSearchingValue" />
 </template>

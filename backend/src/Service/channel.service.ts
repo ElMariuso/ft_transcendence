@@ -15,6 +15,7 @@ import { ERROR_MESSAGES, TYPE } from 'src/globalVariables';
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { UserChannelQuery } from 'src/Query/userchannel.query';
 import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
+import { RoleQuery } from 'src/Query/role.query';
 
 @Injectable()
 export class ChannelService
@@ -25,6 +26,7 @@ export class ChannelService
 		private readonly userQuery: UserQuery,
 		private readonly messageQuery: MessageQuery,
 		private readonly userChannelQuery: UserChannelQuery,
+		private readonly roleQuery: RoleQuery
 		) {}
 
 	/**
@@ -109,11 +111,14 @@ export class ChannelService
 		if (!users)
 			return [];
 
+		console.log(users)
+
 		const usersDTO: UserInChannelDTO[] = users.map((user) =>
 		{
 			return this.transformToUserInChannelDTO(user, channel.idOwner === user.idUser ? true : false);
 		});
 
+		console.log(usersDTO)
 		return usersDTO;
 	}
 
@@ -195,14 +200,15 @@ export class ChannelService
 		return messageDTO;
 	}
 
-	private transformToUserInChannelDTO(user: User, owner: boolean) : UserInChannelDTO
+	private transformToUserInChannelDTO(user: any, owner: boolean) : UserInChannelDTO
 	{
 		const dto: UserInChannelDTO = 
 		{
 			idUser: user.idUser,
 			username: user.username,
 			email: user.email,
-			owner: owner
+			owner: owner,
+			role: user.role,
 		}
 		return dto;
 	}
