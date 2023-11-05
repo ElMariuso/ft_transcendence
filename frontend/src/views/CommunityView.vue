@@ -254,9 +254,8 @@
 	</div>
 </template>
 
-
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { ref, onBeforeMount } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { storeToRefs } from 'pinia'
@@ -298,22 +297,152 @@ async function createChannel() {
 		await communityStore.setupNewChannel(newChannelname.value, 2, newChannelPassword.value)
 	else if (newChannelType.value.trim() == 'private')
 		await communityStore.setupNewChannel(newChannelname.value, 1, newChannelPassword.value)
+
+	newChannelname.value = "";
+	newChannelType.value = "public";
+	newChannelPassword.value = "";
+	await communityStore.setupCommunity();
 }
 
-// const setupChannel = async () => {
-//   await channelStore.setupChannel()
-//   showchannel.value = true // Set a flag to indicate that data is loaded
+// *************************************************
+
+// *********** Open Channels
+
+const pwInput = ref([]);
+
+async function btnJoinChannel(event) {
+
+	const idChannel = +event.target.id;
+	const type = +event.target.getAttribute('channType');
+
+	// if Private, send PW
+	if (type === 1)
+		await joinChannel(userID.value, idChannel, pwInput._value[idChannel]);
+	else
+		await joinChannel(userID.value, idChannel);
+	await communityStore.setupCommunity();
+}
+
+// *************************************************
+
+// *********** CHAT ROOM
+
+const selectedChannelID = ref(null);
+const scrollContainer = ref(null);
+const newMessage = ref('');
+
+async function selectChannel(channelID: string) {
+
+	// Websocket connect here ?
+	selectedChannelID.value = channelID;
+	await communityStore.updateSelectedChannel(channelID);
+
+	// scrollToSelectedTab();
+}
+
+// const scrollToSelectedTab = () => {
+//   if (selectedChannelID.value) {
+//     scrollContainer.value.scrollTop = selectedChannelID.value.offsetTop - scrollContainer.value.offsetTop;
+//   };
+// };
+
+async function sendMessage() {
+	// Also websocket pb, ping all connected users ?
+	let body = {
+		content: newMessage.value,
+		idUser: userID.value,
+		idChannel: selectedChannelID.value,
+	}
+	try {
+		const res = await sendMessageTo(body);
+		// update msg UI
+	} catch (error) {
+		console.error('Error sending message', error);
+	}
+
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
+async function leaveOrDeleteChannel() {
+
+	if (roleInChannel.value === "Owner") {
+		// Confirmation popup, then
+		const res = await deleteCurrentChannel(selectedChannelID.value);
+		console.log(res);
+		console.log("OWNER")
+	}
+	else {
+		console.log("NOT OWNER")
+		// roleInChannel IF OWNER, DO SMTH ELSE (delete? ADD popup are you sure ?)
+		const res = await leaveCurrentChannel(userID.value, selectedChannelID.value);
+		console.log(res);
+	}
+	selectedChannelID.value = null;
+	await communityStore.setupCommunity();
+}
+
+// *************************************************
+
+// *********** PLAYER LIST
+
+const selectedUserID = ref(null);
+const dropDownOpen = ref(null);
+const muteTime = ref(null);
+
+function toggleDropDown(playerID) {
+	selectedUserID.value = playerID;
+	if (dropDownOpen.value != playerID)
+		dropDownOpen.value = playerID;
+	else
+		dropDownOpen.value = null;
+}
+
+function getChannelTypeImg(channType) {
+	if (channType === 2)
+		return "src/assets/public.svg";
+	else if (channType === 1)
+		return "src/assets/private.svg";
+}
+
+// async function playerPlay() {
+// 	console.log("play");
+// 	// Need game implementation
+// }
+// async function playerProfile() {
+// 	console.log("profile");
+// 	// Need profile implementation
+// }
+// async function playerMessage() {
+// 	console.log("message");
+// 	// Need websocket I believe
+// }
+// async function playerFriend() {
+// 	console.log("friend");
 // }
 
-////////////////
-async function boop(test) {
-	console.log("booped")
-	// console.log(test)
-	channelStore.setChannelId(test)
-	// await setupChannel()
-	// console.log("bop")
-}
-////////////////
+// async function playerBlock() {
+// 	console.log("block");
 
+// 	await block(userID.value, selectedUserID.value);
+	
+// }
+
+async function playerMute() {
+	console.log("mute");
+
+	// Adds to DB but doesnt mute ... (:
+	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
+}
+async function playerKick() {
+	console.log("kick");
+
+	const res = await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	console.log(res);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
+// async function playerBan() {
+// 	console.log("ban");
+// }
 
 </script>
