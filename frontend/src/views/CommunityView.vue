@@ -1,121 +1,289 @@
 <!-- 
-	Create channel (pub/private/protected)
+	TO DO
 
-	Join channel 
+	- Websocket msg
+	- Online / offline players
+	- players buttons functionnality:
+		* PLAY
+		* PROFILE
+		* DM
+		* add friend
+		* BLOCK
 
-	send private msg -> list of other users
-			 - friend list ?
-			 - users of selected channel -> button to play/view profile/ send msg
+		IF ADMIN
+		* KICK/BAN/MUTE
 
  -->
 
+
+
 <template>
-<div v-if="showUsers">
+	<div class="flex">
 
-  <h2 class="text-lg font-semibold">Community</h2>
+		<!-- Find Users -->
+		<!-- <div class="mb-4">
+		<h3 class="text-lg font-semibold">Find users</h3>
+		<select class="p-2 w-1/3 border rounded-lg">
+			<option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
+		</select>
+		<button @click="findUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
+		</div> -->
 
-  <div class="p-4">
-	<!-- Find Users -->
-    <!-- <div class="mb-4">
-      <h3 class="text-lg font-semibold">Find users</h3>
-	  <select class="p-2 w-1/3 border rounded-lg">
-        <option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
-      </select>
-      <button @click="findUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
-    </div> -->
+		<!-- Send Private Message -->
+		<!-- <div class="mb-4">
+		<h3 class="text-lg font-semibold">Send Private Message To</h3>
+		<select class="p-2 w-1/3 border rounded-lg">
+			<option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
+		</select>
+		<button @click="sendPrivateMessage" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send</button>
+		</div> -->
 
-	<!-- Send Private Message -->
-    <div class="mb-4">
-      <h3 class="text-lg font-semibold">Send Private Message To</h3>
-	  <select class="p-2 w-1/3 border rounded-lg">
-        <option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
-      </select>
-      <button @click="sendPrivateMessage" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send</button>
-    </div>
 
-    <!-- Create Channels -->
-    <div  class="mb-4">
-      <h3 class="text-lg font-semibold">Create Channels</h3>
-      <input
-	    v-model="newChannelname"
-        type="text"
-        placeholder="Enter channel name"
-        class="p-2 w-1/3 border rounded-lg mt-2"
-      />
-	  <select v-model="newChannelType" class="p-2 w-1/6 border rounded-lg">
-        <option value="public">Public</option>
-        <option value="private">Private</option>
-      </select>
-	   <input
-	    v-model="newChannelPassword"
-        type="text"
-        placeholder="Enter password"
-        class="p-2 w-1/3 border rounded-lg mt-2"
-      />
-      <button @click="createChannel" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">
-		Create
-      </button>
-	  <div v-if="noChannelName">
-		<h3 class="text-lg text-red-600 font-semibold">You need to enter a name to create a channel</h3>
-	  </div>
-	  <div v-if="noChannelType">
-		<h3 class="text-lg text-red-600 font-semibold">You need to select a type to create a channel</h3>
-	  </div>
-	  <div v-if="noChannelPassword">
-		<h3 class="text-lg text-red-600 font-semibold">Private channel need a password</h3>
-	  </div>
+
+		<!-- Create Channel -->
+		<div  class="mb-4 flex flex-col w-1/4">
+
+			<div class="border-2 border-blue-500 px-4 py-2 rounded-lg">
+				<h3 class="text-lg font-semibold border-b border-gray-400">Create Channel</h3>
+
+				<input
+					v-model="newChannelname"
+					type="text"
+					placeholder="Enter channel name"
+					class="p-2 border rounded-lg mt-2 w-full"
+				/>
+
+				<select v-model="newChannelType" class="p-2 border rounded-lg mt-2 text-sm">
+					<option value="public" class="">Public</option>
+					<option value="private">Private</option>
+				</select>
+
+				<input
+					v-model="newChannelPassword"
+					type="password"
+					placeholder="Enter password"
+					:disabled="newChannelType==='public'"
+					class="p-2 border rounded-lg mt-2 w-full"
+				/>
+
+				<div class="flex items-baseline">
+
+					<button 
+						@click="createChannel"
+						class="mt-4 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg mr-5"
+					>
+						Create
+					</button>
+					
+					<div v-if="noChannelName"> <h3 class="text-lg text-red-600 font-semibold">Name required</h3> </div>
+					<div v-if="noChannelPassword"> <h3 class="text-lg text-red-600 font-semibold">Password required</h3> </div>
+
+				</div>
+			</div>
+
+		<!-- Open Channels -->
+			<div class="mt-5 border-2 border-blue-500 px-4 py-2 rounded-lg ">
+				<h3 class="text-lg font-semibold border-b border-gray-400">Open Channels</h3>
+
+				<ul class="mt-2 h-96 overflow-y-auto">
+					<li v-for="channel in openChannels" class="mb-2 border px-2 py-1 rounded-lg" >		
+						<div class="text-lg flex flex-row ">
+							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
+							<button 
+								:id="channel.idChannel" 
+								:channType="channel.idType" 
+								@click="btnJoinChannel" 
+								class="flex w-1/3"
+								:class="{
+									'text-blue-600': pwInput[channel.idChannel] || channel.idType !== 1,
+									'text-gray-600': !pwInput[channel.idChannel] && channel.idType === 1,
+								}"
+								:disabled="!pwInput[channel.idChannel] && channel.idType === 1"
+								
+							>
+								Join
+							</button>
+							<img :src="getChannelTypeImg(channel.idType)" alt="channType">
+						</div>
+						<div class="flex justify-end">
+							<input
+								v-if="channel.idType === 1"
+								v-model="pwInput[channel.idChannel]"
+								type="text"
+								placeholder="Enter password"
+								class="px-2 border rounded-lg"
+							/>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+
+
+		<!--CHAT ROOM  -->
+		<div class="flex flex-row w-3/4 pl-5">
+			<div class="mb-4 flex flex-col w-2/3">
+				<div class="border-2 border-blue-500 px-4 py-2 rounded-lg h-full">
+					
+					<div class="flex flex-row border-b border-gray-400">
+						<div class="w-1/6 mr-5">
+							<h3 class="text-lg font-semibold ">Rooms</h3>
+						</div>
+
+				
+						<div class="overflow-y-auto" ref="scrollContainer">
+							<ul class="flex flex-row">
+								<button 
+									:id="channel.idChannel"
+									v-for="channel in joinedChannels"
+									class="mx-1 border rounded-lg px-2 py-1 max-w-tab min-w-tab truncate"
+									:class="{ 
+										'bg-blue-500 text-white': channel.idChannel === selectedChannelID,
+										'bg-gray-300 text-black': !(channel.idChannel === selectedChannelID),
+									}"
+									@click="selectChannel(channel.idChannel)"
+								> 
+									{{channel.name}}
+								</button>
+							</ul>
+						</div>
+					
+					</div>
+
+					<div v-if="selectedChannelID" class="h-12 border-b px-2">
+						<div class="flex justify-end py-2">
+
+							<button
+								@click="leaveOrDeleteChannel"
+								class="border rounded-lg px-2 py-1 bg-red-200"
+							>
+								{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }}
+							</button>
+						</div>
+					</div>
+						
+					<div v-if="selectedChannelID" class="">
+						<ul class="h-128 overflow-y-auto">
+							<li v-for="msg in selectedChannelMsg" class="flex flex-row">
+								<p class="mr-2 text-lg text-blue-500"> {{ msg.username }}:</p>
+								<p class="text-lg overflow-x-auto"> {{ msg.content }}</p>
+							</li>
+						</ul>
+					</div>
+						<div v-if="selectedChannelID" class="mt-auto">
+							<input
+								v-model="newMessage"
+								type="text"
+								placeholder="Send a message"
+								class="p-2 w-5/6 border rounded-lg"
+							/>
+							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+						</div>			
+				</div>
+			</div>
+			
+
+			<!-- PLAYER LIST -->
+			<div class="mb-4 flex flex-col w-1/3">
+				<div class="border-2 border-blue-500 px-4 py-2 rounded-lg ml-5">
+					<h3 class="text-lg font-semibold border-b border-gray-400">Players</h3>
+					
+					<div class="mt-2 h-96 overflow-y-auto">
+
+						<ul v-if="selectedChannelID">
+							
+							<li 
+								v-for="user in selectedChannelUsers" 
+								class="text-lg  border px-2 py-1 rounded-lg "
+								
+								:id="user.idUser"
+							>
+								<div class="flex flex-row justify-between">
+
+									<p 
+										:class="{ 
+											'text-green-600': user.role === 'Admin',
+											'text-red-500': user.owner,
+										}"	
+									>
+										{{ user.username }}
+									</p>
+
+									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
+										<img src="../assets/elipsis-h.svg" alt="options">
+									</button>
+								</div>
+								<div 
+									v-if="dropDownOpen === user.idUser"
+									class="border-t pt-2"
+								>
+									<div class="flex justify-between">
+										<img @click="playerPlay" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+										<img @click="playerProfile" class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
+										<img @click="playerFriend" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+										<img @click="playerBlock" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+									</div>
+									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
+
+										<div class="flex flex-row">
+
+											<input
+												v-model="muteTime"
+												type="text"
+												placeholder="seconds"
+												class="p-1 w-16 border rounded-lg text-sm mr-2"
+											/>
+								
+											<button @click="playerMute" :disabled="!muteTime">
+												<img title="mute" src="../assets/player/mute.svg" alt="mute">
+											</button>
+										</div>
+										<img @click="playerKick" class="cursor-pointer" title="kick" src="../assets/player/kick.svg" alt="kick">
+										<img @click="playerBan" class="cursor-pointer" title="ban" src="../assets/player/ban.svg" alt="ban">
+									</div>
+								</div>
+									
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-
-    <!-- Joined Channels -->
-    <div>
-      <h3 class="text-lg font-semibold w-1/3">Available Channels</h3>
-      <ul class="mt-2 w-1/3">
-		<li v-for="channel in communityStore.getAvailableChannels()" class="mb-2">
-		  <router-link @click="boop(channel.idChannel)" :to="'/channel'">
-			<nav class="text-lg mr-5">
-              <section>{{ channel.name }}</section>
-            </nav>
-		  </router-link>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-</div>
 </template>
 
 
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
-import { useChannelStore } from '../stores/ChannelStore'
+import { useProfileStore } from '../stores/ProfileStore'
+import { storeToRefs } from 'pinia'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, mute, block } from '@/services/Community-helpers'
 
-const communityStore = useCommunityStore()
-const channelStore = useChannelStore()
-const showUsers = ref(false);
+onBeforeMount(async () => {
+	await communityStore.setupCommunity();
+
+	console.log(joinedChannels.value);
+}) 
+
+const communityStore = useCommunityStore();
+const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
+
+const profileStore = useProfileStore();
+const { userID } = storeToRefs(profileStore);
+
+// ******** Create Channel
 
 const noChannelName = ref(false);
 const noChannelType = ref(false);
 const noChannelPassword = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
-const newChannelType = ref('');
-
-
-const setupUsernames = async () => {
-  await communityStore.setupUsernames()
-//   showUsers.value = true // Set a flag to indicate that data is loaded
-}
-setupUsernames()
-
-const setupAvailableChannels = async () => {
-  await communityStore.setupAvailableChannels()
-  showUsers.value = true // Set a flag to indicate that data is loaded
-}
-setupAvailableChannels()
+const newChannelType = ref('public');
 
 async function createChannel() {
-	let bodyInfo = {};
 	noChannelName.value = false;
 	noChannelType.value = false;
 	noChannelPassword.value = false;
@@ -130,12 +298,14 @@ async function createChannel() {
 		await communityStore.setupNewChannel(newChannelname.value, 2, newChannelPassword.value)
 	else if (newChannelType.value.trim() == 'private')
 		await communityStore.setupNewChannel(newChannelname.value, 1, newChannelPassword.value)
-	newChannelname.value = '';
-	newChannelType.value = '';
-	newChannelPassword.value = '';
 }
 
+// const setupChannel = async () => {
+//   await channelStore.setupChannel()
+//   showchannel.value = true // Set a flag to indicate that data is loaded
+// }
 
+////////////////
 async function boop(test) {
 	console.log("booped")
 	// console.log(test)
@@ -143,15 +313,7 @@ async function boop(test) {
 	// await setupChannel()
 	// console.log("bop")
 }
-
-////////////////
 ////////////////
 
 
 </script>
-
-
-<style scoped>
-/* Add Tailwind CSS classes if not already included */
-
-</style>

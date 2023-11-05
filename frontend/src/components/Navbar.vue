@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue';
+import { computed, watch, ref, onActivated } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
@@ -23,6 +23,11 @@ const isInGame = computed(() => (matchmakingStore.roomID !== null));
 const { username, avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
+
+watch(isAuthenticated, async () => {
+	if (isAuthenticated)
+		await profileStore.setupProfile();
+})
 
 const refreshNavbar = () => {
   avatarImg.value = getAvatarImg();
@@ -52,7 +57,7 @@ function getAvatarImg() {
 </script>
 
 <template>
-   <div class="w-full h-20 flex justify-between border-b border-gray-400 p-4">
+   <div class="h-20 flex justify-between border-b border-gray-400 p-4">
         <div class="ml-30px flex items-baseline">
 		
 			<router-link to="/">

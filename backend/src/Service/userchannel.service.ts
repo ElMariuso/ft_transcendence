@@ -79,9 +79,17 @@ export class UserChannelService
 
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.PRIVATE))
 		{
-			if (newUser.password != channel.password)
+			const bcrypt = require('bcryptjs');
+			const pwIsCorrect = bcrypt.compareSync(newUser.password, channel.password);
+			
+			if (!pwIsCorrect)
 				throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
+			
+
+			// if (newUser.password != channel.password)
+			// 	throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
 		}
+
 		const userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(newUser.idUser, newUser.idChannel);
 		if (userChannel)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.ALREADY_IN);
@@ -94,7 +102,6 @@ export class UserChannelService
 				throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.CANTREJOINDM);
 		}
 		const newMember = await this.userchannelQuery.addMember(newUser.idUser, newUser.idChannel);
-
 		return this.transformToUserChannelDTO(newMember);
 	}
 

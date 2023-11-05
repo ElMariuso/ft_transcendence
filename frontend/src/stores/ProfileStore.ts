@@ -37,12 +37,23 @@ export const useProfileStore = defineStore('profile', () => {
 		try {
 			const userData = await getUserData(id);
 			setUserID(id);
-			setUsername(userData.username);
+			username.value = userData.username;
+			// setUsername(userData.username);
             setAvatar(userData.avatar);
             setTwoFactorAuth(userData.isTwoFactorAuthEnabled);
 			avatarUpdated.value = true;
 		} catch (error) {
 			console.error("Error setting up profile:", error);
+		}
+	}
+
+	function updateProfile(bodyInfo: []) {
+		if (bodyInfo['username'])
+			username.value = bodyInfo['username'];
+		if (bodyInfo['isTwoFactorAuthEnabled'])
+			twoFactorAuth.value = bodyInfo['isTwoFactorAuthEnabled'];
+		if (bodyInfo['avatar']) {
+			avatarUpdated.value = true;
 		}
 	}
 
@@ -79,5 +90,8 @@ export const useProfileStore = defineStore('profile', () => {
 	}
 
 	// Exporting reactive properties and methods to be accessible within components
-	return {avatar, username, twoFactorAuth, userID, avatarUpdated, setAvatar, setUsername, setTwoFactorAuth, setupProfile, setUserID}
+	return {
+		avatar, username, twoFactorAuth, userID, avatarUpdated, 
+		setupProfile, updateProfile
+	}
 })
