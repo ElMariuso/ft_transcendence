@@ -5,7 +5,7 @@ import { Player, Direction, EndReason, EndMatchResult, size, position } from 'sr
 export class GameStateService {
     private static readonly WINNING_SCORE = 5;
     private static readonly BALL_LAUNCH_DELAY_MS = 1500;
-    private static readonly RACKET_MOVEMENT = 6;
+    private static readonly RACKET_MOVEMENT = 12;
     private static readonly INITIAL_BALL_SPEED = 3;
 
     player1ID: number | string;
