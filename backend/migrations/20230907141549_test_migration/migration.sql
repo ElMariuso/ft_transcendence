@@ -191,6 +191,7 @@ INSERT INTO "Status" ("name") VALUES ('Refused');
 
 INSERT INTO "Role" ("name") VALUES ('Admin');
 INSERT INTO "Role" ("name") VALUES ('Member');
+INSERT INTO "Role" ("name") VALUES ('Banned');
 
 INSERT INTO "ChannelType" ("name") VALUES ('private');
 INSERT INTO "ChannelType" ("name") VALUES ('public');
