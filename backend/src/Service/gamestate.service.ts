@@ -88,17 +88,29 @@ export class GameStateService {
     }
 
     updateBallPosition() {
-        if (this.score1 !== 5 && this.score2 !== 5) {
-            this.ballPosition.x += this.ballVelocity.x;
-            this.ballPosition.y += this.ballVelocity.y;
-            this.checkCollisions();
+        if (!this.isGameEnded()) {
+            this.ballMovement();
         } else {
-            this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
-            this.ballSize = { width: 0, height: 0 };
+            this.resetBallPostMatch();
         }
     }
 
-    checkCollisions() {
+    private isGameEnded(): boolean {
+        return this.score1 === GameStateService.WINNING_SCORE || this.score2 === GameStateService.WINNING_SCORE;
+    }
+
+    private resetBallPostMatch() {
+        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        this.ballSize = { width: 0, height: 0 };
+    }
+
+    private ballMovement() {
+        this.ballPosition.x += this.ballVelocity.x;
+        this.ballPosition.y += this.ballVelocity.y;
+        this.checkCollisions();
+    }
+
+    private checkCollisions() {
         const ballHalfWidth = this.ballSize.width / 2;
         const ballHalfHeight = this.ballSize.height / 2;
     
@@ -144,7 +156,7 @@ export class GameStateService {
             this.updateScore(1, Player.Player1);
             this.resetBall();
         }
-    }    
+    }
 
     private resetBall() {
         this.ballSize = { width: 0, height: 0 };
@@ -192,8 +204,10 @@ export class GameStateService {
     private checkEndMatch() {
         if (this.score1 === GameStateService.WINNING_SCORE) {
             this.endMatch(Player.Player1, EndReason.Score);
+            this.resetBallPostMatch();
         } else if (this.score2 === GameStateService.WINNING_SCORE) {
             this.endMatch(Player.Player2, EndReason.Score);
+            this.resetBallPostMatch();
         }
     }
 
