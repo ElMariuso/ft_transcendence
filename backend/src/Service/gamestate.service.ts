@@ -132,7 +132,17 @@ export class GameStateService {
             ballLeft <= this.racket2Position.x + this.racket2Size.width &&
             ballBottom >= this.racket2Position.y &&
             ballTop <= this.racket2Position.y + this.racket2Size.height;
-            
+    
+        if (intersectsWithRacket1) {
+            this.ballPosition.x = this.racket1Position.x + this.racket1Size.width + ballHalfWidth;
+            this.ballVelocity.x *= -1;
+        }
+    
+        if (intersectsWithRacket2) {
+            this.ballPosition.x = this.racket2Position.x - ballHalfWidth;
+            this.ballVelocity.x *= -1;
+        }
+    
         let intersectsWithObstacle1 = this.obstacle.first && 
             ballLeft <= this.obstacle1Position.x + this.obstacle1Size.width &&
             ballRight >= this.obstacle1Position.x &&
@@ -145,7 +155,21 @@ export class GameStateService {
             ballBottom >= this.obstacle2Position.y &&
             ballTop <= this.obstacle2Position.y + this.obstacle2Size.height;
     
-        if (intersectsWithRacket1 || intersectsWithRacket2 || intersectsWithObstacle1 || intersectsWithObstacle2) {
+        if (intersectsWithObstacle1) {
+            if (this.ballVelocity.x > 0) {
+                this.ballPosition.x = this.obstacle1Position.x - ballHalfWidth;
+            } else {
+                this.ballPosition.x = this.obstacle1Position.x + this.obstacle1Size.width + ballHalfWidth;
+            }
+            this.ballVelocity.x *= -1;
+        }
+    
+        if (intersectsWithObstacle2) {
+            if (this.ballVelocity.x > 0) {
+                this.ballPosition.x = this.obstacle2Position.x - ballHalfWidth;
+            } else {
+                this.ballPosition.x = this.obstacle2Position.x + this.obstacle2Size.width + ballHalfWidth;
+            }
             this.ballVelocity.x *= -1;
         }
     
@@ -156,7 +180,7 @@ export class GameStateService {
             this.updateScore(1, Player.Player1);
             this.resetBall();
         }
-    }
+    }    
 
     private resetBall() {
         this.ballSize = { width: 0, height: 0 };
