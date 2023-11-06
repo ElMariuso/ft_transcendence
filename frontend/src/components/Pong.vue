@@ -12,14 +12,14 @@ const matchmakingStore = useMatchmakingStore();
 
 const player1Username = computed(() => gameStore.player1Username);
 const player2Username = computed(() => gameStore.player2Username);
-const isPlayer1Ready = computed(() => gameStore.gameState.playerReady.first);
-const isPlayer2Ready = computed(() => gameStore.gameState.playerReady.second);
-const isPlayer1WantBaseGame = computed(() => gameStore.gameState.wantBaseGame.first);
-const isPlayer2WantBaseGame = computed(() => gameStore.gameState.wantBaseGame.second);
-const isPlayer1SmallRacket = computed(() => gameStore.gameState.smallRacket.first);
-const isPlayer2SmallRacket = computed(() => gameStore.gameState.smallRacket.second);
-const isPlayer1Obstacle = computed(() => gameStore.gameState.obstacle.first);
-const isPlayer2Obstacle= computed(() => gameStore.gameState.obstacle.second);
+const isPlayer1Ready = computed(() => gameStore.isPlayer1Ready);
+const isPlayer2Ready = computed(() => gameStore.isPlayer2Ready);
+const isPlayer1WantBaseGame = computed(() => gameStore.isPlayer1WantBaseGame);
+const isPlayer2WantBaseGame = computed(() => gameStore.isPlayer2WantBaseGame);
+const isPlayer1SmallRacket = computed(() => gameStore.isPlayer1SmallRacket);
+const isPlayer2SmallRacket = computed(() => gameStore.isPlayer2SmallRacket);
+const isPlayer1Obstacle = computed(() => gameStore.isPlayer1Obstacle);
+const isPlayer2Obstacle = computed(() => gameStore.isPlayer2Obstacle);
 const areBothPlayersReady = computed(() => isPlayer1Ready.value && isPlayer2Ready.value);
 const baseGameRestriction = computed(() => isPlayer1WantBaseGame.value || isPlayer2WantBaseGame.value);
 
@@ -216,7 +216,7 @@ onUnmounted(() => {
 .username-box {
     display: flex;
     justify-content: space-between;
-    min-width: calc(13ch + 64.95px);
+    min-width: calc(13ch + 90px);
     overflow: hidden; 
     white-space: nowrap; 
 }
