@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 // import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 import { getLadderData } from '@/services/UserProfile-helpers'
 import { getAllUserData } from '@/services/UserProfile-helpers'
@@ -25,11 +26,10 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	function setId(newId : number) {
 
-		// console.log(newId);
 		if (newId == 0)
 		{
 			// console.log("YOOOOOO");
-			const token = localStorage.getItem('token')
+			const token = Cookies.get('token')
 			const id = jwt_decode(token).sub;
 			userID.value = id;
 		}

@@ -360,6 +360,8 @@ async function sendMessage() {
 		console.error('Error sending message', error);
 	}
 
+	newMessage.value = '';
+
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
