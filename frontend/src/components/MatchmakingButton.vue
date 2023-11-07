@@ -42,7 +42,7 @@ const handleClick = async () => {
         try {
             if (props.isRanked) {
                 const playerData = { 
-                    id: profileStore.userID.value,
+                    id: profileStore.userID,
                     isGuest: false,
                     points: 0,
                     username: profileStore.username

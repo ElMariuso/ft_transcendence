@@ -26,7 +26,7 @@ const updateAvatarKey = ref(0);
 
 watch(isAuthenticated, async () => {
 	if (isAuthenticated)
-		await profileStore.setupProfile();
+		await profileStore.setupProfile(0);
 })
 
 const refreshNavbar = () => {

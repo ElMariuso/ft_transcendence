@@ -283,11 +283,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.clientRooms.set(player1Info.socketId, roomId);
             this.clientRooms.set(player2Info.socketId, roomId);
 
-            this.server.to(roomId).emit('match-found-standard', { 
-                player1: { id: match.player1.id, username: player1Info.username }, 
-                player2: { id: match.player2.id, username: player2Info.username }, 
-                roomId 
-            });
+            if (isRanked) {
+                this.server.to(roomId).emit('match-found-ranked', { 
+                    player1: { id: match.player1.id, username: player1Info.username }, 
+                    player2: { id: match.player2.id, username: player2Info.username }, 
+                    roomId 
+                });
+            } else {
+                this.server.to(roomId).emit('match-found-standard', { 
+                    player1: { id: match.player1.id, username: player1Info.username }, 
+                    player2: { id: match.player2.id, username: player2Info.username }, 
+                    roomId 
+                });
+            }
 
             const newGameLoop = new GameLoopService(newGameState);
 

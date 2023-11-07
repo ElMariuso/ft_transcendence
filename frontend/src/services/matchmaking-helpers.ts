@@ -64,7 +64,7 @@ const setObstacle = (roomId, action) => {
     socket.emit('set-obstacle', roomId, action);
 };
 
-const initializeSocketListeners = (matchmakingStore) => {
+const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
     socket.on('joined', (response) => {
@@ -128,10 +128,10 @@ const initializeSocketListeners = (matchmakingStore) => {
 
         let opponentUUID;
         let opponentUsername;
-        if (response.player1.id == matchmakingStore.guestUUID) {
+        if (response.player1.id == profileStore.userID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-        } else if (response.player2.id == matchmakingStore.guestUUID) {
+        } else if (response.player2.id == profileStore.userID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
         }
