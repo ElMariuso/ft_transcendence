@@ -71,7 +71,10 @@ export class GameStateService {
         this.obstacle2Size = { width: 0, height: 0 };
         this.obstacle1Position = { x: 0, y: 0 };
         this.obstacle2Position = { x: 0, y: 0 };
-        this.resetBall();
+        this.ballSize = { width: 0, height: 0 };
+        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        this.ballVelocity = { x: 0, y: 0 };
+        this.launchBall();
     }
 
     moveRacket(player: Player, direction: Direction): void {
@@ -188,6 +191,7 @@ export class GameStateService {
         this.ballVelocity = { x: 0, y: 0 };
 
         setTimeout(() => {
+            this.displayBall();
             this.launchBall();
         }, GameStateService.BALL_LAUNCH_DELAY_MS);
     }
@@ -206,6 +210,9 @@ export class GameStateService {
             x: Math.cos(angle) * this.ballSpeed,
             y: Math.sin(angle) * this.ballSpeed
         };
+    }
+
+    displayBall(): void {
         this.ballSize = { width: 10, height: 10 };
     }
 

@@ -11,6 +11,7 @@ export class GameLoopService {
 
     startGameLoop(): void {
         if (this.gameStateService.playerReady.first && this.gameStateService.playerReady.second) {
+            this.gameStateService.displayBall();
             this.gameLoopInterval = setInterval(() => {
                 this.gameTick();
             }, this.TICK_RATE);
