@@ -68,37 +68,30 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
     socket.on('joined', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status', (response) => {
-        console.log(response);
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
 
     socket.on('joined-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
 
     socket.on('match-found-standard', (response) => {
-        console.log(response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -123,7 +116,6 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('match-found-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -149,18 +141,15 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('rejoin-failed', (response) => {
-        console.log(response);
         matchmakingStore.setRoomID(null);
     });
 
     socket.on('games-informations', (gameState) => {
         const gameStore = useGameStore();
-        
         gameStore.updateGameState(gameState);
     });
 
     socket.on('match-ended', (response) => {
-        console.log(response);
         const gameStore = useGameStore();
         gameStore.setMatchResult(response);
     
