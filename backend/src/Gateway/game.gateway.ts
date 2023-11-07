@@ -130,36 +130,32 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    private startCountDown(roomId: string, duration: number, gameLoop): void {
+        let remaining = duration;
+        const tick = () => {
+            this.server.to(roomId).emit('timer-before-launch', remaining);
+            if (remaining === -1) {
+                gameLoop.startGameLoop();
+            } else {
+                remaining--;
+                setTimeout(tick, 1000);
+            }
+        };
+        tick();
+    }    
+
     @SubscribeMessage('set-ready')
     setReady(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
         const gameState = gameLoop.getGameState();
 
         if (gameState) {
-            switch (action) {
-                case 'player1':
-                    if (gameState.playerReady.first) {
-                        gameState.setReady(false, 'player1');
-                    } else {
-                        gameState.setReady(true, 'player1');
-                    }
-                    break;
-                case 'player2':
-                    if (gameState.playerReady.second) {
-                        gameState.setReady(false, 'player2');
-                    } else {
-                        gameState.setReady(true, 'player2');
-                    }
-                    break;
-                default:
-                    client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
-                    break;
-            }
+            const player = action === 'player1' ? 'first' : 'second';
+            gameState.setReady(!gameState.playerReady[player], action);
+
             if (gameState.playerReady.first && gameState.playerReady.second) {
-                setTimeout(() => {
-                    gameLoop.startGameLoop();
-                }, 3000);
-            }
+                this.startCountDown(roomId, 3, gameLoop);
+            }            
         } else {
             client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
         }

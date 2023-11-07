@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useGameStore = defineStore('game', {
     state: () => ({
         gameState: null,
+        count: 0,
         player1Username: 'Loading...',
         player2Username: 'Loading...',
         isPlayer1Ready: false,
@@ -30,6 +31,9 @@ export const useGameStore = defineStore('game', {
             this.isPlayer2SmallRacket = this.gameState.smallRacket.second;
             this.isPlayer1Obstacle = this.gameState.obstacle.first;
             this.isPlayer2Obstacle = this.gameState.obstacle.second;
+        },
+        updateCount(count) {
+            this.count = count;
         },
         setIsFirstPlayer(value) {
             this.isFirstPlayer = value;

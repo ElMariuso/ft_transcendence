@@ -174,7 +174,12 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             }
             gameStore.setMatchResult(null);
         }, 10000);
-    });    
+    });
+
+    socket.on('timer-before-launch', (response) => {
+        const gameStore = useGameStore();
+        gameStore.updateCount(response);
+    });
 };
 
 export { joinQueue, 
