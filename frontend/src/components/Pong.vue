@@ -196,13 +196,13 @@ onUnmounted(() => {
             <span class="bg-gray-800 p-2 rounded mr-2">Space</span> Ready
         </div>
         <div class="flex items-center border-2 border-white p-2 rounded-lg">
-            <span class="bg-gray-800 p-2 rounded mr-2">Numpad 0</span> Base Game
+            <span class="bg-gray-800 p-2 rounded mr-2">0</span> Base Game
         </div>
         <div class="flex items-center border-2 border-white p-2 rounded-lg">
-            <span class="bg-gray-800 p-2 rounded mr-2">Numpad 1</span> Small Racket
+            <span class="bg-gray-800 p-2 rounded mr-2">1</span> Small Racket
         </div>
         <div class="flex items-center border-2 border-white p-2 rounded-lg">
-            <span class="bg-gray-800 p-2 rounded mr-2">Numpad 2</span> Obstacle
+            <span class="bg-gray-800 p-2 rounded mr-2">2</span> Obstacle
         </div>
     </div>
 </template>
