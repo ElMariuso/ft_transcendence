@@ -64,41 +64,34 @@ const setObstacle = (roomId, action) => {
     socket.emit('set-obstacle', roomId, action);
 };
 
-const initializeSocketListeners = (matchmakingStore) => {
+const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
     socket.on('joined', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status', (response) => {
-        console.log(response);
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
 
     socket.on('joined-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(true);
     });
 
     socket.on('left-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setIsSearching(false);
     });
 
     socket.on('status-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
 
     socket.on('match-found-standard', (response) => {
-        console.log(response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -123,15 +116,14 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('match-found-ranked', (response) => {
-        console.log(response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
         let opponentUsername;
-        if (response.player1.id == matchmakingStore.guestUUID) {
+        if (response.player1.id == profileStore.userID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-        } else if (response.player2.id == matchmakingStore.guestUUID) {
+        } else if (response.player2.id == profileStore.userID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
         }
@@ -149,18 +141,15 @@ const initializeSocketListeners = (matchmakingStore) => {
     });
 
     socket.on('rejoin-failed', (response) => {
-        console.log(response);
         matchmakingStore.setRoomID(null);
     });
 
     socket.on('games-informations', (gameState) => {
         const gameStore = useGameStore();
-        
         gameStore.updateGameState(gameState);
     });
 
     socket.on('match-ended', (response) => {
-        console.log(response);
         const gameStore = useGameStore();
         gameStore.setMatchResult(response);
     
@@ -174,7 +163,12 @@ const initializeSocketListeners = (matchmakingStore) => {
             }
             gameStore.setMatchResult(null);
         }, 10000);
-    });    
+    });
+
+    socket.on('timer-before-launch', (response) => {
+        const gameStore = useGameStore();
+        gameStore.updateCount(response);
+    });
 };
 
 export { joinQueue, 

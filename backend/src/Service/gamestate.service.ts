@@ -5,7 +5,7 @@ import { Player, Direction, EndReason, EndMatchResult, size, position } from 'sr
 export class GameStateService {
     private static readonly WINNING_SCORE = 5;
     private static readonly BALL_LAUNCH_DELAY_MS = 1500;
-    private static readonly RACKET_MOVEMENT = 6;
+    private static readonly RACKET_MOVEMENT = 13;
     private static readonly INITIAL_BALL_SPEED = 3;
 
     player1ID: number | string;
@@ -71,7 +71,10 @@ export class GameStateService {
         this.obstacle2Size = { width: 0, height: 0 };
         this.obstacle1Position = { x: 0, y: 0 };
         this.obstacle2Position = { x: 0, y: 0 };
-        this.resetBall();
+        this.ballSize = { width: 0, height: 0 };
+        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        this.ballVelocity = { x: 0, y: 0 };
+        this.launchBall();
     }
 
     moveRacket(player: Player, direction: Direction): void {
@@ -88,17 +91,29 @@ export class GameStateService {
     }
 
     updateBallPosition() {
-        if (this.score1 !== 5 && this.score2 !== 5) {
-            this.ballPosition.x += this.ballVelocity.x;
-            this.ballPosition.y += this.ballVelocity.y;
-            this.checkCollisions();
+        if (!this.isGameEnded()) {
+            this.ballMovement();
         } else {
-            this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
-            this.ballSize = { width: 0, height: 0 };
+            this.resetBallPostMatch();
         }
     }
 
-    checkCollisions() {
+    private isGameEnded(): boolean {
+        return this.score1 === GameStateService.WINNING_SCORE || this.score2 === GameStateService.WINNING_SCORE;
+    }
+
+    private resetBallPostMatch() {
+        this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
+        this.ballSize = { width: 0, height: 0 };
+    }
+
+    private ballMovement() {
+        this.ballPosition.x += this.ballVelocity.x;
+        this.ballPosition.y += this.ballVelocity.y;
+        this.checkCollisions();
+    }
+
+    private checkCollisions() {
         const ballHalfWidth = this.ballSize.width / 2;
         const ballHalfHeight = this.ballSize.height / 2;
     
@@ -120,7 +135,17 @@ export class GameStateService {
             ballLeft <= this.racket2Position.x + this.racket2Size.width &&
             ballBottom >= this.racket2Position.y &&
             ballTop <= this.racket2Position.y + this.racket2Size.height;
-            
+    
+        if (intersectsWithRacket1) {
+            this.ballPosition.x = this.racket1Position.x + this.racket1Size.width + ballHalfWidth;
+            this.ballVelocity.x *= -1;
+        }
+    
+        if (intersectsWithRacket2) {
+            this.ballPosition.x = this.racket2Position.x - ballHalfWidth;
+            this.ballVelocity.x *= -1;
+        }
+    
         let intersectsWithObstacle1 = this.obstacle.first && 
             ballLeft <= this.obstacle1Position.x + this.obstacle1Size.width &&
             ballRight >= this.obstacle1Position.x &&
@@ -133,7 +158,21 @@ export class GameStateService {
             ballBottom >= this.obstacle2Position.y &&
             ballTop <= this.obstacle2Position.y + this.obstacle2Size.height;
     
-        if (intersectsWithRacket1 || intersectsWithRacket2 || intersectsWithObstacle1 || intersectsWithObstacle2) {
+        if (intersectsWithObstacle1) {
+            if (this.ballVelocity.x > 0) {
+                this.ballPosition.x = this.obstacle1Position.x - ballHalfWidth;
+            } else {
+                this.ballPosition.x = this.obstacle1Position.x + this.obstacle1Size.width + ballHalfWidth;
+            }
+            this.ballVelocity.x *= -1;
+        }
+    
+        if (intersectsWithObstacle2) {
+            if (this.ballVelocity.x > 0) {
+                this.ballPosition.x = this.obstacle2Position.x - ballHalfWidth;
+            } else {
+                this.ballPosition.x = this.obstacle2Position.x + this.obstacle2Size.width + ballHalfWidth;
+            }
             this.ballVelocity.x *= -1;
         }
     
@@ -152,6 +191,7 @@ export class GameStateService {
         this.ballVelocity = { x: 0, y: 0 };
 
         setTimeout(() => {
+            this.displayBall();
             this.launchBall();
         }, GameStateService.BALL_LAUNCH_DELAY_MS);
     }
@@ -170,6 +210,9 @@ export class GameStateService {
             x: Math.cos(angle) * this.ballSpeed,
             y: Math.sin(angle) * this.ballSpeed
         };
+    }
+
+    displayBall(): void {
         this.ballSize = { width: 10, height: 10 };
     }
 
@@ -192,8 +235,10 @@ export class GameStateService {
     private checkEndMatch() {
         if (this.score1 === GameStateService.WINNING_SCORE) {
             this.endMatch(Player.Player1, EndReason.Score);
+            this.resetBallPostMatch();
         } else if (this.score2 === GameStateService.WINNING_SCORE) {
             this.endMatch(Player.Player2, EndReason.Score);
+            this.resetBallPostMatch();
         }
     }
 
