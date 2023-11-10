@@ -13,85 +13,85 @@ import { GameGateway } from './game.gateway';
     }
 })
 export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
+    private logger: Logger = new Logger('MatchmakingGateway');
+    private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
+    
+    @WebSocketServer() server: Server;
+    
+    constructor(
+      private readonly matchmakingService: MatchmakingService,
+      private readonly gameGateway: GameGateway,
+      private readonly eventEmitter: EventEmitter,
+    ) {
+      this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
+      this.eventEmitter.on('match-ranked', this.getRankedMatch.bind(this));
+    }
 
-  constructor(
-    private readonly matchmakingService: MatchmakingService,
-    private readonly gameGateway: GameGateway,
-    private readonly eventEmitter: EventEmitter,
-  ) {
-    this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
-    this.eventEmitter.on('match-ranked', this.getRankedMatch.bind(this));
-  }
+    async handleConnection(client: Socket) {
+      this.logger.log(`Client connected: ${client.id}`);
+    }
+    
+    async handleDisconnect(client: Socket) {
+      this.logger.log(`Client disconnected: ${client.id}`);
+      this.onlinePlayers.delete(client.id);
+    }
 
-  @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('MatchmakingGateway');
+    @SubscribeMessage('join-standard')
+    joinQueue(client: Socket, player: PlayerInQueue): void {
+      this.matchmakingService.add(player);
+      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
+    }
 
-  async handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
-  }
+    @SubscribeMessage('leave-standard')
+    leaveQueue(client: Socket, data: { playerId: string | number }): void {
+      const playerId = data.playerId;
+      this.matchmakingService.remove(playerId);
+      client.emit('left', { status: 'Removed from standard queue' });
+    }
 
-  async handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
-    this.onlinePlayers.delete(client.id);
-  }
+    @SubscribeMessage('status-standard')
+    getQueueStatus(client: Socket): void {
+      client.emit('status', { playersInQueue: this.matchmakingService.getQueueSize() });
+    }
 
-  @SubscribeMessage('join-standard')
-  joinQueue(client: Socket, player: PlayerInQueue): void {
-    this.matchmakingService.add(player);
-    this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
-    client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
-  }
+    @SubscribeMessage('join-ranked')
+    joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
+      this.matchmakingService.addRanked(player);
+      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
+    }
 
-  @SubscribeMessage('leave-standard')
-  leaveQueue(client: Socket, data: { playerId: string | number }): void {
-    const playerId = data.playerId;
-    this.matchmakingService.remove(playerId);
-    client.emit('left', { status: 'Removed from standard queue' });
-  }
+    @SubscribeMessage('leave-ranked')
+    leaveRankedQueue(client: Socket, playerId: number): void {
+      this.matchmakingService.removeRanked(playerId);
+      client.emit('left-ranked', { status: 'Removed from ranked queue' });
+    }
 
-  @SubscribeMessage('status-standard')
-  getQueueStatus(client: Socket): void {
-    client.emit('status', { playersInQueue: this.matchmakingService.getQueueSize() });
-  }
+    @SubscribeMessage('status-ranked')
+    getRankedQueueStatus(client: Socket): void {
+      client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
+    }
 
-  @SubscribeMessage('join-ranked')
-  joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
-    this.matchmakingService.addRanked(player);
-    this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
-    client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
-  }
+    private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
+      this.transferPlayerToGame(match.player1.id);
+      this.transferPlayerToGame(match.player2.id);
+      this.gameGateway.createMatch(match, false);
+    }
 
-  @SubscribeMessage('leave-ranked')
-  leaveRankedQueue(client: Socket, playerId: number): void {
-    this.matchmakingService.removeRanked(playerId);
-    client.emit('left-ranked', { status: 'Removed from ranked queue' });
-  }
+    private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
+      this.transferPlayerToGame(match.player1.id);
+      this.transferPlayerToGame(match.player2.id);
+      this.gameGateway.createMatch(match, true);
+    }
 
-  @SubscribeMessage('status-ranked')
-  getRankedQueueStatus(client: Socket): void {
-    client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
-  }
-
-  private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
-    this.transferPlayerToGame(match.player1.id);
-    this.transferPlayerToGame(match.player2.id);
-    this.gameGateway.createMatch(match, false);
-  }
-
-  private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
-    this.transferPlayerToGame(match.player1.id);
-    this.transferPlayerToGame(match.player2.id);
-    this.gameGateway.createMatch(match, true);
-  }
-
-  private transferPlayerToGame(playerId: number | string): void {
-    const playerInfo = this.onlinePlayers.get(playerId);
-    if (playerInfo) {
+    private transferPlayerToGame(playerId: number | string): void {
+      const playerInfo = this.onlinePlayers.get(playerId);
+      if (playerInfo) {
         this.gameGateway.addOnlinePlayer(playerId, playerInfo);
         this.onlinePlayers.delete(playerId);
-    } else {
+      } else {
         this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+      }
     }
-}
 }
