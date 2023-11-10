@@ -1,19 +1,18 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-
 import { GameLoopService } from 'src/Service/gameloop.service';
 import { GameStateService } from 'src/Service/gamestate.service';
-
 import { Player, Direction, EndMatchResult, GameState } from 'src/Model/gamestate.model';
-
 import { PlayerInQueue } from 'src/Model/player.model';
-
 import { GameService } from 'src/Service/game.service';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
-
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * The GameGateway handles WebSocket connections for game-related interactions.
+ * It manages player connections, disconnections, and the orchestration of game states.
+ */
 @WebSocketGateway({ 
     cors: {
         origin: "http://localhost:8080",
@@ -35,10 +34,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     private logger: Logger = new Logger('GameGateway');
 
+    /**
+     * Handles new client connection.
+     * @param client - The socket client that connected.
+     */
     async handleConnection(client: Socket) {
         this.logger.log(`Client connected: ${client.id}`);
     }
 
+    /**
+     * Handles client disconnection. Removes the client from the room they are part of,
+     * and updates the remaining clients in the room.
+     * @param client - The socket client that disconnected.
+     */
     async handleDisconnect(client: Socket) {
         this.logger.log(`Client disconnected: ${client.id}`);
     
@@ -52,7 +60,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.onlinePlayers.delete(client.id);
         this.clientRooms.delete(client.id);
     }
-      
+
+    /**
+     * Finds the room ID associated with a given client ID.
+     * @param clientId - The ID of the client.
+     * @returns The room ID if found, otherwise undefined.
+     */
+    private findRoomIdByClientId(clientId: string): string | undefined {
+        return this.clientRooms.get(clientId);
+    }
+
+    /**
+     * Handles the 'quit-match' message to manage a player's request to quit a match.
+     * It sets the player as having forfeited and updates the game state accordingly.
+     * @param client - The socket client sending the quit request.
+     * @param playerId - The ID of the player quitting the match.
+     */
     @SubscribeMessage('quit-match')
     quitMatch(client: Socket, playerId: number | string): void {
         const roomId = this.findRoomIdByClientId(client.id);
@@ -74,7 +97,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             client.emit('error-quit-match', { status: 'Error leaving room or room not found' });
         }
     }
+
     
+    /**
+     * Handles the 'rejoin-room' message to allow a client to rejoin a game room.
+     * @param client - The socket client sending the rejoin request.
+     * @param data - Data containing the room ID and username for the rejoining client.
+     */
     @SubscribeMessage('rejoin-room')
     rejoinRoom(client: Socket, data: { roomId: string, username: string}): void {
         const roomId = data.roomId;
@@ -92,6 +121,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Handles the 'ask-games-informations' message to send the current game state to the client.
+     * @param client - The socket client requesting the game information.
+     * @param roomId - The ID of the room for which game information is requested.
+     */
     @SubscribeMessage('ask-games-informations')
     updateGame(client: Socket, roomId: string): void {
         const gameState = this.gameStates.get(roomId).getGameState();
@@ -103,6 +137,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Handles the 'update-racket' message to update the position of a player's racket.
+     * @param client - The socket client sending the update request.
+     * @param roomId - The ID of the room in which the game is taking place.
+     * @param action - The action specifying which racket to move and in which direction.
+     */
     @SubscribeMessage('update-racket')
     updateRacket(client: Socket, [roomId, action]: [string, string]): void {
         const gameState = this.gameStates.get(roomId).getGameState();
@@ -130,6 +170,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Starts a countdown in a game room, emitting a countdown event every second.
+     * @param roomId - The ID of the room where the countdown is taking place.
+     * @param duration - The duration of the countdown in seconds.
+     * @param gameLoop - The game loop service associated with the room.
+     */
     private startCountDown(roomId: string, duration: number, gameLoop): void {
         let remaining = duration;
         const tick = () => {
@@ -144,6 +190,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         tick();
     }    
 
+    /**
+     * Handles the 'set-ready' message to set a player's readiness in a game room
+     * @param client - The socket client sending the readiness update.
+     * @param roomId - The ID of the room where the player's readiness is being updated.
+     * @param action - The action specifying which player is being updated.
+     */
     @SubscribeMessage('set-ready')
     setReady(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
@@ -161,6 +213,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Handles the 'set-want-base-game' message to toggle the base game option for a player.
+     * @param client - The socket client sending the request.
+     * @param roomId - The ID of the room where the game state is managed.
+     * @param action - The action indicating which player (player1 or player2) and their choice.
+     */
     @SubscribeMessage('set-want-base-game')
     setWantBaseGame(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
@@ -191,6 +249,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Handles the 'set-small-racket' message to toggle the small racket option for a player.
+     * @param client - The socket client sending the request.
+     * @param roomId - The ID of the room where the game state is managed.
+     * @param action - The action indicating which player (player1 or player2) and their choice.
+     */
     @SubscribeMessage('set-small-racket')
     setSmallRacket(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
@@ -221,6 +285,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Handles the 'set-obstacle' message to toggle the obstacle option for a player.
+     * @param client - The socket client sending the request.
+     * @param roomId - The ID of the room where the game state is managed.
+     * @param action - The action indicating which player (player1 or player2) and their choice.
+     */
     @SubscribeMessage('set-obstacle')
     setObstacle(client: Socket, [roomId, action]: [string, string]): void {
         const gameLoop = this.gameStates.get(roomId);
@@ -251,10 +321,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Adds a player to the online players map.
+     * @param playerId - The ID of the player.
+     * @param playerInfo - The player's information including socket ID and username.
+     */
     public addOnlinePlayer(playerId: number | string, playerInfo: { socketId: string; username: string }) {
         this.onlinePlayers.set(playerId, playerInfo);
     }
 
+    /**
+     * Creates a new match and initializes the game state. It also sets up the players in the match and starts the game loop.
+     * @param match - The match object containing information about the two players.
+     * @param isRanked - Boolean indicating if the match is a ranked match.
+ */
     public createMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }, isRanked: boolean): void {
         const player1Info = this.onlinePlayers.get(match.player1.id);
         const player2Info = this.onlinePlayers.get(match.player2.id);
@@ -307,10 +387,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
-    private findRoomIdByClientId(clientId: string): string | undefined {
-        return this.clientRooms.get(clientId);
-    }
-
+    /**
+     * Sends the current game state to all clients in a specified room.
+     * @param roomId - The ID of the room where the game is taking place.
+     * @param gameState - The current state of the game to be sent.
+     */
     private sendGameState(roomId: string, gameState: GameState): void {
         const informations = {
             player1ID: gameState.player1ID,
@@ -337,6 +418,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(roomId).emit('games-informations', informations);
     }
 
+    /**
+     * Handles the end of a match. It emits the match result to clients, updates the game state, and cleans up.
+     * @param roomId - The ID of the room where the match took place.
+     * @param wasRanked - Indicates whether the match was a ranked match.
+     * @param matchResult - The result of the match, including the winner and the reason.
+     */
     private endMatch(roomId: string, wasRanked: boolean, matchResult: EndMatchResult): void {
         const gameState = this.gameStates.get(roomId).getGameState();
     
