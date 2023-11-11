@@ -34,6 +34,10 @@ const rejoinRoom = (data) => {
     socket.emit('rejoin-room', data);
 };
 
+const rejoinMatchmaking = (data) => {
+    socket.emit('rejoin-matchmaking', data);
+};
+
 const askGamesInformations = (roomId) => {
     return new Promise((resolve) => {
         socket.once('games-informations', (data) => {
@@ -169,6 +173,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
         const gameStore = useGameStore();
         gameStore.updateCount(response);
     });
+
+    socket.on('matchmaking-informations', (data) => {
+        matchmakingStore.updateInformations(data);
+    });
 };
 
 export { joinQueue, 
@@ -178,7 +186,8 @@ export { joinQueue,
     leaveRankedQueue, 
     getRankedQueueStatus, 
     quitMatch, 
-    rejoinRoom, 
+    rejoinRoom,
+    rejoinMatchmaking,
     askGamesInformations, 
     updateRacket, 
     setReady,

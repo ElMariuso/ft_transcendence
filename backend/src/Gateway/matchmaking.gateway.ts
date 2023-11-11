@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 import { GameGateway } from './game.gateway';
+import { MatchmakingStateService } from 'src/Service/matchmakingstate.service';
 
 /**
  * @WebSocketGateway The gateway for handling all matchmaking related operations.
@@ -22,7 +23,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     /**
      * A map to keep track of online players and their socket IDs.
      */
-    private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
+    private onlinePlayers: Map<string, { playerId: number | string; username: string }> = new Map();
+    private matchmakingStates: Map<string | number, MatchmakingStateService> = new Map();
     
     @WebSocketServer() server: Server;
     
@@ -39,6 +41,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     ) {
       this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
       this.eventEmitter.on('match-ranked', this.getRankedMatch.bind(this));
+      this.startMatchmakingUpdates();
     }
 
     /**
@@ -55,7 +58,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
-      this.onlinePlayers.delete(client.id);
+      this.deleteOnlinePlayer(client.id);
     }
 
     /**
@@ -66,7 +69,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('join-standard')
     joinQueue(client: Socket, player: PlayerInQueue): void {
       this.matchmakingService.add(player);
-      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      this.addOnlinePlayer(client.id, player.id, player.username);
+      this.setMatchmakingState(player.id, player.username, false);
       client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
     }
 
@@ -79,6 +83,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     leaveQueue(client: Socket, data: { playerId: string | number }): void {
       const playerId = data.playerId;
       this.matchmakingService.remove(playerId);
+      this.deleteMatchmakingState(playerId);
+      this.deleteOnlinePlayer(client.id);
       client.emit('left', { status: 'Removed from standard queue' });
     }
 
@@ -99,7 +105,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('join-ranked')
     joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
       this.matchmakingService.addRanked(player);
-      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      this.addOnlinePlayer(client.id, player.id, player.username);
+      this.setMatchmakingState(player.id, player.username, true);
       client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
     }
 
@@ -111,6 +118,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('leave-ranked')
     leaveRankedQueue(client: Socket, playerId: number): void {
       this.matchmakingService.removeRanked(playerId);
+      this.deleteMatchmakingState(playerId);
+      this.deleteOnlinePlayer(client.id);
       client.emit('left-ranked', { status: 'Removed from ranked queue' });
     }
 
@@ -123,14 +132,32 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
     }
 
+    @SubscribeMessage('rejoin-matchmaking')
+    rejoinMatchmaking(client: Socket, playerId: string | number): void {
+      if (this.matchmakingStates.has(playerId)) {
+        this.logger.log(`Player rejoining matchmaking: ${playerId}`);
+        const playerState = this.matchmakingStates.get(playerId);
+
+        this.addOnlinePlayer(client.id, playerId, playerState.username);
+        this.sendMatchmakingState(playerId);
+      } else {
+        this.logger.log(`Player not found in matchmakingStates: ${playerId}`);
+      }
+    }
+
     /**
      * Handles the event when a standard match is found. Transfers both players to the game session.
      * @param match - The match information containing both players.
      */
     private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
-      this.transferPlayerToGame(match.player1.id);
-      this.transferPlayerToGame(match.player2.id);
-      this.gameGateway.createMatch(match, false);
+      this.updateMatchmakingStateForMatchFound(match.player1.id, match.player2);
+      this.updateMatchmakingStateForMatchFound(match.player2.id, match.player1);
+
+      setTimeout(() => {
+        this.transferPlayerToGame(match.player1.id);
+        this.transferPlayerToGame(match.player2.id);
+        this.gameGateway.createMatch(match, false);
+      }, 5000);
     }
 
     /**
@@ -138,9 +165,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      * @param match - The match information containing both players.
      */
     private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
-      this.transferPlayerToGame(match.player1.id);
-      this.transferPlayerToGame(match.player2.id);
-      this.gameGateway.createMatch(match, true);
+      this.updateMatchmakingStateForMatchFound(match.player1.id, match.player2);
+      this.updateMatchmakingStateForMatchFound(match.player2.id, match.player1);
+
+      setTimeout(() => {
+        this.transferPlayerToGame(match.player1.id);
+        this.transferPlayerToGame(match.player2.id);
+        this.gameGateway.createMatch(match, true);
+      }, 5000);
     }
 
     /**
@@ -148,12 +180,111 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      * @param playerId - The ID of the player to be transferred.
      */
     private transferPlayerToGame(playerId: number | string): void {
-      const playerInfo = this.onlinePlayers.get(playerId);
+      const playerInfo = this.findPlayerByPlayerId(playerId);
       if (playerInfo) {
-        this.gameGateway.addOnlinePlayer(playerId, playerInfo);
-        this.onlinePlayers.delete(playerId);
+        this.sendMatchFoundNotification(playerId);
+
+        // this.gameGateway.addOnlinePlayer(playerId, playerInfo);
+        this.deleteOnlinePlayer(playerInfo.clientId);
+        this.deleteMatchmakingState(playerId);
       } else {
         this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+      }
+    }
+
+    private addOnlinePlayer(clientId: string, sentPlayerId: string | number, sentUsername: string): void {
+      this.onlinePlayers.set(clientId, { playerId: sentPlayerId, username: sentUsername });
+    }
+
+    private deleteOnlinePlayer(clientId: string): void {
+      this.onlinePlayers.delete(clientId);
+    }
+
+    private findPlayerByPlayerId(playerId: number | string): { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined {
+      let foundPlayer: { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined = undefined;
+
+      this.onlinePlayers.forEach((playerInfo, clientId) => {
+          if (playerInfo.playerId === playerId) {
+              foundPlayer = { clientId, playerInfo };
+              return;
+          }
+      });
+      return foundPlayer;
+    }
+
+    private setMatchmakingState(playerId: string | number, username: string, isRanked: boolean): void {
+      const state = new MatchmakingStateService();
+      state.setUsername(username);
+      state.setIsSearching(true);
+      state.setIsRanked(isRanked);
+      this.matchmakingStates.set(playerId, state);
+    }
+
+    private deleteMatchmakingState(playerId: string | number): void {
+      this.matchmakingStates.delete(playerId);
+    }
+
+    private startMatchmakingUpdates(): void {
+      setInterval(() => {
+          this.matchmakingStates.forEach((_, playerId) => {
+              this.sendMatchmakingState(playerId);
+          });
+      }, 500);
+    }
+
+    private sendMatchmakingState(playerId: string | number): void {
+      const state = this.matchmakingStates.get(playerId);
+
+      if (!state) {
+        this.logger.error('No matchmaking state found for player ID: ${playerId}');
+        return ;
+      }
+
+      const informations = {
+        isSearching: state.isSearching,
+        isRanked: state.isRanked,
+        matchFound: state.matchFound,
+        opponentUUID: state.opponentUUID,
+        opponentUsername: state.opponentUsername,
+      };
+
+      const playerInfo = this.findPlayerByPlayerId(playerId);
+      if (playerInfo) {
+        const client = this.server.sockets.sockets.get(playerInfo.clientId);
+        if (client) {
+          client.emit('matchmaking-informations', informations);
+        } else {
+          this.logger.error(`No socket found for client ID: ${playerInfo.clientId}`);
+        }
+      } else {
+        this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+      }
+    }
+
+    private updateMatchmakingStateForMatchFound(playerId: string | number, opponent: PlayerInQueue | AuthenticatedPlayer): void {
+      const state = this.matchmakingStates.get(playerId);
+      if (state) {
+          state.setMatchFound(true);
+          state.setOpponentUUID(opponent.id.toString());
+          state.setOpponentUsername(opponent.username);
+      }
+    }
+
+    private updateMatchmakingStateForGameStart(playerId: number | string): void {
+      const state = this.matchmakingStates.get(playerId);
+      if (state) {
+          state.setIsSearching(false);
+          state.setMatchFound(false);
+      }
+    }
+
+    private sendMatchFoundNotification(playerId: string | number): void {
+      this.updateMatchmakingStateForGameStart(playerId);
+      this.sendMatchmakingState(playerId);
+  
+      const playerInfo = this.findPlayerByPlayerId(playerId);
+      if (playerInfo && this.server.sockets.sockets.get(playerInfo.clientId)) {
+          this.server.sockets.sockets.get(playerInfo.clientId).emit('match-found');
       }
     }
 }
