@@ -50,6 +50,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     async handleConnection(client: Socket) {
       this.logger.log(`Client connected: ${client.id}`);
+
+      console.log('Connect:', this.onlinePlayers);
     }
     
     /**
@@ -59,6 +61,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
       this.deleteOnlinePlayer(client.id);
+
+      console.log('Disconnect:', this.onlinePlayers);
     }
 
     /**
@@ -71,6 +75,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       this.matchmakingService.add(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, false);
+
+      console.log("Join standard:", this.onlinePlayers);
+
       client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
     }
 
@@ -107,6 +114,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       this.matchmakingService.addRanked(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, true);
+
+      console.log("Join ranked:", this.onlinePlayers);
+
       client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
     }
 
@@ -134,6 +144,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     @SubscribeMessage('rejoin-matchmaking')
     rejoinMatchmaking(client: Socket, playerId: string | number): void {
+      console.log("PlayerID:", playerId);
       if (this.matchmakingStates.has(playerId)) {
         this.logger.log(`Player rejoining matchmaking: ${playerId}`);
         const playerState = this.matchmakingStates.get(playerId);
@@ -143,6 +154,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       } else {
         this.logger.log(`Player not found in matchmakingStates: ${playerId}`);
       }
+
+      console.log('Rejoin:', this.onlinePlayers);
     }
 
     /**
