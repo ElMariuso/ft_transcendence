@@ -127,6 +127,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('leave-ranked')
     leaveRankedQueue(client: Socket, playerId: number): void {
+
+      console.log("IDRANKED:", playerId);
+
       this.matchmakingService.removeRanked(playerId);
       this.deleteMatchmakingState(playerId);
       this.deleteOnlinePlayer(client.id);
