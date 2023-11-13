@@ -5,6 +5,7 @@ import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
 
 import { getLadderData } from '@/services/UserProfile-helpers'
+import { getUserData } from '@/services/UserProfile-helpers'
 import { getAllUserData } from '@/services/UserProfile-helpers'
 import { getStatsData } from '@/services/UserProfile-helpers'
 import { getAchievementsData } from '@/services/UserProfile-helpers'
@@ -21,6 +22,8 @@ export const useLadderStore = defineStore('ladder', () => {
 	const friends = ref(['test', 'retest']);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
+	const username = ref("username")
+	const avatar = ref("../../upload/default_avatar.png")
 
 	/////////////////// ID ////////////////////////
 
@@ -28,7 +31,6 @@ export const useLadderStore = defineStore('ladder', () => {
 
 		if (newId == 0)
 		{
-			// console.log("YOOOOOO");
 			const token = Cookies.get('token')
 			const id = jwt_decode(token).sub;
 			userID.value = id;
@@ -37,6 +39,23 @@ export const useLadderStore = defineStore('ladder', () => {
 		{
 			userID.value = newId;
 		}
+	}
+
+	/////////////////// USERNAME AND AVATAR ////////////////////////
+
+	async function setupUser() {
+
+		try {
+			const userData = await getUserData(userID.value);
+			setUser(userData);
+		} catch (error) {
+			console.error("Error setting up Username:", error);
+		}
+	}
+
+	function setUser(newList : any) {
+		username.value = newList.username;
+		avatar.value = newList.avatar;
 	}
 
 	/////////////////// LADDER ////////////////////////
@@ -175,5 +194,5 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	// console.log(ladder.value[0])
 
-	return {history, ladder, friends, nbWin, nbLoose, achievements, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers}
+	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers}
 })
