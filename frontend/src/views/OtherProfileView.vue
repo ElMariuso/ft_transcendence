@@ -1,5 +1,5 @@
 <template>
-<div v-if="showUsers, showUser, showAchievements, showUsersList">
+<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList">
 
 	<!-- Profile Header -->
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
@@ -16,7 +16,7 @@
 	<div class="mt-6 col-3">
 
 		<!-- Player Ladder -->
-    	<h3 class="text-lg font-semibold">Player Ladder OI</h3>
+    	<h3 class="text-lg font-semibold">Player Ladder</h3>
 		<div class="mt-2 flex w- pr-4">
           <ul>
             <li v-for="player in ladderStore.getLadder()" class="mb-2">
@@ -64,6 +64,20 @@
 
 	<div class="col-3">
 
+		<!-- Friend invitations -->
+		<!-- <div class="mt-6">
+		  <h3 class="text-lg font-semibold">Friend invitations</h3>
+		  <div class="mt-2">
+            <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
+			  <span class="font-semibold">
+				{{ Invite.username }}
+				<button @click="Accept(Invite.idUser)" class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Accept</button>
+				<button @click="Decline(Invite.idUser)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Decline</button>
+			  </span>
+            </li>
+          </div>
+		</div> -->
+
 		<!-- Friend list -->
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend list</h3>
@@ -101,6 +115,8 @@ const ladderStore = useLadderStore()
 const showUsers = ref(false);
 const showUser = ref(false);
 const showAchievements = ref(false);
+const showFriendRequest = ref(false);
+const showFriendList = ref(false);
 const showUsersList = ref(true);
 const ownProfile = ref(true);
 
@@ -139,9 +155,9 @@ const setupAllUsers = async () => {
 }
 setupAllUsers()
 
-
 const setupFriends = async () => {
   await ladderStore.setupFriends()
+    showFriendList.value = true // Set a flag to indicate that data is loaded
 }
 setupFriends()
 
@@ -161,30 +177,61 @@ const setupGamesHistory = async () => {
 }
 setupGamesHistory()
 
+const setupFriendsInvite = async () => {
+  await ladderStore.setupFriendsInvite()
+  showFriendRequest.value = true // Set a flag to indicate that data is loaded
+}
+setupFriendsInvite()
+
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
 		uri[1] = 1;
 	return "http://localhost:3000/users/avatar/" + uri[1];
-
 }
 
-async function FindUser() {
+async function Accept(idFriend) {
+	let friendRequestUpdate = true;
 
-	userNotFound.value = false;
-	userFound.value = false;
-	await api.get('/users')
-	.then(res => {
-		for (let i = 0; res.data[i]; i++) {
-			if (searchUsername.value == res.data[i].username)
-			{
-				searchIdUser.value = res.data[i].idUser;
-				userFound.value = true;
-			}
-		}
-		if (userFound.value != true)
-			userNotFound.value = true;
-	});
+	// for (let i = 0; ladderStore.friends[i]; i++) {
+	// 	if (idFriend == ladderStore.friends[i].idUser)
+	// 		friendRequestUpdate = false;
+	// }
+	if (friendRequestUpdate)
+	{
+ 	   try {
+    	    const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+				"idFriend": idFriend,
+					})
+	        return response.data;
+    	} catch (error) {
+        	console.error('Error accepting a friend request:', error);
+        	throw error;
+    	}
+	}
+}
+
+async function Decline(idFriend) {
+	let friendRequestUpdate = true;
+
+	// for (let i = 0; ladderStore.friends[i]; i++) {
+	// 	if (idFriend == ladderStore.friends[i].idUser)
+	// 		friendRequestUpdate = false;
+	// }
+	// console.log("friendRequestUpdate");
+	// console.log(friendRequestUpdate);
+	if (friendRequestUpdate)
+	{
+ 	   try {
+    	    const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+				"idFriend": idFriend,
+					})
+	        return response.data;
+    	} catch (error) {
+        	console.error('Error refusing a friend request:', error);
+        	throw error;
+    	}
+	}
 }
 
 

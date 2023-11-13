@@ -11,6 +11,8 @@ import { getStatsData } from '@/services/UserProfile-helpers'
 import { getAchievementsData } from '@/services/UserProfile-helpers'
 import { getGamesData } from '@/services/UserProfile-helpers'
 import { getFriendsData } from '@/services/UserProfile-helpers'
+import { getFriendsInviteData } from '@/services/UserProfile-helpers'
+import { postFriendsInviteData } from '@/services/UserProfile-helpers'
 
 export const useLadderStore = defineStore('ladder', () => {
 
@@ -20,6 +22,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	const achievements = ref(['test', 'retest']);
 	const history = ref(['test', 'retest']);
 	const friends = ref(['test', 'retest']);
+	const invite = ref(['test', 'retest']);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
 	const username = ref("username")
@@ -39,6 +42,10 @@ export const useLadderStore = defineStore('ladder', () => {
 		{
 			userID.value = newId;
 		}
+	}
+
+	function getId() {
+		return userID.value;
 	}
 
 	/////////////////// USERNAME AND AVATAR ////////////////////////
@@ -191,8 +198,36 @@ export const useLadderStore = defineStore('ladder', () => {
 		return friends.values;
 	}
 
+	/////////////////// FRIENDS INVITE ////////////////////////
 
-	// console.log(ladder.value[0])
+	async function setupFriendsInvite() {
 
-	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers}
+		try {
+			const userData = await getFriendsInviteData(userID.value);
+			setFriendsInvite(userData);
+		} catch (error) {
+			console.error("Error setting up Friends Invite:", error);
+		}
+	}
+
+	function setFriendsInvite(newList: any) {
+		invite.values = newList;
+	}
+
+	function getFriendsInvite() {
+		return invite.values;
+	}
+
+	async function sendFriendRequest(username: string) {
+
+		try {
+			const userData = await postFriendsInviteData(userID.value, username);
+			setFriendsInvite(userData);
+		} catch (error) {
+			console.error("Error posting new Friends Invite:", error);
+		}
+	}
+
+
+	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest}
 })

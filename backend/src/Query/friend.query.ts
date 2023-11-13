@@ -71,52 +71,40 @@ export class FriendQuery
 	 * 
 	 * @query select * from user inner join friend on (friend.idUser = $idUser or friend.idFriendUser = $idUser) where friend.idUser = $idUser or friend.idFriendUser = $idUser and friend.idStatus = 1;
 	 */
-	async getFriendsInvitations(idUser: number)
-	{
-		const friends1 = await this.prisma.friend.findMany
-		(
-			{
-				where:
-				{
-					idStatus: 1,
-					idUser,
-				}
-			}
-		);
-
-		const friends2 = await this.prisma.friend.findMany
-		(
-			{
-				where:
-				{
-					idStatus: 1,
-					idFriendUser: idUser,
-				}
-			}
-		);
-
-		const friends = [...friends1, ...friends2];
-		const friendsIds = friends.map(friend =>
-		(
-			friend.idUser === idUser ? friend.idFriendUser : friend.idUser
-		)
-		);
-
-		const user = await this.prisma.user.findMany
-		(
-			{
-				where:
-				{
-					idUser:
-					{
-						in: friendsIds,
-					}
-				}
-			}
-		);
-
-		return user;
-	}
+	 async getFriendsInvitations(idUser: number)
+	 {
+	 
+		 const friends = await this.prisma.friend.findMany
+		 (
+			 {
+				 where:
+				 {
+					 idStatus: 1,
+					 idFriendUser: idUser,
+				 }
+			 }
+		 );
+		 const friendsIds = friends.map(friend =>
+		 (
+			 friend.idUser === idUser ? friend.idFriendUser : friend.idUser
+		 )
+		 );
+ 
+		 const user = await this.prisma.user.findMany
+		 (
+			 {
+				 where:
+				 {
+					 idUser:
+					 {
+						 in: friendsIds,
+					 }
+				 }
+			 }
+		 );
+ 
+		 return user;
+	 }
 
 	/**
 	 * Get a friendship relation by his user's id and the friend user's id
