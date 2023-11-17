@@ -22,21 +22,16 @@ export const useMatchmakingStore = defineStore('matchmaking', {
                 Cookies.set('guestUUID', guestUUIDCookie, { expires: 365 });
             }
             this.guestUUID = guestUUIDCookie;
-            if (profileStore.userID <= 0)
-                rejoinMatchmaking(this.guestUUID);
-            else
-                rejoinMatchmaking(profileStore.userID);
+
+            const playerId = profileStore.userID <= 0 ? this.guestUUID : profileStore.userID;
+            rejoinMatchmaking(playerId);
 
             const roomIDCookie = Cookies.get('roomID');
             if (roomIDCookie) {
                 this.roomID = roomIDCookie;
-                let username;
-                if (profileStore.isAuthenticated) {
-                    username = profileStore.username;
-                } else {
-                    username = 'Guest' + this.guestUUID.substring(0, 8);
-                }
-                const data = { 
+                const username = profileStore.isAuthenticated ? profileStore.username : 'Guest' + this.guestUUID.substring(0, 8);
+                const data = {
+                    playerId: playerId,
                     roomId: this.roomID, 
                     username: username
                 };

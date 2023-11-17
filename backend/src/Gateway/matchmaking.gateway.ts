@@ -72,6 +72,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('join-standard')
     joinQueue(client: Socket, player: PlayerInQueue): void {
+      console.log("JoinQueue:", player.id);
+
       this.matchmakingService.add(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, false);
@@ -196,12 +198,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      * @param playerId - The ID of the player to be transferred.
      */
     private transferPlayerToGame(playerId: number | string): void {
-      const playerInfo = this.findPlayerByPlayerId(playerId);
-      if (playerInfo) {
+      const playerInfos = this.findPlayerByPlayerId(playerId);
+      if (playerInfos) {
         this.sendMatchFoundNotification(playerId);
 
-        // this.gameGateway.addOnlinePlayer(playerId, playerInfo);
-        this.deleteOnlinePlayer(playerInfo.clientId);
+        this.gameGateway.addOnlinePlayer(playerInfos.clientId, playerInfos.playerInfo);
+        this.deleteOnlinePlayer(playerInfos.clientId);
         this.deleteMatchmakingState(playerId);
       } else {
         this.logger.error(`Player with ID ${playerId} not found in online players map.`);

@@ -26,8 +26,8 @@ const getRankedQueueStatus = () => {
     socket.emit('status-ranked');
 };
 
-const quitMatch = () => {
-    socket.emit('quit-match');
+const quitMatch = (data) => {
+    socket.emit('quit-match', data);
 };
 
 const rejoinRoom = (data) => {
@@ -96,14 +96,15 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('match-found-standard', (response) => {
+        console.log("Standard:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
         let opponentUsername;
-        if (response.player1.id == matchmakingStore.guestUUID) {
+        if (response.player1.id == matchmakingStore.guestUUID || response.player1.id == profileStore.userID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-        } else if (response.player2.id == matchmakingStore.guestUUID) {
+        } else if (response.player2.id == matchmakingStore.guestUUID || response.player2.id == profileStore.userID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
         }
@@ -120,6 +121,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('match-found-ranked', (response) => {
+        console.log("Ranked:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
