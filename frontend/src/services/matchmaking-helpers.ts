@@ -1,6 +1,7 @@
 import { useGameStore } from "@/stores/GameStore";
 import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
+import { useProfileStore } from "@/stores/ProfileStore";
 
 const joinQueue = (playerData) => {
     socket.emit('join-standard', playerData);
@@ -64,6 +65,19 @@ const setObstacle = (roomId, action) => {
     socket.emit('set-obstacle', roomId, action);
 };
 
+const updatePlayerStatus = (status) => {
+    const profileStore = useProfileStore();
+    const playerId = profileStore.userID;
+
+    if (playerId > 0) {
+        socket.emit('update-status', { playerId, status });
+    }
+};
+
+const getPlayerStatus = (data) => {
+    socket.emit('get-status', data);
+}
+
 const initializeSocketListeners = (matchmakingStore) => {
     const router = useRouter();
 
@@ -120,6 +134,7 @@ const initializeSocketListeners = (matchmakingStore) => {
                 router.push({ name: 'game', params: { roomId: response.roomId } });
             }, 5000);
         }
+        updatePlayerStatus(2);
     });
 
     socket.on('match-found-ranked', (response) => {
@@ -146,6 +161,7 @@ const initializeSocketListeners = (matchmakingStore) => {
                 router.push({ name: 'game', params: { roomId: response.roomId } });
             }, 5000);
         }
+        updatePlayerStatus(2);
     });
 
     socket.on('rejoin-failed', (response) => {
@@ -174,7 +190,13 @@ const initializeSocketListeners = (matchmakingStore) => {
             }
             gameStore.setMatchResult(null);
         }, 10000);
-    });    
+        updatePlayerStatus(0);
+    });
+
+    socket.on('status-response', (data) => {
+        console.log(data); // Need to be removed after
+        // Logic to handle the data received from the backend
+    });
 };
 
 export { joinQueue, 
@@ -191,5 +213,7 @@ export { joinQueue,
     setWantBaseGame,
     setSmallRacket,
     setObstacle,
+    updatePlayerStatus,
+    getPlayerStatus,
     initializeSocketListeners
 };
