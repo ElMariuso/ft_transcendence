@@ -259,7 +259,7 @@ import { ref, onBeforeMount } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, mute, block } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -369,6 +369,10 @@ async function leaveOrDeleteChannel() {
 
 	if (roleInChannel.value === "Owner") {
 		// Confirmation popup, then
+		const messages = await getChannelMsg(selectedChannelID.value);
+		for (let i = 0; messages[i]; i++) {
+			await deleteMessage(messages[i].idMessage);//removing all message from the channel to delete so it doesn't crash
+		}
 		const res = await deleteCurrentChannel(selectedChannelID.value);
 		console.log(res);
 		console.log("OWNER")
