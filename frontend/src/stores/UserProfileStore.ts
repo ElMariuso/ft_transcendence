@@ -209,12 +209,10 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function sendFriendRequest(username: string) {
 
 		try {
-			postFriendsInviteData(userID.value, username);
-			// const userData = await postFriendsInviteData(userID.value, username);
-			// if (userData != "Friend invite already sent")  //Why did i set friend evite when sending one to someone else ????
-			// 	setFriendsInvite(userData);
-			// else 
-			// 	console.log("error caught");
+			// postFriendsInviteData(userID.value, username);
+			const userData = await postFriendsInviteData(userID.value, username);
+			if (userData == "Friend invite already sent")
+				return("error caught");
 		} catch (error) {
 			console.error("Error posting new Friends Invite:", error);
 		}
