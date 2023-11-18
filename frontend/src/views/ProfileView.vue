@@ -1,5 +1,5 @@
 <template>
-<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList">
+<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList, showBlockedList">
 
 	<!-- Profile Header -->
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
@@ -83,8 +83,9 @@
 			<router-link :to="'/otherprofile/id=' + searchIdUser">
 			  <button class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">View profile</button>
 			</router-link>
-			<button v-if="!alreadyFriend" @click="sendFriendRequest" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send friend request</button>
-			<button v-if="!alreadyFriend" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
+			<button v-if="!alreadyFriend && !alreadyBlocked" @click="sendFriendRequest" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send friend request</button>
+			<button v-if="!alreadyFriend && !alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
+			<button v-if="!alreadyFriend && alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
 		  </div>
     	</div>
 
@@ -108,6 +109,7 @@
 		  <div class="mt-2">
             <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
 			  <span class="font-semibold">{{ Friends.username }}</span>
+			  <button @click="Unfriend(Friends.idUser)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unfriend</button>
 			  <!-- <span :class="{ 'text-green-600 ': friend.status === user.online, 'text-yellow-600 ': friend.status === user.playing, 'text-red-600 ': friend.status === user.offline }">
 				  <div class="ml-1">{{ friend.status }}</div>
 				</span> -->
@@ -134,13 +136,14 @@ import Cookies from 'js-cookie';
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
+
 const showUsers = ref(false);
 const showUser = ref(false);
 const showAchievements = ref(false);
 const showFriendRequest = ref(false);
 const showFriendList = ref(false);
 const showUsersList = ref(true);
-const ownProfile = ref(true);
+const showBlockedList = ref(true);
 
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
@@ -150,17 +153,17 @@ const userNotFound = ref(false);
 const userFound = ref(false);
 const searchUsername = ref('');
 const alreadyFriend = ref(false);
+const alreadyBlocked = ref(false);
 
 watch(searchUsername, async () => {
 	userNotFound.value = false;
 	userFound.value = false;
 	alreadyFriend.value = false;
+	alreadyBlocked.value = false;
 })
 
 const setId = async () => {
 	let uri = window.location.href.split('id=');
-	if (uri[1] != 0)
-		ownProfile.value = false;
 	await ladderStore.setId(uri[1])
 }
 setId()
@@ -211,6 +214,12 @@ const setupFriendsInvite = async () => {
 }
 setupFriendsInvite()
 
+const setupBlockedList = async () => {
+  await ladderStore.setupBlockedList()
+  showBlockedList.value = true // Set a flag to indicate that data is loaded
+}
+setupBlockedList()
+
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
@@ -224,6 +233,7 @@ async function FindUser() {
 	userFound.value = false;
 	alreadyFriend.value = false;
 	let friendlist = ladderStore.getFriends();
+	let blocklist = ladderStore.getBlockedList();
 
 	await api.get('/users')
 	.then(res => {
@@ -237,9 +247,18 @@ async function FindUser() {
 		if (userFound.value != true)
 			userNotFound.value = true;
 	});
+	//youself
+	if (searchUsername.value == ladderStore.username)
+		alreadyFriend.value = true;
+	//friendlist
 	for (let i = 0; friendlist[i]; i++) {
 		if (searchUsername.value == friendlist[i].username)
 			alreadyFriend.value = true;
+	}
+	//blocklist
+	for (let i = 0; blocklist[i]; i++) {
+		if (searchUsername.value == blocklist[i].username)
+			alreadyBlocked.value = true;
 	}
 }
 
@@ -249,51 +268,90 @@ async function sendFriendRequest() {
 }
 
 async function Block() {
-	console.log("Does nothing for now")
-}
 
-async function Accept(idFriend) {
-	let friendRequestUpdate = true;
+	let blocklist = ladderStore.getBlockedList();
+	let idBlocked;
 
-	// for (let i = 0; ladderStore.friends[i]; i++) {
-	// 	if (idFriend == ladderStore.friends[i].idUser)
-	// 		friendRequestUpdate = false;
-	// }
-	if (friendRequestUpdate)
+	for (let i = 0; blocklist[i]; i++) {
+		if (searchUsername.value == blocklist[i].username)
+			idBlocked = blocklist[i].idUser;
+	}
+	console.log(idBlocked);
+	
+	if (alreadyBlocked.value == false)
 	{
- 	   try {
-    	    const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-				"idFriend": idFriend,
+		console.log("Blocking...");
+		try {
+    	    const response = await api.post('/users/' + ladderStore.getId() + '/blockUser', {
+				"username": searchUsername.value,
 					})
-	        return response.data;
     	} catch (error) {
-        	console.error('Error accepting a friend request:', error);
+        	console.error('Error blocking a user:', error);
         	throw error;
     	}
+		refreshPage();
 	}
+	else
+	{
+		console.log("Unblocking...");
+		console.log('/users/' + ladderStore.getId() + '/deleteBlock');
+		console.log(idBlocked);
+		try {
+    	    const response = await api.delete('/users/' + ladderStore.getId() + '/deleteBlock', {
+				"idBlock": idBlocked,
+					})
+    	} catch (error) {
+        	console.error('Error unblocking a user:', error);
+        	throw error;
+    	}
+		refreshPage();
+	}
+}
+
+const refreshPage = () => {
+  location.reload(); // Reloads the current page
+};
+
+async function Accept(idFriend) {
+
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+			"idFriend": idFriend,
+				})
+    } catch (error) {
+    	console.error('Error accepting a friend request:', error);
+    	throw error;
+    }
+	refreshPage();
 }
 
 async function Decline(idFriend) {
-	let friendRequestUpdate = true;
 
-	// for (let i = 0; ladderStore.friends[i]; i++) {
-	// 	if (idFriend == ladderStore.friends[i].idUser)
-	// 		friendRequestUpdate = false;
-	// }
-	// console.log("friendRequestUpdate");
-	// console.log(friendRequestUpdate);
-	if (friendRequestUpdate)
-	{
- 	   try {
-    	    const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-				"idFriend": idFriend,
-					})
-	        return response.data;
-    	} catch (error) {
-        	console.error('Error refusing a friend request:', error);
-        	throw error;
-    	}
-	}
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+			"idFriend": idFriend,
+			})
+    } catch (error) {
+    	console.error('Error refusing a friend request:', error);
+    	throw error;
+    }
+	refreshPage();
+}
+
+async function Unfriend(idFriend) {
+
+	console.log("unfriending :")
+	console.log(idFriend)
+	ladderStore.removeFriend(idFriend)
+ 	// try {
+    //     const response = await api.delete('/users/' + ladderStore.getId() + '/deleteFriendship', {
+	// 		"idFriend": idFriend,
+	// 		})
+    // } catch (error) {
+    // 	console.error('Error removing a friend:', error);
+    // 	throw error;
+    // }
+	//refreshPage();
 }
 
 </script>

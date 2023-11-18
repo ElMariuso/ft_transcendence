@@ -65,7 +65,7 @@
 	<div class="col-3">
 
 		<!-- Friend invitations -->
-		<!-- <div class="mt-6">
+		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -76,7 +76,7 @@
 			  </span>
             </li>
           </div>
-		</div> -->
+		</div>
 
 		<!-- Friend list -->
 		<div class="mt-6">
@@ -100,7 +100,7 @@
 
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import api from '../services/api';
@@ -108,17 +108,17 @@ import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
+
 const showUsers = ref(false);
 const showUser = ref(false);
 const showAchievements = ref(false);
 const showFriendRequest = ref(false);
 const showFriendList = ref(false);
 const showUsersList = ref(true);
-const ownProfile = ref(true);
 
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
@@ -126,13 +126,11 @@ const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
 const userNotFound = ref(false);
 const userFound = ref(false);
-const router = useRouter();
-const searchUsername = ref('');
+// const router = useRouter();
+// const searchUsername = ref('');
 
 const setId = async () => {
 	let uri = window.location.href.split('id=');
-	if (uri[1] != 0)
-		ownProfile.value = false;
 	await ladderStore.setId(uri[1])
 }
 setId()
@@ -190,50 +188,35 @@ function getAvatarImg() {
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
-async function Accept(idFriend) {
-	let friendRequestUpdate = true;
+const refreshPage = () => {
+  location.reload(); // Reloads the current page
+};
 
-	// for (let i = 0; ladderStore.friends[i]; i++) {
-	// 	if (idFriend == ladderStore.friends[i].idUser)
-	// 		friendRequestUpdate = false;
-	// }
-	if (friendRequestUpdate)
-	{
- 	   try {
-    	    const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-				"idFriend": idFriend,
-					})
-	        return response.data;
-    	} catch (error) {
-        	console.error('Error accepting a friend request:', error);
-        	throw error;
-    	}
-	}
+async function Accept(idFriend) {
+
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+			"idFriend": idFriend,
+				})
+    } catch (error) {
+    	console.error('Error accepting a friend request:', error);
+    	throw error;
+    }
+	refreshPage();
 }
 
 async function Decline(idFriend) {
-	let friendRequestUpdate = true;
 
-	// for (let i = 0; ladderStore.friends[i]; i++) {
-	// 	if (idFriend == ladderStore.friends[i].idUser)
-	// 		friendRequestUpdate = false;
-	// }
-	// console.log("friendRequestUpdate");
-	// console.log(friendRequestUpdate);
-	if (friendRequestUpdate)
-	{
- 	   try {
-    	    const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-				"idFriend": idFriend,
-					})
-	        return response.data;
-    	} catch (error) {
-        	console.error('Error refusing a friend request:', error);
-        	throw error;
-    	}
-	}
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+			"idFriend": idFriend,
+			})
+    } catch (error) {
+    	console.error('Error refusing a friend request:', error);
+    	throw error;
+    }
+	refreshPage();
 }
-
 
 </script>
 

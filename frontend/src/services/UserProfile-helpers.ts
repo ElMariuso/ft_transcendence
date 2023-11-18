@@ -187,7 +187,59 @@ export const getFriendsData = async (userID) => {
 				})
         return response.data;
     } catch (error) {
-        console.error('Error creating a new friend request data:', error);
+		if (error.message != "Request failed with status code 409")
+		{
+			console.error('Error creating a new friend request data:', error);
+      		throw error;
+		}
+		else
+		{
+			return ("Friend invite already sent");
+		}
+    }
+};
+
+/**
+ * Asynchronous function to retrieve blocked list data from the API.
+ * 
+ * This function sends a GET request to the `/users/{userID}/blocked` endpoint and 
+ * returns the response data. If an error occurs during the request, it logs 
+ * the error message to the console and re-throws the error to be handled by 
+ * the calling function.
+ *
+ * @param {string} userID - The unique identifier of the user.
+ * @returns {Promise<Object>} - A promise that resolves to the blocked list data.
+ */
+ export const getBlockedListData = async (userID) => {
+    try {
+        const response = await api.get('/users/' + userID + '/blocked');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching blocked list data:', error);
+        throw error;
+    }
+};
+
+/**
+ * Asynchronous function to delete a friend data from the API.
+ * 
+ * This function sends a GET request to the `/users/{userID}/blocked` endpoint and 
+ * returns the response data. If an error occurs during the request, it logs 
+ * the error message to the console and re-throws the error to be handled by 
+ * the calling function.
+ *
+ * @param {string} userID - The unique identifier of the user.
+ * @param {number} idFriend - The unique identifier of the friend to remove.
+ * @returns {Promise<Object>} - A promise that resolves to the blocked list data.
+ */
+ export const deleteFriend = async (userID, idFriend) => {
+    try {
+        const response = await api.delete('/users/' + userID + '/deleteFriendship',{
+				"idFriend": idFriend,
+				})
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting a frien data:', error);
         throw error;
     }
 };
