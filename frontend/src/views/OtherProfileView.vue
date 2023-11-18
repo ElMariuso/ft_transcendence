@@ -65,7 +65,7 @@
 	<div class="col-3">
 
 		<!-- Friend invitations -->
-		<div class="mt-6">
+		<!-- <div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -76,7 +76,7 @@
 			  </span>
             </li>
           </div>
-		</div>
+		</div> -->
 
 		<!-- Friend list -->
 		<div class="mt-6">
@@ -108,8 +108,6 @@ import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 
-// import { useRouter } from 'vue-router';
-
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
 
@@ -126,8 +124,6 @@ const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
 const userNotFound = ref(false);
 const userFound = ref(false);
-// const router = useRouter();
-// const searchUsername = ref('');
 
 const setId = async () => {
 	let uri = window.location.href.split('id=');
@@ -192,31 +188,31 @@ const refreshPage = () => {
   location.reload(); // Reloads the current page
 };
 
-async function Accept(idFriend) {
+// async function Accept(idFriend) {
 
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-			"idFriend": idFriend,
-				})
-    } catch (error) {
-    	console.error('Error accepting a friend request:', error);
-    	throw error;
-    }
-	refreshPage();
-}
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+// 			"idFriend": idFriend,
+// 				})
+//     } catch (error) {
+//     	console.error('Error accepting a friend request:', error);
+//     	throw error;
+//     }
+// 	refreshPage();
+// }
 
-async function Decline(idFriend) {
+// async function Decline(idFriend) {
 
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-			"idFriend": idFriend,
-			})
-    } catch (error) {
-    	console.error('Error refusing a friend request:', error);
-    	throw error;
-    }
-	refreshPage();
-}
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+// 			"idFriend": idFriend,
+// 			})
+//     } catch (error) {
+//     	console.error('Error refusing a friend request:', error);
+//     	throw error;
+//     }
+// 	refreshPage();
+// }
 
 </script>
 

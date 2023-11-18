@@ -134,6 +134,7 @@ import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
+import { deleteBlock } from '@/services/UserProfile-helpers'
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
@@ -281,11 +282,9 @@ async function Block() {
 		if (searchUsername.value == blocklist[i].username)
 			idBlocked = blocklist[i].idUser;
 	}
-	console.log(idBlocked);
 	
 	if (alreadyBlocked.value == false)
 	{
-		console.log("Blocking...");
 		try {
     	    const response = await api.post('/users/' + ladderStore.getId() + '/blockUser', {
 				"username": searchUsername.value,
@@ -298,17 +297,7 @@ async function Block() {
 	}
 	else
 	{
-		console.log("Unblocking...");
-		console.log('/users/' + ladderStore.getId() + '/deleteBlock');
-		console.log(idBlocked);
-		try {
-    	    const response = await api.delete('/users/' + ladderStore.getId() + '/deleteBlock', {
-				"idBlock": idBlocked,
-					})
-    	} catch (error) {
-        	console.error('Error unblocking a user:', error);
-        	throw error;
-    	}
+		await deleteBlock(ladderStore.getId(), idBlocked);
 		refreshPage();
 	}
 }
@@ -345,18 +334,8 @@ async function Decline(idFriend) {
 
 async function Unfriend(idFriend) {
 
-	console.log("unfriending :")
-	console.log(idFriend)
 	ladderStore.removeFriend(idFriend)
- 	// try {
-    //     const response = await api.delete('/users/' + ladderStore.getId() + '/deleteFriendship', {
-	// 		"idFriend": idFriend,
-	// 		})
-    // } catch (error) {
-    // 	console.error('Error removing a friend:', error);
-    // 	throw error;
-    // }
-	//refreshPage();
+	refreshPage();
 }
 
 </script>

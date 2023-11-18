@@ -234,12 +234,24 @@ export const getFriendsData = async (userID) => {
  */
  export const deleteFriend = async (userID, idFriend) => {
     try {
-        const response = await api.delete('/users/' + userID + '/deleteFriendship',{
+        const response = await api.post('/users/' + userID + '/deleteFriendship',{
 				"idFriend": idFriend,
 				})
         return response.data;
     } catch (error) {
-        console.error('Error deleting a frien data:', error);
+        console.error('Error deleting a friend data:', error);
         throw error;
     }
 };
+
+export const deleteBlock = async (idUser, idBlock : number) => {
+	try {
+		const res = await api.post('/users/' + idUser + '/deleteBlock', {
+			"idBlock" : idBlock,
+			})
+		return res;
+	} catch (error) {
+		console.error('Error deleting block', error);
+		throw error;
+	}
+}
