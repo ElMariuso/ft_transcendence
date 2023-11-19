@@ -2,13 +2,19 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 // import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 import { getLadderData } from '@/services/UserProfile-helpers'
+import { getUserData } from '@/services/UserProfile-helpers'
 import { getAllUserData } from '@/services/UserProfile-helpers'
 import { getStatsData } from '@/services/UserProfile-helpers'
 import { getAchievementsData } from '@/services/UserProfile-helpers'
 import { getGamesData } from '@/services/UserProfile-helpers'
 import { getFriendsData } from '@/services/UserProfile-helpers'
+import { getFriendsInviteData } from '@/services/UserProfile-helpers'
+import { postFriendsInviteData } from '@/services/UserProfile-helpers'
+import { getBlockedListData } from '@/services/UserProfile-helpers'
+import { deleteFriend } from '@/services/UserProfile-helpers'
 
 export const useLadderStore = defineStore('ladder', () => {
 
@@ -18,18 +24,20 @@ export const useLadderStore = defineStore('ladder', () => {
 	const achievements = ref(['test', 'retest']);
 	const history = ref(['test', 'retest']);
 	const friends = ref(['test', 'retest']);
+	const invite = ref(['test', 'retest']);
+	const blocked = ref(['test', 'retest']);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
+	const username = ref("username")
+	const avatar = ref("../../upload/default_avatar.png")
 
 	/////////////////// ID ////////////////////////
 
 	function setId(newId : number) {
 
-		// console.log(newId);
 		if (newId == 0)
 		{
-			// console.log("YOOOOOO");
-			const token = localStorage.getItem('token')
+			const token = Cookies.get('token')
 			const id = jwt_decode(token).sub;
 			userID.value = id;
 		}
@@ -39,12 +47,30 @@ export const useLadderStore = defineStore('ladder', () => {
 		}
 	}
 
+	function getId() {
+		return userID.value;
+	}
+
+	/////////////////// USERNAME AND AVATAR ////////////////////////
+
+	async function setupUser() {
+
+		try {
+			const userData = await getUserData(userID.value);
+			setUser(userData);
+		} catch (error) {
+			console.error("Error setting up Username:", error);
+		}
+	}
+
+	function setUser(newList : any) {
+		username.value = newList.username;
+		avatar.value = newList.avatar;
+	}
+
 	/////////////////// LADDER ////////////////////////
 
 	async function setupLadder() {
-		// const token = localStorage.getItem('token')
-		// const id = jwt_decode(token).sub;
-		// userID.value = id;
 
 		try {
 			const userData = await getLadderData(userID.value);
@@ -85,9 +111,6 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// ACHIEVEMENTS ////////////////////////
 
 	async function setupAchievements() {
-		// const token = localStorage.getItem('token')
-		// const id = jwt_decode(token).sub;
-		// userID.value = id;
 
 		try {
 			const userData = await getAchievementsData(userID.value);
@@ -108,9 +131,6 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// STATS ////////////////////////
 
 	async function setupStats() {
-		// const token = localStorage.getItem('token')
-		// const id = jwt_decode(token).sub;
-		// userID.value = id;
 
 		try {
 			const userData = await getStatsData(userID.value);
@@ -128,9 +148,6 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// GAMES HISTORY ////////////////////////
 
 	async function setupGamesHistory() {
-		// const token = localStorage.getItem('token')
-		// const id = jwt_decode(token).sub;
-		// userID.value = id;
 
 		try {
 			const userData = await getGamesData(userID.value);
@@ -152,9 +169,6 @@ export const useLadderStore = defineStore('ladder', () => {
 	/////////////////// FRIENDS ////////////////////////
 
 	async function setupFriends() {
-		// const token = localStorage.getItem('token')
-		// const id = jwt_decode(token).sub;
-		// userID.value = id;
 
 		try {
 			const userData = await getFriendsData(userID.value);
@@ -172,8 +186,68 @@ export const useLadderStore = defineStore('ladder', () => {
 		return friends.values;
 	}
 
+	/////////////////// FRIENDS INVITE ////////////////////////
 
-	// console.log(ladder.value[0])
+	async function setupFriendsInvite() {
 
-	return {history, ladder, friends, nbWin, nbLoose, achievements, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers}
+		try {
+			const userData = await getFriendsInviteData(userID.value);
+			setFriendsInvite(userData);
+		} catch (error) {
+			console.error("Error setting up Friends Invite:", error);
+		}
+	}
+
+	function setFriendsInvite(newList: any) {
+		invite.values = newList;
+	}
+
+	function getFriendsInvite() {
+		return invite.values;
+	}
+
+	async function sendFriendRequest(username: string) {
+
+		try {
+			// postFriendsInviteData(userID.value, username);
+			const userData = await postFriendsInviteData(userID.value, username);
+			if (userData == "Friend invite already sent")
+				return("error caught");
+		} catch (error) {
+			console.error("Error posting new Friends Invite:", error);
+		}
+	}
+
+	async function removeFriend(idFriend: number) {
+
+		// console.log(idFriend);
+		try {
+			deleteFriend(userID.value, idFriend);
+		} catch (error) {
+			console.error("Error removing a friend :", error);
+		}
+	}
+
+	/////////////////// BLOCKED LIST ////////////////////////
+
+	async function setupBlockedList() {
+
+		try {
+			const userData = await getBlockedListData(userID.value);
+			setBlockedList(userData);
+		} catch (error) {
+			console.error("Error setting up Blocked list:", error);
+		}
+	}
+
+	function setBlockedList(newList: any) {
+		blocked.values = newList;
+	}
+
+	function getBlockedList() {
+		return blocked.values;
+	}
+
+
+	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend}
 })

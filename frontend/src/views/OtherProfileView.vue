@@ -1,5 +1,5 @@
 <template>
-<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList, showBlockedList">
+<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList">
 
 	<!-- Profile Header -->
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
@@ -64,34 +64,8 @@
 
 	<div class="col-3">
 
-		<!-- Search Users -->
-		<div class="mt-6">
-    	  <h3 class="text-lg font-semibold">Search User</h3>
-    	  <ul class="mt-2">
-			<input
-		      v-model="searchUsername"
-    	      type="text"
-    	      placeholder="Enter username"
-    	      class="p-2 border rounded-lg mt-2"
-    		/>
-			<button @click="FindUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
-    	  </ul>
-		  <div v-if="userNotFound">
-			<h3 class="text-lg text-red-600 font-semibold">User not found</h3>
-		  </div>
-		  <div v-if="userFound">
-			<router-link :to="'/otherprofile/id=' + searchIdUser">
-			  <button class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">View profile</button>
-			</router-link>
-			<button v-if="!alreadyFriend && !alreadyBlocked && !cannotSendFriendRequest" @click="sendFriendRequest" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send friend request</button>
-			<button v-if="!alreadyFriend && !alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
-			<button v-if="!alreadyFriend && alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
-			<div v-if="cannotSendFriendRequest" class="text-lg text-red-600 font-semibold"> You cannot send another friend request to this user </div>
-		  </div>
-    	</div>
-
 		<!-- Friend invitations -->
-		<div class="mt-6">
+		<!-- <div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -102,7 +76,7 @@
 			  </span>
             </li>
           </div>
-		</div>
+		</div> -->
 
 		<!-- Friend list -->
 		<div class="mt-6">
@@ -110,7 +84,6 @@
 		  <div class="mt-2">
             <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
 			  <span class="font-semibold">{{ Friends.username }}</span>
-			  <button @click="Unfriend(Friends.idUser)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unfriend</button>
 			  <span :class="{ 'text-green-600 ': getStatus(Friends.idUser) === isOnline(), 'text-yellow-600 ': getStatus(Friends.idUser) === isPlaying(), 'text-red-600 ': getStatus(Friends.idUser) === isOffline()}">
 				<div class="ml-3">{{  getStatus(Friends.idUser) }}</div>
 			  </span>
@@ -127,14 +100,13 @@
 
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
-import { deleteBlock } from '@/services/UserProfile-helpers'
 import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
 const profileStore = useProfileStore()
@@ -146,7 +118,6 @@ const showAchievements = ref(false);
 const showFriendRequest = ref(false);
 const showFriendList = ref(false);
 const showUsersList = ref(true);
-const showBlockedList = ref(true);
 
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
@@ -154,18 +125,6 @@ const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
 const userNotFound = ref(false);
 const userFound = ref(false);
-const searchUsername = ref('');
-const alreadyFriend = ref(false);
-const alreadyBlocked = ref(false);
-const cannotSendFriendRequest = ref(false);
-
-watch(searchUsername, async () => {
-	userNotFound.value = false;
-	userFound.value = false;
-	alreadyFriend.value = false;
-	alreadyBlocked.value = false;
-	cannotSendFriendRequest.value = false;
-})
 
 const setId = async () => {
 	let uri = window.location.href.split('id=');
@@ -193,7 +152,7 @@ setupAllUsers()
 
 const setupFriends = async () => {
   await ladderStore.setupFriends()
-  showFriendList.value = true // Set a flag to indicate that data is loaded
+    showFriendList.value = true // Set a flag to indicate that data is loaded
 }
 setupFriends()
 
@@ -219,12 +178,6 @@ const setupFriendsInvite = async () => {
 }
 setupFriendsInvite()
 
-const setupBlockedList = async () => {
-  await ladderStore.setupBlockedList()
-  showBlockedList.value = true // Set a flag to indicate that data is loaded
-}
-setupBlockedList()
-
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
@@ -232,112 +185,35 @@ function getAvatarImg() {
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
-async function FindUser() {
-
-	userNotFound.value = false;
-	userFound.value = false;
-	alreadyFriend.value = false;
-	let friendlist = ladderStore.getFriends();
-	let blocklist = ladderStore.getBlockedList();
-
-	await api.get('/users')
-	.then(res => {
-		for (let i = 0; res.data[i]; i++) {
-			if (searchUsername.value == res.data[i].username)
-			{
-				searchIdUser.value = res.data[i].idUser;
-				userFound.value = true;
-			}
-		}
-		if (userFound.value != true)
-			userNotFound.value = true;
-	});
-	//youself
-	if (searchUsername.value == ladderStore.username)
-		alreadyFriend.value = true;
-	//friendlist
-	for (let i = 0; friendlist[i]; i++) {
-		if (searchUsername.value == friendlist[i].username)
-			alreadyFriend.value = true;
-	}
-	//blocklist
-	for (let i = 0; blocklist[i]; i++) {
-		if (searchUsername.value == blocklist[i].username)
-			alreadyBlocked.value = true;
-	}
-}
-
-async function sendFriendRequest() {
-	
-	const userData = await ladderStore.sendFriendRequest(searchUsername.value);
-	if (userData == "error caught")
-		cannotSendFriendRequest.value = true;
-}
-
-async function Block() {
-
-	let blocklist = ladderStore.getBlockedList();
-	let idBlocked;
-
-	for (let i = 0; blocklist[i]; i++) {
-		if (searchUsername.value == blocklist[i].username)
-			idBlocked = blocklist[i].idUser;
-	}
-	
-	if (alreadyBlocked.value == false)
-	{
-		try {
-    	    const response = await api.post('/users/' + ladderStore.getId() + '/blockUser', {
-				"username": searchUsername.value,
-					})
-    	} catch (error) {
-        	console.error('Error blocking a user:', error);
-        	throw error;
-    	}
-		refreshPage();
-	}
-	else
-	{
-		await deleteBlock(ladderStore.getId(), idBlocked);
-		refreshPage();
-	}
-}
-
 const refreshPage = () => {
   location.reload(); // Reloads the current page
 };
 
-async function Accept(idFriend) {
+// async function Accept(idFriend) {
 
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-			"idFriend": idFriend,
-				})
-    } catch (error) {
-    	console.error('Error accepting a friend request:', error);
-    	throw error;
-    }
-	refreshPage();
-}
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+// 			"idFriend": idFriend,
+// 				})
+//     } catch (error) {
+//     	console.error('Error accepting a friend request:', error);
+//     	throw error;
+//     }
+// 	refreshPage();
+// }
 
-async function Decline(idFriend) {
+// async function Decline(idFriend) {
 
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-			"idFriend": idFriend,
-			})
-    } catch (error) {
-    	console.error('Error refusing a friend request:', error);
-    	throw error;
-    }
-	refreshPage();
-}
-
-async function Unfriend(idFriend) {
-
-	ladderStore.removeFriend(idFriend)
-	refreshPage();
-}
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+// 			"idFriend": idFriend,
+// 			})
+//     } catch (error) {
+//     	console.error('Error refusing a friend request:', error);
+//     	throw error;
+//     }
+// 	refreshPage();
+// }
 
 function isOnline() {
 	return ("Online")

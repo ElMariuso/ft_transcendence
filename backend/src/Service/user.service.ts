@@ -149,13 +149,13 @@ export class UserService
 		if (!checkUser)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
-		let ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5);
-		let ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5);
+		let ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5, checkUser.idUser);
+		let ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5, checkUser.idUser);
 
 		if (ladderAbove.length != 5)
-			ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5 + (5 - ladderAbove.length));
+			ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5 + (5 - ladderAbove.length), checkUser.idUser);
 		else
-			ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5 + (5 - ladderBelow.length));
+			ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5 + (5 - ladderBelow.length), checkUser.idUser);
 		
 		const ladder = [...ladderAbove, checkUser, ...ladderBelow];
 		

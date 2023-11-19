@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted, onUnmounted, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
 import Footer from './components/Footer.vue';
@@ -8,6 +8,8 @@ import Cookies from 'js-cookie';
 import { useProfileStore } from './stores/ProfileStore'
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { initializeSocketListeners } from './services/matchmaking-helpers';
+
+import { updatePlayerStatus } from './services/matchmaking-helpers';
 
 const profileStore = useProfileStore();
 const matchmakingStore = useMatchmakingStore();
@@ -21,12 +23,17 @@ async function setupStore() {
 }
 
 onMounted(() => {
+    matchmakingStore.initializeStore(profileStore);
+    
     const token = Cookies.get('token');
     if (token) {
       setupStore();
     }
-    matchmakingStore.initializeStore(profileStore);
     initializeSocketListeners(matchmakingStore, profileStore);
+    updatePlayerStatus(0);
+});
+onUnmounted(() => {
+  updatePlayerStatus(1);
 });
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
