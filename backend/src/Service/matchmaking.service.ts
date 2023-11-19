@@ -155,7 +155,7 @@ export class MatchmakingService {
                 match = await this.match();
             }
             while (ranked_match) {
-                this.eventEmitter.emit('match-ranked', match);
+                this.eventEmitter.emit('match-ranked', ranked_match);
                 ranked_match = await this.rankedMatch();
             }
         }, 5000);

@@ -22,7 +22,11 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
                     username = gameState.player2Username;
                 drawWinner(context, canvas, username, matchResult.reason);
             } else {
-                drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2, gameState.obstacle1Size, gameState.obstacle1Position, gameState.obstacle2Size, gameState.obstacle2Position);
+                if (gameStore.count > 0) {
+                    drawCountdown(context, canvas, gameStore.count);
+                } else {
+                    drawGame(context, canvas, gameState.racket1Size, gameState.racket2Size, gameState.racket1Position, gameState.racket2Position, gameState.ballSize, gameState.ballPosition, gameState.score1, gameState.score2, gameState.obstacle1Size, gameState.obstacle1Position, gameState.obstacle2Size, gameState.obstacle2Position);
+                }
             }
         }
         requestAnimationFrame(loop);
@@ -84,4 +88,17 @@ function drawWinner(context, canvas, winner, reason) {
     context.fillText(winnerText, canvas.width / 2, centerY - 30);
     context.font = '40px Arial';
     context.fillText(reasonText, canvas.width / 2, centerY + 40);
+}
+
+function drawCountdown(context, canvas, count) {
+    if (count > -1) {
+        context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        
+        context.fillStyle = 'white';
+        context.font = '100px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(count.toString(), canvas.width / 2, canvas.height / 2);
+    }
 }

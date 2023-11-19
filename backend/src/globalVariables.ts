@@ -177,7 +177,8 @@ export const TYPE =
 export const ROLE =
 {
 	ADMIN: "Admin",
-	MEMBER: "Member"
+	MEMBER: "Member",
+	BANNED: "Banned"
 }
 
 export const ACCEPTED_TYPE_FILE =

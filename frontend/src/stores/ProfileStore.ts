@@ -30,7 +30,6 @@ export const useProfileStore = defineStore('profile', () => {
 		const token = Cookies.get('token')
 		const id = jwt_decode(token).sub;
 		userID.value = id;
-		console.log(newId);
 		if (newId != 0)
 			userID.value = newId;
 

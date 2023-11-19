@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, Channel } from '@prisma/client';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
+import { ROLE } from 'src/globalVariables';
 
 @Injectable()
 export class ChannelQuery
@@ -47,38 +48,17 @@ export class ChannelQuery
 	 */
 	async findAllChannelsByUserId(idUser: number) //: Promise<Channel[]>
 	{
-		// const channels = await this.prisma.channel.findMany
-		// (
-		// 	{
-		// 		where: { idUser },
-		// 		include:
-		// 		{
-		// 			User_Channel:
-		// 			{
-		// 				include: {User: true}
-		// 			}
-		// 		},
-		// 	}
-		// );
-		// const channels = await this.prisma.user.findMany({
-		// 	where: { idUser },
-		// 	include: {
-		// 	  User_Channel: {
-		// 		include: {
-		// 		  Channel: true
-		// 		}
-		// 	  }
-		// 	}
-		// });
+		const banned = await this.prisma.role.findFirst
+		(
+			{
+				where: { name: ROLE.BANNED}
+			}
+		);
 
-		// if (!channels)
-		//   	return [];
-
-		// return channels.User_Channel.map(uc => uc.Channel);
 		const us_ch = await this.prisma.user_Channel.findMany
 		(
 			{
-				where: { idUser }
+				where: { idUser, idRole: { not: banned.idRole } }
 			}
 		);
 		
@@ -154,6 +134,13 @@ export class ChannelQuery
 	async deleteChannel(idChannel: number)
 	{
 		await this.prisma.user_Channel.deleteMany
+		(
+			{
+				where: { idChannel }
+			}
+		);
+
+		await this.prisma.message.deleteMany
 		(
 			{
 				where: { idChannel }

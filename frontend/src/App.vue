@@ -24,12 +24,12 @@ async function setupStore() {
 
 onMounted(() => {
     matchmakingStore.initializeStore(profileStore);
-    initializeSocketListeners(matchmakingStore);
 
     const token = Cookies.get('token');
     if (token) {
       setupStore();
     }
+    initializeSocketListeners(matchmakingStore, profileStore);
     updatePlayerStatus(0);
 });
 onUnmounted(() => {
