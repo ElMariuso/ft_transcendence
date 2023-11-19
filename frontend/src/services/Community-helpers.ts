@@ -138,6 +138,16 @@ export const deleteCurrentChannel = async (idChannel) => {
 	}
 }
 
+export const deleteMessage = async (idMessage) => {
+	try {
+		const res = await api.delete('/messages/delete/' + idMessage);
+		return res;
+	} catch (error) {
+		console.error('Error deleting message', error);
+		throw error;
+	}
+}
+
 /**
  * Asynchronous function to create a new channel data from the API.
  * 

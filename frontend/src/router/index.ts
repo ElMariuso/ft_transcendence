@@ -24,6 +24,7 @@ import LoginView from '../views/LoginView.vue';
 import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import OtherProfileView from '../views/OtherProfileView.vue';
 import ChannelView from '../views/ChannelView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import GameView from '../views/GameView.vue';
@@ -61,6 +62,12 @@ const router = createRouter({
       	component: ProfileView,
 		meta: { requiresAuth: true }
     },
+	{
+		path: '/otherprofile/id=:id',
+		name: 'otherprofile',
+		component: OtherProfileView,
+		meta: { requiresAuth: true }
+	},
     {
       	path: '/settings',
       	name: 'settings',

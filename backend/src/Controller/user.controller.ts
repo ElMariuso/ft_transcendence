@@ -451,7 +451,7 @@ export class UserController
 	 * @throw HTTPException with status NOT_FOUND if the bond is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
-	@Delete(':id/deleteFriendship')
+	@Post(':id/deleteFriendship')
 	async deleteFriendship(@Param('id') id: string, @Body() data: { idFriend: string })
 	{
 		try
@@ -544,7 +544,7 @@ export class UserController
 	 * @throw HTTPException with status NOT_FOUND if the relation is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
-	@Delete(':id/deleteBlock')
+	@Post(':id/deleteBlock')
 	async deleteBlocked(@Param('id') id: string, @Body() data: { idBlock: number })
 	{
 		try

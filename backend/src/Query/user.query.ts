@@ -116,7 +116,7 @@ export class UserQuery
 	 * 
 	 * @returns User[]
 	 */
-	async getAboveLadder(nbPoints: number, take: number)
+	async getAboveLadder(nbPoints: number, take: number, idUser: number)
 	{
 		const ladder = await this.prisma.user.findMany
 		(
@@ -126,6 +126,10 @@ export class UserQuery
 					points:
 					{
 						gt: nbPoints,
+					},
+					idUser:
+					{
+						not: idUser
 					}
 				},
 				take: take,
@@ -147,7 +151,7 @@ export class UserQuery
 	 * 
 	 * @returns User[]
 	 */
-	async getBelowLadder(nbPoints: number, take: number)
+	async getBelowLadder(nbPoints: number, take: number, idUser: number)
 	{
 		const ladder = await this.prisma.user.findMany
 		(
@@ -156,7 +160,11 @@ export class UserQuery
 				{
 					points:
 					{
-						lt: nbPoints,
+						lte: nbPoints,
+					},
+					idUser:
+					{
+						not: idUser,
 					}
 				},
 				take: take,
