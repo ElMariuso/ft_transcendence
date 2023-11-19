@@ -75,7 +75,8 @@ const updatePlayerStatus = (status) => {
 };
 
 const getPlayerStatus = (data) => {
-    socket.emit('get-status', data);
+    const res = socket.emit('get-status', data);
+	return (res)
 }
 
 const initializeSocketListeners = (matchmakingStore) => {
