@@ -206,7 +206,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         this.deleteOnlinePlayer(playerInfos.clientId);
         this.deleteMatchmakingState(playerId);
       } else {
-        this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+        this.logger.error(`TransferPlayerToGame: Player with ID ${playerId} not found in online players map.`);
       }
     }
 
@@ -275,7 +275,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
           this.logger.error(`No socket found for client ID: ${playerInfo.clientId}`);
         }
       } else {
-        this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+        this.logger.error(`SendMatchmakingState: Player with ID ${playerId} not found in online players map.`);
       }
     }
 
