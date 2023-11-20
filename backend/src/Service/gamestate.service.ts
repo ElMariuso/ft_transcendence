@@ -7,6 +7,7 @@ export class GameStateService {
     private static readonly BALL_LAUNCH_DELAY_MS = 1500;
     private static readonly RACKET_MOVEMENT = 13;
     private static readonly INITIAL_BALL_SPEED = 3;
+    private static readonly INITIAL_OBSTACLE_SPEED = 1;
 
     player1ID: number | string;
     player2ID: number | string;
@@ -93,6 +94,7 @@ export class GameStateService {
     updateBallPosition() {
         if (!this.isGameEnded()) {
             this.ballMovement();
+            this.obstacleMovement();
         } else {
             this.resetBallPostMatch();
         }
@@ -111,6 +113,25 @@ export class GameStateService {
         this.ballPosition.x += this.ballVelocity.x;
         this.ballPosition.y += this.ballVelocity.y;
         this.checkCollisions();
+    }
+
+    private obstacleMovement() {
+        let obstacle1Direction: number = 1;
+        let obstacle2Direction: number = -1;
+        const obstacleSpeed = GameStateService.INITIAL_OBSTACLE_SPEED;
+
+        if (this.obstacle1Size.width > 0 && this.obstacle1Size.height > 0) {
+            this.obstacle1Position.y += obstacleSpeed * obstacle1Direction;
+            if (this.obstacle1Position.y <= 0 || this.obstacle1Position.y + this.obstacle1Size.height >= this.canvasSize.height) {
+                obstacle1Direction *= -1;
+            }
+        }
+        if (this.obstacle2Size.width > 0 && this.obstacle2Size.height > 0) {
+            this.obstacle2Position.y += obstacleSpeed * obstacle2Direction;
+            if (this.obstacle2Position.y <= 0 || this.obstacle2Position.y + this.obstacle2Size.height >= this.canvasSize.height) {
+                obstacle2Direction *= -1;
+            }
+        }
     }
 
     private checkCollisions() {
