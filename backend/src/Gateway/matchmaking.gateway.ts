@@ -91,6 +91,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('leave-standard')
     leaveQueue(client: Socket, data: { playerId: string | number }): void {
       const playerId = data.playerId;
+
+      console.log("leaveQueue ID:", playerId);
+
       this.matchmakingService.remove(playerId);
       this.deleteMatchmakingState(playerId);
       this.deleteOnlinePlayer(client.id);

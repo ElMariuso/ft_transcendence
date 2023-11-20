@@ -21,7 +21,12 @@ const cancelSearch = async () => {
         if (matchmakingStore.isRanked) {
             await leaveRankedQueue(profileStore.userID);
         } else {
-            await leaveQueue(guestUUID.value);
+            if (profileStore.userID > 0) {
+                await leaveQueue(profileStore.userID);
+            }
+            else {
+                await leaveQueue(guestUUID.value);
+            }
         }
     } catch (error) {
         console.error(error);
