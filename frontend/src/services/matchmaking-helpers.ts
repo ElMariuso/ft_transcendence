@@ -127,11 +127,9 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setOpponentUUID(opponentUUID);
             matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
-            setTimeout(() => {
-                matchmakingStore.setIsSearching(false);
-                matchmakingStore.setMatchFound(false);
-                router.push({ name: 'game', params: { roomId: response.roomId } });
-            }, 5000);
+            matchmakingStore.setIsSearching(false);
+            matchmakingStore.setMatchFound(false);
+            router.push({ name: 'game', params: { roomId: response.roomId } });
         }
         updatePlayerStatus(2);
     });
@@ -153,12 +151,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setOpponentUUID(opponentUUID);
             matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
-            setTimeout(() => {
-                matchmakingStore.setIsSearching(false);
-                matchmakingStore.setMatchFound(false);
-                matchmakingStore.setIsRanked(false);
-                router.push({ name: 'game', params: { roomId: response.roomId } });
-            }, 5000);
+            matchmakingStore.setIsSearching(false);
+            matchmakingStore.setMatchFound(false);
+            matchmakingStore.setIsRanked(false);
+            router.push({ name: 'game', params: { roomId: response.roomId } });
         }
         updatePlayerStatus(2);
     });
