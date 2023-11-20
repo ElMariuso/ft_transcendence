@@ -15,6 +15,9 @@ import { getFriendsInviteData } from '@/services/UserProfile-helpers'
 import { postFriendsInviteData } from '@/services/UserProfile-helpers'
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 import { deleteFriend } from '@/services/UserProfile-helpers'
+import { postBlock } from '@/services/UserProfile-helpers'
+import { deleteBlock } from '@/services/UserProfile-helpers'
+
 
 export const useLadderStore = defineStore('ladder', () => {
 
@@ -30,6 +33,22 @@ export const useLadderStore = defineStore('ladder', () => {
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
+
+	/////////////////// SETUP ////////////////////////
+
+	async function setup(newId : number) {
+
+		await setId(newId);
+		await setupUser();
+		await setupLadder();
+		await setupAllUsers();
+		await setupAchievements();
+		await setupStats();
+		await setupGamesHistory();
+		await setupFriends();
+		await setupFriendsInvite();
+		await setupBlockedList();
+	}
 
 	/////////////////// ID ////////////////////////
 
@@ -248,6 +267,26 @@ export const useLadderStore = defineStore('ladder', () => {
 		return blocked.values;
 	}
 
+	async function blockUnblock(usernameToBlock: string) {
 
-	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend}
+		let blocklist = getBlockedList();
+		let idBlocked;
+		let alreadyBlocked = false;
+
+		for (let i = 0; blocklist[i]; i++) {
+			if (usernameToBlock == blocklist[i].username)
+			{	
+				idBlocked = blocklist[i].idUser;
+				alreadyBlocked = true;
+			}
+		}
+	
+		if (alreadyBlocked == false)
+			await postBlock(getId(), usernameToBlock);
+		else
+			await deleteBlock(getId(), idBlocked);
+	}
+
+
+	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
 })
