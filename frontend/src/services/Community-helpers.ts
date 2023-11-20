@@ -128,6 +128,21 @@ export const leaveCurrentChannel = async (idUser, idChannel) => {
 	}
 }
 
+export const banUserFromChannel = async (idUser, banId, idChannel) => {
+	try {
+
+		const res = await api.put('/userchannels/modifyRole/' + idUser,{
+			"idMember": banId,
+			"idChannel": idChannel,
+			"idRole": 3,
+			})
+		return res;
+	} catch (error) {
+		console.error('Error banning user from channel', error);
+		throw error;
+	}
+}
+
 export const deleteCurrentChannel = async (idChannel) => {
 	try {
 		const res = await api.delete('/channels/delete/' + idChannel);
@@ -212,9 +227,9 @@ export const mute = async (user, channel, time) => {
 	});
 }
 
-export const kick = async () => {
-	console.log("kick");
-}
-export const ban = async () => {
-	console.log("ban");
-}
+// export const kick = async () => {
+// 	console.log("kick");
+// }
+// export const ban = async () => {
+// 	console.log("ban");
+// }

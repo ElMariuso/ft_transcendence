@@ -219,22 +219,23 @@ export class UserChannelService
 	}
 
 	/**
-	 * Transform a Prisma User Object to a UserChannelDTO
-	 * 
-	 * @param userchannel Prisma User_Channel Object
-	 * 
-	 * @returns UserChannelDTO
-	 */
-	private transformToUserChannelDTO(userchannel: User_Channel) : UserChannelDTO
-	{
-		const userchannelDTO: UserChannelDTO = 
-		{
-			idUser_Channel: userchannel.idUser_Channel,
-			idUser: userchannel.idUser,
-			idChannel: userchannel.idChannel,
-			idRole: userchannel.idRole
-		};
+     * Transform a Prisma User Object to a UserChannelDTO
+     * 
+     * @param userchannel Prisma User_Channel Object
+     * 
+     * @returns UserChannelDTO
+     */
+    private transformToUserChannelDTO(userchannel: User_Channel) : UserChannelDTO
+    {
+        const userchannelDTO: UserChannelDTO = 
+        {
+            idUser_Channel: userchannel.idUser_Channel,
+            idUser: userchannel.idUser,
+            idChannel: userchannel.idChannel,
+            idRole: userchannel.idRole,
+            muteTime: userchannel.muteTime
+        };
 
-		return userchannelDTO;
-	}
+        return userchannelDTO;
+    }
 }

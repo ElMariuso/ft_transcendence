@@ -262,7 +262,7 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -444,9 +444,9 @@ const setAll = async () => {
 }
 setAll()
 
-const refreshPage = () => {
-  location.reload(); // Reloads the current page
-};
+// const refreshPage = () => {
+//   location.reload(); // Reloads the current page
+// };
 
 async function sendFriendRequest(usernameToFriend) {
 	
@@ -458,7 +458,8 @@ async function sendFriendRequest(usernameToFriend) {
 async function playerBlock(usernameToBlock) {
 
 	await ladderStore.blockUnblock(usernameToBlock);
-	refreshPage();
+	console.log("Block / unblock")
+	// refreshPage();
 }
 
 async function playerMute() {
@@ -475,8 +476,12 @@ async function playerKick() {
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
-// async function playerBan() {
-// 	console.log("ban");
-// }
+async function playerBan() {
+	console.log("ban");
+
+	await banUserFromChannel(ladderStore.getId(), selectedUserID.value, selectedChannelID.value);
+	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
 
 </script>

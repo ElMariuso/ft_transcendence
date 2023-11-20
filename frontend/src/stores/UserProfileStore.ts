@@ -22,13 +22,13 @@ import { deleteBlock } from '@/services/UserProfile-helpers'
 export const useLadderStore = defineStore('ladder', () => {
 
 	const userID = ref(0)
-	const ladder = ref(['test', 'retest']);
-	const users = ref(['test', 'retest']);
-	const achievements = ref(['test', 'retest']);
-	const history = ref(['test', 'retest']);
-	const friends = ref(['test', 'retest']);
-	const invite = ref(['test', 'retest']);
-	const blocked = ref(['test', 'retest']);
+	const ladder = ref([]);
+	const users = ref([]);
+	const achievements = ref([]);
+	const history = ref([]);
+	const friendlist = ref([]);
+	const invite = ref([]);
+	const blocked = ref([]);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
 	const username = ref("username")
@@ -198,11 +198,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setFriends(newList: any) {
-		friends.values = newList;
+		friendlist.values = newList;
 	}
 
 	function getFriends() {
-		return friends.values;
+		return friendlist.values;
 	}
 
 	/////////////////// FRIENDS INVITE ////////////////////////
@@ -285,8 +285,9 @@ export const useLadderStore = defineStore('ladder', () => {
 			await postBlock(getId(), usernameToBlock);
 		else
 			await deleteBlock(getId(), idBlocked);
+		await setupBlockedList();//updating blocked list
 	}
 
 
-	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
+	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
 })

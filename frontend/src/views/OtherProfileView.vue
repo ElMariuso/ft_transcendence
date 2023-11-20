@@ -65,7 +65,7 @@
 	<div class="col-3">
 
 		<!-- Friend invitations -->
-		<!-- <div class="mt-6">
+		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -76,7 +76,7 @@
 			  </span>
             </li>
           </div>
-		</div> -->
+		</div>
 
 		<!-- Friend list -->
 		<div class="mt-6">
@@ -140,31 +140,33 @@ const refreshPage = () => {
   location.reload(); // Reloads the current page
 };
 
-// async function Accept(idFriend) {
+async function Accept(idFriend) {
 
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-// 			"idFriend": idFriend,
-// 				})
-//     } catch (error) {
-//     	console.error('Error accepting a friend request:', error);
-//     	throw error;
-//     }
-// 	refreshPage();
-// }
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+			"idFriend": idFriend,
+				})
+    } catch (error) {
+    	console.error('Error accepting a friend request:', error);
+    	throw error;
+    }
+	// await ladderStore.setupFriendsInvite();//updating friends invite list
+	refreshPage();
+}
 
-// async function Decline(idFriend) {
+async function Decline(idFriend) {
 
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-// 			"idFriend": idFriend,
-// 			})
-//     } catch (error) {
-//     	console.error('Error refusing a friend request:', error);
-//     	throw error;
-//     }
-// 	refreshPage();
-// }
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+			"idFriend": idFriend,
+			})
+    } catch (error) {
+    	console.error('Error refusing a friend request:', error);
+    	throw error;
+    }
+	// await ladderStore.setupFriendsInvite();//updating friends invite list
+	refreshPage();
+}
 
 function isOnline() {
 	return ("Online")

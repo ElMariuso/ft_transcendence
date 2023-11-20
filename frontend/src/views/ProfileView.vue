@@ -221,7 +221,10 @@ async function sendFriendRequest() {
 async function Block() {
 
 	await ladderStore.blockUnblock(searchUsername.value);
-	refreshPage();
+	if (alreadyBlocked.value == true)
+		alreadyBlocked.value = false;
+	else
+		alreadyBlocked.value = true;
 }
 
 const refreshPage = () => {
@@ -238,6 +241,7 @@ async function Accept(idFriend) {
     	console.error('Error accepting a friend request:', error);
     	throw error;
     }
+	// await ladderStore.setupFriendsInvite();//updating friends invite list
 	refreshPage();
 }
 
@@ -251,11 +255,13 @@ async function Decline(idFriend) {
     	console.error('Error refusing a friend request:', error);
     	throw error;
     }
+	// await ladderStore.setupFriendsInvite();//updating friends invite list
 	refreshPage();
 }
 
 async function Unfriend(idFriend) {
 
+	//console.log("Unfriend")
 	ladderStore.removeFriend(idFriend)
 	refreshPage();
 }
