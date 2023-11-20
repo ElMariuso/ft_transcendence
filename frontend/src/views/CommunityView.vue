@@ -220,10 +220,12 @@
 								>
 									<div class="flex justify-between">
 										<img @click="playerPlay" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
-										<img @click="playerProfile" class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+										<router-link :to="'/otherprofile/id=' + user.idUser">
+			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+										</router-link>
 										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-										<img @click="playerFriend" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
-										<img @click="playerBlock" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+										<img @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
 									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
 
@@ -258,6 +260,7 @@
 import { ref, onBeforeMount } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
+import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
 
@@ -272,6 +275,8 @@ const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, 
 
 const profileStore = useProfileStore();
 const { userID } = storeToRefs(profileStore);
+
+const ladderStore = useLadderStore()
 
 // ******** Create Channel
 
@@ -432,6 +437,29 @@ function getChannelTypeImg(channType) {
 // 	await block(userID.value, selectedUserID.value);
 	
 // }
+
+const setAll = async () => {
+	await ladderStore.setup(0)
+	// showProfile.value = true // Set a flag to indicate that data is loaded
+}
+setAll()
+
+const refreshPage = () => {
+  location.reload(); // Reloads the current page
+};
+
+async function sendFriendRequest(usernameToFriend) {
+	
+	const userData = await ladderStore.sendFriendRequest(usernameToFriend);
+	// if (userData == "error caught")
+	// 	cannotSendFriendRequest.value = true;
+}
+
+async function playerBlock(usernameToBlock) {
+
+	await ladderStore.blockUnblock(usernameToBlock);
+	refreshPage();
+}
 
 async function playerMute() {
 	console.log("mute");

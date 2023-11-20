@@ -1,5 +1,5 @@
 <template>
-<div v-if="showUsers, showUser, showAchievements, showUsersList, showFriendRequest, showFriendList, showBlockedList">
+<div v-if="showProfile">
 
 	<!-- Profile Header -->
 	<div class="col-3 bg-white p-4 rounded-lg shadow-lg">
@@ -140,13 +140,7 @@ import { getPlayerStatus } from '@/services/matchmaking-helpers'
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
 
-const showUsers = ref(false);
-const showUser = ref(false);
-const showAchievements = ref(false);
-const showFriendRequest = ref(false);
-const showFriendList = ref(false);
-const showUsersList = ref(true);
-const showBlockedList = ref(true);
+const showProfile = ref(false);
 
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
@@ -167,63 +161,13 @@ watch(searchUsername, async () => {
 	cannotSendFriendRequest.value = false;
 })
 
-const setId = async () => {
+const setAll = async () => {
 	let uri = window.location.href.split('id=');
-	await ladderStore.setId(uri[1])
+	await ladderStore.setup(uri[1])
+	showProfile.value = true // Set a flag to indicate that data is loaded
 }
-setId()
+setAll()
 
-const setupLadder = async () => {
-  await ladderStore.setupLadder()
-  showUsers.value = true // Set a flag to indicate that data is loaded
-}
-setupLadder()
-
-const setupUser = async () => {
-  await ladderStore.setupUser()
-  showUser.value = true // Set a flag to indicate that data is loaded
-}
-setupUser()
-
-const setupAllUsers = async () => {
-  await ladderStore.setupAllUsers()
-  showUsersList.value = true // Set a flag to indicate that data is loaded
-}
-setupAllUsers()
-
-const setupFriends = async () => {
-  await ladderStore.setupFriends()
-  showFriendList.value = true // Set a flag to indicate that data is loaded
-}
-setupFriends()
-
-const setupStats = async () => {
-  await ladderStore.setupStats()
-}
-setupStats()
-
-const setupAchievements = async () => {
-  await ladderStore.setupAchievements()
-  showAchievements.value = true // Set a flag to indicate that data is loaded
-}
-setupAchievements()
-
-const setupGamesHistory = async () => {
-  await ladderStore.setupGamesHistory()
-}
-setupGamesHistory()
-
-const setupFriendsInvite = async () => {
-  await ladderStore.setupFriendsInvite()
-  showFriendRequest.value = true // Set a flag to indicate that data is loaded
-}
-setupFriendsInvite()
-
-const setupBlockedList = async () => {
-  await ladderStore.setupBlockedList()
-  showBlockedList.value = true // Set a flag to indicate that data is loaded
-}
-setupBlockedList()
 
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
@@ -276,31 +220,8 @@ async function sendFriendRequest() {
 
 async function Block() {
 
-	let blocklist = ladderStore.getBlockedList();
-	let idBlocked;
-
-	for (let i = 0; blocklist[i]; i++) {
-		if (searchUsername.value == blocklist[i].username)
-			idBlocked = blocklist[i].idUser;
-	}
-	
-	if (alreadyBlocked.value == false)
-	{
-		try {
-    	    const response = await api.post('/users/' + ladderStore.getId() + '/blockUser', {
-				"username": searchUsername.value,
-					})
-    	} catch (error) {
-        	console.error('Error blocking a user:', error);
-        	throw error;
-    	}
-		refreshPage();
-	}
-	else
-	{
-		await deleteBlock(ladderStore.getId(), idBlocked);
-		refreshPage();
-	}
+	await ladderStore.blockUnblock(searchUsername.value);
+	refreshPage();
 }
 
 const refreshPage = () => {
