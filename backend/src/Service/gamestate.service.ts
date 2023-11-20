@@ -32,6 +32,8 @@ export class GameStateService {
     obstacle2Size: size;
     obstacle1Position: position;
     obstacle2Position: position;
+    obstacle1Direction: number;
+    obstacle2Direction: number;
 
     private endMatchCallback: (result: EndMatchResult) => void;
     public initialize(
@@ -75,6 +77,8 @@ export class GameStateService {
         this.ballSize = { width: 0, height: 0 };
         this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
         this.ballVelocity = { x: 0, y: 0 };
+        this.obstacle1Direction = 1;
+        this.obstacle2Direction = -1;
         this.launchBall();
     }
 
@@ -116,20 +120,18 @@ export class GameStateService {
     }
 
     private obstacleMovement() {
-        let obstacle1Direction: number = 1;
-        let obstacle2Direction: number = -1;
         const obstacleSpeed = GameStateService.INITIAL_OBSTACLE_SPEED;
 
         if (this.obstacle1Size.width > 0 && this.obstacle1Size.height > 0) {
-            this.obstacle1Position.y += obstacleSpeed * obstacle1Direction;
+            this.obstacle1Position.y += obstacleSpeed * this.obstacle1Direction;
             if (this.obstacle1Position.y <= 0 || this.obstacle1Position.y + this.obstacle1Size.height >= this.canvasSize.height) {
-                obstacle1Direction *= -1;
+                this.obstacle1Direction *= -1;
             }
         }
         if (this.obstacle2Size.width > 0 && this.obstacle2Size.height > 0) {
-            this.obstacle2Position.y += obstacleSpeed * obstacle2Direction;
+            this.obstacle2Position.y += obstacleSpeed * this.obstacle2Direction;
             if (this.obstacle2Position.y <= 0 || this.obstacle2Position.y + this.obstacle2Size.height >= this.canvasSize.height) {
-                obstacle2Direction *= -1;
+                this.obstacle2Direction *= -1;
             }
         }
     }
