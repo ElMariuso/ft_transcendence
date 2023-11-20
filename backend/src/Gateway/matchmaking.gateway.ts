@@ -72,6 +72,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('join-standard')
     joinQueue(client: Socket, player: PlayerInQueue): void {
+      if (this.isPlayerAlreadyInQueue(player.id)) {
+        this.logger.error(`Player ${player.id} already in standard queue.`);
+        client.emit('matchmaking-error', { message: 'Already in queue' });
+        return;
+      }
       console.log("JoinQueue:", player.id);
 
       this.matchmakingService.add(player);
@@ -116,6 +121,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('join-ranked')
     joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
+      if (this.isPlayerAlreadyInQueue(player.id)) {
+        this.logger.error(`Player ${player.id} already in ranked queue.`);
+        client.emit('error-matchmaking', { message: 'Already in queue' });
+        return;
+      }
+
       this.matchmakingService.addRanked(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, true);
@@ -152,7 +163,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     @SubscribeMessage('rejoin-matchmaking')
     rejoinMatchmaking(client: Socket, playerId: string | number): void {
-      console.log("PlayerID:", playerId);
+      console.log("Rejoin PlayerID:", playerId);
       if (this.matchmakingStates.has(playerId)) {
         this.logger.log(`Player rejoining matchmaking: ${playerId}`);
         const playerState = this.matchmakingStates.get(playerId);
@@ -308,4 +319,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
           this.server.sockets.sockets.get(playerInfo.clientId).emit('match-found');
       }
     }
+
+    private isPlayerAlreadyInQueue(playerId: number | string): boolean {
+      return Array.from(this.onlinePlayers.values()).some(player => player.playerId === playerId);
+  }
 }
