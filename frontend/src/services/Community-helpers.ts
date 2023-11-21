@@ -215,6 +215,15 @@ export const mute = async (user, channel, time) => {
 export const kick = async () => {
 	console.log("kick");
 }
+
 export const ban = async () => {
 	console.log("ban");
+}
+
+export const promote = async (idPromoted, idCurrentChannel) => {
+	api.put('/userchannels/modifyRole/' + idPromoted, {
+		idMember: idPromoted,
+		idChannel: idCurrentChannel,
+		idRole: 1,
+	})
 }

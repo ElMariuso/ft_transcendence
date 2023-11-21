@@ -134,6 +134,8 @@ export class UserChannelController
 	{
 		try
 		{
+			console.log("Aled");
+			
 			const newId = parseInt(id, 10);
 			return this.userchannelService.modifyMemberRole(newId, updateRoleUserChannelDTO.idMember, updateRoleUserChannelDTO.idChannel, updateRoleUserChannelDTO.idRole);
 		}

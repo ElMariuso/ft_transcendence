@@ -13,6 +13,9 @@
 		IF ADMIN
 		* KICK/BAN/MUTE
 
+		IF OWNER 
+		* Give admin rights
+
  -->
 
 
@@ -195,20 +198,28 @@
 							
 							<li 
 								v-for="user in selectedChannelUsers" 
-								class="text-lg  border px-2 py-1 rounded-lg "
+								class="text-lg border px-2 py-1 rounded-lg "
 								
 								:id="user.idUser"
 							>
 								<div class="flex flex-row justify-between">
 
-									<p 
-										:class="{ 
-											'text-green-600': user.role === 'Admin',
-											'text-red-500': user.owner,
-										}"	
-									>
-										{{ user.username }}
-									</p>
+									<div class="flex">
+										<p 
+											:class="{ 
+												'text-green-600': user.role === 'Admin',
+												'text-red-500': user.owner,
+											}"	
+										>
+											{{ user.username }}
+										</p>
+										<button 
+											v-if="roleInChannel === 'Owner' && user.role !== 'Admin'"
+											@click="promoteUser(user.idUser)"
+										>
+											<img src="../assets/player/promote.svg" class="px-1 py-1" alt="promote">
+										</button>
+									</div>
 
 									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
@@ -262,7 +273,7 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block, promote } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -478,5 +489,11 @@ async function playerKick() {
 // async function playerBan() {
 // 	console.log("ban");
 // }
+
+function promoteUser(idPromoted) {
+	promote(idPromoted, selectedChannelID.value);
+
+
+}
 
 </script>

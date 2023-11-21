@@ -135,6 +135,19 @@ export class GameService
 
 			this.achievementService.checkAchievement(game.idPlayerOne, 1);
 			this.achievementService.checkAchievement(game.idPlayerSecond, 1);
+
+			const onePl = await this.userQuery.findUserById(game.idPlayerOne);
+            const secPl = await this.userQuery.findUserById(game.idPlayerSecond);
+
+            let i = -1;
+            if (oneWin)
+                i = 1;
+            
+            onePl.points += (i * 10);
+            secPl.points += (-i * 10);
+
+            await this.userQuery.updateUser(onePl.idUser, onePl);
+            await this.userQuery.updateUser(secPl.idUser, secPl);
 		}
 		else
 			throw new InternalServerErrorException();
