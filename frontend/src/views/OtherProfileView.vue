@@ -80,16 +80,20 @@
 
 		<!-- Friend list -->
 		<div class="mt-6">
-		  <h3 class="text-lg font-semibold">Friend list</h3>
-		  <div class="mt-2">
-            <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
-			  <span class="font-semibold">{{ Friends.username }}</span>
-			  <span :class="{ 'text-green-600 ': getStatus(Friends.idUser) === isOnline(), 'text-yellow-600 ': getStatus(Friends.idUser) === isPlaying(), 'text-red-600 ': getStatus(Friends.idUser) === isOffline()}">
-				<div class="ml-3">{{  getStatus(Friends.idUser) }}</div>
-			  </span>
-            </li>
-          </div>
-		</div>
+			<h3 class="text-lg font-semibold">Friend list</h3>
+			<div class="mt-2">
+			  <li v-for="Friends in friendlist" :key="Friends.idUser" class="mb-2">
+				  <span class="font-semibold">{{ Friends.username }}</span>
+				  <span :class="{
+					  'text-green-600': formattedFriendStatuses[Friends.idUser] === 'Online', 
+					  'text-yellow-600': formattedFriendStatuses[Friends.idUser] === 'In Game', 
+					  'text-red-600': formattedFriendStatuses[Friends.idUser] === 'Offline'
+				  }">
+					  <div class="ml-3">{{ formattedFriendStatuses[Friends.idUser] }}</div>
+				  </span>
+			  </li>			  
+			</div>		
+		  </div>
 
 	</div>
 
@@ -168,27 +172,6 @@ async function Decline(idFriend) {
 	await ladderStore.updateFriendsInvite();//updating friends invite list
 	await ladderStore.updateFriends();
 	// refreshPage();
-}
-
-function isOnline() {
-	return ("Online")
-}
-
-function isOffline() {
-	return ("Offline")
-}
-
-function isPlaying() {
-	return ("Playing")
-}
-
-function getStatus(idUser) {
-	let res = getPlayerStatus(idUser);
-	if (res.ids == 2)
-		return("Playing")
-	if (res.ids == 0)
-		return ("Online")
-	return ("Offline")
 }
 
 </script>
