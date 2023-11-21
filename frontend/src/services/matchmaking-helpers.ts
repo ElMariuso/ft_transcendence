@@ -73,8 +73,6 @@ const setObstacle = (roomId, action) => {
 const updatePlayerStatus = (status, profileStore) => {
     const playerId = profileStore.userID;
 
-    console.log("Update:", { playerId, status });
-
     if (playerId > 0) {
         socket.emit('update-status', { playerId, status });
     }

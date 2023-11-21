@@ -32,9 +32,6 @@ onMounted(() => {
     initializeSocketListeners(matchmakingStore, profileStore);
     updatePlayerStatus(0, profileStore);
 });
-onBeforeUnmount(() => {
-    updatePlayerStatus(1, profileStore);
-});
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
