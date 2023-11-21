@@ -2,9 +2,11 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { quitMatch  } from '@/services/matchmaking-helpers';
+import { useProfileStore } from '@/stores/ProfileStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 
 const route = useRoute();
+const profileStore = useProfileStore();
 const matchmakingStore = useMatchmakingStore();
 
 const buttonText = computed(() => {
@@ -15,9 +17,10 @@ const buttonText = computed(() => {
 });
 
 const quitMatchFront = async () => {
-    console.log('Leaving the match...');
+    const playerId = profileStore.userID <= 0 ? matchmakingStore.guestUUID : profileStore.userID;
     try {
-        await quitMatch();
+        console.log('Leaving the match...:', playerId);
+        await quitMatch(playerId);
     } catch (error) {
         console.error(error);
     }

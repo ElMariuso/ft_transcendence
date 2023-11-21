@@ -52,4 +52,6 @@ export interface GameState {
     obstacle2Size: size;
     obstacle1Position: position;
     obstacle2Position: position;
+    obstacle1Direction: number;
+    obstacle2Direction: number;
 }

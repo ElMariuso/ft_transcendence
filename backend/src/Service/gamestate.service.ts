@@ -7,6 +7,7 @@ export class GameStateService {
     private static readonly BALL_LAUNCH_DELAY_MS = 1500;
     private static readonly RACKET_MOVEMENT = 13;
     private static readonly INITIAL_BALL_SPEED = 3;
+    private static readonly INITIAL_OBSTACLE_SPEED = 1;
 
     player1ID: number | string;
     player2ID: number | string;
@@ -31,6 +32,8 @@ export class GameStateService {
     obstacle2Size: size;
     obstacle1Position: position;
     obstacle2Position: position;
+    obstacle1Direction: number;
+    obstacle2Direction: number;
 
     private endMatchCallback: (result: EndMatchResult) => void;
     public initialize(
@@ -74,6 +77,8 @@ export class GameStateService {
         this.ballSize = { width: 0, height: 0 };
         this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
         this.ballVelocity = { x: 0, y: 0 };
+        this.obstacle1Direction = 1;
+        this.obstacle2Direction = -1;
         this.launchBall();
     }
 
@@ -93,6 +98,7 @@ export class GameStateService {
     updateBallPosition() {
         if (!this.isGameEnded()) {
             this.ballMovement();
+            this.obstacleMovement();
         } else {
             this.resetBallPostMatch();
         }
@@ -111,6 +117,23 @@ export class GameStateService {
         this.ballPosition.x += this.ballVelocity.x;
         this.ballPosition.y += this.ballVelocity.y;
         this.checkCollisions();
+    }
+
+    private obstacleMovement() {
+        const obstacleSpeed = GameStateService.INITIAL_OBSTACLE_SPEED;
+
+        if (this.obstacle1Size.width > 0 && this.obstacle1Size.height > 0) {
+            this.obstacle1Position.y += obstacleSpeed * this.obstacle1Direction;
+            if (this.obstacle1Position.y <= 0 || this.obstacle1Position.y + this.obstacle1Size.height >= this.canvasSize.height) {
+                this.obstacle1Direction *= -1;
+            }
+        }
+        if (this.obstacle2Size.width > 0 && this.obstacle2Size.height > 0) {
+            this.obstacle2Position.y += obstacleSpeed * this.obstacle2Direction;
+            if (this.obstacle2Position.y <= 0 || this.obstacle2Position.y + this.obstacle2Size.height >= this.canvasSize.height) {
+                this.obstacle2Direction *= -1;
+            }
+        }
     }
 
     private checkCollisions() {

@@ -20,16 +20,12 @@ import { v4 as uuidv4 } from 'uuid';
     }
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-    private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
+    private onlinePlayers: Map<string, { playerId: number | string; username: string }> = new Map();
     private clientRooms: Map<string, string> = new Map();
     private gameStates: Map<string, GameLoopService> = new Map();
     private gameStateUpdateIntervals: Map<string, NodeJS.Timeout> = new Map();
 
-    constructor(
-        private readonly gameService: GameService,
-    ) {
-
-    }
+    constructor(private readonly gameService: GameService) {}
 
     @WebSocketServer() server: Server;
     private logger: Logger = new Logger('GameGateway');
@@ -80,24 +76,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     quitMatch(client: Socket, playerId: number | string): void {
         const roomId = this.findRoomIdByClientId(client.id);
         if (roomId) {
-            const gameState = this.gameStates.get(roomId).getGameState();
+            const gameState = this.gameStates.get(roomId)?.getGameState();
             if (gameState) {
-                const playerLeaving = Array.from(this.onlinePlayers.entries()).find(([, value]) => value.socketId === client.id);
-    
-                if (playerLeaving) {
-                    const [playerId] = playerLeaving;
+                const playerInfo = this.onlinePlayers.get(client.id);
+                if (playerInfo && playerInfo.playerId === playerId) {
                     gameState.setForfeit(playerId);
+                    client.emit('confirm-quit-match', { status: 'Successfully left the match.' });
                 } else {
-                    client.emit('error-quit-match', { status: 'Player not found.' });
+                    client.emit('error-quit-match', { status: 'Player information mismatch or not found.' });
                 }
             } else {
-                client.emit('error-quit-match', { status: 'Error gameState not found' });
+                client.emit('error-quit-match', { status: 'Error gameState not found.' });
             }
         } else {
-            client.emit('error-quit-match', { status: 'Error leaving room or room not found' });
+            client.emit('error-quit-match', { status: 'Error leaving room or room not found.' });
         }
     }
-
     
     /**
      * Handles the 'rejoin-room' message to allow a client to rejoin a game room.
@@ -105,7 +99,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      * @param data - Data containing the room ID and username for the rejoining client.
      */
     @SubscribeMessage('rejoin-room')
-    rejoinRoom(client: Socket, data: { roomId: string, username: string}): void {
+    rejoinRoom(client: Socket, data: { playerId: string | number, roomId: string, username: string}): void {
+        const playerId = data.playerId;
         const roomId = data.roomId;
         const username = data.username;
         const room = this.server.sockets.adapter.rooms.get(roomId);
@@ -113,9 +108,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (room) {
             client.join(roomId);
             client.emit('rejoined-room', { status: 'Rejoined the room', roomId });
-    
             this.clientRooms.set(client.id, roomId);
-            this.onlinePlayers.set(client.id, { socketId: client.id, username: username });
+            this.onlinePlayers.set(client.id, { playerId: playerId, username: username });
         } else {
             client.emit('rejoin-failed', { status: 'Failed to rejoin the room', roomId });
         }
@@ -326,66 +320,76 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      * @param playerId - The ID of the player.
      * @param playerInfo - The player's information including socket ID and username.
      */
-    public addOnlinePlayer(playerId: number | string, playerInfo: { socketId: string; username: string }) {
-        this.onlinePlayers.set(playerId, playerInfo);
+    public addOnlinePlayer(socketId: string, playerInfo: { playerId: number | string; username: string }) {
+        this.onlinePlayers.set(socketId, playerInfo);
     }
 
     /**
      * Creates a new match and initializes the game state. It also sets up the players in the match and starts the game loop.
      * @param match - The match object containing information about the two players.
      * @param isRanked - Boolean indicating if the match is a ranked match.
- */
+     */
     public createMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }, isRanked: boolean): void {
-        const player1Info = this.onlinePlayers.get(match.player1.id);
-        const player2Info = this.onlinePlayers.get(match.player2.id);
         const roomId = uuidv4();
+        const player1Info = this.findPlayerInfoById(match.player1.id);
+        const player2Info = this.findPlayerInfoById(match.player2.id);
 
-        if (player1Info && player2Info) {
-            const newGameState = new GameStateService();
-            newGameState.initialize(
-                match.player1.id,
-                match.player2.id,
-                player1Info.username,
-                player2Info.username,
-                (result) => {
-                    this.logger.log(`${result.winner} has won the match for reason: ${result.reason}!`);
-                    this.endMatch(roomId, isRanked, result);
-                }
-            );
-
-            this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
-            this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
-
-            this.clientRooms.set(player1Info.socketId, roomId);
-            this.clientRooms.set(player2Info.socketId, roomId);
-
-            if (isRanked) {
-                this.server.to(roomId).emit('match-found-ranked', { 
-                    player1: { id: match.player1.id, username: player1Info.username }, 
-                    player2: { id: match.player2.id, username: player2Info.username }, 
-                    roomId 
-                });
-            } else {
-                this.server.to(roomId).emit('match-found-standard', { 
-                    player1: { id: match.player1.id, username: player1Info.username }, 
-                    player2: { id: match.player2.id, username: player2Info.username }, 
-                    roomId 
-                });
-            }
-
-            const newGameLoop = new GameLoopService(newGameState);
-
-            this.gameStates.set(roomId, newGameLoop);
-
-            const gameStateUpdateInterval = setInterval(() => {
-                const gameState = this.gameStates.get(roomId)?.getGameState();
-                if (gameState) {
-                    this.sendGameState(roomId, gameState);
-                }
-            }, 1000 / 120);
-            this.gameStateUpdateIntervals.set(roomId, gameStateUpdateInterval);
+        if (!player1Info || !player2Info) {
+            this.logger.error(`Player information missing for match creation. Player1: ${match.player1.id}, Player2: ${match.player2.id}`);
+            return;
         }
+        const newGameState = new GameStateService();
+        newGameState.initialize(
+            match.player1.id,
+            match.player2.id,
+            player1Info.username,
+            player2Info.username,
+            (result) => {
+                this.logger.log(`${result.winner} has won the match for reason: ${result.reason}!`);
+                this.endMatch(roomId, isRanked, result);
+            }
+        );
+        this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
+        this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
+        this.clientRooms.set(player1Info.socketId, roomId);
+        this.clientRooms.set(player2Info.socketId, roomId);
+
+        if (isRanked) {
+            this.server.to(roomId).emit('match-found-ranked', { 
+                player1: { id: match.player1.id, username: player1Info.username }, 
+                player2: { id: match.player2.id, username: player2Info.username }, 
+                roomId 
+            });
+        } else {
+            this.server.to(roomId).emit('match-found-standard', { 
+                player1: { id: match.player1.id, username: player1Info.username }, 
+                player2: { id: match.player2.id, username: player2Info.username }, 
+                roomId 
+            });
+        }
+        const newGameLoop = new GameLoopService(newGameState);
+        this.gameStates.set(roomId, newGameLoop);
+        
+        const gameStateUpdateInterval = setInterval(() => {
+            const gameState = this.gameStates.get(roomId)?.getGameState();
+            if (gameState) {
+                this.sendGameState(roomId, gameState);
+            }
+        }, 1000 / 120);
+        this.gameStateUpdateIntervals.set(roomId, gameStateUpdateInterval);
     }
+
+    private findPlayerInfoById(playerId: number | string): { socketId: string; username: string } | undefined {
+        let playerInfo;
+    
+        this.onlinePlayers.forEach((info, socketId) => {
+            if (info.playerId === playerId) {
+                playerInfo = { socketId, ...info };
+            }
+        });
+    
+        return playerInfo;
+    }    
 
     /**
      * Sends the current game state to all clients in a specified room.

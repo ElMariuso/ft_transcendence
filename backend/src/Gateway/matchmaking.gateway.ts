@@ -5,10 +5,15 @@ import { Server, Socket } from 'socket.io';
 import { MatchmakingService } from 'src/Service/matchmaking.service';
 import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 import { GameGateway } from './game.gateway';
+import { MatchmakingStateService } from 'src/Service/matchmakingstate.service';
 
 /**
  * @WebSocketGateway The gateway for handling all matchmaking related operations.
  * It listens for specific socket events related to standard and ranked matchmaking.
+ * 
+ * This class manages the player connections, matchmaking queues, and transitions players
+ * from matchmaking to game sessions. It integrates closely with MatchmakingService and GameGateway
+ * to provide a seamless experience.
  */
 @WebSocketGateway({ 
     cors: {
@@ -22,7 +27,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     /**
      * A map to keep track of online players and their socket IDs.
      */
-    private onlinePlayers: Map<number | string, { socketId: string; username: string }> = new Map();
+    private onlinePlayers: Map<string, { playerId: number | string; username: string }> = new Map();
+    private matchmakingStates: Map<string | number, MatchmakingStateService> = new Map();
     
     @WebSocketServer() server: Server;
     
@@ -39,10 +45,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     ) {
       this.eventEmitter.on('match-standard', this.getStandardMatch.bind(this));
       this.eventEmitter.on('match-ranked', this.getRankedMatch.bind(this));
+      this.startMatchmakingUpdates();
     }
 
     /**
-     * Handle new client connection.
+     * Handles new client connections. Logs the connection event and performs any necessary setup.
      * @param client - The connecting socket client.
      */
     async handleConnection(client: Socket) {
@@ -50,12 +57,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
     
     /**
-     * Handle client disconnection.
+     * Handles client disconnections. Logs the disconnection event and cleans up any related resources.
      * @param client - The disconnecting socket client.
      */
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
-      this.onlinePlayers.delete(client.id);
+      this.deleteOnlinePlayer(client.id);
     }
 
     /**
@@ -65,8 +72,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('join-standard')
     joinQueue(client: Socket, player: PlayerInQueue): void {
+      if (this.isPlayerAlreadyInQueue(player.id)) {
+        this.logger.error(`Player ${player.id} already in standard queue.`);
+        client.emit('matchmaking-error', { message: 'Already in queue' });
+        return;
+      }
       this.matchmakingService.add(player);
-      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      this.addOnlinePlayer(client.id, player.id, player.username);
+      this.setMatchmakingState(player.id, player.username, false);
       client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
     }
 
@@ -78,7 +91,10 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('leave-standard')
     leaveQueue(client: Socket, data: { playerId: string | number }): void {
       const playerId = data.playerId;
+
       this.matchmakingService.remove(playerId);
+      this.deleteMatchmakingState(playerId);
+      this.deleteOnlinePlayer(client.id);
       client.emit('left', { status: 'Removed from standard queue' });
     }
 
@@ -98,8 +114,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('join-ranked')
     joinRankedQueue(client: Socket, player: AuthenticatedPlayer): void {
+      if (this.isPlayerAlreadyInQueue(player.id)) {
+        this.logger.error(`Player ${player.id} already in ranked queue.`);
+        client.emit('error-matchmaking', { message: 'Already in queue' });
+        return;
+      }
       this.matchmakingService.addRanked(player);
-      this.onlinePlayers.set(player.id, { socketId: client.id, username: player.username });
+      this.addOnlinePlayer(client.id, player.id, player.username);
+      this.setMatchmakingState(player.id, player.username, true);
       client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
     }
 
@@ -111,6 +133,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('leave-ranked')
     leaveRankedQueue(client: Socket, playerId: number): void {
       this.matchmakingService.removeRanked(playerId);
+      this.deleteMatchmakingState(playerId);
+      this.deleteOnlinePlayer(client.id);
       client.emit('left-ranked', { status: 'Removed from ranked queue' });
     }
 
@@ -124,13 +148,36 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     /**
+     * Rejoins a player into the matchmaking process, restoring their state.
+     * This is useful in cases where the client might have disconnected and reconnected.
+     * @param client - The socket client sending the request.
+     * @param playerId - The ID of the player rejoining matchmaking.
+     */
+    @SubscribeMessage('rejoin-matchmaking')
+    rejoinMatchmaking(client: Socket, playerId: string | number): void {
+      if (this.matchmakingStates.has(playerId)) {
+        this.logger.log(`Player rejoining matchmaking: ${playerId}`);
+        const playerState = this.matchmakingStates.get(playerId);
+        this.addOnlinePlayer(client.id, playerId, playerState.username);
+        this.sendMatchmakingState(playerId);
+      } else {
+        this.logger.log(`Player not found in matchmakingStates: ${playerId}`);
+      }
+    }
+
+    /**
      * Handles the event when a standard match is found. Transfers both players to the game session.
      * @param match - The match information containing both players.
      */
     private getStandardMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }): void {
-      this.transferPlayerToGame(match.player1.id);
-      this.transferPlayerToGame(match.player2.id);
-      this.gameGateway.createMatch(match, false);
+      this.updateMatchmakingStateForMatchFound(match.player1.id, match.player2);
+      this.updateMatchmakingStateForMatchFound(match.player2.id, match.player1);
+
+      setTimeout(() => {
+        this.transferPlayerToGame(match.player1.id);
+        this.transferPlayerToGame(match.player2.id);
+        this.gameGateway.createMatch(match, false);
+      }, 5000);
     }
 
     /**
@@ -138,9 +185,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      * @param match - The match information containing both players.
      */
     private getRankedMatch(match: { player1: AuthenticatedPlayer, player2: AuthenticatedPlayer }): void {
-      this.transferPlayerToGame(match.player1.id);
-      this.transferPlayerToGame(match.player2.id);
-      this.gameGateway.createMatch(match, true);
+      this.updateMatchmakingStateForMatchFound(match.player1.id, match.player2);
+      this.updateMatchmakingStateForMatchFound(match.player2.id, match.player1);
+
+      setTimeout(() => {
+        this.transferPlayerToGame(match.player1.id);
+        this.transferPlayerToGame(match.player2.id);
+        this.gameGateway.createMatch(match, true);
+      }, 5000);
     }
 
     /**
@@ -148,12 +200,172 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      * @param playerId - The ID of the player to be transferred.
      */
     private transferPlayerToGame(playerId: number | string): void {
-      const playerInfo = this.onlinePlayers.get(playerId);
-      if (playerInfo) {
-        this.gameGateway.addOnlinePlayer(playerId, playerInfo);
-        this.onlinePlayers.delete(playerId);
+      const playerInfos = this.findPlayerByPlayerId(playerId);
+
+      if (playerInfos) {
+        this.sendMatchFoundNotification(playerId);
+        this.gameGateway.addOnlinePlayer(playerInfos.clientId, playerInfos.playerInfo);
+        this.deleteOnlinePlayer(playerInfos.clientId);
+        this.deleteMatchmakingState(playerId);
       } else {
-        this.logger.error(`Player with ID ${playerId} not found in online players map.`);
+        this.logger.error(`TransferPlayerToGame: Player with ID ${playerId} not found in online players map.`);
       }
     }
+
+    /**
+     * Adds a player to the online players map, tracking their current state in the matchmaking process.
+     * @param clientId - The client ID associated with the player.
+     * @param sentPlayerId - The player's unique ID.
+     * @param sentUsername - The player's username.
+     */
+    private addOnlinePlayer(clientId: string, sentPlayerId: string | number, sentUsername: string): void {
+      this.onlinePlayers.set(clientId, { playerId: sentPlayerId, username: sentUsername });
+    }
+
+    /**
+     * Removes a player from the online players map when they disconnect or leave the matchmaking process.
+     * @param clientId - The client ID associated with the player.
+     */
+    private deleteOnlinePlayer(clientId: string): void {
+      this.onlinePlayers.delete(clientId);
+    }
+
+    /**
+     * Finds a player by their player ID in the online players map.
+     * Returns an object containing the client ID and player info if found, or undefined if not.
+     * @param playerId - The ID of the player to find.
+     * @return The player's client and info, or undefined if not found.
+     */
+    private findPlayerByPlayerId(playerId: number | string): { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined {
+      let foundPlayer: { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined = undefined;
+
+      this.onlinePlayers.forEach((playerInfo, clientId) => {
+          if (playerInfo.playerId === playerId) {
+              foundPlayer = { clientId, playerInfo };
+              return;
+          }
+      });
+      return foundPlayer;
+    }
+
+    /**
+     * Sets the matchmaking state for a specific player.
+     * Initializes a new MatchmakingStateService instance and updates the matchmaking states map.
+     * @param playerId - The ID of the player.
+     * @param username - The username of the player.
+     * @param isRanked - Boolean indicating whether the player is in ranked matchmaking.
+     */
+    private setMatchmakingState(playerId: string | number, username: string, isRanked: boolean): void {
+      const state = new MatchmakingStateService();
+      state.setUsername(username);
+      state.setIsSearching(true);
+      state.setIsRanked(isRanked);
+      this.matchmakingStates.set(playerId, state);
+    }
+
+    /**
+     * Deletes the matchmaking state for a specific player.
+     * Removes the player's state from the matchmaking states map.
+     * @param playerId - The ID of the player whose matchmaking state is to be deleted.
+     */
+    private deleteMatchmakingState(playerId: string | number): void {
+      this.matchmakingStates.delete(playerId);
+    }
+
+    /**
+     * Starts periodic updates for matchmaking states.
+     * Sends the current matchmaking state to each player at regular intervals.
+     */
+    private startMatchmakingUpdates(): void {
+      setInterval(() => {
+          this.matchmakingStates.forEach((_, playerId) => {
+              this.sendMatchmakingState(playerId);
+          });
+      }, 500);
+    }
+
+    /**
+     * Sends the current matchmaking state to a specific player.
+     * Emits matchmaking information to the client if the player is found in the online players map.
+     * @param playerId - The ID of the player to send the matchmaking state to.
+     */
+    private sendMatchmakingState(playerId: string | number): void {
+      const state = this.matchmakingStates.get(playerId);
+
+      if (!state) {
+        this.logger.error('No matchmaking state found for player ID: ${playerId}');
+        return ;
+      }
+      const informations = {
+        isSearching: state.isSearching,
+        isRanked: state.isRanked,
+        matchFound: state.matchFound,
+        opponentUUID: state.opponentUUID,
+        opponentUsername: state.opponentUsername,
+      };
+      const playerInfo = this.findPlayerByPlayerId(playerId);
+      if (playerInfo) {
+        const client = this.server.sockets.sockets.get(playerInfo.clientId);
+        if (client) {
+          client.emit('matchmaking-informations', informations);
+        } else {
+          this.logger.error(`No socket found for client ID: ${playerInfo.clientId}`);
+        }
+      } else {
+        this.logger.error(`SendMatchmakingState: Player with ID ${playerId} not found in online players map.`);
+      }
+    }
+
+    /**
+     * Updates the matchmaking state when a match is found for a player.
+     * Sets the matchFound flag and stores the opponent's information in the state.
+     * @param playerId - The ID of the player for whom the match was found.
+     * @param opponent - The player information of the opponent.
+     */
+    private updateMatchmakingStateForMatchFound(playerId: string | number, opponent: PlayerInQueue | AuthenticatedPlayer): void {
+      const state = this.matchmakingStates.get(playerId);
+      if (state) {
+          state.setMatchFound(true);
+          state.setOpponentUUID(opponent.id.toString());
+          state.setOpponentUsername(opponent.username);
+      }
+    }
+
+    /**
+     * Updates the matchmaking state to reflect the start of a game.
+     * Marks the player as no longer searching and resets the matchFound flag.
+     * @param playerId - The ID of the player whose game is starting.
+     */
+    private updateMatchmakingStateForGameStart(playerId: number | string): void {
+      const state = this.matchmakingStates.get(playerId);
+      if (state) {
+          state.setIsSearching(false);
+          state.setMatchFound(false);
+      }
+    }
+
+    /**
+     * Sends a match found notification to a specific player.
+     * Updates the matchmaking state for game start and emits a 'match-found' event to the player.
+     * @param playerId - The ID of the player to notify about the match found.
+     */
+    private sendMatchFoundNotification(playerId: string | number): void {
+      this.updateMatchmakingStateForGameStart(playerId);
+      this.sendMatchmakingState(playerId);
+  
+      const playerInfo = this.findPlayerByPlayerId(playerId);
+      if (playerInfo && this.server.sockets.sockets.get(playerInfo.clientId)) {
+          this.server.sockets.sockets.get(playerInfo.clientId).emit('match-found');
+      }
+    }
+
+    /**
+     * Determines if a player is already in the matchmaking queue.
+     * This is to prevent players from joining the queue multiple times.
+     * @param playerId - The ID of the player to check.
+     * @return boolean - True if the player is already in queue, false otherwise.
+     */
+    private isPlayerAlreadyInQueue(playerId: number | string): boolean {
+      return Array.from(this.onlinePlayers.values()).some(player => player.playerId === playerId);
+  }
 }
