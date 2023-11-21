@@ -328,7 +328,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      * Creates a new match and initializes the game state. It also sets up the players in the match and starts the game loop.
      * @param match - The match object containing information about the two players.
      * @param isRanked - Boolean indicating if the match is a ranked match.
- */
+     */
     public createMatch(match: { player1: PlayerInQueue, player2: PlayerInQueue }, isRanked: boolean): void {
         const roomId = uuidv4();
         const player1Info = this.findPlayerInfoById(match.player1.id);
