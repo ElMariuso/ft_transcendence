@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from 'vue';
+import { onMounted, onBeforeUnmount, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
 import Footer from './components/Footer.vue';
@@ -30,10 +30,10 @@ onMounted(() => {
       setupStore();
     }
     initializeSocketListeners(matchmakingStore, profileStore);
-    updatePlayerStatus(0);
+    updatePlayerStatus(0, profileStore);
 });
-onUnmounted(() => {
-  updatePlayerStatus(1);
+onBeforeUnmount(() => {
+    updatePlayerStatus(1, profileStore);
 });
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
