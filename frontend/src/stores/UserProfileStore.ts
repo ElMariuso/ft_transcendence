@@ -198,11 +198,30 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setFriends(newList: any) {
-		friendlist.values = newList;
+		friendlist.value = newList;
 	}
 
 	function getFriends() {
-		return friendlist.values;
+		return friendlist.value;
+	}
+
+	async function removeFriend(idFriend: number) {
+
+		try {
+			await deleteFriend(userID.value, idFriend);
+		} catch (error) {
+			console.error("Error removing a friend :", error);
+		}
+	}
+
+	async function updateFriends() {
+
+		try {
+			const userData = await getFriendsData(userID.value);
+			setFriends(userData);
+		} catch (error) {
+			console.error("Error updating up Friends:", error);
+		}
 	}
 
 	/////////////////// FRIENDS INVITE ////////////////////////
@@ -218,17 +237,16 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setFriendsInvite(newList: any) {
-		invite.values = newList;
+		invite.value = newList;
 	}
 
 	function getFriendsInvite() {
-		return invite.values;
+		return invite.value;
 	}
 
 	async function sendFriendRequest(username: string) {
 
 		try {
-			// postFriendsInviteData(userID.value, username);
 			const userData = await postFriendsInviteData(userID.value, username);
 			if (userData == "Friend invite already sent")
 				return("error caught");
@@ -237,13 +255,13 @@ export const useLadderStore = defineStore('ladder', () => {
 		}
 	}
 
-	async function removeFriend(idFriend: number) {
+	async function updateFriendsInvite() {
 
-		// console.log(idFriend);
 		try {
-			deleteFriend(userID.value, idFriend);
+			const userData = await getFriendsInviteData(userID.value);
+			setFriendsInvite(userData);
 		} catch (error) {
-			console.error("Error removing a friend :", error);
+			console.error("Error updating Friends Invite:", error);
 		}
 	}
 
@@ -289,5 +307,5 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 
-	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
+	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
 })

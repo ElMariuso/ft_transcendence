@@ -136,9 +136,9 @@ function getAvatarImg() {
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
-const refreshPage = () => {
-  location.reload(); // Reloads the current page
-};
+// const refreshPage = () => {
+//   location.reload(); // Reloads the current page
+// };
 
 async function Accept(idFriend) {
 
@@ -150,8 +150,9 @@ async function Accept(idFriend) {
     	console.error('Error accepting a friend request:', error);
     	throw error;
     }
-	// await ladderStore.setupFriendsInvite();//updating friends invite list
-	refreshPage();
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	// refreshPage();
 }
 
 async function Decline(idFriend) {
@@ -164,8 +165,9 @@ async function Decline(idFriend) {
     	console.error('Error refusing a friend request:', error);
     	throw error;
     }
-	// await ladderStore.setupFriendsInvite();//updating friends invite list
-	refreshPage();
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	// refreshPage();
 }
 
 function isOnline() {

@@ -444,10 +444,6 @@ const setAll = async () => {
 }
 setAll()
 
-// const refreshPage = () => {
-//   location.reload(); // Reloads the current page
-// };
-
 function isFriend(friendId) {
 	
 	let friendList = ladderStore.getFriends();

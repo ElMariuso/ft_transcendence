@@ -109,7 +109,7 @@
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend list</h3>
 		  <div class="mt-2">
-            <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
+            <li v-for="Friends in friendlist" class="mb-2">
 			  <span class="font-semibold">{{ Friends.username }}</span>
 			  <button @click="Unfriend(Friends.idUser)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unfriend</button>
 			  <span :class="{ 'text-green-600 ': getStatus(Friends.idUser) === isOnline(), 'text-yellow-600 ': getStatus(Friends.idUser) === isPlaying(), 'text-red-600 ': getStatus(Friends.idUser) === isOffline()}">
@@ -135,7 +135,7 @@ import api from '../services/api';
 import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
-import { deleteBlock } from '@/services/UserProfile-helpers'
+//import { deleteBlock } from '@/services/UserProfile-helpers'
 import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
 const profileStore = useProfileStore()
@@ -143,6 +143,7 @@ const ladderStore = useLadderStore()
 
 const showProfile = ref(false);
 
+const { friendlist } = storeToRefs(ladderStore);
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
@@ -228,9 +229,9 @@ async function Block() {
 		alreadyBlocked.value = true;
 }
 
-const refreshPage = () => {
-  location.reload(); // Reloads the current page
-};
+// const refreshPage = () => {
+//   location.reload(); // Reloads the current page
+// };
 
 async function Accept(idFriend) {
 
@@ -242,8 +243,9 @@ async function Accept(idFriend) {
     	console.error('Error accepting a friend request:', error);
     	throw error;
     }
-	// await ladderStore.setupFriendsInvite();//updating friends invite list
-	refreshPage();
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	//refreshPage();
 }
 
 async function Decline(idFriend) {
@@ -256,15 +258,18 @@ async function Decline(idFriend) {
     	console.error('Error refusing a friend request:', error);
     	throw error;
     }
-	// await ladderStore.setupFriendsInvite();//updating friends invite list
-	refreshPage();
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	// refreshPage();
 }
 
 async function Unfriend(idFriend) {
-
-	//console.log("Unfriend")
-	ladderStore.removeFriend(idFriend)
-	refreshPage();
+	try {
+		await ladderStore.removeFriend(idFriend)
+	} catch (error) {
+		console.error('Error unfriending someone', error);
+	}
+	await ladderStore.updateFriends();
 }
 
 function isOnline() {
