@@ -10,6 +10,10 @@ import { MatchmakingStateService } from 'src/Service/matchmakingstate.service';
 /**
  * @WebSocketGateway The gateway for handling all matchmaking related operations.
  * It listens for specific socket events related to standard and ranked matchmaking.
+ * 
+ * This class manages the player connections, matchmaking queues, and transitions players
+ * from matchmaking to game sessions. It integrates closely with MatchmakingService and GameGateway
+ * to provide a seamless experience.
  */
 @WebSocketGateway({ 
     cors: {
@@ -45,7 +49,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     /**
-     * Handle new client connection.
+     * Handles new client connections. Logs the connection event and performs any necessary setup.
      * @param client - The connecting socket client.
      */
     async handleConnection(client: Socket) {
@@ -53,7 +57,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
     
     /**
-     * Handle client disconnection.
+     * Handles client disconnections. Logs the disconnection event and cleans up any related resources.
      * @param client - The disconnecting socket client.
      */
     async handleDisconnect(client: Socket) {
@@ -143,6 +147,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       client.emit('status-ranked', { playersInQueue: this.matchmakingService.getRankedQueueSize() });
     }
 
+    /**
+     * Rejoins a player into the matchmaking process, restoring their state.
+     * This is useful in cases where the client might have disconnected and reconnected.
+     * @param client - The socket client sending the request.
+     * @param playerId - The ID of the player rejoining matchmaking.
+     */
     @SubscribeMessage('rejoin-matchmaking')
     rejoinMatchmaking(client: Socket, playerId: string | number): void {
       if (this.matchmakingStates.has(playerId)) {
@@ -202,14 +212,30 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Adds a player to the online players map, tracking their current state in the matchmaking process.
+     * @param clientId - The client ID associated with the player.
+     * @param sentPlayerId - The player's unique ID.
+     * @param sentUsername - The player's username.
+     */
     private addOnlinePlayer(clientId: string, sentPlayerId: string | number, sentUsername: string): void {
       this.onlinePlayers.set(clientId, { playerId: sentPlayerId, username: sentUsername });
     }
 
+    /**
+     * Removes a player from the online players map when they disconnect or leave the matchmaking process.
+     * @param clientId - The client ID associated with the player.
+     */
     private deleteOnlinePlayer(clientId: string): void {
       this.onlinePlayers.delete(clientId);
     }
 
+    /**
+     * Finds a player by their player ID in the online players map.
+     * Returns an object containing the client ID and player info if found, or undefined if not.
+     * @param playerId - The ID of the player to find.
+     * @return The player's client and info, or undefined if not found.
+     */
     private findPlayerByPlayerId(playerId: number | string): { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined {
       let foundPlayer: { clientId: string; playerInfo: { playerId: number | string; username: string } } | undefined = undefined;
 
@@ -222,6 +248,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       return foundPlayer;
     }
 
+    /**
+     * Sets the matchmaking state for a specific player.
+     * Initializes a new MatchmakingStateService instance and updates the matchmaking states map.
+     * @param playerId - The ID of the player.
+     * @param username - The username of the player.
+     * @param isRanked - Boolean indicating whether the player is in ranked matchmaking.
+     */
     private setMatchmakingState(playerId: string | number, username: string, isRanked: boolean): void {
       const state = new MatchmakingStateService();
       state.setUsername(username);
@@ -230,10 +263,19 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       this.matchmakingStates.set(playerId, state);
     }
 
+    /**
+     * Deletes the matchmaking state for a specific player.
+     * Removes the player's state from the matchmaking states map.
+     * @param playerId - The ID of the player whose matchmaking state is to be deleted.
+     */
     private deleteMatchmakingState(playerId: string | number): void {
       this.matchmakingStates.delete(playerId);
     }
 
+    /**
+     * Starts periodic updates for matchmaking states.
+     * Sends the current matchmaking state to each player at regular intervals.
+     */
     private startMatchmakingUpdates(): void {
       setInterval(() => {
           this.matchmakingStates.forEach((_, playerId) => {
@@ -242,6 +284,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }, 500);
     }
 
+    /**
+     * Sends the current matchmaking state to a specific player.
+     * Emits matchmaking information to the client if the player is found in the online players map.
+     * @param playerId - The ID of the player to send the matchmaking state to.
+     */
     private sendMatchmakingState(playerId: string | number): void {
       const state = this.matchmakingStates.get(playerId);
 
@@ -269,6 +316,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Updates the matchmaking state when a match is found for a player.
+     * Sets the matchFound flag and stores the opponent's information in the state.
+     * @param playerId - The ID of the player for whom the match was found.
+     * @param opponent - The player information of the opponent.
+     */
     private updateMatchmakingStateForMatchFound(playerId: string | number, opponent: PlayerInQueue | AuthenticatedPlayer): void {
       const state = this.matchmakingStates.get(playerId);
       if (state) {
@@ -278,6 +331,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Updates the matchmaking state to reflect the start of a game.
+     * Marks the player as no longer searching and resets the matchFound flag.
+     * @param playerId - The ID of the player whose game is starting.
+     */
     private updateMatchmakingStateForGameStart(playerId: number | string): void {
       const state = this.matchmakingStates.get(playerId);
       if (state) {
@@ -286,6 +344,11 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Sends a match found notification to a specific player.
+     * Updates the matchmaking state for game start and emits a 'match-found' event to the player.
+     * @param playerId - The ID of the player to notify about the match found.
+     */
     private sendMatchFoundNotification(playerId: string | number): void {
       this.updateMatchmakingStateForGameStart(playerId);
       this.sendMatchmakingState(playerId);
@@ -296,6 +359,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Determines if a player is already in the matchmaking queue.
+     * This is to prevent players from joining the queue multiple times.
+     * @param playerId - The ID of the player to check.
+     * @return boolean - True if the player is already in queue, false otherwise.
+     */
     private isPlayerAlreadyInQueue(playerId: number | string): boolean {
       return Array.from(this.onlinePlayers.values()).some(player => player.playerId === playerId);
   }
