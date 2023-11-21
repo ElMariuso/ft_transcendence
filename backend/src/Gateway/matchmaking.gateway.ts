@@ -50,8 +50,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     async handleConnection(client: Socket) {
       this.logger.log(`Client connected: ${client.id}`);
-
-      console.log('Connect:', this.onlinePlayers);
     }
     
     /**
@@ -61,8 +59,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
       this.deleteOnlinePlayer(client.id);
-
-      console.log('Disconnect:', this.onlinePlayers);
     }
 
     /**
@@ -77,14 +73,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         client.emit('matchmaking-error', { message: 'Already in queue' });
         return;
       }
-      console.log("JoinQueue:", player.id);
-
       this.matchmakingService.add(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, false);
-
-      console.log("Join standard:", this.onlinePlayers);
-
       client.emit('joined', { status: 'Added to standard queue', playerId: player.id });
     }
 
@@ -96,8 +87,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('leave-standard')
     leaveQueue(client: Socket, data: { playerId: string | number }): void {
       const playerId = data.playerId;
-
-      console.log("leaveQueue ID:", playerId);
 
       this.matchmakingService.remove(playerId);
       this.deleteMatchmakingState(playerId);
@@ -126,13 +115,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         client.emit('error-matchmaking', { message: 'Already in queue' });
         return;
       }
-
       this.matchmakingService.addRanked(player);
       this.addOnlinePlayer(client.id, player.id, player.username);
       this.setMatchmakingState(player.id, player.username, true);
-
-      console.log("Join ranked:", this.onlinePlayers);
-
       client.emit('joined-ranked', { status: 'Added to ranked queue', playerId: player.id });
     }
 
@@ -143,9 +128,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     @SubscribeMessage('leave-ranked')
     leaveRankedQueue(client: Socket, playerId: number): void {
-
-      console.log("IDRANKED:", playerId);
-
       this.matchmakingService.removeRanked(playerId);
       this.deleteMatchmakingState(playerId);
       this.deleteOnlinePlayer(client.id);
@@ -163,18 +145,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     @SubscribeMessage('rejoin-matchmaking')
     rejoinMatchmaking(client: Socket, playerId: string | number): void {
-      console.log("Rejoin PlayerID:", playerId);
       if (this.matchmakingStates.has(playerId)) {
         this.logger.log(`Player rejoining matchmaking: ${playerId}`);
         const playerState = this.matchmakingStates.get(playerId);
-
         this.addOnlinePlayer(client.id, playerId, playerState.username);
         this.sendMatchmakingState(playerId);
       } else {
         this.logger.log(`Player not found in matchmakingStates: ${playerId}`);
       }
-
-      console.log('Rejoin:', this.onlinePlayers);
     }
 
     /**
@@ -213,9 +191,9 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     private transferPlayerToGame(playerId: number | string): void {
       const playerInfos = this.findPlayerByPlayerId(playerId);
+
       if (playerInfos) {
         this.sendMatchFoundNotification(playerId);
-
         this.gameGateway.addOnlinePlayer(playerInfos.clientId, playerInfos.playerInfo);
         this.deleteOnlinePlayer(playerInfos.clientId);
         this.deleteMatchmakingState(playerId);
@@ -271,7 +249,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         this.logger.error('No matchmaking state found for player ID: ${playerId}');
         return ;
       }
-
       const informations = {
         isSearching: state.isSearching,
         isRanked: state.isRanked,
@@ -279,7 +256,6 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         opponentUUID: state.opponentUUID,
         opponentUsername: state.opponentUsername,
       };
-
       const playerInfo = this.findPlayerByPlayerId(playerId);
       if (playerInfo) {
         const client = this.server.sockets.sockets.get(playerInfo.clientId);
