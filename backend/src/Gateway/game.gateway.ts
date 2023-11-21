@@ -74,17 +74,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      */
     @SubscribeMessage('quit-match')
     quitMatch(client: Socket, playerId: number | string): void {
-        console.log("TEST:", playerId);
-
         const roomId = this.findRoomIdByClientId(client.id);
         if (roomId) {
-            console.log("Room ID found:", roomId);
             const gameState = this.gameStates.get(roomId)?.getGameState();
             if (gameState) {
-                console.log("GameState found");
                 const playerInfo = this.onlinePlayers.get(client.id);
-
-                console.log("PlayerINFO:", playerInfo);
                 if (playerInfo && playerInfo.playerId === playerId) {
                     gameState.setForfeit(playerId);
                     client.emit('confirm-quit-match', { status: 'Successfully left the match.' });
@@ -114,9 +108,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (room) {
             client.join(roomId);
             client.emit('rejoined-room', { status: 'Rejoined the room', roomId });
-    
             this.clientRooms.set(client.id, roomId);
-            console.log("playerID rejoinRoom:", playerId);
             this.onlinePlayers.set(client.id, { playerId: playerId, username: username });
         } else {
             client.emit('rejoin-failed', { status: 'Failed to rejoin the room', roomId });
@@ -329,7 +321,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      * @param playerInfo - The player's information including socket ID and username.
      */
     public addOnlinePlayer(socketId: string, playerInfo: { playerId: number | string; username: string }) {
-        console.log("Add Online Player:", playerInfo.playerId);
         this.onlinePlayers.set(socketId, playerInfo);
     }
 
@@ -342,9 +333,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const roomId = uuidv4();
         const player1Info = this.findPlayerInfoById(match.player1.id);
         const player2Info = this.findPlayerInfoById(match.player2.id);
-
-        console.log("Player1Info:", player1Info);
-        console.log("Player2Info:", player2Info);
 
         if (!player1Info || !player2Info) {
             this.logger.error(`Player information missing for match creation. Player1: ${match.player1.id}, Player2: ${match.player2.id}`);
@@ -361,9 +349,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 this.endMatch(roomId, isRanked, result);
             }
         );
-
-        console.log("GameState initialized");
-        
         this.server.sockets.sockets.get(player1Info.socketId)?.join(roomId);
         this.server.sockets.sockets.get(player2Info.socketId)?.join(roomId);
         this.clientRooms.set(player1Info.socketId, roomId);
@@ -376,7 +361,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 roomId 
             });
         } else {
-            console.log("Match standard");
             this.server.to(roomId).emit('match-found-standard', { 
                 player1: { id: match.player1.id, username: player1Info.username }, 
                 player2: { id: match.player2.id, username: player2Info.username }, 
