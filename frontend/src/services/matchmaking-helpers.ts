@@ -191,8 +191,6 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             LadderStore.friendsStatus.value = {};
         }
 
-        console.log("data.status:", data.status);
-
         let statusText = "Offline";
         switch (data.status) {
             case 0:
@@ -205,11 +203,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
                 statusText = "In Game";
                 break;
         }
-    
-        console.log(`Player ID: ${data.playerId}, Status: ${statusText}`);
         LadderStore.friendsStatus.value[data.playerId] = statusText;
-
-        console.log("Essai:", LadderStore.friendsStatus.value[data.playerId]);
     });    
 
     socket.on('timer-before-launch', (response) => {

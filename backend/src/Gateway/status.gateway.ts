@@ -59,7 +59,6 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
      */
     @SubscribeMessage('update-status')
     handleStatusUpdate(client: Socket, payload: { playerId: number, status: PlayerStatus }) {
-        console.log("PAYLOAD:", payload);
         const { playerId, status } = payload;
         this.listOfPlayers.set(playerId, status);
         this.logger.log(`Status updated for player ${playerId}: ${PlayerStatus[status]}`);
