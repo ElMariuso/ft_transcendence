@@ -57,7 +57,7 @@
 		  <div class="mt-2">
             <li v-for="match in ladderStore.getGamesHistory()" class="mb-2">
 			  <span class="font-semibold">{{ match.scoreLeft }} - {{ match.scoreRight }}</span>
-			  <div>{{ match.date }}</div>
+			  <!-- <div>{{ match.date }}</div> -->
             </li>
           </div>
 		</div>

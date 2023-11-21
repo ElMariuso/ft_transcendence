@@ -224,7 +224,7 @@
 			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
 										</router-link>
 										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-										<img @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+										<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
 									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
@@ -447,6 +447,18 @@ setAll()
 // const refreshPage = () => {
 //   location.reload(); // Reloads the current page
 // };
+
+function isFriend(friendId) {
+	
+	let friendList = ladderStore.getFriends();
+
+	for(let i = 0; friendList[i]; i++)
+	{
+		if (friendList[i].idUser == friendId)
+			return (true);
+	}
+	return (false);
+}
 
 async function sendFriendRequest(usernameToFriend) {
 	
