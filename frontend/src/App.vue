@@ -24,7 +24,7 @@ async function setupStore() {
 
 onMounted(() => {
     matchmakingStore.initializeStore(profileStore);
-
+    
     const token = Cookies.get('token');
     if (token) {
       setupStore();

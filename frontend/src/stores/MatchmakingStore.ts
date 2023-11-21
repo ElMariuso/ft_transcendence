@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
-import { rejoinRoom } from '@/services/matchmaking-helpers';
+import { rejoinMatchmaking, rejoinRoom } from '@/services/matchmaking-helpers';
 
 export const useMatchmakingStore = defineStore('matchmaking', {
     state: () => ({
@@ -23,30 +23,27 @@ export const useMatchmakingStore = defineStore('matchmaking', {
             }
             this.guestUUID = guestUUIDCookie;
 
-            const isSearchingCookie = Cookies.get('isSearching');
-            this.isSearching = isSearchingCookie === 'true';
-
-            const isRankedCookie = Cookies.get('isRanked');
-            this.isRanked = isRankedCookie === 'true';
-
-            const matchFoundCookie = Cookies.get('matchFound');
-            this.matchFound = matchFoundCookie === 'true';
+            const playerId = profileStore.userID <= 0 ? this.guestUUID : profileStore.userID;
+            rejoinMatchmaking(playerId);
 
             const roomIDCookie = Cookies.get('roomID');
             if (roomIDCookie) {
                 this.roomID = roomIDCookie;
-                let username;
-                if (profileStore.isAuthenticated) {
-                    username = profileStore.username;
-                } else {
-                    username = 'Guest' + this.guestUUID.substring(0, 8);
-                }
-                const data = { 
+                const username = profileStore.isAuthenticated ? profileStore.username : 'Guest' + this.guestUUID.substring(0, 8);
+                const data = {
+                    playerId: playerId,
                     roomId: this.roomID, 
                     username: username
                 };
                 rejoinRoom(data);
             }
+        },
+        updateInformations(data) {
+            this.isSearching = data.isSearching;
+            this.isRanked = data.isRanked
+            this.matchFound = data.matchFound;
+            this.opponentUUID = data.opponentUUID;
+            this.opponentUsername = data.opponentUsername;
         },
         setGuestUUID(value) {
             this.guestUUID = value;
@@ -54,30 +51,12 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         },
         setIsSearching(value) {
             this.isSearching = value;
-
-            if (value) {
-                Cookies.set('isSearching', 'true', { expires: 1/144 });
-            } else {
-                Cookies.remove('isSearching');
-            }
         },
         setIsRanked(value) {
             this.isRanked = value;
-
-            if (value) {
-                Cookies.set('isRanked', 'true', { expires: 1/144 });
-            } else {
-                Cookies.remove('isRanked');
-            }
         },
         setMatchFound(value) {
             this.matchFound = value;
-
-            if (value) {
-                Cookies.set('matchFound', 'true', { expires: 365 });
-            } else {
-                Cookies.remove('matchFound');
-            }
         },
         setNumberOfPlayers(count) {
             this.numberOfPlayers = count;

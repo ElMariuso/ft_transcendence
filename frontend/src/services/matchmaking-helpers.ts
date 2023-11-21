@@ -27,12 +27,16 @@ const getRankedQueueStatus = () => {
     socket.emit('status-ranked');
 };
 
-const quitMatch = () => {
-    socket.emit('quit-match');
+const quitMatch = (data) => {
+    socket.emit('quit-match', data);
 };
 
 const rejoinRoom = (data) => {
     socket.emit('rejoin-room', data);
+};
+
+const rejoinMatchmaking = (data) => {
+    socket.emit('rejoin-matchmaking', data);
 };
 
 const askGamesInformations = (roomId) => {
@@ -107,14 +111,15 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('match-found-standard', (response) => {
+        console.log("Standard:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
         let opponentUsername;
-        if (response.player1.id == matchmakingStore.guestUUID) {
+        if (response.player1.id == matchmakingStore.guestUUID || response.player1.id == profileStore.userID) {
             opponentUUID = response.player2.id;
             opponentUsername = response.player2.username;
-        } else if (response.player2.id == matchmakingStore.guestUUID) {
+        } else if (response.player2.id == matchmakingStore.guestUUID || response.player2.id == profileStore.userID) {
             opponentUUID = response.player1.id;
             opponentUsername = response.player1.username;
         }
@@ -122,16 +127,15 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setOpponentUUID(opponentUUID);
             matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
-            setTimeout(() => {
-                matchmakingStore.setIsSearching(false);
-                matchmakingStore.setMatchFound(false);
-                router.push({ name: 'game', params: { roomId: response.roomId } });
-            }, 5000);
+            matchmakingStore.setIsSearching(false);
+            matchmakingStore.setMatchFound(false);
+            router.push({ name: 'game', params: { roomId: response.roomId } });
         }
         updatePlayerStatus(2);
     });
 
     socket.on('match-found-ranked', (response) => {
+        console.log("Ranked:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -147,12 +151,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setOpponentUUID(opponentUUID);
             matchmakingStore.setOpponentUsername(opponentUsername);
             matchmakingStore.setRoomID(response.roomId);
-            setTimeout(() => {
-                matchmakingStore.setIsSearching(false);
-                matchmakingStore.setMatchFound(false);
-                matchmakingStore.setIsRanked(false);
-                router.push({ name: 'game', params: { roomId: response.roomId } });
-            }, 5000);
+            matchmakingStore.setIsSearching(false);
+            matchmakingStore.setMatchFound(false);
+            matchmakingStore.setIsRanked(false);
+            router.push({ name: 'game', params: { roomId: response.roomId } });
         }
         updatePlayerStatus(2);
     });
@@ -192,6 +194,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
         const gameStore = useGameStore();
         gameStore.updateCount(response);
     });
+
+    socket.on('matchmaking-informations', (data) => {
+        matchmakingStore.updateInformations(data);
+    });
 };
 
 export { joinQueue, 
@@ -201,7 +207,8 @@ export { joinQueue,
     leaveRankedQueue, 
     getRankedQueueStatus, 
     quitMatch, 
-    rejoinRoom, 
+    rejoinRoom,
+    rejoinMatchmaking,
     askGamesInformations, 
     updateRacket, 
     setReady,

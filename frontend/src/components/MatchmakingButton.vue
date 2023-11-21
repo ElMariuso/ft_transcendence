@@ -52,7 +52,7 @@ const handleClick = async () => {
                 let playerData;
                 if (isAuthenticated.value) {
                     playerData = {
-                        id: guestUUID.value,
+                        id: profileStore.userID,
                         isGuest: false,
                         username: profileStore.username
                     };

@@ -244,6 +244,18 @@ export const getFriendsData = async (userID) => {
     }
 };
 
+export const postBlock = async (idUser, usernameToBlock : string) => {
+	try {
+        const response = await api.post('/users/' + idUser + '/blockUser', {
+			"username": usernameToBlock,
+				})
+		return response;
+	} catch (error) {
+    	console.error('Error blocking a user:', error);
+		throw error;
+	}
+}
+
 export const deleteBlock = async (idUser, idBlock : number) => {
 	try {
 		const res = await api.post('/users/' + idUser + '/deleteBlock', {
