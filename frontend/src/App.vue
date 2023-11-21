@@ -22,6 +22,10 @@ async function setupStore() {
 		await profileStore.setupProfile(0);
 }
 
+function handleBeforeUnload() {
+  updatePlayerStatus(1, profileStore);
+}
+
 onMounted(() => {
     matchmakingStore.initializeStore(profileStore);
     
@@ -31,7 +35,13 @@ onMounted(() => {
     }
     initializeSocketListeners(matchmakingStore, profileStore);
     updatePlayerStatus(0, profileStore);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
+});
+
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
