@@ -2,6 +2,7 @@ import { useGameStore } from "@/stores/GameStore";
 import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
 import { useProfileStore } from "@/stores/ProfileStore";
+import { useLadderStore } from "@/stores/UserProfileStore";
 
 const joinQueue = (playerData) => {
     socket.emit('join-standard', playerData);
@@ -69,8 +70,7 @@ const setObstacle = (roomId, action) => {
     socket.emit('set-obstacle', roomId, action);
 };
 
-const updatePlayerStatus = (status) => {
-    const profileStore = useProfileStore();
+const updatePlayerStatus = (status, profileStore) => {
     const playerId = profileStore.userID;
 
     if (playerId > 0) {
@@ -79,9 +79,8 @@ const updatePlayerStatus = (status) => {
 };
 
 const getPlayerStatus = (data) => {
-    const res = socket.emit('get-status', data);
-	return (res)
-}
+    socket.emit('get-status', data);
+};
 
 const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
@@ -131,7 +130,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setMatchFound(false);
             router.push({ name: 'game', params: { roomId: response.roomId } });
         }
-        updatePlayerStatus(2);
+        updatePlayerStatus(2, profileStore);
     });
 
     socket.on('match-found-ranked', (response) => {
@@ -156,7 +155,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setIsRanked(false);
             router.push({ name: 'game', params: { roomId: response.roomId } });
         }
-        updatePlayerStatus(2);
+        updatePlayerStatus(2, profileStore);
     });
 
     socket.on('rejoin-failed', (response) => {
@@ -182,13 +181,30 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             }
             gameStore.setMatchResult(null);
         }, 10000);
-        updatePlayerStatus(0);
+        updatePlayerStatus(0, profileStore);
     });
 
     socket.on('status-response', (data) => {
-        console.log(data); // Need to be removed after
-        // Logic to handle the data received from the backend
-    });
+        const LadderStore = useLadderStore();
+    
+        if (!LadderStore.friendsStatus.value) {
+            LadderStore.friendsStatus.value = {};
+        }
+
+        let statusText = "Offline";
+        switch (data.status) {
+            case 0:
+                statusText = "Online";
+                break;
+            case 1:
+                statusText = "Offline";
+                break;
+            case 2:
+                statusText = "In Game";
+                break;
+        }
+        LadderStore.friendsStatus.value[data.playerId] = statusText;
+    });    
 
     socket.on('timer-before-launch', (response) => {
         const gameStore = useGameStore();

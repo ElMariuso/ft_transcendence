@@ -65,18 +65,17 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     /**
-     * Listens for 'get-status' messages from clients to retrieve status information for multiple players.
-     * Emits the 'status-response' event to the requesting client with status information.
+     * Listens for 'get-status' messages from clients to retrieve the status information for a specific player.
+     * Emits the 'status-response' event to the requesting client with the status information.
      * 
      * @param client - The client's Socket instance requesting the status information.
-     * @param playerIds - Array of player IDs whose statuses are being requested.
+     * @param playerId - The ID of the player whose status is being requested.
      */
     @SubscribeMessage('get-status')
-    async getStatus(client: Socket, playerIds: number[]): Promise<void> {
-        const statusRet = playerIds.map(playerId => ({
-            playerId,
-            status: this.listOfPlayers.get(playerId) || PlayerStatus.Offline
-        }));
+    getStatus(client: Socket, playerId: number) {
+        const status = this.listOfPlayers.get(playerId);
+        const statusRet = { playerId, status };
+
         client.emit('status-response', statusRet);
     }
 }

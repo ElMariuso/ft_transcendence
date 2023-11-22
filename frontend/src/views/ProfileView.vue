@@ -109,14 +109,18 @@
 		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend list</h3>
 		  <div class="mt-2">
-            <li v-for="Friends in friendlist" class="mb-2">
-			  <span class="font-semibold">{{ Friends.username }}</span>
-			  <button @click="Unfriend(Friends.idUser)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unfriend</button>
-			  <span :class="{ 'text-green-600 ': getStatus(Friends.idUser) === isOnline(), 'text-yellow-600 ': getStatus(Friends.idUser) === isPlaying(), 'text-red-600 ': getStatus(Friends.idUser) === isOffline()}">
-				<div class="ml-3">{{  getStatus(Friends.idUser) }}</div>
-			  </span>
-            </li>
-          </div>
+			<li v-for="Friends in friendlist" :key="Friends.idUser" class="mb-2">
+				<span class="font-semibold">{{ Friends.username }}</span>
+				<button @click="Unfriend(Friends.idUser)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unfriend</button>
+				<span :class="{
+					'text-green-600': formattedFriendStatuses[Friends.idUser] === 'Online', 
+					'text-yellow-600': formattedFriendStatuses[Friends.idUser] === 'In Game', 
+					'text-red-600': formattedFriendStatuses[Friends.idUser] === 'Offline'
+				}">
+					<div class="ml-3">{{ formattedFriendStatuses[Friends.idUser] }}</div>
+				</span>
+			</li>			  
+		  </div>		
 		</div>
 
 	</div>
@@ -128,7 +132,7 @@
 
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import api from '../services/api';
@@ -136,7 +140,6 @@ import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 //import { deleteBlock } from '@/services/UserProfile-helpers'
-import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
@@ -154,6 +157,26 @@ const searchUsername = ref('');
 const alreadyFriend = ref(false);
 const alreadyBlocked = ref(false);
 const cannotSendFriendRequest = ref(false);
+
+let intervalId;
+
+onMounted(() => {
+	ladderStore.updateFriendStatuses();
+	intervalId = setInterval(ladderStore.updateFriendStatuses, 1000);
+});
+
+onUnmounted(() => {
+	clearInterval(intervalId);
+});
+
+const formattedFriendStatuses = computed(() => {
+    const statuses = {};
+    const friendsStatus = ladderStore.friendsStatus.value || {};
+    for (const [id, status] of Object.entries(friendsStatus)) {
+        statuses[id] = status;
+    }
+    return statuses;
+});
 
 watch(searchUsername, async () => {
 	userNotFound.value = false;
@@ -270,27 +293,6 @@ async function Unfriend(idFriend) {
 		console.error('Error unfriending someone', error);
 	}
 	await ladderStore.updateFriends();
-}
-
-function isOnline() {
-	return ("Online")
-}
-
-function isOffline() {
-	return ("Offline")
-}
-
-function isPlaying() {
-	return ("Playing")
-}
-
-function getStatus(idUser) {
-	let res = getPlayerStatus(idUser);
-	if (res.ids == 2)
-		return("Playing")
-	if (res.ids == 0)
-		return ("Online")
-	return ("Offline")
 }
 
 </script>
