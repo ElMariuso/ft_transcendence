@@ -76,6 +76,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('challenge')
     askChallenge(client: Socket, [playerId, opponentId]: [number, number]) {
       this.challenges.set(playerId, opponentId);
+
+      setTimeout(() => {
+        if (this.challenges.has(playerId)) {
+            this.logger.log(`Challenge expired: ${playerId}`);
+            this.challenges.delete(playerId);
+        }
+    }, 120000);
     }
 
     @SubscribeMessage('challenge-answer')
@@ -118,8 +125,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
       let challengeState = {
         isChallengePending: false,
-        challengerId: null,
-        opponentId: null
+        challengerId: askerId,
+        opponentId: friendId
       };
 
       if (this.challenges.has(askerId) && this.challenges.get(askerId) === friendId) {
