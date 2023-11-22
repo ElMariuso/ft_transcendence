@@ -201,14 +201,12 @@
 							>
 								<div class="flex flex-row justify-between">
 
-									<p 
-										:class="{ 
-											'text-green-600': user.role === 'Admin',
-											'text-red-500': user.owner,
-										}"	
-									>
-										{{ user.username }}
-									</p>
+									<div class="flex items-center">
+										<p :class="{'text-green-600': user.role === 'Admin', 'text-red-500': user.owner, }"	>
+											{{ user.username }}
+										</p>
+										<div v-if="isChallengeActive(user.idUser)" class="ml-2 w-3 h-3 bg-green-500 rounded-full"></div>
+									</div>
 
 									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
@@ -219,7 +217,8 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<img @click="playerPlay" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+										<img v-if="!isChallengeActive(user.idUser)" @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+										<button v-else>Accept Challenge</button>
 										<router-link :to="'/otherprofile/id=' + user.idUser">
 			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
 										</router-link>
@@ -227,6 +226,8 @@
 										<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
+									<!-- <div v-else class="flex justify-between">
+									</div> -->
 									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
 
 										<div class="flex flex-row">
@@ -257,18 +258,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, onUnmounted, onMounted, watchEffect, computed } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { askChallenge, askChallengeState } from '@/services/matchmaking-helpers'
 
-onBeforeMount(async () => {
-	await communityStore.setupCommunity();
+const usersIntervals = ref({});
 
-	console.log(joinedChannels.value);
-}) 
+onMounted(async () => {
+    await communityStore.setupCommunity();
+});
+
+const isChallengeActive = (idUser) => {
+	return computed(() => {
+        const challengeState = communityStore.getChallengeState(idUser);
+        return challengeState && challengeState.isChallengePending;
+    }).value;
+};
+
+const startChallengeInterval = (friendId) => {
+    stopChallengeInterval(friendId);
+    usersIntervals.value[friendId] = setInterval(() => {
+        askChallengeState(profileStore.userID, friendId);
+    }, 1000);
+};
+
+const stopChallengeInterval = (friendId) => {
+    if (usersIntervals.value[friendId]) {
+        clearInterval(usersIntervals.value[friendId]);
+        delete usersIntervals.value[friendId];
+    }
+};
+
+onUnmounted(() => {
+    Object.keys(usersIntervals.value).forEach(friendId => stopChallengeInterval(friendId));
+});
 
 const communityStore = useCommunityStore();
 const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
@@ -342,6 +369,9 @@ async function selectChannel(channelID: string) {
 	selectedChannelID.value = channelID;
 	await communityStore.updateSelectedChannel(channelID);
 
+	communityStore.selectedChannelUsers.forEach(user => {
+        startChallengeInterval(user.idUser);
+    });
 	// scrollToSelectedTab();
 }
 
@@ -415,10 +445,10 @@ function getChannelTypeImg(channType) {
 		return "src/assets/private.svg";
 }
 
-// async function playerPlay() {
-// 	console.log("play");
-// 	// Need game implementation
-// }
+function playerPlay(idUser) {
+	askChallenge(profileStore.userID, idUser);
+}
+
 // async function playerProfile() {
 // 	console.log("profile");
 // 	// Need profile implementation

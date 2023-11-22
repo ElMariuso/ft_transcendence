@@ -7,6 +7,12 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 import { GameGateway } from './game.gateway';
 import { MatchmakingStateService } from 'src/Service/matchmakingstate.service';
 
+interface PlayerInfo {
+  playerId: number;
+  socketId: string;
+  username: string;
+}
+
 /**
  * @WebSocketGateway The gateway for handling all matchmaking related operations.
  * It listens for specific socket events related to standard and ranked matchmaking.
@@ -29,6 +35,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     private onlinePlayers: Map<string, { playerId: number | string; username: string }> = new Map();
     private matchmakingStates: Map<string | number, MatchmakingStateService> = new Map();
+    private challenges: Map<number, number> = new Map();
+    private acceptedChallenges: Map<number, { opponentInfo: PlayerInfo, challengerInfo: PlayerInfo, isReady: { [playerId: number]: boolean } }> = new Map();
     
     @WebSocketServer() server: Server;
     
@@ -63,6 +71,72 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
       this.deleteOnlinePlayer(client.id);
+    }
+
+    @SubscribeMessage('challenge')
+    askChallenge(client: Socket, [playerId, opponentId]: [number, number]) {
+      this.challenges.set(playerId, opponentId);
+    }
+
+    @SubscribeMessage('challenge-answer')
+    handleChallengeAnswer(client: Socket, challengerId: number, opponentId: number, answer: number) {
+      if (this.challenges.has(challengerId)) {
+        const challengedOpponentId = this.challenges.get(challengerId);
+
+        if (challengedOpponentId === opponentId) {
+          if (answer === 0) {
+            this.challenges.delete(challengerId);
+          } else if (answer === 1) {
+            const challengerInfo: PlayerInfo = {
+              playerId: challengerId,
+              socketId: null,
+              username: null
+            };
+            const opponentInfo: PlayerInfo = {
+              playerId: opponentId,
+              socketId: null,
+              username: null
+            };
+
+            this.acceptedChallenges.set(challengerId, { 
+              opponentInfo,
+              challengerInfo,
+              isReady: { [challengerId]: false, [opponentId]: false }
+            });
+            this.challenges.delete(challengerId);
+          }
+        }
+      }
+    }
+
+    @SubscribeMessage('confirm-challenge')
+    confirmChallenge(client: Socket, playerId: number, playerUsername: string) {
+
+    }
+
+    @SubscribeMessage('challenge-state')
+    sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
+      let challengeState = {
+        isChallengePending: false,
+        challengerId: null,
+        opponentId: null
+      };
+
+      if (this.challenges.has(askerId) && this.challenges.get(askerId) === friendId) {
+        challengeState = {
+          isChallengePending: true,
+          challengerId: askerId,
+          opponentId: friendId
+        };
+      }
+      else if (this.challenges.has(friendId) && this.challenges.get(friendId) === askerId) {
+        challengeState = {
+          isChallengePending: true,
+          challengerId: friendId,
+          opponentId: askerId
+        };
+      }
+      client.emit('challenge-state-response', challengeState);
     }
 
     /**

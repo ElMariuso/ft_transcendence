@@ -17,6 +17,15 @@ export const useCommunityStore = defineStore('community', () => {
 	const selectedChannelMsg = ref([]);
 	const selectedChannelUsers = ref([]);
 	const roleInChannel = ref('Member');
+	const challengeStates = ref(new Map());
+
+	function updateChallengeState(userId, newState) {
+        challengeStates.value.set(userId, newState);
+    }
+
+    function getChallengeState(userId) {
+        return challengeStates.value.get(userId);
+    }
 
 	async function setupCommunity() {
 	
@@ -72,6 +81,6 @@ export const useCommunityStore = defineStore('community', () => {
 
 	return {
 		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel,
-		setupNewChannel, setupCommunity, updateSelectedChannel
+		updateChallengeState, getChallengeState, setupNewChannel, setupCommunity, updateSelectedChannel
 	};
 })
