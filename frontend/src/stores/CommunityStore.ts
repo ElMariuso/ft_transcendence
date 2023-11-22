@@ -17,15 +17,23 @@ export const useCommunityStore = defineStore('community', () => {
 	const selectedChannelMsg = ref([]);
 	const selectedChannelUsers = ref([]);
 	const roleInChannel = ref('Member');
-	const challengeStates = ref(new Map());
+	const challengeStates = ref([]);
 
 	function updateChallengeState(userId, newState) {
-        challengeStates.value.set(userId, newState);
-    }
+		const index = challengeStates.value.findIndex(state => state.userId === userId);
+		if (index !== -1) {
+			challengeStates.value[index].state = newState;
+		} else {
+			challengeStates.value.push({ userId, state: newState });
+		}
+
+		console.log("ChallengeStates:", challengeStates);
+	}
 
     function getChallengeState(userId) {
-        return challengeStates.value.get(userId);
-    }
+		const userState = challengeStates.value.find(state => state.userId === userId);
+		return userState ? userState.state : null;
+	}
 
 	async function setupCommunity() {
 	
