@@ -99,7 +99,7 @@ export const getChannelMsg = async (channelID) => {
 export const getChannelUsers = async (channelID) => {
 	try {
 		const res = await api.get('/channels/allUsers/' + channelID);
-		console.log(res)
+		// console.log(res)
 		return res.data;
 	} catch (error) {
 		console.error('Error fetching channel users', error);

@@ -90,6 +90,7 @@
 						<div class="text-lg flex flex-row ">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button 
+								v-if="channel.idType !== 4"
 								:id="channel.idChannel" 
 								:channType="channel.idType" 
 								@click="btnJoinChannel" 
@@ -103,7 +104,8 @@
 							>
 								Join
 							</button>
-							<img :src="getChannelTypeImg(channel.idType)" alt="channType">
+							<span v-if="channel.idType === 4" class="text-red-600"> Banned </span>
+							<img v-if="channel.idType !== 4" :src="getChannelTypeImg(channel.idType)" alt="channType">
 						</div>
 						<div class="flex justify-end">
 							<input
@@ -195,10 +197,10 @@
 							
 							<li 
 								v-for="user in selectedChannelUsers" 
-								class="text-lg  border px-2 py-1 rounded-lg "
 								
 								:id="user.idUser"
 							>
+							  <div v-if="user.role !== 'Banned'" class="text-lg  border px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 
 									<p 
@@ -246,6 +248,7 @@
 										<img @click="playerBan" class="cursor-pointer" title="ban" src="../assets/player/ban.svg" alt="ban">
 									</div>
 								</div>
+							  </div>
 									
 							</li>
 						</ul>
@@ -262,7 +265,7 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block, getChannelUsers } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();

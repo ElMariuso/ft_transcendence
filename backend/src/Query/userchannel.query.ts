@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User_Channel, User } from '@prisma/client';
+import { ROLE } from 'src/globalVariables';
 
 @Injectable()
 export class UserChannelQuery
@@ -36,50 +37,70 @@ export class UserChannelQuery
 	 * @returns User[]
 	 */
 	async findAllUsersByChannelId(idChannel: number) : Promise<User[]>
-	{
-		const us_ch = await this.prisma.user_Channel.findMany
-		(
-			{
-				where:
-				{
-					idChannel: idChannel
-				}
-			}
-		);
+    {
+        const us_ch = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idChannel: idChannel
+                }
+            }
+        );
 
-		const idUsers = us_ch.map(value => value.idUser);
+        const idUsers = us_ch.map(value => value.idUser);
 
-		const users = this.prisma.user.findMany
-		(
-			{
-				where:
-				{
-					idUser:
-					{
-						in: idUsers
-					}
-				}
-			}
-		);
+        const users = this.prisma.user.findMany
+        (
+            {
+                where:
+                {
+                    idUser:
+                    {
+                        in: idUsers
+                    }
+                }
+            }
+        );
 
-		const idRoles = us_ch.reduce((acc, value) =>
-		{
-			acc[value.idUser] = value.idRole;
-			return acc;
-		}, {});
+        const idRoles = us_ch.reduce((acc, value) =>
+        {
+            acc[value.idUser] = value.idRole;
+            return acc;
+        }, {});
 
-		const idAdmin = 1;
+        const admin = await this.prisma.role.findFirst
+        (
+            {
+                where:
+                {
+                    name: ROLE.ADMIN
+                }
+            }
+        );
+        const member = await this.prisma.role.findFirst
+        (
+            {
+                where:
+                {
+                    name: ROLE.MEMBER
+                }
+            }
+        );
 
-		const fullUsers = (await users).map(user => 
-			(
-				{
-					...user,
-					role: idRoles[user.idUser] === idAdmin ? "Admin" : "Member",
-				}
-			));
+        const idAdmin = admin.idRole;
+        const idMember = member.idRole;
 
-		return fullUsers;;
-	}
+        const fullUsers = (await users).map(user => 
+            (
+                {
+                    ...user,
+                    role: idRoles[user.idUser] === idAdmin ? ROLE.ADMIN : idRoles[user.idUser] === idMember ? ROLE.MEMBER : ROLE.BANNED,
+                }
+            ));
+
+        return fullUsers;;
+    }
 
 	/**
 	 * Invites a new member into the channel with a member role, a waiting status and a null mutetime.

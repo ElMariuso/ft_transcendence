@@ -100,11 +100,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setLadder(newList : any) {
-		ladder.values = newList;
+		ladder.value = newList;
 	}
 
 	function getLadder() {
-		return ladder.values;
+		return ladder.value;
 	}
 
 	/////////////////// ALL USERS ////////////////////////
@@ -120,11 +120,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setUsers(newList : any) {
-		users.values = newList;
+		users.value = newList;
 	}
 
 	function getUsers() {
-		return users.values;
+		return users.value;
 	}
 	
 	/////////////////// ACHIEVEMENTS ////////////////////////
@@ -140,11 +140,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setAchievements(newList : any) {
-		achievements.values = newList;
+		achievements.value = newList;
 	}
 
 	function getAchievements() {
-		return achievements.values;
+		return achievements.value;
 	}
 
 	/////////////////// STATS ////////////////////////
@@ -177,11 +177,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setGamesHistory(newList : any) {
-		history.values = newList;
+		history.value = newList;
 	}
 
 	function getGamesHistory() {
-		return history.values;
+		return history.value;
 	}
 	
 
@@ -278,11 +278,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setBlockedList(newList: any) {
-		blocked.values = newList;
+		blocked.value = newList;
 	}
 
 	function getBlockedList() {
-		return blocked.values;
+		return blocked.value;
 	}
 
 	async function blockUnblock(usernameToBlock: string) {

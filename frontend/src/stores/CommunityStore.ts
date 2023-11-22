@@ -34,6 +34,15 @@ export const useCommunityStore = defineStore('community', () => {
 			});
 
 			openChannels.value = resChannels;
+			for(let i = 0; openChannels.value[i] ; i++)
+			{
+				const users = await getChannelUsers(openChannels.value[i].idChannel);
+				const user = users.find(user => user.idUser === id);
+				if (user && user.role == "Banned")
+				{
+					openChannels.value[i].idType = 4;
+				}
+			}
 		} catch (error) {
 			console.error("Error setting up available channels:", error);
 		}
