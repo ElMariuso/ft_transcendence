@@ -225,6 +225,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('challenge-state-response', (data) => {
+        console.log("RESPONSE:", data);
         const communityStore = useCommunityStore()
         
         communityStore.updateChallengeState(data.challengerId, data);

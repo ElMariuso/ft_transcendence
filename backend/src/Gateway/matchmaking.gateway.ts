@@ -129,6 +129,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         opponentId: friendId
       };
 
+      if (askerId === friendId)
+        return ;
       if (this.challenges.has(askerId) && this.challenges.get(askerId) === friendId) {
         challengeState = {
           isChallengePending: true,
@@ -141,6 +143,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
           isChallengePending: true,
           challengerId: friendId,
           opponentId: askerId
+        };
+      }
+      else {
+        challengeState = {
+          isChallengePending: false,
+          challengerId: askerId,
+          opponentId: friendId
         };
       }
       client.emit('challenge-state-response', challengeState);
