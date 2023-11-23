@@ -112,7 +112,7 @@
 							<input
 								v-if="channel.idType === 1"
 								v-model="pwInput[channel.idChannel]"
-								type="text"
+								type="password"
 								placeholder="Enter password"
 								class="px-2 border rounded-lg"
 							/>
@@ -155,14 +155,33 @@
 					</div>
 
 					<div v-if="selectedChannelID" class="h-12 border-b px-2">
-						<div class="flex justify-end py-2">
-
-							<button
-								@click="leaveOrDeleteChannel"
-								class="border rounded-lg px-2 py-1 bg-red-200"
-							>
-								{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }}
-							</button>
+						<div class="chatDropDown flex justify-end py-2">
+							<div @click="toggleDropdownChatSettings" class="cursor-pointer p-2">
+								<img  src="../assets/gear.svg" alt="settings"/>
+							</div>
+							<div v-if="dropdownOpenChatSettings" class="absolute mt-10 w-48 bg-white border rounded-lg shadow-lg">
+								
+								<div v-if="roleInChannel === 'Owner'" >
+									<a class="block px-2 py-1"> Change password: </a>
+									<div class="flex flex-row justify-around block px-2 py-1 border-b">
+										<input type="password" placeholder="old" class="w-2/5 border rounded-lg px-2"/>
+										<input type="password" placeholder="new" class="w-2/5 border rounded-lg px-2"/>
+										<button> <img src="../assets/confirm.svg" alt="Confirm"></button>
+									</div>
+									
+									<a class="block px-2 py-1 cursor-pointer hover:text-blue-500 border-b"> 
+										Remove password
+									</a>
+								</div>
+									
+								<!-- Leave/delete channel -->
+								<a 
+									@click="leaveOrDeleteChannel" 
+									class="block px-2 py-1 cursor-pointer hover:text-red-500"
+								> 
+									{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }} 
+								</a>
+							</div>
 						</div>
 					</div>
 						
@@ -238,21 +257,21 @@
 										<img @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
-									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
+									<div v-if="(roleInChannel === 'Admin' || roleInChannel === 'Owner') && !user.owner" class="flex justify-between mt-2 border-t pt-1">
 
+										<!-- Mute -->
 										<div class="flex flex-row">
-
+											<button @click="playerMute" :disabled="!muteTime">
+												<img title="mute" src="../assets/player/mute.svg" alt="mute">
+											</button>
 											<input
 												v-model="muteTime"
 												type="text"
 												placeholder="seconds"
-												class="p-1 w-16 border rounded-lg text-sm mr-2"
-											/>
-								
-											<button @click="playerMute" :disabled="!muteTime">
-												<img title="mute" src="../assets/player/mute.svg" alt="mute">
-											</button>
+												class="p-1 w-16 border rounded-lg text-sm ml-2"
+											/>								
 										</div>
+										
 										<img @click="playerKick" class="cursor-pointer" title="kick" src="../assets/player/kick.svg" alt="kick">
 										<img @click="playerBan" class="cursor-pointer" title="ban" src="../assets/player/ban.svg" alt="ban">
 									</div>
@@ -268,7 +287,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, watch } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
@@ -346,6 +365,27 @@ async function btnJoinChannel(event) {
 const selectedChannelID = ref(null);
 const scrollContainer = ref(null);
 const newMessage = ref('');
+const dropdownOpenChatSettings = ref(false);
+
+function toggleDropdownChatSettings() {
+	
+	console.log(dropdownOpenChatSettings.value)
+	dropdownOpenChatSettings.value = !dropdownOpenChatSettings.value;
+}
+
+watch(dropdownOpenChatSettings, (isOpen) => {
+	if (isOpen) {
+		window.addEventListener('click', closeDropdownOnClick);
+	} else {
+		window.removeEventListener('click', closeDropdownOnClick);
+	}
+});
+
+const closeDropdownOnClick = (event) => {
+	if (dropdownOpenChatSettings.value && !event.target.closest('.chatDropDown')) {
+		dropdownOpenChatSettings.value = false;
+	}
+};
 
 async function selectChannel(channelID: string) {
 
@@ -410,6 +450,7 @@ async function leaveOrDeleteChannel() {
 const selectedUserID = ref(null);
 const dropDownOpen = ref(null);
 const muteTime = ref(null);
+const updatePlayersList = ref(0);
 
 function toggleDropDown(playerID) {
 	selectedUserID.value = playerID;
@@ -490,10 +531,9 @@ async function playerKick() {
 // 	console.log("ban");
 // }
 
-function promoteUser(idPromoted) {
-	promote(idPromoted, selectedChannelID.value, userID.value);
-
-
+async function promoteUser(idPromoted) {
+	await promote(idPromoted, selectedChannelID.value, userID.value)
+	communityStore.updateSelectedChannel(selectedChannelID.value);
+	
 }
-
 </script>
