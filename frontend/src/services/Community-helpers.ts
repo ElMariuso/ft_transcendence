@@ -128,13 +128,13 @@ export const leaveCurrentChannel = async (idUser, idChannel) => {
 	}
 }
 
-export const banUserFromChannel = async (idUser, banId, idChannel) => {
+export const updateUserRole = async (idUser, banId, idChannel, newRole) => {
 	try {
 
 		const res = await api.put('/userchannels/modifyRole/' + idUser,{
 			"idMember": banId,
 			"idChannel": idChannel,
-			"idRole": 3,
+			"idRole": newRole,
 			})
 		return res;
 	} catch (error) {

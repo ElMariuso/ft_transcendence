@@ -200,6 +200,24 @@
 								
 								:id="user.idUser"
 							>
+							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg  border px-2 py-1 rounded-lg ">
+								<div class="flex flex-row justify-between">
+								  {{ user.username }}
+								  <button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
+									<img src="../assets/elipsis-h.svg" alt="options">
+								  </button>
+								</div>
+
+								<div 
+									v-if="dropDownOpen === user.idUser"
+									class="border-t pt-2"
+								>
+									<div class="flex justify-between">>
+										<img @click="playerUnBan" class="cursor-pointer" title="unban" src="../assets/player/unlock.svg" alt="unban">
+									</div>
+								</div>
+							  </div>
+
 							  <div v-if="user.role !== 'Banned'" class="text-lg  border px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 
@@ -265,7 +283,7 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block, getChannelUsers } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, getChannelMsg, deleteMessage, mute, block, getChannelUsers } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -487,10 +505,18 @@ async function playerKick() {
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
+async function playerUnBan() {
+	console.log("unban");
+
+	await updateUserRole(ladderStore.getId(), selectedUserID.value, selectedChannelID.value, 2);
+	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
 async function playerBan() {
 	console.log("ban");
 
-	await banUserFromChannel(ladderStore.getId(), selectedUserID.value, selectedChannelID.value);
+	await updateUserRole(ladderStore.getId(), selectedUserID.value, selectedChannelID.value, 3);
 	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
