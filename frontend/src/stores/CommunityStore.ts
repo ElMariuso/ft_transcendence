@@ -11,15 +11,21 @@ export const useCommunityStore = defineStore('community', {
 		selectedChannelUsers: [],
 		roleInChannel: 'Member',
 		challengeStates: new Map(),
+		challengesStatesForOpponent: new Map()
 	}),
 	actions: {
 		updateChallengeState(userId, newState) {
             this.challengeStates.set(userId, newState);
-            console.log("ChallengeStates:", this.challengeStates);
         },
         getChallengeState(userId) {
             return this.challengeStates.get(userId);
         },
+		updateChallengeStateForOpponent(userId, newState) {
+			this.challengesStatesForOpponent.set(userId, newState);
+		},
+		getChallengeStateForOpponent(userId) {
+			return this.challengesStatesForOpponent.get(userId);
+		},
 		async setupCommunity() {
 			const token = Cookies.get('token');
 			const id = jwt_decode(token).sub;

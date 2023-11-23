@@ -91,6 +91,10 @@ const askChallengeState = (askerId, friendId) => {
     socket.emit('challenge-state', askerId, friendId);
 };
 
+const challengeAnswer = (challengerId: number, opponentId: number, answer: number) => {
+    socket.emit('challenge-answer', challengerId, opponentId, answer);
+};
+
 const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
@@ -225,10 +229,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('challenge-state-response', (data) => {
-        console.log("RESPONSE:", data);
         const communityStore = useCommunityStore()
         
         communityStore.updateChallengeState(data.challengerId, data);
+        communityStore.updateChallengeStateForOpponent(data.opponentId, data);
     });
 };
 
@@ -251,5 +255,6 @@ export { joinQueue,
     getPlayerStatus,
     askChallenge,
     askChallengeState,
+    challengeAnswer,
     initializeSocketListeners
 };

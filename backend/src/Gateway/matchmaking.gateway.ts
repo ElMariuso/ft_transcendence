@@ -86,7 +86,7 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     @SubscribeMessage('challenge-answer')
-    handleChallengeAnswer(client: Socket, challengerId: number, opponentId: number, answer: number) {
+    handleChallengeAnswer(client: Socket, [challengerId, opponentId, answer]: [number, number, number]) {
       if (this.challenges.has(challengerId)) {
         const challengedOpponentId = this.challenges.get(challengerId);
 
@@ -125,8 +125,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
       let challengeState = {
         isChallengePending: false,
-        challengerId: askerId,
-        opponentId: friendId
+        challengerId: -1,
+        opponentId: -1
       };
 
       if (askerId === friendId)
@@ -146,6 +146,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
         };
       }
       else {
+        challengeState = {
+          isChallengePending: false,
+          challengerId: friendId,
+          opponentId: askerId
+        };
+        client.emit('challenge-state-response', challengeState);
         challengeState = {
           isChallengePending: false,
           challengerId: askerId,

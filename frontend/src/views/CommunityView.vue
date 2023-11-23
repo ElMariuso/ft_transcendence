@@ -205,7 +205,9 @@
 										<p :class="{'text-green-600': user.role === 'Admin', 'text-red-500': user.owner, }"	>
 											{{ user.username }}
 										</p>
-										<div v-if="isChallengeActive(user.idUser)" class="ml-2 w-3 h-3 bg-green-500 rounded-full"></div>
+										<div v-if="isChallengeActive(user.idUser)" class="spinner-wrapper">
+											<div class="spinner"></div>
+										</div>
 									</div>
 
 									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
@@ -217,7 +219,10 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<div v-if="!isChallengeActive(user.idUser)">
+										<div v-if="isChallengeActiveForOpponent(user.idUser)">
+											<span>Waiting</span>
+										</div>
+										<div v-else-if="!isChallengeActive(user.idUser)">
 											<img @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
 											<router-link :to="'/otherprofile/id=' + user.idUser">
 												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
@@ -227,8 +232,8 @@
 											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 										</div>
 										<div v-else>
-											<button>Accept</button>
-											<button>Refuse</button>
+											<button @click="answerToChallenge(user.idUser, 1)">A</button>
+											<button @click="answerToChallenge(user.idUser, 0)">R</button>
 										</div>
 									</div>
 									<!-- <div v-else class="flex justify-between">
@@ -263,13 +268,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, onUnmounted, onMounted, watchEffect, computed } from 'vue'
+import { ref, onUnmounted, onMounted, computed } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
-import { askChallenge, askChallengeState } from '@/services/matchmaking-helpers'
+import { askChallenge, askChallengeState, challengeAnswer } from '@/services/matchmaking-helpers'
 
 const usersIntervals = ref({});
 
@@ -277,11 +282,25 @@ onMounted(async () => {
     await communityStore.setupCommunity();
 });
 
-const isChallengeActive = (idUser) => {
+const answerToChallenge = async (idUser: number, response: number) => {
+	const challengeState = communityStore.getChallengeState(idUser);
+	if (challengeState) {
+		challengeAnswer(challengeState.challengerId, challengeState.opponentId, response);
+	}
+};
+
+const isChallengeActive = (idUser: number) => {
 	return computed(() => {
         const challengeState = communityStore.getChallengeState(idUser);
         return challengeState && challengeState.isChallengePending;
     }).value;
+};
+
+const isChallengeActiveForOpponent = (idUser: number) => {
+	return computed(() => {
+		const challengeState = communityStore.getChallengeStateForOpponent(idUser);
+        return challengeState && challengeState.isChallengePending;
+	}).value;
 };
 
 const startChallengeInterval = (friendId) => {
@@ -528,3 +547,83 @@ async function playerBan() {
 }
 
 </script>
+
+<style scoped>
+.spinner-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 1vh;
+	margin-left: 3px !important;
+}
+  
+.spinner {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+  
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+}
+
+.checkmark {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    position: relative;
+    transform: rotate(-45deg);
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: green;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px green;
+    }
+}
+</style>
