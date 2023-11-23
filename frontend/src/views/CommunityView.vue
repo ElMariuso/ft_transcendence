@@ -262,6 +262,7 @@
 												<img title="mute" src="../assets/player/mute.svg" alt="mute">
 											</button>
 										</div>
+										<img @click="playerPromote" class="cursor-pointer" title="promote" src="../assets/player/promote.svg" alt="promote">
 										<img @click="playerKick" class="cursor-pointer" title="kick" src="../assets/player/kick.svg" alt="kick">
 										<img @click="playerBan" class="cursor-pointer" title="ban" src="../assets/player/ban.svg" alt="ban">
 									</div>
@@ -502,6 +503,14 @@ async function playerKick() {
 
 	const res = await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	console.log(res);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
+
+async function playerPromote() {
+	console.log("unban");
+
+	await updateUserRole(ladderStore.getId(), selectedUserID.value, selectedChannelID.value, 1);
+	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
