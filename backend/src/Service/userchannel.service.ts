@@ -147,33 +147,49 @@ export class UserChannelService
 		const user = await this.userQuery.findUserById(idUser);
 		const member = await this.userQuery.findUserById(idMember);
 
+		console.log("Check 1")
+
 		if (!user || !member)
 			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
+		console.log("Check 2")
+		
 		const channel = await this.channelQuery.findChannelById(idChannel);	
 
 		if (!channel)
 			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 		
+		console.log("Check 3")
+
 		if (channel.idOwner == member.idUser)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_OWNER_ROLE);
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_DM_ROLE);
 
+		console.log("Check 4")
+
 		const role = await this.roleQuery.findRoleById(idRole);
 		if (!role)
 			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
+
+
+		console.log("Check 5")
 
 		const checkAdmin = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 		if (!checkAdmin)
 			throw new ConflictException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
 
+		console.log("Check 6")
+		console.log("id CheckAdmin: ", checkAdmin.idUser, " . Role: ", checkAdmin.idRole);
+
 		const admin = await this.roleQuery.findRoleById(checkAdmin.idRole);
 		if (!admin)
 			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
-		
+		console.log("admin; ", admin.name);
 		if (admin.name != ROLE.ADMIN)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.FORBIDDEN_ACTION);
+
+		console.log("Check 7")
 
 		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idMember, idChannel);
 		if (!userChannel)
@@ -181,6 +197,8 @@ export class UserChannelService
 		
 		userChannel = await this.userchannelQuery.updateRole(userChannel.idUser_Channel, idRole);
 		
+		console.log("In modify member role, passed through checks")
+
 		return this.transformToUserChannelDTO(userChannel);
 	}
 

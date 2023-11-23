@@ -220,10 +220,13 @@ export const ban = async () => {
 	console.log("ban");
 }
 
-export const promote = async (idPromoted, idCurrentChannel) => {
-	api.put('/userchannels/modifyRole/' + idPromoted, {
+export const promote = async (idPromoted, idCurrentChannel, userID) => {
+	const res = await api.put('/userchannels/modifyRole/' + userID, {
 		idMember: idPromoted,
 		idChannel: idCurrentChannel,
 		idRole: 1,
 	})
+
+	console.log("Promote: ")
+	console.log(res);
 }

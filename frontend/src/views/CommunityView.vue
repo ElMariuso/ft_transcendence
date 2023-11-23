@@ -491,7 +491,7 @@ async function playerKick() {
 // }
 
 function promoteUser(idPromoted) {
-	promote(idPromoted, selectedChannelID.value);
+	promote(idPromoted, selectedChannelID.value, userID.value);
 
 
 }

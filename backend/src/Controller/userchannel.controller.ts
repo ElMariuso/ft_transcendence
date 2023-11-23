@@ -141,6 +141,10 @@ export class UserChannelController
 		}
 		catch (error)
 		{
+			
+			console.log("Error caught in userChannel controler")
+
+
 			if (error instanceof NotFoundException)
 				throw new NotFoundException(error.message);
 			if (error instanceof ConflictException)
