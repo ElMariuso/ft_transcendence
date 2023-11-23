@@ -217,14 +217,19 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<img v-if="!isChallengeActive(user.idUser)" @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
-										<button v-else>Accept Challenge</button>
-										<router-link :to="'/otherprofile/id=' + user.idUser">
-			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
-										</router-link>
-										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-										<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
-										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+										<div v-if="!isChallengeActive(user.idUser)">
+											<img @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+											<router-link :to="'/otherprofile/id=' + user.idUser">
+												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+											</router-link>
+											<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
+											<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+										</div>
+										<div v-else>
+											<button>Accept</button>
+											<button>Refuse</button>
+										</div>
 									</div>
 									<!-- <div v-else class="flex justify-between">
 									</div> -->
