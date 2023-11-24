@@ -199,13 +199,17 @@
 								
 								:id="user.idUser"
 							>
-								<div class="flex flex-row justify-between">
+								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
+									<button class="bg-white p-1 rounded">R</button>
+									<span>{{ countReadyPlayers }} / 2</span>
+								</div>
+								<div v-else class="flex flex-row justify-between">
 
 									<div class="flex items-center">
 										<p :class="{'text-green-600': user.role === 'Admin', 'text-red-500': user.owner, }"	>
 											{{ user.username }}
 										</p>
-										<div v-if="isChallengeActive(user.idUser)" class="spinner-wrapper">
+										<div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
 											<div class="spinner"></div>
 										</div>
 									</div>
@@ -219,10 +223,10 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<div v-if="isChallengeActiveForOpponent(user.idUser)">
+										<div v-if="isChallengeActiveForOpponent(user.idUser).value">
 											<span>Waiting</span>
 										</div>
-										<div v-else-if="!isChallengeActive(user.idUser)">
+										<div v-else-if="!isChallengeActive(user.idUser).value">
 											<img @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
 											<router-link :to="'/otherprofile/id=' + user.idUser">
 												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
@@ -268,19 +272,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted, computed } from 'vue'
+import { ref, onUnmounted, onMounted, computed, Ref } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
-import { askChallenge, askChallengeState, challengeAnswer } from '@/services/matchmaking-helpers'
+import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState } from '@/services/matchmaking-helpers'
 
 const usersIntervals = ref({});
+const acceptedChallengeInterval = ref<number | null>(null);
 
 onMounted(async () => {
     await communityStore.setupCommunity();
+
+	acceptedChallengeInterval.value = setInterval(() => {
+        askAcceptedChallengeState(profileStore.userID);
+    }, 1000);
 });
+
+const countReadyPlayers: Ref<number> = computed(() => {
+	const acceptedChallengeState = communityStore.acceptedChallengesStates;
+	if (!acceptedChallengeState) return 0;
+
+	let count = 0;
+	const keys = Object.keys(acceptedChallengeState.isReady);
+	for (const key of keys) {
+		if (acceptedChallengeState.isReady[key]) {
+			count++;
+		}
+	}
+	return count;
+});
+
+const isAcceptedChallengeActive = (idUser: number): Ref<boolean> => {
+	return computed(() => {
+		const acceptedChallengeState = communityStore.acceptedChallengesStates;
+
+		if (!acceptedChallengeState || acceptedChallengeState.opponentId === -1) {
+			return false;
+		}
+		const isOpponentActive = acceptedChallengeState.opponentId === idUser;
+		return isOpponentActive;
+	});
+};
 
 const answerToChallenge = async (idUser: number, response: number) => {
 	const challengeState = communityStore.getChallengeState(idUser);
@@ -289,18 +324,18 @@ const answerToChallenge = async (idUser: number, response: number) => {
 	}
 };
 
-const isChallengeActive = (idUser: number) => {
+const isChallengeActive = (idUser: number): Ref<boolean> => {
 	return computed(() => {
         const challengeState = communityStore.getChallengeState(idUser);
         return challengeState && challengeState.isChallengePending;
-    }).value;
+    });
 };
 
-const isChallengeActiveForOpponent = (idUser: number) => {
+const isChallengeActiveForOpponent = (idUser: number): Ref<boolean> => {
 	return computed(() => {
 		const challengeState = communityStore.getChallengeStateForOpponent(idUser);
         return challengeState && challengeState.isChallengePending;
-	}).value;
+	});
 };
 
 const startChallengeInterval = (friendId) => {
@@ -319,6 +354,11 @@ const stopChallengeInterval = (friendId) => {
 
 onUnmounted(() => {
     Object.keys(usersIntervals.value).forEach(friendId => stopChallengeInterval(friendId));
+
+	if (acceptedChallengeInterval.value !== null) {
+        clearInterval(acceptedChallengeInterval.value);
+        acceptedChallengeInterval.value = null;
+    }
 });
 
 const communityStore = useCommunityStore();

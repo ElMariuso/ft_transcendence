@@ -95,6 +95,10 @@ const challengeAnswer = (challengerId: number, opponentId: number, answer: numbe
     socket.emit('challenge-answer', challengerId, opponentId, answer);
 };
 
+const askAcceptedChallengeState = (playerId: number) => {
+    socket.emit('accepted-challenge-state', playerId);
+};
+
 const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
@@ -234,6 +238,12 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
         communityStore.updateChallengeState(data.challengerId, data);
         communityStore.updateChallengeStateForOpponent(data.opponentId, data);
     });
+
+    socket.on('accepted-challenge-state-response', (data) => {
+        const communityStore = useCommunityStore();
+
+        communityStore.updateAcceptedChallengeState(data);
+    });
 };
 
 export { joinQueue, 
@@ -256,5 +266,6 @@ export { joinQueue,
     askChallenge,
     askChallengeState,
     challengeAnswer,
+    askAcceptedChallengeState,
     initializeSocketListeners
 };

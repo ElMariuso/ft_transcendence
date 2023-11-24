@@ -121,6 +121,25 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
 
     }
 
+    @SubscribeMessage('accepted-challenge-state')
+    sendAcceptedChallengeState(client: Socket, playerId: number) {
+      let acceptedChallengeState = {
+        isReady: {},
+        opponentId: -1
+      };
+
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        if (challengeInfo.challengerInfo.playerId === playerId || challengeInfo.opponentInfo.playerId === playerId) {
+          acceptedChallengeState = {
+            isReady: challengeInfo.isReady,
+            opponentId: challengeInfo.opponentInfo.playerId
+          };
+          break ;
+        }
+      }
+      client.emit('accepted-challenge-state-response', acceptedChallengeState);
+    }
+
     @SubscribeMessage('challenge-state')
     sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
       let challengeState = {

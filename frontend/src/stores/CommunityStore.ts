@@ -11,9 +11,16 @@ export const useCommunityStore = defineStore('community', {
 		selectedChannelUsers: [],
 		roleInChannel: 'Member',
 		challengeStates: new Map(),
-		challengesStatesForOpponent: new Map()
+		challengesStatesForOpponent: new Map(),
+		acceptedChallengesStates: null
 	}),
 	actions: {
+		updateAcceptedChallengeState(newState) {
+			this.acceptedChallengesStates = newState;
+		},
+		getAcceptedChallengeState() {
+			return this.acceptedChallengesStates;
+		},
 		updateChallengeState(userId, newState) {
             this.challengeStates.set(userId, newState);
         },
