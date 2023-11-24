@@ -187,15 +187,8 @@ export const getFriendsData = async (userID) => {
 				})
         return response.data;
     } catch (error) {
-		if (error.message != "Request failed with status code 409")
-		{
-			console.error('Error creating a new friend request data:', error);
-      		throw error;
-		}
-		else
-		{
-			return ("Friend invite already sent");
-		}
+		console.error('Error creating a new friend request data:', error);
+      	throw error;
     }
 };
 

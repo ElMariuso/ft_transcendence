@@ -65,7 +65,7 @@
 	<div class="col-3">
 
 		<!-- Friend invitations -->
-		<!-- <div class="mt-6">
+		<div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -76,20 +76,24 @@
 			  </span>
             </li>
           </div>
-		</div> -->
+		</div>
 
 		<!-- Friend list -->
 		<div class="mt-6">
-		  <h3 class="text-lg font-semibold">Friend list</h3>
-		  <div class="mt-2">
-            <li v-for="Friends in ladderStore.getFriends()" class="mb-2">
-			  <span class="font-semibold">{{ Friends.username }}</span>
-			  <span :class="{ 'text-green-600 ': getStatus(Friends.idUser) === isOnline(), 'text-yellow-600 ': getStatus(Friends.idUser) === isPlaying(), 'text-red-600 ': getStatus(Friends.idUser) === isOffline()}">
-				<div class="ml-3">{{  getStatus(Friends.idUser) }}</div>
-			  </span>
-            </li>
-          </div>
-		</div>
+			<h3 class="text-lg font-semibold">Friend list</h3>
+			<div class="mt-2">
+			  <li v-for="Friends in friendlist" :key="Friends.idUser" class="mb-2">
+				  <span class="font-semibold">{{ Friends.username }}</span>
+				  <span :class="{
+					  'text-green-600': formattedFriendStatuses[Friends.idUser] === 'Online', 
+					  'text-yellow-600': formattedFriendStatuses[Friends.idUser] === 'In Game', 
+					  'text-red-600': formattedFriendStatuses[Friends.idUser] === 'Offline'
+				  }">
+					  <div class="ml-3">{{ formattedFriendStatuses[Friends.idUser] }}</div>
+				  </span>
+			  </li>			  
+			</div>		
+		  </div>
 
 	</div>
 
@@ -136,55 +140,38 @@ function getAvatarImg() {
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
-const refreshPage = () => {
-  location.reload(); // Reloads the current page
-};
+// const refreshPage = () => {
+//   location.reload(); // Reloads the current page
+// };
 
-// async function Accept(idFriend) {
+async function Accept(idFriend) {
 
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-// 			"idFriend": idFriend,
-// 				})
-//     } catch (error) {
-//     	console.error('Error accepting a friend request:', error);
-//     	throw error;
-//     }
-// 	refreshPage();
-// }
-
-// async function Decline(idFriend) {
-
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-// 			"idFriend": idFriend,
-// 			})
-//     } catch (error) {
-//     	console.error('Error refusing a friend request:', error);
-//     	throw error;
-//     }
-// 	refreshPage();
-// }
-
-function isOnline() {
-	return ("Online")
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+			"idFriend": idFriend,
+				})
+    } catch (error) {
+    	console.error('Error accepting a friend request:', error);
+    	throw error;
+    }
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	// refreshPage();
 }
 
-function isOffline() {
-	return ("Offline")
-}
+async function Decline(idFriend) {
 
-function isPlaying() {
-	return ("Playing")
-}
-
-function getStatus(idUser) {
-	let res = getPlayerStatus(idUser);
-	if (res.ids == 2)
-		return("Playing")
-	if (res.ids == 0)
-		return ("Online")
-	return ("Offline")
+ 	try {
+        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+			"idFriend": idFriend,
+			})
+    } catch (error) {
+    	console.error('Error refusing a friend request:', error);
+    	throw error;
+    }
+	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriends();
+	// refreshPage();
 }
 
 </script>

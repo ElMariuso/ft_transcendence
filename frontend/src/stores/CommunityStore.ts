@@ -8,6 +8,7 @@ import {
 	getSubscribedChannels, 
 	postNewChannelsData, 
 	getChannelMsg,
+	getChannel,
 	getChannelUsers } from '@/services/Community-helpers'
 
 export const useCommunityStore = defineStore('community', () => {
@@ -17,6 +18,7 @@ export const useCommunityStore = defineStore('community', () => {
 	const selectedChannelMsg = ref([]);
 	const selectedChannelUsers = ref([]);
 	const roleInChannel = ref('Member');
+	const channelType = ref(0);
 
 	async function setupCommunity() {
 	
@@ -24,8 +26,8 @@ export const useCommunityStore = defineStore('community', () => {
 		const id = jwt_decode(token).sub;
 
 		try {
-			const allChannels = await getAllChannels();
 			const channelsJoined = await getSubscribedChannels(id);
+			const allChannels = await getAllChannels();
 
 			joinedChannels.value = channelsJoined;
 				
@@ -34,6 +36,15 @@ export const useCommunityStore = defineStore('community', () => {
 			});
 
 			openChannels.value = resChannels;
+			for(let i = 0; openChannels.value[i] ; i++)
+			{
+				const users = await getChannelUsers(openChannels.value[i].idChannel);
+				const user = users.find(user => user.idUser === id);
+				if (user && user.role == "Banned")
+				{
+					openChannels.value[i].idType = 4;
+				}
+			}
 		} catch (error) {
 			console.error("Error setting up available channels:", error);
 		}
@@ -44,6 +55,10 @@ export const useCommunityStore = defineStore('community', () => {
 		const id = jwt_decode(token).sub;
 
 		try {
+			const channel = await getChannel(channelID);
+			channelType.value = channel.idType;
+			console.log(channelType.value)
+
 			const messages = await getChannelMsg(channelID);
 			selectedChannelMsg.value = messages;
 			
@@ -67,14 +82,15 @@ export const useCommunityStore = defineStore('community', () => {
 		const id = jwt_decode(token).sub;
 
 		try {
-			await postNewChannelsData(id, name, type, password);
+			const res = await postNewChannelsData(id, name, type, password);
+			return (res);
 		} catch (error) {
 			console.error("Error creating a new channel:", error);
 		}
 	}
 
 	return {
-		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel,
+		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType,
 		setupNewChannel, setupCommunity, updateSelectedChannel
 	};
 })

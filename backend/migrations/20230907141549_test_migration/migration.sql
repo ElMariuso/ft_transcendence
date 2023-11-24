@@ -185,6 +185,10 @@ ALTER TABLE "Block" ADD CONSTRAINT "Block_idBlockedUser_fkey" FOREIGN KEY ("idBl
 
 -- Insert
 
+-- Insert
+
+--          PRIMARY DATAS
+
 INSERT INTO "Status" ("name") VALUES ('Waiting');
 INSERT INTO "Status" ("name") VALUES ('Accepted');
 INSERT INTO "Status" ("name") VALUES ('Refused');
@@ -201,3 +205,183 @@ INSERT INTO "Achievement" ("name", "content") VALUES ('Depucelage', 'Joue ta pre
 INSERT INTO "Achievement" ("name", "content") VALUES ('Mysanthrope?', 'Obtiens ton premier ami.');
 INSERT INTO "Achievement" ("name", "content") VALUES ('Moulin à parole', 'Envoie ton premier message.');
 INSERT INTO "Achievement" ("name", "content") VALUES ('Double-Face', 'Provoque ta propre chance.');
+
+--          USER
+
+INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
+VALUES ('TinkyWinky', 'TinkyWinky@gmail.be', 'src/../upload/default_avatar.png', 50, false, 1, 'default');
+
+INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
+VALUES ('Dipsy', 'Dipsy@gmail.be', 'src/../upload/default_avatar.png', 0, false, 2, 'default');
+
+INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
+VALUES ('Laa-Laa', 'Laa-Laa@gmail.be', 'src/../upload/default_avatar.png', 10, false, 3, 'default');
+
+INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
+VALUES ('Po', 'Po@gmail.be', 'src/../upload/default_avatar.png', 40, false, 4, 'default');
+
+
+
+--          CHANNEL
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('Cocktail in the tube', '', 1, 2);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (1, 1, 1, NULL);
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('The baby sun', '', 3, 2);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (3, 2, 1, NULL);
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('Viva la muerte!', '', 1, 2);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (1, 3, 1, NULL);
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('Les apirateurs sont vraiment nos amis ?', '', 4, 2);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (4, 4, 1, NULL);
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('Dipsy, this dick', '', 3, 2);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (3, 5, 1, NULL);
+
+INSERT INTO "Channel" ("name", "password", "idOwner", "idType")
+VALUES ('DM TinkyWinky | Laa-Laa', '', 1, 3);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (1, 6, 2, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (3, 6, 2, NULL);
+
+--          JOIN CHANNEL
+
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (2, 1, 2, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (3, 1, 2, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (4, 1, 2, NULL);
+
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (2, 2, 2, NULL);
+
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (4, 3, 2, NULL);
+
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (1, 4, 2, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (2, 4, 2, NULL);
+
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (1, 5, 2, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (2, 5, 3, NULL);
+INSERT INTO "User_Channel" ("idUser", "idChannel", "idRole", "muteTime")
+VALUES (4, 5, 2, NULL);
+
+--          MESSAGE
+
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('SALUT BG !', '1997-05-12 15:00:00', 1, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Oh quelle belle antenne... Tu ne capterais pas des programmes coquins ?', '1997-05-12 15:00:20', 3, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Viens un peu par ici que je te montre...', '1997-05-12 15:00:30', 1, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Grrrrrr!', '1997-05-12 15:00:40', 3, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Salut les coupains !!!!!!!', '1997-05-12 15:05:00', 2, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('STFU Dipsy!', '1997-05-12 15:05:10', 4, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Jamais il va la fermer ce connard !', '1997-05-12 15:05:12', 1, 1);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Honnetement, si j etais toi Dispsy, je me jeterai du haut de la maison la tete en avant... On n a tellement pas besoin de toi...', '1997-05-12 15:05:15', 3, 1);
+
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Mes bien chers freres... Mes bien cheres so... On n a pas le temps pour elles. Vous n etes pas sans savoir que le soleil n est une simple balle brillante amusante a regarder. Non stupide Dipsy ! Ce n est meme pas une balle! C est un bebe !', '2014-01-01 08:00:00', 3, 2);
+INSERT INTO "Message" ("content", "timestamps", "idUser", "idChannel")
+VALUES ('Tu es trop maligne Laa-Laa !', '2014-01-01 12:00:00', 2, 2);
+
+--          GAME
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 12:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (1, 1, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 1, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (1, 2, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 2, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 14:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (1, 3, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 3, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 18:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (1, 4, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 4, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 19:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (1, 5, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 5, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (3, 6, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (4, 6, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:00:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (3, 7, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 7, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:30:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (4, 8, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (3, 8, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:10:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (4, 9, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 9, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 12:30:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (4, 10, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 10, false);
+
+INSERT INTO "Game" ("scoreLeft", "scoreRight", "date")
+VALUES (5, 0 , '1997-05-12 13:20:00');
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (4, 11, true);
+INSERT INTO "User_Game"("idUser", "idGame", "isWinner")
+VALUES (2, 11, false);

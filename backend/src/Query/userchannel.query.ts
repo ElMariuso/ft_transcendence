@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, User_Channel, User } from '@prisma/client';
+import { ROLE } from 'src/globalVariables';
 
 @Injectable()
 export class UserChannelQuery
@@ -29,6 +30,75 @@ export class UserChannelQuery
 	}
 
 	/**
+     * Gets all the common channels with specific type between two users 
+     * 
+     * @param idUser First user's id
+     * @param idUser2 Second user's id
+     * @param idType Channel type's id 
+     * 
+     * @returns List of common channels, or null
+     */
+    async findUserChannelByUserIds(idUser: number, idUser2: number, idType: number)
+    {
+        const userchannel = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idUser
+                },
+                include:
+                {
+                    Channel:
+                    {
+                        select:
+                        {
+                            idType: true
+                        }
+                    }
+                }
+            }
+        );
+
+        const userchannel2 = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idUser: idUser2,
+                    Channel:
+                    {
+                        idType
+                    }
+                },
+                include:
+                {
+                    Channel:
+                    {
+                        select:
+                        {
+                            idType: true
+                        }
+                    }
+                }
+            }
+        );
+
+        const common = userchannel.filter
+        (
+            (uc) => userchannel2.some
+            (
+                (uc2) => uc.idChannel === uc2.idChannel
+            ) 
+        );
+        
+        if (common.length > 0)
+            return common;
+
+        return null;    
+    }
+
+	/**
 	 * Get all User for a specific channel
 	 * 
 	 * @param idChannel Channel's id
@@ -36,50 +106,70 @@ export class UserChannelQuery
 	 * @returns User[]
 	 */
 	async findAllUsersByChannelId(idChannel: number) : Promise<User[]>
-	{
-		const us_ch = await this.prisma.user_Channel.findMany
-		(
-			{
-				where:
-				{
-					idChannel: idChannel
-				}
-			}
-		);
+    {
+        const us_ch = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idChannel: idChannel
+                }
+            }
+        );
 
-		const idUsers = us_ch.map(value => value.idUser);
+        const idUsers = us_ch.map(value => value.idUser);
 
-		const users = this.prisma.user.findMany
-		(
-			{
-				where:
-				{
-					idUser:
-					{
-						in: idUsers
-					}
-				}
-			}
-		);
+        const users = this.prisma.user.findMany
+        (
+            {
+                where:
+                {
+                    idUser:
+                    {
+                        in: idUsers
+                    }
+                }
+            }
+        );
 
-		const idRoles = us_ch.reduce((acc, value) =>
-		{
-			acc[value.idUser] = value.idRole;
-			return acc;
-		}, {});
+        const idRoles = us_ch.reduce((acc, value) =>
+        {
+            acc[value.idUser] = value.idRole;
+            return acc;
+        }, {});
 
-		const idAdmin = 1;
+        const admin = await this.prisma.role.findFirst
+        (
+            {
+                where:
+                {
+                    name: ROLE.ADMIN
+                }
+            }
+        );
+        const member = await this.prisma.role.findFirst
+        (
+            {
+                where:
+                {
+                    name: ROLE.MEMBER
+                }
+            }
+        );
 
-		const fullUsers = (await users).map(user => 
-			(
-				{
-					...user,
-					role: idRoles[user.idUser] === idAdmin ? "Admin" : "Member",
-				}
-			));
+        const idAdmin = admin.idRole;
+        const idMember = member.idRole;
 
-		return fullUsers;;
-	}
+        const fullUsers = (await users).map(user => 
+            (
+                {
+                    ...user,
+                    role: idRoles[user.idUser] === idAdmin ? ROLE.ADMIN : idRoles[user.idUser] === idMember ? ROLE.MEMBER : ROLE.BANNED,
+                }
+            ));
+
+        return fullUsers;;
+    }
 
 	/**
 	 * Invites a new member into the channel with a member role, a waiting status and a null mutetime.
@@ -155,32 +245,32 @@ export class UserChannelQuery
 	}
 
 	/**
-	 * Update the mute time of a member of a channel. Mute time can be null.
-	 * 
-	 * @param idUserChannel UserChannel's id
-	 * @param timeToMute Time to mute a member
-	 * 
-	 * @returns  Updated record
-	 * 
-	 * @query update user_channel set user_channel.muteTime = new_date/null where user_channel.idUser_Channel = $idUserChannel;
-	 */
-	async updateMuteTime(idUserChannel: number, timeToMute: number)
-	{
-		// Convert seconds to milliseconds -> * 1000
-		const newMuteTime = timeToMute ? new Date(new Date().getTime() + timeToMute * 1000) : null;
+     * Update the mute time of a member of a channel. Mute time can be null.
+     * 
+     * @param idUserChannel UserChannel's id
+     * @param timeToMute Time to mute a member, can be null
+     * 
+     * @returns  Updated record
+     * 
+     * @query update user_channel set user_channel.muteTime = new_date/null where user_channel.idUser_Channel = $idUserChannel;
+     */
+    async updateMuteTime(idUserChannel: number, timeToMute: number | null)
+    {
+        // Convert seconds to milliseconds -> * 1000
+        const newMuteTime = timeToMute ? new Date(new Date().getTime() + timeToMute * 1000) : null;
 
-		const userchannel = await this.prisma.user_Channel.update
-		(
-			{
-				where: { idUser_Channel: idUserChannel },
+        const userchannel = await this.prisma.user_Channel.update
+        (
+            {
+                where: { idUser_Channel: idUserChannel },
 
-				data:
-				{
-					muteTime: newMuteTime,
-				},
-			}
-		);
+                data:
+                {
+                    muteTime: newMuteTime,
+                },
+            }
+        );
 
-		return userchannel;
-	}
+        return userchannel;
+    }
 }

@@ -86,6 +86,16 @@ export const joinChannel = async (userID: number, channelID: number, pw: string=
 	}
 }
 
+export const getChannel = async (channelID) => {
+	try {
+		const res = await api.get('/channels/' + channelID);
+		return res.data;
+	} catch (error) {
+		console.error('Error fetching specific channel', error);
+		throw error;
+	}
+}
+
 export const getChannelMsg = async (channelID) => {
 	try {
 		const res = await api.get('/channels/allMessages/' + channelID);
@@ -116,6 +126,20 @@ export const sendMessageTo = async (body) => {
 	}
 }
 
+export const creatDMChannel = async (id1 : number, id2) => {
+	try {
+		let body = {
+			"idUser": id1,
+			"idUser2": id2
+		}
+		const res = await api.post('/channels/createDM', body);
+		return res;
+	} catch (error) {
+		console.error('Error creating dm', error);
+		throw error;
+	}
+}
+
 export const leaveCurrentChannel = async (idUser, idChannel) => {
 	try {
 
@@ -123,6 +147,21 @@ export const leaveCurrentChannel = async (idUser, idChannel) => {
 		return res;
 	} catch (error) {
 		console.error('Error leaving channel', error);
+		throw error;
+	}
+}
+
+export const updateUserRole = async (idUser, banId, idChannel, newRole) => {
+	try {
+
+		const res = await api.put('/userchannels/modifyRole/' + idUser,{
+			"idMember": banId,
+			"idChannel": idChannel,
+			"idRole": newRole,
+			})
+		return res;
+	} catch (error) {
+		console.error('Error banning user from channel', error);
 		throw error;
 	}
 }
@@ -227,13 +266,12 @@ export const mute = async (user, channel, time) => {
 	});
 }
 
-export const kick = async () => {
-	console.log("kick");
-}
-
-export const ban = async () => {
-	console.log("ban");
-}
+// export const kick = async () => {
+// 	console.log("kick");
+// }
+// export const ban = async () => {
+// 	console.log("ban");
+// }
 
 export const promote = async (idPromoted, idCurrentChannel, userID) => {
 	const res = await api.put('/userchannels/modifyRole/' + userID, {

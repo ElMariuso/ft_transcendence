@@ -24,4 +24,25 @@ export class RoleQuery
 		
 		return role;
 	}
+
+	/**
+     * Gets a role by his name
+     * 
+     * @param name Role's name
+     * 
+     * @returns Role or null
+     * 
+     * @query select * from role where role.name = $name;
+     */
+	 async findRoleByName(name: string) : Promise<Role | null>
+	 {
+		 const role = await this.prisma.role.findFirst
+		 (
+			 {
+				 where: { name },
+			 }
+		 );
+		 
+		 return role;
+	 }
 }

@@ -87,32 +87,39 @@ export class MessageService
 	}
 
 	/**
-	 * Creates a message in DB
-	 * 
-	 * @param Message MessageDTO to create
-	 * 
-	 * @returns New message
-	 */
-	async createMessage(message : CreateMessageDTO) : Promise<MessageDTO>
-	{
-		const user = await this.userQuery.findUserById(message.idUser);
-		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+     * Creates a message in DB
+     * 
+     * @param Message MessageDTO to create
+     * 
+     * @returns New message
+     */
+    async createMessage(message : CreateMessageDTO) : Promise<MessageDTO>
+    {
+        const user = await this.userQuery.findUserById(message.idUser);
+        if (!user)
+            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
-		const channel = await this.channelQuery.findChannelById(message.idChannel);
-		if(!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
-		
-		const userchannel = this.userchannelQuery.findUserChannelByUserAndChannelIds(user.idUser, channel.idChannel);
-		if (!userchannel)
-			throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
+        const channel = await this.channelQuery.findChannelById(message.idChannel);
+        if(!channel)
+            throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+        
+        const userchannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(user.idUser, channel.idChannel);
+        if (!userchannel)
+            throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.NOT_FOUND);
 
-		const newMessage = await this.messageQuery.createMessage(message);
+        if (userchannel.muteTime != null)
+        {
+            if (userchannel.muteTime > new Date())
+                throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.STILL_MUTE + userchannel.muteTime.toLocaleDateString() + " " + userchannel.muteTime.toLocaleTimeString());
 
-		this.achievementService.checkAchievement(message.idUser, 3);
-		
-		return this.transformToDTO(newMessage, user.username);
-	}
+            const newUsCh = await this.userchannelQuery.updateMuteTime(userchannel.idUser_Channel, null);
+        }
+        const newMessage = await this.messageQuery.createMessage(message);
+
+        this.achievementService.checkAchievement(message.idUser, 3);
+        
+        return this.transformToDTO(newMessage, user.username);
+    }
 
 	/**
 	 * Delete a message based on their id
