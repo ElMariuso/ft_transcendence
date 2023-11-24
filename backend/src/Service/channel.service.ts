@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ForbiddenException} from '@nestjs/common';
 
 import { Channel, Message, User } from '@prisma/client';
 
@@ -9,6 +9,7 @@ import { MessageQuery } from 'src/Query/message.query';
 
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
+import { UpdateChannelDTO } from 'src/DTO/channel/updateChannel.dto';
 
 import { ERROR_MESSAGES, TYPE } from 'src/globalVariables';
 
@@ -147,6 +148,58 @@ export class ChannelService
 
 		return this.transformToDTO(newChannel);
 	}
+
+	/**
+     * Update a channel in DB.
+     * Can only update the password and the channel type.
+     * 
+     * @param id User's id
+     * @param data Data to update
+     * 
+     * @returns Updated Channel
+     */
+	 async updateChannel(id: number, data: UpdateChannelDTO) : Promise<ChannelDTO>
+	 {
+		 const updateChannel = await this.channelQuery.findChannelById(data.idChannel);
+		 if (!updateChannel)
+			 throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+		 
+		 const dm = await this.typeQuery.findChannelTypeIdByName(TYPE.DM);
+		 if (updateChannel.idType == dm)
+			 throw new BadRequestException(ERROR_MESSAGES.CHANNEL.DM_CHANGE);
+ 
+		 const user = await this.userQuery.findUserById(id);
+		 if (!user)
+			 throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
+		 
+		 if (user.idUser != updateChannel.idOwner)
+			 throw new ForbiddenException(ERROR_MESSAGES.CHANNEL.NOT_OWNER);
+		 
+		 if (data.password)
+		 {
+			 const bcrypt = require('bcryptjs');
+			 const salt = bcrypt.genSaltSync(10);
+			 const hash = bcrypt.hashSync(data.password, salt);
+			 data.password = hash;
+		 }
+ 
+		 if (data.idType)
+		 {
+			 const type = await this.typeQuery.findChannelTypeById(data.idType);
+			 if (!type)
+				 throw new BadRequestException(ERROR_MESSAGES.CHANNELTYPE.NOT_FOUND);
+			 
+			 const dm = await this.typeQuery.findChannelTypeIdByName(TYPE.DM);
+			 if (!dm || data.idType == dm)
+				 throw new BadRequestException(ERROR_MESSAGES.CHANNEL.DM_CHANGE_INTO)
+		 }
+ 
+		 await this.channelQuery.updateChannel(data);
+ 
+		 const updatedChannel = await this.channelQuery.findChannelById(updateChannel.idChannel);
+ 
+		 return this.transformToDTO(updatedChannel);
+	 }
 
 	/**
 	 * Delete a channel based on their id

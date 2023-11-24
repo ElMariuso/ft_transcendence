@@ -94,10 +94,16 @@ export const ERROR_MESSAGES =
 	{
 		NOT_FOUND: "Channel not found",
 		PASSWORD_MISSING: "Missing password for private channel",
+		NOT_OWNER: "User is not the channel's owner",
+		DM_CHANGE: "Cannot change direct message type",
+		DM_CHANGE_INTO: "Channel type cannot change into direct message",
+		
 
 		CREATECHANNEL_FAILED: "Channel creation failed",
+		UPDATECHANNEL_FAILED : "Update Channel failed",
 		DELETECHANNEL_FAILED: "Delete channel failed",
 		GETALLMESSAGESFROMCHANNEL_FAILED: "Get all messages from a channel failed",
+		GETALLUSERS_FAILED: "Get all users from a channel failed",
 	},
 
 	/*	CHANNEL TYPE ERROR	*/
@@ -131,6 +137,7 @@ export const ERROR_MESSAGES =
 		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
 		CHANGE_DM_ROLE: "Can not change role in DM",
 		CANTREJOINDM: "Can not join a Direct Message Channel",
+		STILL_MUTE: "Can send any messages. You are still muted until ",
 
 		JOINCHANNEL_FAILED: "Joining channel failed",
 		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",

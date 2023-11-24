@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, Channel } from '@prisma/client';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
+import { UpdateChannelDTO } from 'src/DTO/channel/updateChannel.dto';
 import { ROLE } from 'src/globalVariables';
 
 @Injectable()
@@ -122,6 +123,22 @@ export class ChannelQuery
 
 		return newChannel;
 	}
+
+	/**
+     * Update a channel in DB
+     * 
+     * @param channelDTO Updated datas
+     */
+	 async updateChannel(channelDTO: UpdateChannelDTO)
+	 {
+		 await this.prisma.channel.update
+		 (
+			 {
+				 where: { idChannel: channelDTO.idChannel },
+				 data: channelDTO
+			 }
+		 );
+	 }
 
 	/**
 	 * Delete a Channel based on his id

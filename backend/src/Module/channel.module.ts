@@ -4,6 +4,7 @@ import { ChannelService } from 'src/Service/channel.service';
 import { ChannelQuery } from 'src/Query/channel.query';
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 import { CreateChannelDTO} from 'src/DTO/channel/createChannel.dto';
+import { UpdateChannelDTO } from 'src/DTO/channel/updateChannel.dto';
 import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
 
 import { ChannelTypeQuery } from 'src/Query/type.query';
@@ -17,17 +18,18 @@ import { PrismaClient } from '@prisma/client';
 @Module({
   controllers: [ChannelController],
   providers: [
-	ChannelDTO,
-	CreateChannelDTO,
-	UserInChannelDTO,
-	PrismaClient,
-	ChannelQuery,
-	ChannelService,
-	ChannelTypeQuery,
-	UserQuery,
-	MessageQuery,
-	UserChannelQuery,
-	RoleQuery,
+    ChannelDTO,
+    CreateChannelDTO,
+    UpdateChannelDTO,
+    UserInChannelDTO,
+    PrismaClient,
+    ChannelQuery,
+    ChannelService,
+    ChannelTypeQuery,
+    UserQuery,
+    MessageQuery,
+    UserChannelQuery,
+    RoleQuery,
 ],
 })
 export class ChannelModule {}

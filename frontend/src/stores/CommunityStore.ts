@@ -49,10 +49,13 @@ export const useCommunityStore = defineStore('community', () => {
 			
 			const users = await getChannelUsers(channelID);
 			const user = users.find(user => user.idUser === id);
-			if (user.owner)
+			if (user) {
+
+				if (user.owner)
 				roleInChannel.value = "Owner";
-			else
+				else
 				roleInChannel.value = user.role;
+			}
 			selectedChannelUsers.value = users;
 		} catch (error) {
 			console.error("Error fetching channel's messages:", error);

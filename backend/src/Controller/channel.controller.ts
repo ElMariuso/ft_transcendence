@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post, ForbiddenException, Put } from '@nestjs/common';
 
 
 import { ChannelService } from 'src/Service/channel.service';
 
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
+import { UpdateChannelDTO } from 'src/DTO/channel/updateChannel.dto';
 
 import { ERROR_MESSAGES, MESSAGES } from 'src/globalVariables';
 
@@ -129,6 +130,41 @@ export class ChannelController
 			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.CREATECHANNEL_FAILED);
 		}
 	}
+
+	/**
+     * Update a channel in DB.
+     * Can only update the password and the channel type.
+     * 
+     * @param id User's id
+     * @param updateChannelDTO Updated datas
+     * 
+     * @returns Updated channel
+     * 
+     * @throw HTTPException with status BAD_REQUEST if the channel was not found
+     * @throw HTTPException with status BAD_REQUEST if the user was not found
+     * @throw HTTPException with status BAD_REQUEST if the type is not valid
+     * @throw HTTPException with status BAD_REQUEST if the updated type is DM type
+     * @throw HTTPException with status FORBIDDEN if the user is not the channel owner
+     * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
+     */
+    @Put('/update/:id')
+    async updateChannel(@Param('id') id: string, @Body() updateChannelDTO : UpdateChannelDTO) : Promise<ChannelDTO>
+    {
+        try
+        {
+            let newId = parseInt(id, 10);
+
+            return this.channelService.updateChannel(newId, updateChannelDTO);
+        }
+        catch (error)
+        {
+            if (error instanceof BadRequestException)
+                throw new BadRequestException(error.message);
+            if (error instanceof ForbiddenException)
+                throw new ForbiddenException(error.message);
+            throw new InternalServerErrorException();
+        }
+    }
 
 	/**
 	 * Delete a channel by his id

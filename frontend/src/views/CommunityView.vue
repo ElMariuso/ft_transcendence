@@ -1,47 +1,5 @@
-<!-- 
-	TO DO
-
-	- Websocket msg
-	- Online / offline players
-	- players buttons functionnality:
-		* PLAY
-		* PROFILE
-		* DM
-		* add friend
-		* BLOCK
-
-		IF ADMIN
-		* KICK/BAN/MUTE
-
-		IF OWNER 
-		* Give admin rights
-
- -->
-
-
-
 <template>
 	<div class="flex">
-
-		<!-- Find Users -->
-		<!-- <div class="mb-4">
-		<h3 class="text-lg font-semibold">Find users</h3>
-		<select class="p-2 w-1/3 border rounded-lg">
-			<option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
-		</select>
-		<button @click="findUser" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Find</button>
-		</div> -->
-
-		<!-- Send Private Message -->
-		<!-- <div class="mb-4">
-		<h3 class="text-lg font-semibold">Send Private Message To</h3>
-		<select class="p-2 w-1/3 border rounded-lg">
-			<option v-for="usernames in communityStore.getUsernames()">{{ usernames }}</option>
-		</select>
-		<button @click="sendPrivateMessage" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send</button>
-		</div> -->
-
-
 
 		<!-- Create Channel -->
 		<div  class="mb-4 flex flex-col w-1/4">
@@ -164,12 +122,11 @@
 								<div v-if="roleInChannel === 'Owner'" >
 									<a class="block px-2 py-1"> Change password: </a>
 									<div class="flex flex-row justify-around block px-2 py-1 border-b">
-										<input type="password" placeholder="old" class="w-2/5 border rounded-lg px-2"/>
-										<input type="password" placeholder="new" class="w-2/5 border rounded-lg px-2"/>
-										<button> <img src="../assets/confirm.svg" alt="Confirm"></button>
+										<input v-model="channelNewPw" type="password" placeholder="new pw" class="w-4/5 border rounded-lg px-2"/>
+										<button @click="changeChannelPw"> <img src="../assets/confirm.svg" alt="Confirm"></button>
 									</div>
 									
-									<a class="block px-2 py-1 cursor-pointer hover:text-blue-500 border-b"> 
+									<a @click="removePW" class="block px-2 py-1 cursor-pointer hover:text-blue-500 border-b"> 
 										Remove password
 									</a>
 								</div>
@@ -292,7 +249,8 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block, promote } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, 
+	getChannelMsg, deleteMessage, mute, block, promote, channelPrivToPub, modifyChannelPw } from '@/services/Community-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -304,7 +262,7 @@ const communityStore = useCommunityStore();
 const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
 
 const profileStore = useProfileStore();
-const { userID } = storeToRefs(profileStore);
+const { userID, username } = storeToRefs(profileStore);
 
 const ladderStore = useLadderStore()
 
@@ -366,6 +324,31 @@ const selectedChannelID = ref(null);
 const scrollContainer = ref(null);
 const newMessage = ref('');
 const dropdownOpenChatSettings = ref(false);
+const channelNewPw = ref('');
+let updateChannelInterval;
+
+const userIsInChannel = (usernameToSearch: string): boolean => {
+  return users.some(user => user.username === usernameToSearch);
+};
+
+// Refreshes Chat + players list
+watch(selectedChannelID, (newChannelID, oldChannelID) => {
+    // Clear the existing interval when selectedChannelID is reset
+    if (newChannelID !== oldChannelID || newChannelID === null) {
+		clearInterval(updateChannelInterval);
+    }
+
+    // Start the interval when selectedChannelID is set
+    // if (newChannelID) {
+		updateChannelInterval = setInterval(async () => {
+			await communityStore.updateSelectedChannel(newChannelID);
+			await communityStore.setupCommunity();
+			
+			if (!(selectedChannelUsers.value.some(user => user.username === username.value)))
+				selectedChannelID.value = null;
+		}, 500);
+    // }
+});
 
 function toggleDropdownChatSettings() {
 	
@@ -442,6 +425,15 @@ async function leaveOrDeleteChannel() {
 	selectedChannelID.value = null;
 	await communityStore.setupCommunity();
 }
+
+async function removePW() {
+	await channelPrivToPub(userID.value, selectedChannelID.value);
+}
+
+async function changeChannelPw() {
+	await modifyChannelPw(userID.value, selectedChannelID.value, channelNewPw.value);
+}
+
 
 // *************************************************
 

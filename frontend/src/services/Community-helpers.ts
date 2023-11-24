@@ -99,7 +99,6 @@ export const getChannelMsg = async (channelID) => {
 export const getChannelUsers = async (channelID) => {
 	try {
 		const res = await api.get('/channels/allUsers/' + channelID);
-		console.log(res)
 		return res.data;
 	} catch (error) {
 		console.error('Error fetching channel users', error);
@@ -180,6 +179,22 @@ export const deleteMessage = async (idMessage) => {
     }
 };
 
+export const channelPrivToPub = async (userID, channelID) => {
+	const res = await api.put('channels/update/' + userID, {
+		idChannel: channelID,
+		idType: 2 // Public
+	})
+};
+
+export const modifyChannelPw = async (userID, channelID, pw) => {
+	const res = await api.put('channels/update/' + userID, {
+		idChannel: channelID,
+		idType: 1, // Private
+		password: pw
+	})
+
+	console.log(res)
+};
 
 // Player actions
 
