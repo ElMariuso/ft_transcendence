@@ -64,7 +64,7 @@
 					
 					<div v-if="badUserName"> <h3 class="text-lg text-red-600 font-semibold">User not found</h3> </div>
 					<div v-if="alone"> <h3 class="text-lg text-red-600 font-semibold">Try talking with someone, not yourself</h3> </div>
-					<div v-if="block"> <h3 class="text-lg text-red-600 font-semibold">You cannot send message to this user</h3> </div>
+					<div v-if="block"> <h3 class="text-lg text-red-600 font-semibold">One of you blocked the other...</h3> </div>
 
 				</div>
 			</div>
@@ -314,7 +314,7 @@ import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import api from '../services/api';
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, getChannelMsg, deleteMessage, mute, block, getChannelUsers } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, getChannelMsg, deleteMessage, mute, block, getChannelUsers, creatDMChannel } from '@/services/Community-helpers'
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 
 onBeforeMount(async () => {
@@ -353,8 +353,6 @@ async function privateMessage(name : string) {
 	block.value = false;
 	let blocklist = ladderStore.getBlockedList();
 
-	//check if mp channel with these two already exist
-
 	if (name != '')
 		newUsername.value = name;
 	
@@ -389,8 +387,12 @@ async function privateMessage(name : string) {
 		};
 	}
 
-	const res = await communityStore.setupNewChannel("mp", 3, "Useless!")
-	await joinChannel(searchIdUser.value, res.idChannel);
+	try {
+		const res = await creatDMChannel(searchIdUser.value, ladderStore.getId())
+	} catch (error) {
+		console.error('Error creating dm', error);
+		throw error;
+	}
 
 	newUsername.value = "";
 	await communityStore.setupCommunity();

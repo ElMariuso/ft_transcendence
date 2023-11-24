@@ -122,15 +122,22 @@ export const sendMessageTo = async (body) => {
 		const res = await api.post('/messages', body);
 		return res;
 	} catch (error) {
-		if (error.message != "Request failed with status code 400")
-		{
-			console.error('Error posting message', error);
-			throw error;
+		console.error('Error posting message', error);
+		throw error;
+	}
+}
+
+export const creatDMChannel = async (id1 : number, id2) => {
+	try {
+		let body = {
+			"idUser": id1,
+			"idUser2": id2
 		}
-		else
-		{
-			return ("Currently muted");
-		}
+		const res = await api.post('/channels/createDM', body);
+		return res;
+	} catch (error) {
+		console.error('Error creating dm', error);
+		throw error;
 	}
 }
 
