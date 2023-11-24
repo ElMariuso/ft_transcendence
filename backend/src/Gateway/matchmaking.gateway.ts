@@ -131,16 +131,47 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     @SubscribeMessage('confirm-challenge')
     confirmChallenge(client: Socket, [playerId, playerUsername]: [number, string]) {
       for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        let bothReady = false;
+
         if (challengeInfo.challengerInfo.playerId === playerId) {
           challengeInfo.challengerInfo.socketId = client.id;
           challengeInfo.challengerInfo.username = playerUsername;
           challengeInfo.isReady[playerId] = true;
+          bothReady = challengeInfo.isReady[challengeInfo.opponentInfo.playerId];
         } else if (challengeInfo.opponentInfo.playerId === playerId) {
           challengeInfo.opponentInfo.socketId = client.id;
           challengeInfo.opponentInfo.username = playerUsername;
           challengeInfo.isReady[playerId] = true;
+          bothReady = challengeInfo.isReady[challengeInfo.challengerInfo.playerId];
         }
-        return ;
+
+        if (bothReady) {
+          const player1: AuthenticatedPlayer = {
+            id: challengeInfo.challengerInfo.playerId,
+            isGuest: false,
+            points: 0,
+            username: challengeInfo.challengerInfo.username 
+          };
+          const player2: AuthenticatedPlayer = {
+            id: challengeInfo.opponentInfo.playerId,
+            isGuest: false,
+            points: 0,
+            username: challengeInfo.opponentInfo.username
+          };
+          const player1Info = {
+            playerId: player1.id,
+            username: player1.username
+          };
+          const player2Info = {
+            playerId: player2.id,
+            username: player2.username
+          };
+          this.gameGateway.addOnlinePlayer(challengeInfo.challengerInfo.socketId, player1Info);
+          this.gameGateway.addOnlinePlayer(challengeInfo.opponentInfo.socketId, player2Info);
+          this.gameGateway.createMatch({ player1, player2}, false);
+          this.acceptedChallenges.delete(challengerId);
+        }
+        break ;
       }
     }
 
