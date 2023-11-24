@@ -71,6 +71,18 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
       this.deleteOnlinePlayer(client.id);
+
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        if (challengeInfo.challengerInfo.socketId === client.id) {
+          challengeInfo.challengerInfo.socketId = null;
+          challengeInfo.challengerInfo.username = null;
+          challengeInfo.isReady[challengeInfo.challengerInfo.playerId] = false;
+        } else if (challengeInfo.opponentInfo.socketId === client.id) {
+          challengeInfo.opponentInfo.socketId = null;
+          challengeInfo.opponentInfo.username = null;
+          challengeInfo.isReady[challengeInfo.opponentInfo.playerId] = false;
+        }
+      }
     }
 
     @SubscribeMessage('challenge')
