@@ -55,9 +55,11 @@ export class AuthService {
     */
 	async login(data): Promise<string> {
         const userIdFrom42 = parseInt(data.id, 10);
-        let user = await this.findOrCreateUser(userIdFrom42, data);
+        let res = await this.findOrCreateUser(userIdFrom42, data);
+		let user = res.user;
+		let first_auth = res.first_auth;
 		
-		return this.signJwtForUser(user.idUser, user.isTwoFactorAuthEnabled);
+		return this.signJwtForUser(user.idUser, user.isTwoFactorAuthEnabled, first_auth);
 	}
 
 	login2fa(userID: string, twoFactorAuthEnabled: boolean) {
@@ -91,6 +93,7 @@ export class AuthService {
     */
 	private async findOrCreateUser(userIdFrom42: number, data) {
 		let user;
+		let first_auth = false;
 
 		try {
 			user = await this.userService.findUserById42(userIdFrom42)
@@ -99,6 +102,7 @@ export class AuthService {
 		}
 		
 		if (!user) {
+			first_auth = true;
 			const userDto: CreateUserDTO = {
 				username: data._json.login,
 				email: data._json.email,
@@ -111,7 +115,7 @@ export class AuthService {
 				throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		return user;
+		return {user, first_auth };
 	}
 
 
@@ -123,12 +127,13 @@ export class AuthService {
      * @returns A JWT token.
      * @throws {HttpException} - Throws an exception if token signing fails, with a 500 status code.
     */
-	private signJwtForUser(userId: string, user2fa: boolean, otp=false): string {
+	private signJwtForUser(userId: string, user2fa: boolean, first_auth=false, otp=false): string {
 		try {
 			return this.jwtService.sign({ 
 				sub: userId,
 				twoFactorAuthEnabled: user2fa,
-				twoFactorAuthOTP: otp
+				twoFactorAuthOTP: otp,
+				firstLogin: first_auth,
 			});
 		} catch (error) {
 			throw new HttpException('Failed to sign JWT', HttpStatus.INTERNAL_SERVER_ERROR);

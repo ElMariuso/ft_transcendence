@@ -32,7 +32,7 @@ module.exports = {
         'tab': '5rem',
       },
 	  spacing: {
-        '128': '34rem',
+        'chat': '44rem',
       }
     }
   },

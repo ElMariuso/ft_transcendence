@@ -188,7 +188,7 @@ export class ChannelService
 			if (isBlocked)
 				throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
 	
-			let isBlocked = await this.blockedQuery.getBlockedByUserIds(user2.idUser, user.idUser);
+			isBlocked = await this.blockedQuery.getBlockedByUserIds(user2.idUser, user.idUser);
 			if (isBlocked)
 				throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
 	

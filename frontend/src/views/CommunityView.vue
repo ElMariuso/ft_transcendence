@@ -147,7 +147,7 @@
 							</div>
 							<div v-if="dropdownOpenChatSettings" class="absolute mt-10 w-48 bg-white border rounded-lg shadow-lg">
 								
-								<div v-if="roleInChannel === 'Owner'" >
+								<div v-if="roleInChannel === 'Owner' && channelType !== 3" >
 									<a class="block px-2 py-1"> Change password: </a>
 									<div class="flex flex-row justify-around block px-2 py-1 border-b">
 										<input v-model="channelNewPw" type="password" placeholder="new pw" class="w-4/5 border rounded-lg px-2"/>
@@ -172,21 +172,30 @@
 					</div>
 						
 					<div v-if="selectedChannelID" class="">
-						<ul class="h-128 overflow-y-auto">
+						<ul class="h-chat overflow-y-auto">
 							<li v-for="msg in selectedChannelMsg" class="flex flex-row">
 								<p class="mr-2 text-lg text-blue-500"> {{ msg.username }}:</p>
 								<p class="text-lg overflow-x-auto"> {{ msg.content }}</p>
 							</li>
 						</ul>
 					</div>
-						<div v-if="selectedChannelID" class="mt-auto">
+						<div v-if="selectedChannelID" class="flex">
 							<input
 								v-model="newMessage"
 								type="text"
 								placeholder="Send a message"
-								class="p-2 w-5/6 border rounded-lg"
+								class="px-2 mr-2 w-5/6 border rounded-lg"
+								@keyup.enter="newMessage && sendMessage()"
+								
 							/>
-							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+							<button 
+								@click="sendMessage" 
+								:disabled="!newMessage" 
+								class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg"
+								:class="{ 'bg-blue-500 text-white': newMessage, 'bg-gray-500': !newMessage }"
+							>
+								Send
+							</button>
 							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">One of you blocked the other...</h3> </div>
 						</div>			
 				</div>
