@@ -44,6 +44,32 @@
 		<div  class="mb-4 flex flex-col w-1/4">
 
 			<div class="border-2 border-blue-500 px-4 py-2 rounded-lg">
+				<h3 class="text-lg font-semibold border-b border-gray-400">Private message</h3>
+
+				<input
+					v-model="newUsername"
+					type="text"
+					placeholder="Enter user name"
+					class="p-2 border rounded-lg mt-2 w-full"
+				/>
+
+				<div class="flex items-baseline">
+
+					<button 
+						@click="privateMessage('')"
+						class="mt-4 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg mr-5"
+					>
+						Send
+					</button>
+					
+					<div v-if="badUserName"> <h3 class="text-lg text-red-600 font-semibold">User not found</h3> </div>
+					<div v-if="alone"> <h3 class="text-lg text-red-600 font-semibold">Try talking with someone, not yourself</h3> </div>
+					<div v-if="block"> <h3 class="text-lg text-red-600 font-semibold">You cannot send message to this user</h3> </div>
+
+				</div>
+			</div>
+
+			<div class="border-2 border-blue-500 px-4 py-2 rounded-lg">
 				<h3 class="text-lg font-semibold border-b border-gray-400">Create Channel</h3>
 
 				<input
@@ -86,8 +112,8 @@
 				<h3 class="text-lg font-semibold border-b border-gray-400">Open Channels</h3>
 
 				<ul class="mt-2 h-96 overflow-y-auto">
-					<li v-for="channel in openChannels" class="mb-2 border px-2 py-1 rounded-lg" >		
-						<div class="text-lg flex flex-row ">
+					<li v-for="channel in openChannels">		
+						<div v-if="channel.idType !== 3" class="mb-2 border px-2 py-1 rounded-lg text-lg flex flex-row ">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button 
 								v-if="channel.idType !== 4"
@@ -160,7 +186,8 @@
 								@click="leaveOrDeleteChannel"
 								class="border rounded-lg px-2 py-1 bg-red-200"
 							>
-								{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }}
+								<span v-if="channelType !== 3">{{ roleInChannel === "Owner" ? 'Delete Channel' : 'Leave Channel' }}</span>
+								<span v-if="channelType === 3">{{'Delete Channel'}}</span>
 							</button>
 						</div>
 					</div>
@@ -226,9 +253,11 @@
 											'text-green-600': user.role === 'Admin',
 											'text-red-500': user.owner,
 										}"	
+										v-if="channelType !== 3"
 									>
 										{{ user.username }}
 									</p>
+									<p v-if="channelType === 3" class="text-green-600">{{ user.username }}</p>
 
 									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
@@ -243,11 +272,11 @@
 										<router-link :to="'/otherprofile/id=' + user.idUser">
 			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
 										</router-link>
-										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
+										<img v-if="channelType !== 3" @click="privateMessage(user.username)" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
 										<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
-									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
+									<div v-if="channelType !== 3 && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="flex justify-between mt-2 border-t pt-1">
 
 										<div class="flex flex-row">
 
@@ -283,7 +312,9 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
+import api from '../services/api';
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, getChannelMsg, deleteMessage, mute, block, getChannelUsers } from '@/services/Community-helpers'
+import { getBlockedListData } from '@/services/UserProfile-helpers'
 
 onBeforeMount(async () => {
 	await communityStore.setupCommunity();
@@ -292,7 +323,7 @@ onBeforeMount(async () => {
 }) 
 
 const communityStore = useCommunityStore();
-const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
+const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType } = storeToRefs(communityStore);
 
 const profileStore = useProfileStore();
 const { userID } = storeToRefs(profileStore);
@@ -304,9 +335,62 @@ const ladderStore = useLadderStore()
 const noChannelName = ref(false);
 const noChannelType = ref(false);
 const noChannelPassword = ref(false);
+const badUserName = ref(false);
+const alone = ref(false);
+const block = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
+const newUsername = ref('');
+
+async function privateMessage(name : string) {
+	const userFound = ref(false);
+	const searchIdUser = ref(0);
+	badUserName.value = false;
+	alone.value = false;
+	block.value = false;
+	let blocklist = ladderStore.getBlockedList();
+
+	if (name != '')
+		newUsername.value = name;
+	
+	await api.get('/users')
+	.then(res => {
+		for (let i = 0; res.data[i]; i++) {
+			if (newUsername.value == res.data[i].username)
+			{
+				searchIdUser.value = res.data[i].idUser;
+				userFound.value = true;
+			}
+		}
+	});
+	if (userFound.value != true)
+		badUserName.value = true;
+	else if (newUsername.value == ladderStore.username)
+		alone.value = true;
+
+	for (let i = 0; blocklist[i]; i++) {
+		if (newUsername.value == blocklist[i].username)
+			block.value = true;
+	}
+	if (badUserName.value == true || alone.value == true || block.value == true)
+		return ;
+	
+	blocklist = await getBlockedListData(searchIdUser.value)
+	for (let i = 0; blocklist[i]; i++) {
+		if (ladderStore.username == blocklist[i].username)
+		{	
+			block.value = true;
+			return ;
+		};
+	}
+
+	const res = await communityStore.setupNewChannel("mp", 3, "Useless!")
+	await joinChannel(searchIdUser.value, res.idChannel);
+
+	newUsername.value = "";
+	await communityStore.setupCommunity();
+}
 
 async function createChannel() {
 	noChannelName.value = false;
@@ -372,8 +456,41 @@ async function selectChannel(channelID: string) {
 //   };
 // };
 
+async function checkForBlock(idChannel)
+{
+	let users = await getChannelUsers(idChannel);
+
+	let blocklist = await getBlockedListData(users[0].idUser)
+	for (let i = 0; blocklist[i]; i++) {
+		if (users[1].username == blocklist[i].username)
+		{	
+			return (false)
+		}
+	}
+	
+	blocklist = await getBlockedListData(users[1].idUser)
+	for (let i = 0; blocklist[i]; i++) {
+		if (users[0].username == blocklist[i].username)
+		{	
+			return (false)
+		}
+	}
+	return (true)
+}
+
 async function sendMessage() {
 	// Also websocket pb, ping all connected users ?
+
+	if (channelType.value === 3)
+	{
+		const res = await checkForBlock(selectedChannelID.value);
+		if (res == false)
+		{
+			newMessage.value = '';
+			return ;
+		}
+	}
+
 	let body = {
 		content: newMessage.value,
 		idUser: userID.value,
@@ -393,7 +510,7 @@ async function sendMessage() {
 
 async function leaveOrDeleteChannel() {
 
-	if (roleInChannel.value === "Owner") {
+	if (roleInChannel.value === "Owner" || channelType.value === 3) {
 		// Confirmation popup, then
 		const messages = await getChannelMsg(selectedChannelID.value);
 		for (let i = 0; messages[i]; i++) {

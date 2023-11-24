@@ -79,14 +79,14 @@ export const ERROR_MESSAGES =
 	/*	BLOCK ERROR		*/
 
 	BLOCK:
-	{
-		NOT_FOUND: "Relation not found",
+    {
+        NOT_FOUND: "Relation not found",
+        ALREADY_BLOCK: "User already blocked",
+        USER_BLOCKED: "Cannot send invitation to this user",
 
-		ALREADY_BLOCK: "USer already blocked",
-
-		GETBLOCK_FAILED: "Gets blocked users list failed",
-		BLOCKUSER_FAILED: "Block user failed",
-	},
+        GETBLOCK_FAILED: "Gets blocked users list failed",
+        BLOCKUSER_FAILED: "Block user failed",
+    },
 
 	/*	CHANNEL ERROR	*/
 

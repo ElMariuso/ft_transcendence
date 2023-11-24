@@ -1,8 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 
-import { FriendQuery } from 'src/Query/friend.query'
-import { UserQuery } from 'src/Query/user.query'
+import { FriendQuery } from 'src/Query/friend.query';
+import { UserQuery } from 'src/Query/user.query';
+import { BlockedQuery } from 'src/Query/blocked.query';
 import { FriendBlockedDTO } from 'src/DTO/user/friendblocked.dto';
 
 import { ERROR_MESSAGES } from 'src/globalVariables';
@@ -11,11 +12,12 @@ import { AchievementService } from './achievement.service';
 @Injectable()
 export class FriendService
 {
-	constructor(
-		private readonly friendQuery: FriendQuery,
-		private readonly userQuery: UserQuery,
-		private readonly achievementService: AchievementService	
-	) {}
+    constructor(
+        private readonly friendQuery: FriendQuery,
+        private readonly userQuery: UserQuery,
+        private readonly achievementService: AchievementService,
+        private readonly blockedQuery: BlockedQuery
+    ) {}
 
 	/**
 	 * Get the friend list of the user
@@ -75,37 +77,39 @@ export class FriendService
 	}
 
 	/**
-	 * Send a friend invitation to a specific user
-	 * 
-	 * @param idUser User's id
-	 * @param username Username of the user to invite
-	 * 
-	 * @returns FriendBlockedDTO
-	 */
-	async addFriend(idUser: number, username: string) : Promise<FriendBlockedDTO>
-	{
-		const checkUser = await this.userQuery.findUserByUsername(username);
+     * Send a friend invitation to a specific user
+     * 
+     * @param idUser User's id
+     * @param username Username of the user to invite
+     * 
+     * @returns FriendBlockedDTO
+     */
+    async addFriend(idUser: number, username: string) : Promise<FriendBlockedDTO>
+    {
+        const checkUser = await this.userQuery.findUserByUsername(username);
 
-		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-		if (checkUser.idUser == idUser)
-			throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_INVITE_ITSELF);
-		
-		const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
-		
-		/** DEMANDER SI ON ACCEPT DE RENVOYER UNE NOUVELLE DEMANDE SI ELLE A ETE REFUSEE */
+        if (!checkUser)
+            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+        if (checkUser.idUser == idUser)
+            throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_INVITE_ITSELF);
+        
+        const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
 
-		if (bond && bond.idStatus == 1)
-			throw new ConflictException(ERROR_MESSAGES.FRIEND.IN_WAITING);
-		if (bond && bond.idStatus == 2)
-			throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_ACCEPTED);
-		if (bond && bond.idStatus == 3)
-			throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_REFUSED);
-		
-		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
+        if (bond && bond.idStatus == 1)
+            throw new ConflictException(ERROR_MESSAGES.FRIEND.IN_WAITING);
+        if (bond && bond.idStatus == 2)
+            throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_ACCEPTED);
+        if (bond && bond.idStatus == 3)
+            throw new ConflictException(ERROR_MESSAGES.FRIEND.ALREADY_REFUSED);
+        
+        const isBlocked = await this.blockedQuery.getBlockedByUserIds(idUser, checkUser.idUser);
+        if (isBlocked)
+            throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
+        
+        const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
 
-		return this.transformToFriendBlockedDTO(checkUser);
-	}
+        return this.transformToFriendBlockedDTO(checkUser);
+    }
 
 	/**
 	 * Accepts a friend invitation from a specific user

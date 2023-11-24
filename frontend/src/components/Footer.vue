@@ -17,7 +17,7 @@
 
 
 <template>
-	<div class="h-20 flex justify-between border border-gray-400 p-4 mt-auto">
+	<!-- <div class="h-20 flex justify-between border border-gray-400 p-4 mt-auto">
 
 		<div class="flex items-baseline">
 		
@@ -32,7 +32,7 @@
 			</button>
 		</div>
 
-		<!-- FRIENDS LIST -->
+		FRIENDS LIST
 		<div v-if="listOpen" class="absolute bottom-20 right-0 w-1/3 h-1/2 bg-white border rounded-lg shadow-lg px-2 py-1 overflow-y-auto">
 
 		   <div class="flex flex-row items-center mb-2">
@@ -352,5 +352,5 @@
 		   
         </div>
 	  
-	</div>
+	</div> -->
 </template>
