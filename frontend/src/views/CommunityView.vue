@@ -353,6 +353,8 @@ async function privateMessage(name : string) {
 	block.value = false;
 	let blocklist = ladderStore.getBlockedList();
 
+	//check if mp channel with these two already exist
+
 	if (name != '')
 		newUsername.value = name;
 	

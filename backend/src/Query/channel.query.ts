@@ -38,6 +38,62 @@ export class ChannelQuery
 	}
 
 	/**
+     * Create new DM channel between two users
+     * 
+     * @param idUser User's id
+     * @param idUser2 Second user's id
+     * @param name Channel's name
+     * @param password Channel's password
+     * @param idType Channel's type
+     * @param idRole User's role
+     * 
+     * @returns new created channel
+     */
+    async createDM(idUser: number, idUser2: number, name: string, password: string, idType: number, idRole: number)
+    {
+        const newChannel = await this.prisma.channel.create
+        (
+            {
+                include:
+                {
+                    User_Channel: true,
+                },
+                data:
+                {
+                    name,
+                    password,
+                    idOwner: idUser,
+                    idType,
+                    User_Channel:
+                    {
+                        create:
+                        {
+                            idUser,
+                            idRole,
+                            muteTime: null
+                        }
+                    }
+                }
+            }
+        );
+
+        const userchannel = await this.prisma.user_Channel.create
+        (
+            {
+                data:
+                {
+                    idUser: idUser2,
+                    idChannel: newChannel.idChannel,
+                    idRole,
+                    muteTime: null
+                }
+            }
+        );
+
+        return newChannel;
+    }
+
+	/**
 	 * Gets all channel for a specific user's id
 	 * 
 	 * @param idUser  User's id

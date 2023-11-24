@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { Channel, Message, User } from '@prisma/client';
 
@@ -9,13 +9,15 @@ import { MessageQuery } from 'src/Query/message.query';
 
 import { ChannelDTO } from 'src/DTO/channel/channel.dto';
 import { CreateChannelDTO } from 'src/DTO/channel/createChannel.dto';
+import { CreateDMChannelDTO } from 'src/DTO/channel/createDMChannel.dto';
 
-import { ERROR_MESSAGES, TYPE } from 'src/globalVariables';
+import { ERROR_MESSAGES, TYPE, ROLE } from 'src/globalVariables';
 
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { UserChannelQuery } from 'src/Query/userchannel.query';
 import { UserInChannelDTO } from 'src/DTO/user/userInChannel.dto';
 import { RoleQuery } from 'src/Query/role.query';
+import { BlockedQuery } from 'src/Query/blocked.query';
 
 @Injectable()
 export class ChannelService
@@ -26,7 +28,8 @@ export class ChannelService
 		private readonly userQuery: UserQuery,
 		private readonly messageQuery: MessageQuery,
 		private readonly userChannelQuery: UserChannelQuery,
-		private readonly roleQuery: RoleQuery
+		private readonly roleQuery: RoleQuery,
+		private readonly blockedQuery: BlockedQuery
 		) {}
 
 	/**
@@ -123,30 +126,79 @@ export class ChannelService
 	}
 
 	/**
-	 * Creates a channel in DB
-	 * 
-	 * @param channel ChannelDTO to create
-	 * 
-	 * @returns New channel
-	 */
-	async createChannel(channel : CreateChannelDTO) : Promise<ChannelDTO>
-	{
-		const user = await this.userQuery.findUserById(channel.idOwner);
-		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-			
-		const type = await this.typeQuery.findChannelTypeById(channel.idType);
-		if (!type)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNELTYPE.NOT_FOUND);
-		
-		if(type.name === TYPE.PRIVATE && !channel.password)
-			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.PASSWORD_MISSING);
-		if((type.name === TYPE.PUBLIC || type.name === TYPE.DM) && !channel.password)
-			channel.password = "";
-		const newChannel = await this.channelQuery.createChannel(channel);
+     * Creates a channel in DB
+     * 
+     * @param channel ChannelDTO to create
+     * 
+     * @returns New channel
+     */
+    async createChannel(channel : CreateChannelDTO) : Promise<ChannelDTO>
+    {
+        const user = await this.userQuery.findUserById(channel.idOwner);
+        if (!user)
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
+            
+        const type = await this.typeQuery.findChannelTypeById(channel.idType);
+        if (!type)
+            throw new BadRequestException(ERROR_MESSAGES.CHANNELTYPE.NOT_FOUND);
+        
+        if (type.name === TYPE.DM)
+            throw new BadRequestException(ERROR_MESSAGES.CHANNEL.CANNOT_CREATE_DM);
 
-		return this.transformToDTO(newChannel);
-	}
+        if(type.name === TYPE.PRIVATE && !channel.password)
+            throw new BadRequestException(ERROR_MESSAGES.CHANNEL.PASSWORD_MISSING);
+        
+        if((type.name === TYPE.PUBLIC) && !channel.password)
+            channel.password = "";
+        
+        const newChannel = await this.channelQuery.createChannel(channel);
+
+        return this.transformToDTO(newChannel);
+    }
+
+	/**
+     * Creates a DM channel in DB and associate the two users
+     * 
+     * @param dm Data - idUser and idUser2
+     * 
+     * @returns New Channel
+     */
+    async createDM(dm: CreateDMChannelDTO) : Promise<ChannelDTO>
+    {
+        const user = await this.userQuery.findUserById(dm.idUser);
+        if (!user)
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
+        
+        const user2 = await this.userQuery.findUserById(dm.idUser2);
+        if (!user2)
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
+        
+        if (user.idUser === user2.idUser)
+            throw new BadRequestException(ERROR_MESSAGES.CHANNEL.CANNOT_CREATE_DM_WITH_YOURSELF)
+
+        const dmType = await this.typeQuery.findChannelTypeIdByName(TYPE.DM);
+        if (!dmType)
+            throw new BadRequestException(ERROR_MESSAGES.CHANNELTYPE.NOT_FOUND);
+        
+        const common = await this.userChannelQuery.findUserChannelByUserIds(user.idUser, user2.idUser, dmType);
+        if (common)
+            throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.CHANNEL_ALREADY_EXIST);
+        
+        let isBlocked = await this.blockedQuery.getBlockedByUserIds(user.idUser, user2.idUser);
+        if (isBlocked)
+            throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
+
+        isBlocked = await this.blockedQuery.getBlockedByUserIds(user2.idUser, user.idUser);
+        if (isBlocked)
+            throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
+
+        const name = "DM " + user.username + " | " + user2.username;
+        const password = "";
+        const role = await this.roleQuery.findRoleByName(ROLE.MEMBER);
+
+        const newChannel = await this.channelQuery.createDM(user.idUser, user2.idUser, name, password, dmType, role.idRole);
+        return this.transformToDTO(newChannel);
+    }
 
 	/**
 	 * Delete a channel based on their id

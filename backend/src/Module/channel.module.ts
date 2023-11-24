@@ -13,6 +13,7 @@ import { UserChannelQuery } from 'src/Query/userchannel.query';
 import { RoleQuery } from 'src/Query/role.query';
 
 import { PrismaClient } from '@prisma/client';
+import { BlockedQuery } from 'src/Query/blocked.query';
 
 @Module({
   controllers: [ChannelController],
@@ -28,6 +29,7 @@ import { PrismaClient } from '@prisma/client';
 	MessageQuery,
 	UserChannelQuery,
 	RoleQuery,
+	BlockedQuery
 ],
 })
 export class ChannelModule {}

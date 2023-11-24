@@ -79,14 +79,14 @@ export const ERROR_MESSAGES =
 	/*	BLOCK ERROR		*/
 
 	BLOCK:
-    {
-        NOT_FOUND: "Relation not found",
-        ALREADY_BLOCK: "User already blocked",
-        USER_BLOCKED: "Cannot send invitation to this user",
+	{
+		NOT_FOUND: "Relation not found",
+		ALREADY_BLOCK: "User already blocked",
+		USER_BLOCKED: "Cannot send invitation to this user",
 
-        GETBLOCK_FAILED: "Gets blocked users list failed",
-        BLOCKUSER_FAILED: "Block user failed",
-    },
+		GETBLOCK_FAILED: "Gets blocked users list failed",
+		BLOCKUSER_FAILED: "Block user failed",
+	},
 
 	/*	CHANNEL ERROR	*/
 
@@ -94,10 +94,18 @@ export const ERROR_MESSAGES =
 	{
 		NOT_FOUND: "Channel not found",
 		PASSWORD_MISSING: "Missing password for private channel",
+		NOT_OWNER: "User is not the channel's owner",
+		DM_CHANGE: "Cannot change direct message type",
+		DM_CHANGE_INTO: "Channel type cannot change into direct message",
+		CANNOT_CREATE_DM: "Cannot create DM channel",
+		CANNOT_CREATE_DM_WITH_YOURSELF: "Cannot create DM channel with yourself",
 
 		CREATECHANNEL_FAILED: "Channel creation failed",
+		CREATEDMCHANNEL_FAILED: "DM channel creation failed",
+		UPDATECHANNEL_FAILED : "Update Channel failed",
 		DELETECHANNEL_FAILED: "Delete channel failed",
 		GETALLMESSAGESFROMCHANNEL_FAILED: "Get all messages from a channel failed",
+		GETALLUSERS_FAILED: "Get all users from a channel failed",
 	},
 
 	/*	CHANNEL TYPE ERROR	*/
@@ -117,28 +125,29 @@ export const ERROR_MESSAGES =
 		DELETEMESSAGE_FAILED: "Message deletion failed",
 	},
 
-	/*    USER_CHANNEL ERROR    */
-    
-    USER_CHANNEL:
-    {
-        NOT_FOUND: "The user is not in the channel",
-        WRONG_PASSWORD: "Passwords don't match",
-        WRONG_MUTETIME: "Wrong mute time",
-        ALREADY_IN: "User already in the channel",
-        FORBIDDEN_ACTION: "Forbidden action",
-        KICK_OWNER: "Can not kick the owner",
-        KICK_DM: "Can not kick anyone in DM",
-        CHANGE_OWNER_ROLE: "Can not change the role of the owner",
-        CHANGE_DM_ROLE: "Can not change role in DM",
-        CANTREJOINDM: "Can not join a Direct Message Channel",
-        STILL_MUTE: "Can send any messages. You are still muted until ",
+	/*	USER_CHANNEL ERROR	*/
+	
+	USER_CHANNEL:
+	{
+		NOT_FOUND: "The user is not in the channel",
+		WRONG_PASSWORD: "Passwords don't match",
+		WRONG_MUTETIME: "Wrong mute time",
+		ALREADY_IN: "User already in the channel",
+		FORBIDDEN_ACTION: "Forbidden action",
+		KICK_OWNER: "Can not kick the owner",
+		KICK_DM: "Can not kick anyone in DM",
+		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
+		CHANGE_DM_ROLE: "Can not change role in DM",
+		CANTREJOINDM: "Can not join a Direct Message Channel",
+		STILL_MUTE: "Can send any messages. You are still muted until ",
+		CHANNEL_ALREADY_EXIST: "Channel already exists",
 
-        JOINCHANNEL_FAILED: "Joining channel failed",
-        FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
-        DELETEMEMBER_FAILED: "Userchannel deletion failed",
-        MODIFYROLE_FAILED: "Role update failed",
-        ADDMUTETIME_FAILED: "Adding mute time failed",
-    },
+		JOINCHANNEL_FAILED: "Joining channel failed",
+		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
+		DELETEMEMBER_FAILED: "Userchannel deletion failed",
+		MODIFYROLE_FAILED: "Role update failed",
+		ADDMUTETIME_FAILED: "Adding mute time failed",
+	},
 
 	ROLE:
 	{

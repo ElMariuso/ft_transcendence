@@ -30,6 +30,75 @@ export class UserChannelQuery
 	}
 
 	/**
+     * Gets all the common channels with specific type between two users 
+     * 
+     * @param idUser First user's id
+     * @param idUser2 Second user's id
+     * @param idType Channel type's id 
+     * 
+     * @returns List of common channels, or null
+     */
+    async findUserChannelByUserIds(idUser: number, idUser2: number, idType: number)
+    {
+        const userchannel = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idUser
+                },
+                include:
+                {
+                    Channel:
+                    {
+                        select:
+                        {
+                            idType: true
+                        }
+                    }
+                }
+            }
+        );
+
+        const userchannel2 = await this.prisma.user_Channel.findMany
+        (
+            {
+                where:
+                {
+                    idUser: idUser2,
+                    Channel:
+                    {
+                        idType
+                    }
+                },
+                include:
+                {
+                    Channel:
+                    {
+                        select:
+                        {
+                            idType: true
+                        }
+                    }
+                }
+            }
+        );
+
+        const common = userchannel.filter
+        (
+            (uc) => userchannel2.some
+            (
+                (uc2) => uc.idChannel === uc2.idChannel
+            ) 
+        );
+        
+        if (common.length > 0)
+            return common;
+
+        return null;    
+    }
+
+	/**
 	 * Get all User for a specific channel
 	 * 
 	 * @param idChannel Channel's id
