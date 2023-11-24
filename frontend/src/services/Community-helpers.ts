@@ -112,8 +112,15 @@ export const sendMessageTo = async (body) => {
 		const res = await api.post('/messages', body);
 		return res;
 	} catch (error) {
-		console.error('Error posting message', error);
-		throw error;
+		if (error.message != "Request failed with status code 400")
+		{
+			console.error('Error posting message', error);
+			throw error;
+		}
+		else
+		{
+			return ("Currently muted");
+		}
 	}
 }
 
