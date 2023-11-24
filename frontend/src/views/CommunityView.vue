@@ -208,6 +208,7 @@
 								class="p-2 w-5/6 border rounded-lg"
 							/>
 							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">You cannot send message to this user</h3> </div>
 						</div>			
 				</div>
 			</div>
@@ -338,6 +339,7 @@ const noChannelPassword = ref(false);
 const badUserName = ref(false);
 const alone = ref(false);
 const block = ref(false);
+const block2 = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
@@ -480,6 +482,7 @@ async function checkForBlock(idChannel)
 
 async function sendMessage() {
 	// Also websocket pb, ping all connected users ?
+	block2.value = false;
 
 	if (channelType.value === 3)
 	{
@@ -487,6 +490,7 @@ async function sendMessage() {
 		if (res == false)
 		{
 			newMessage.value = '';
+			block2.value = true;
 			return ;
 		}
 	}
