@@ -521,8 +521,8 @@ async function leaveOrDeleteChannel() {
 			await deleteMessage(messages[i].idMessage);//removing all message from the channel to delete so it doesn't crash
 		}
 		const res = await deleteCurrentChannel(selectedChannelID.value);
-		console.log(res);
-		console.log("OWNER")
+		// console.log(res);
+		// console.log("OWNER")
 	}
 	else {
 		console.log("NOT OWNER")

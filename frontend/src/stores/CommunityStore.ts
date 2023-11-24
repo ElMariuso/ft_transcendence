@@ -26,8 +26,8 @@ export const useCommunityStore = defineStore('community', () => {
 		const id = jwt_decode(token).sub;
 
 		try {
-			const allChannels = await getAllChannels();
 			const channelsJoined = await getSubscribedChannels(id);
+			const allChannels = await getAllChannels();
 
 			joinedChannels.value = channelsJoined;
 				
