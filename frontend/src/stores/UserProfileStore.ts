@@ -250,9 +250,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function sendFriendRequest(username: string) {
 
 		try {
-			const userData = await postFriendsInviteData(userID.value, username);
-			if (userData == "Friend invite already sent")
-				return("error caught");
+			await postFriendsInviteData(userID.value, username);
 		} catch (error) {
 			console.error("Error posting new Friends Invite:", error);
 		}
