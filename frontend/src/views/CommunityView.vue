@@ -208,7 +208,7 @@
 								class="p-2 w-5/6 border rounded-lg"
 							/>
 							<button @click="sendMessage" class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
-							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">You cannot send message to this user</h3> </div>
+							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">One of you blocked the other...</h3> </div>
 						</div>			
 				</div>
 			</div>
