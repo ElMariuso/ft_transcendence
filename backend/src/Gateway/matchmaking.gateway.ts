@@ -85,6 +85,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Handles the 'challenge' message to initiate a challenge between two players.
+     * Sets a challenge between the playerId and opponentId and schedules a timeout to delete the challenge if not accepted in time.
+     * @param client - The socket client sending the request.
+     * @param playerId - The ID of the player initiating the challenge.
+     * @param opponentId - The ID of the player being challenged.
+     */
     @SubscribeMessage('challenge')
     askChallenge(client: Socket, [playerId, opponentId]: [number, number]) {
       this.challenges.set(playerId, opponentId);
@@ -97,6 +104,14 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }, 120000);
     }
 
+    /**
+     * Processes a player's response to a challenge, either accepting or declining it.
+     * Updates or deletes the challenge based on the player's response.
+     * @param client - The socket client sending the response.
+     * @param challengerId - The ID of the player who initiated the challenge.
+     * @param opponentId - The ID of the player who was challenged.
+     * @param answer - The player's response to the challenge (1 for accept, 0 for decline).
+     */
     @SubscribeMessage('challenge-answer')
     handleChallengeAnswer(client: Socket, [challengerId, opponentId, answer]: [number, number, number]) {
       if (this.challenges.has(challengerId)) {
@@ -128,6 +143,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Confirms a player's readiness for a challenge and initiates match creation if both players are ready.
+     * Updates player information and checks if both players are ready to start the match.
+     * @param client - The socket client of the player confirming the challenge.
+     * @param playerId - The ID of the player confirming readiness.
+     * @param playerUsername - The username of the player confirming readiness.
+     */
     @SubscribeMessage('confirm-challenge')
     confirmChallenge(client: Socket, [playerId, playerUsername]: [number, string]) {
       for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
@@ -175,6 +197,12 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       }
     }
 
+    /**
+     * Sends the current state of an accepted challenge to a player.
+     * Provides information about the readiness of both players involved in the challenge.
+     * @param client - The socket client requesting the challenge state.
+     * @param playerId - The ID of the player requesting the challenge state.
+     */
     @SubscribeMessage('accepted-challenge-state')
     sendAcceptedChallengeState(client: Socket, playerId: number) {
       let acceptedChallengeState = {
@@ -194,6 +222,13 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
       client.emit('accepted-challenge-state-response', acceptedChallengeState);
     }
 
+    /**
+     * Sends the current state of a challenge to a player, indicating whether a challenge is pending.
+     * Provides information on the challenger and opponent involved in the challenge.
+     * @param client - The socket client requesting the challenge state.
+     * @param askerId - The ID of the player asking for the challenge state.
+     * @param friendId - The ID of the other player involved in the challenge.
+     */
     @SubscribeMessage('challenge-state')
     sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
       let challengeState = {
