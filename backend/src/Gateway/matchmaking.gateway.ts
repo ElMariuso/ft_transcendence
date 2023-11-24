@@ -117,8 +117,19 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     @SubscribeMessage('confirm-challenge')
-    confirmChallenge(client: Socket, playerId: number, playerUsername: string) {
-
+    confirmChallenge(client: Socket, [playerId, playerUsername]: [number, string]) {
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        if (challengeInfo.challengerInfo.playerId === playerId) {
+          challengeInfo.challengerInfo.socketId = client.id;
+          challengeInfo.challengerInfo.username = playerUsername;
+          challengeInfo.isReady[playerId] = true;
+        } else if (challengeInfo.opponentInfo.playerId === playerId) {
+          challengeInfo.opponentInfo.socketId = client.id;
+          challengeInfo.opponentInfo.username = playerUsername;
+          challengeInfo.isReady[playerId] = true;
+        }
+        return ;
+      }
     }
 
     @SubscribeMessage('accepted-challenge-state')

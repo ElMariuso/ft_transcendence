@@ -200,7 +200,7 @@
 								:id="user.idUser"
 							>
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
-									<button class="bg-white p-1 rounded">R</button>
+									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">R</button>
 									<span>{{ countReadyPlayers }} / 2</span>
 								</div>
 								<div v-else class="flex flex-row justify-between">
@@ -278,7 +278,7 @@ import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
-import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState } from '@/services/matchmaking-helpers'
+import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState, confirmChallenge } from '@/services/matchmaking-helpers'
 
 const usersIntervals = ref({});
 const acceptedChallengeInterval = ref<number | null>(null);
@@ -290,6 +290,13 @@ onMounted(async () => {
         askAcceptedChallengeState(profileStore.userID);
     }, 1000);
 });
+
+const sendConfirmChallenge = async () => {
+	const acceptedChallengeState = communityStore.acceptedChallengesStates;
+	if (!acceptedChallengeState) return ;
+
+	confirmChallenge(profileStore.userID, profileStore.username);
+};
 
 const countReadyPlayers: Ref<number> = computed(() => {
 	const acceptedChallengeState = communityStore.acceptedChallengesStates;

@@ -99,6 +99,10 @@ const askAcceptedChallengeState = (playerId: number) => {
     socket.emit('accepted-challenge-state', playerId);
 };
 
+const confirmChallenge = (playerId: number, playerUsername: string) => {
+    socket.emit('confirm-challenge', playerId, playerUsername);
+};
+
 const initializeSocketListeners = (matchmakingStore, profileStore) => {
     const router = useRouter();
 
@@ -267,5 +271,6 @@ export { joinQueue,
     askChallengeState,
     challengeAnswer,
     askAcceptedChallengeState,
+    confirmChallenge,
     initializeSocketListeners
 };
