@@ -56,8 +56,10 @@
 		  <h3 class="text-lg font-semibold">Match History</h3>
 		  <div class="mt-2">
             <li v-for="match in ladderStore.getGamesHistory()" class="mb-2">
-			  <span class="font-semibold">{{ match.scoreLeft }} - {{ match.scoreRight }}</span>
-			  <!-- <div>{{ match.date }}</div> -->
+				
+				<span class="font-semibold">{{ match.scoreLeft }} - {{ match.scoreRight }} </span>
+				<div class="ml-5 text-red-500">{{ getGameResult(match.idGame) }}</div>
+
             </li>
           </div>
 		</div>
@@ -159,6 +161,15 @@ const alreadyBlocked = ref(false);
 const cannotSendFriendRequest = ref(false);
 
 let intervalId;
+
+function getGameResult(idGame) {
+	const result = ladderStore.getResult(idGame);
+
+	if (result)
+		return "Win";
+	else
+		return "Lose";
+}
 
 onMounted(() => {
 	ladderStore.updateFriendStatuses();

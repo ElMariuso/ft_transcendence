@@ -56,7 +56,8 @@
 		  <h3 class="text-lg font-semibold">Match History</h3>
 		  <div class="mt-2">
             <li v-for="match in ladderStore.getGamesHistory()" class="mb-2">
-			  <span class="font-semibold">{{ match }}</span>
+				<span class="font-semibold">{{ match.scoreLeft }} - {{ match.scoreRight }} </span>
+			  	<div class="ml-5 text-red-500">{{ getGameResult(match.idGame) }}</div>
             </li>
           </div>
 		</div>
@@ -138,6 +139,15 @@ function getAvatarImg() {
 	if (uri[1] == 0)
 		uri[1] = 1;
 	return "http://localhost:3000/users/avatar/" + uri[1];
+}
+
+function getGameResult(idGame) {
+	const result = ladderStore.getResult(idGame);
+
+	if (result)
+		return "Win";
+	else
+		return "Lose";
 }
 
 // const refreshPage = () => {

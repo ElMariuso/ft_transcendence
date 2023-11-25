@@ -102,6 +102,17 @@ export class GameService
 		return { nbGames: nbGames, nbWin: nbWin, nbLoose: nbLoose };
 	}
 
+	async getGamesResult(idUser: number) {
+		const checkUser = await this.userQuery.findUserById(idUser);
+
+		if (!checkUser)
+			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+
+		const res = await this.gameQuery.findAllGamesDatasByUserId(idUser);
+
+		return res;
+	}
+
 
 	/**
 	 * Creates a game in DB

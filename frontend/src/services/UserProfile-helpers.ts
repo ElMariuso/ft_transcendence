@@ -126,6 +126,17 @@ export const getLadderData = async (userID) => {
     }
 };
 
+export const getGamesResults = async (userID) => {
+	try {
+		const res = await api.get('/games/gamesResult/' + userID);
+		console.log(res.data)
+		return res.data;
+	} catch (error) {
+        console.error('Error fetching games results:', error);
+        throw error;
+    }
+}
+
 /**
  * Asynchronous function to retrieve friends data from the API.
  * 

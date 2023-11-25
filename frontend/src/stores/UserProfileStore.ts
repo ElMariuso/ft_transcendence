@@ -17,6 +17,7 @@ import { getBlockedListData } from '@/services/UserProfile-helpers'
 import { deleteFriend } from '@/services/UserProfile-helpers'
 import { postBlock } from '@/services/UserProfile-helpers'
 import { deleteBlock } from '@/services/UserProfile-helpers'
+import { getGamesResults } from '@/services/UserProfile-helpers'
 
 import { getPlayerStatus } from '@/services/matchmaking-helpers';
 
@@ -36,6 +37,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
 	const friendsStatus = ref({});
+	const gamesResults = ref(null);
 
 	/////////////////// SETUP ////////////////////////
 
@@ -174,13 +176,31 @@ export const useLadderStore = defineStore('ladder', () => {
 		try {
 			const userData = await getGamesData(userID.value);
 			setGamesHistory(userData);
+
+			const results = await getGamesResults(userID.value);
+			console.log("res")
+			console.log(results)
+
+			setGamesResults(results);
+
 		} catch (error) {
 			console.error("Error setting up match history:", error);
 		}
 	}
 
-	function setGamesHistory(newList : any) {
+	function setGamesHistory(newList: any) {
 		history.value = newList;
+	}
+
+	function setGamesResults(results: any) {
+		gamesResults.value = results;
+	}
+
+	function getResult(idGame: any) {
+		for (let i = 0; gamesResults.value[i]; i++) {
+			if (gamesResults.value[i].idGame === idGame)
+				return gamesResults.value[i].isWinner;
+		}
 	}
 
 	function getGamesHistory() {
@@ -313,5 +333,5 @@ export const useLadderStore = defineStore('ladder', () => {
 		});
 	}
 
-	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses }
+	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult }
 })

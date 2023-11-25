@@ -99,6 +99,17 @@ export class GameController
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETGAMESTATS_FAILED);
 		}
 	}
+	
+	@Get('gamesResult/:id')
+	async getGamesResult(@Param('id') id: string) {
+		try {
+			let newId = parseInt(id, 10);
+
+			return this.gameService.getGamesResult(newId);
+		} catch (error) {
+			throw new NotFoundException(error.message);
+		}
+	}
 
 	/**
 	 * Create a new Game in database
