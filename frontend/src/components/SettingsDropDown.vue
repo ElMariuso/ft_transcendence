@@ -20,6 +20,8 @@ import { useAuthenticationStore } from '../stores/AuthenticationStore'
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import { updatePlayerStatus } from '@/services/matchmaking-helpers';
+import { useProfileStore } from '@/stores/ProfileStore';
 
 export default {
     setup() {
@@ -46,6 +48,8 @@ export default {
     	};
 
         function logout() {
+            const profileStore = useProfileStore();
+            
             updatePlayerStatus(1, profileStore);
             Cookies.remove('token');
 			authStore.logout();
