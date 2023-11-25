@@ -368,6 +368,14 @@ onUnmounted(() => {
     }
 });
 
+const playerPlay = async (idUser) => {
+	const isAnyChallengeActive = isChallengeActive(profileStore.userID).value || isAcceptedChallengeActive(profileStore.userID).value
+
+	if (!isAnyChallengeActive) {
+		askChallenge(profileStore.userID, idUser);
+	}
+}
+
 const communityStore = useCommunityStore();
 const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
 
@@ -514,10 +522,6 @@ function getChannelTypeImg(channType) {
 		return "src/assets/public.svg";
 	else if (channType === 1)
 		return "src/assets/private.svg";
-}
-
-function playerPlay(idUser) {
-	askChallenge(profileStore.userID, idUser);
 }
 
 // async function playerProfile() {
