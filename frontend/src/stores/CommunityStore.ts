@@ -38,6 +38,7 @@ export const useCommunityStore = defineStore('community', () => {
 
 			openChannels.value = resChannels;
 			let j = 0;
+			bannedChannel.value = [];
 			for(let i = 0; openChannels.value[i] ; i++)
 			{
 				const users = await getChannelUsers(openChannels.value[i].idChannel);
@@ -58,23 +59,24 @@ export const useCommunityStore = defineStore('community', () => {
 		const id = jwt_decode(token).sub;
 
 		try {
-			const channel = await getChannel(channelID);
-			channelType.value = channel.idType;
-			console.log(channelType.value)
+			if (channelID)
+			{
+				const channel = await getChannel(channelID);
+				channelType.value = channel.idType;
 
-			const messages = await getChannelMsg(channelID);
-			selectedChannelMsg.value = messages;
-			
-			const users = await getChannelUsers(channelID);
-			const user = users.find(user => user.idUser === id);
-			if (user) {
+				const messages = await getChannelMsg(channelID);
+				selectedChannelMsg.value = messages;
 
-				if (user.owner)
-				roleInChannel.value = "Owner";
-				else
-				roleInChannel.value = user.role;
+				const users = await getChannelUsers(channelID);
+				const user = users.find(user => user.idUser === id);
+				if (user) {
+					if (user.owner)
+					roleInChannel.value = "Owner";
+					else
+					roleInChannel.value = user.role;
+				}
+				selectedChannelUsers.value = users;
 			}
-			selectedChannelUsers.value = users;
 		} catch (error) {
 			console.error("Error fetching channel's messages:", error);
 		}

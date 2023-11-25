@@ -440,8 +440,8 @@ function isBanned(idChannel)
 {
 	for(let i = 0; bannedChannel.value[i]; i++)
 	{
-		if (idChannel == bannedChannel.value[i].idChannel)
-				return (true);
+		if (idChannel === bannedChannel.value[i].idChannel)
+			return (true);
 	}
 	return (false);
 }
@@ -471,11 +471,10 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
     // Start the interval when selectedChannelID is set
     // if (newChannelID) {
 		updateChannelInterval = setInterval(async () => {
-			await communityStore.updateSelectedChannel(newChannelID);
-			await communityStore.setupCommunity();
-			
 			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
 				selectedChannelID.value = null;
+			await communityStore.updateSelectedChannel(newChannelID);
+			await communityStore.setupCommunity();
 		}, 500);
     // }
 });
