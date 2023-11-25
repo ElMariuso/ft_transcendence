@@ -77,7 +77,7 @@
 						<div v-if="channel.idType !== 3" class="mb-2 border px-2 py-1 rounded-lg text-lg flex flex-row ">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button 
-								v-if="channel.idType !== 4"
+								v-if="!isBanned(channel.idChannel)"
 								:id="channel.idChannel" 
 								:channType="channel.idType" 
 								@click="btnJoinChannel" 
@@ -91,8 +91,8 @@
 							>
 								Join
 							</button>
-							<span v-if="channel.idType === 4" class="text-red-600"> Banned </span>
-							<img v-if="channel.idType !== 4" :src="getChannelTypeImg(channel.idType)" alt="channType">
+							<span v-if="isBanned(channel.idChannel)" class="text-red-600"> Banned </span>
+							<img v-if="!isBanned(channel.idChannel)" :src="getChannelTypeImg(channel.idType)" alt="channType">
 						</div>
 						<div class="flex justify-end">
 							<input
@@ -217,7 +217,7 @@
 								
 								:id="user.idUser"
 							>
-							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg  border px-2 py-1 rounded-lg ">
+							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 								  {{ user.username }}
 								  <button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
@@ -235,7 +235,7 @@
 								</div>
 							  </div>
 
-							  <div v-if="user.role !== 'Banned'" class="text-lg  border px-2 py-1 rounded-lg ">
+							  <div v-if="user.role !== 'Banned'" class="text-lg px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 
 									<div class="flex" v-if="channelType !== 3">
@@ -322,7 +322,7 @@ onBeforeMount(async () => {
 }) 
 
 const communityStore = useCommunityStore();
-const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType } = storeToRefs(communityStore);
+const { openChannels, bannedChannel, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType } = storeToRefs(communityStore);
 
 const profileStore = useProfileStore();
 const { userID, username } = storeToRefs(profileStore);
@@ -435,6 +435,16 @@ async function btnJoinChannel(event) {
 	else
 		await joinChannel(userID.value, idChannel);
 	await communityStore.setupCommunity();
+}
+
+function isBanned(idChannel)
+{
+	for(let i = 0; bannedChannel.value[i]; i++)
+	{
+		if (idChannel == bannedChannel.value[i].idChannel)
+				return (true);
+	}
+	return (false);
 }
 
 // *************************************************

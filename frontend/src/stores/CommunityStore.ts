@@ -14,6 +14,7 @@ import {
 export const useCommunityStore = defineStore('community', () => {
 	
 	const openChannels = ref([]);
+	const bannedChannel = ref([]);
 	const joinedChannels = ref([]);
 	const selectedChannelMsg = ref([]);
 	const selectedChannelUsers = ref([]);
@@ -36,13 +37,15 @@ export const useCommunityStore = defineStore('community', () => {
 			});
 
 			openChannels.value = resChannels;
+			let j = 0;
 			for(let i = 0; openChannels.value[i] ; i++)
 			{
 				const users = await getChannelUsers(openChannels.value[i].idChannel);
 				const user = users.find(user => user.idUser === id);
 				if (user && user.role == "Banned")
 				{
-					openChannels.value[i].idType = 4;
+					bannedChannel.value[j] = openChannels.value[i]
+					j++;
 				}
 			}
 		} catch (error) {
@@ -90,7 +93,7 @@ export const useCommunityStore = defineStore('community', () => {
 	}
 
 	return {
-		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType,
+		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType, bannedChannel,
 		setupNewChannel, setupCommunity, updateSelectedChannel
 	};
 })
