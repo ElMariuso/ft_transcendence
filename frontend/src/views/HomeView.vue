@@ -21,21 +21,11 @@ function closeSettingsModal() {
 </script>
 
 <template>
-
-<div>{{ firstLogin }}</div>
-
-<div>{{ firstAuth }}</div>
-<div>{{ showModal }}</div>
-
 	<div class="text-3xl m-0 leading-none mr-5 mx-auto">
 		Welcome to ft_transcendence !
 	</div>
 	<img src="../../Images/pong.jpeg" alt="avatar" class="mt-14 mx-auto">
 
-	
-		<FirstAuthSettingsModal v-if="firstLogin && firstAuth === 0 && showModal" @closeModal="closeSettingsModal" />
-
+	<FirstAuthSettingsModal v-if="firstLogin && firstAuth === 0 && showModal" @closeModal="closeSettingsModal" />
 
 </template>
-
-<!-- firstLogin && authStore.firstAuth === 0 && -->
