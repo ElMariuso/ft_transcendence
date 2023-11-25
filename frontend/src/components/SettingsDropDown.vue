@@ -46,6 +46,7 @@ export default {
     	};
 
         function logout() {
+            updatePlayerStatus(1, profileStore);
             Cookies.remove('token');
 			authStore.logout();
 			router.push('/login');
