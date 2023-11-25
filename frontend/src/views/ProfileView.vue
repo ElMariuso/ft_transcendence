@@ -208,7 +208,12 @@ setAll()
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
-		uri[1] = 1;
+	{	
+		const token = Cookies.get('token')
+		const id = jwt_decode(token).sub;
+		uri[1] = id;
+		console.log("id :" + uri[1])
+	}
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 

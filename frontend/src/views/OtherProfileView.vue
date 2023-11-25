@@ -104,7 +104,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, computed  } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import api from '../services/api';
@@ -115,6 +115,7 @@ import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
+const { friendlist } = storeToRefs(ladderStore);
 
 const showProfile = ref(false);
 
@@ -124,6 +125,26 @@ const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
 const userNotFound = ref(false);
 const userFound = ref(false);
+
+let intervalId;
+
+onMounted(() => {
+	ladderStore.updateFriendStatuses();
+	intervalId = setInterval(ladderStore.updateFriendStatuses, 1000);
+});
+
+onUnmounted(() => {
+	clearInterval(intervalId);
+});
+
+const formattedFriendStatuses = computed(() => {
+    const statuses = {};
+    const friendsStatus = ladderStore.friendsStatus.value || {};
+    for (const [id, status] of Object.entries(friendsStatus)) {
+        statuses[id] = status;
+    }
+    return statuses;
+});
 
 const setAll = async () => {
 	let uri = window.location.href.split('id=');
@@ -136,7 +157,12 @@ setAll()
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
-		uri[1] = 1;
+	{	
+		const token = Cookies.get('token')
+		const id = jwt_decode(token).sub;
+		uri[1] = id;
+		console.log("id :" + uri[1])
+	}
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
