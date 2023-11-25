@@ -271,7 +271,7 @@
 			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
 										</router-link>
 										<img v-if="channelType !== 3" @click="privateMessage(user.username)" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-										<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+										<img v-if="!isFriendOrBlocked(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 									</div>
 									<div v-if="(channelType !== 3 && (roleInChannel === 'Admin' || roleInChannel === 'Owner') && !user.owner)" class="flex justify-between mt-2 border-t pt-1">
@@ -653,13 +653,19 @@ const setAll = async () => {
 }
 setAll()
 
-function isFriend(friendId) {
+function isFriendOrBlocked(friendId) {
 	
 	let friendList = ladderStore.getFriends();
+	let blockList = ladderStore.getBlockedList();
 
 	for(let i = 0; friendList[i]; i++)
 	{
 		if (friendList[i].idUser == friendId)
+			return (true);
+	}
+	for(let i = 0; blockList[i]; i++)
+	{
+		if (blockList[i].idUser == friendId)
 			return (true);
 	}
 	return (false);
