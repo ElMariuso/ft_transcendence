@@ -253,6 +253,7 @@ export const useLadderStore = defineStore('ladder', () => {
 			await postFriendsInviteData(userID.value, username);
 		} catch (error) {
 			console.error("Error posting new Friends Invite:", error);
+			return 1;
 		}
 	}
 

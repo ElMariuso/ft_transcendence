@@ -179,6 +179,7 @@
 							</li>
 						</ul>
 					</div>
+					<span v-if="block2" class="text-lg text-red-600 font-semibold">One of you blocked the other... </span>
 						<div v-if="selectedChannelID" class="flex">
 							<input
 								v-model="newMessage"
@@ -196,7 +197,6 @@
 							>
 								Send
 							</button>
-							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">One of you blocked the other...</h3> </div>
 						</div>			
 				</div>
 			</div>
@@ -389,7 +389,6 @@ async function privateMessage(name : string) {
 		const res = await creatDMChannel(searchIdUser.value, ladderStore.getId())
 	} catch (error) {
 		console.error('Error creating dm', error);
-		throw error;
 	}
 
 	newUsername.value = "";
@@ -475,7 +474,7 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
 			await communityStore.updateSelectedChannel(newChannelID);
 			await communityStore.setupCommunity();
 			
-			if (!(selectedChannelUsers.value.some(user => user.username === username.value)))
+			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
 				selectedChannelID.value = null;
 		}, 500);
     // }

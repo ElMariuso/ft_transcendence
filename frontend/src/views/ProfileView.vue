@@ -85,8 +85,8 @@
 			  <button class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">View profile</button>
 			</router-link>
 			<button v-if="!alreadyFriend && !alreadyBlocked && !cannotSendFriendRequest" @click="sendFriendRequest" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send friend request</button>
-			<button v-if="!alreadyFriend && !alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
-			<button v-if="!alreadyFriend && alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
+			<button v-if="!alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
+			<button v-if="alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
 			<div v-if="cannotSendFriendRequest" class="text-lg text-red-600 font-semibold"> You cannot send another friend request to this user </div>
 		  </div>
     	</div>
@@ -250,7 +250,7 @@ async function FindUser() {
 async function sendFriendRequest() {
 	
 	const userData = await ladderStore.sendFriendRequest(searchUsername.value);
-	if (userData == "error caught")
+	if (userData == 1)
 		cannotSendFriendRequest.value = true;
 }
 
