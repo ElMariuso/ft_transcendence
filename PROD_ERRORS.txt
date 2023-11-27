@@ -1,269 +1,230 @@
-#0 14.83 src/components/LeaveMatch.vue(20,22): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
-#0 14.83 src/components/MatchmakingBox.vue(22,36): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.83 src/components/MatchmakingBox.vue(24,17): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
-#0 14.83 src/components/MatchmakingBox.vue(36,5): error TS7034: Variable 'statusInterval' implicitly has type 'any' in some locations where its type cannot be determined.
-#0 14.83 src/components/MatchmakingBox.vue(49,19): error TS7005: Variable 'statusInterval' implicitly has an 'any' type.
-#0 14.83 src/components/MatchmakingButton.vue(34,53): error TS2551: Property 'userId' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: any) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'. Did you mean 'userID'?
-#0 14.83 src/components/MatchmakingButton.vue(46,21): error TS2322: Type 'string' is not assignable to type 'number'.
-#0 14.83 src/components/MatchmakingButton.vue(55,21): error TS2322: Type '{ id: string; isGuest: false; username: string; }' is not assignable to type 'PlayerInQueue'.
-#0 14.83   Types of property 'id' are incompatible.
-#0 14.83     Type 'string' is not assignable to type 'number'.
-#0 14.83 src/components/Pong.vue(52,52): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.83 src/components/Pong.vue(52,81): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.83 src/components/Pong.vue(58,59): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(58,95): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(64,58): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(64,93): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(70,55): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(70,87): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(109,57): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.84 src/components/Pong.vue(113,17): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 14.84 src/components/Pong.vue(115,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 14.84 src/components/Pong.vue(117,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 14.84 src/router/index.ts(112,25): error TS18047: 'to.query.code' is possibly 'null'.
-#0 14.84 src/router/index.ts(115,33): error TS2571: Object is of type 'unknown'.
-#0 14.84 src/router/index.ts(115,44): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.84   Type 'undefined' is not assignable to type 'string'.
-#0 14.84 src/services/auth-helpers.ts(87,12): error TS2339: Property 'twoFactorAuthEnabled' does not exist on type 'unknown'.
-#0 14.84 src/services/auth-helpers.ts(87,34): error TS2339: Property 'twoFactorAuthOTP' does not exist on type 'unknown'.
-#0 14.84 src/services/game-helpers.ts(3,26): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(3,35): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(3,43): error TS7006: Parameter 'gameStore' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(3,54): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(3,62): error TS7006: Parameter 'movingUp' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(3,72): error TS7006: Parameter 'movingDown' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,19): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,28): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,36): error TS7006: Parameter 'racket1Size' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,49): error TS7006: Parameter 'racket2Size' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,62): error TS7006: Parameter 'racket1Position' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,79): error TS7006: Parameter 'racket2Position' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,96): error TS7006: Parameter 'ballSize' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,106): error TS7006: Parameter 'ballPosition' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,120): error TS7006: Parameter 'score1' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,128): error TS7006: Parameter 'score2' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,136): error TS7006: Parameter 'obstacle1Size' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,151): error TS7006: Parameter 'obstacle1Position' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,170): error TS7006: Parameter 'obstacle2Size' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(37,185): error TS7006: Parameter 'obstacle2Position' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(56,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(56,30): error TS7006: Parameter 'x' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(56,33): error TS7006: Parameter 'y' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(56,36): error TS7006: Parameter 'width' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(56,43): error TS7006: Parameter 'height' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(61,31): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(61,40): error TS7006: Parameter 'x' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(61,43): error TS7006: Parameter 'y' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(61,46): error TS7006: Parameter 'width' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(61,53): error TS7006: Parameter 'height' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(66,18): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(66,27): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(78,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(78,30): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(78,38): error TS7006: Parameter 'winner' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(78,46): error TS7006: Parameter 'reason' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(93,24): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(93,33): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 14.84 src/services/game-helpers.ts(93,41): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 14.84 src/services/matchmaking-helpers.ts(80,9): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
-#0 14.84 src/services/matchmaking-helpers.ts(214,40): error TS2339: Property 'value' does not exist on type '{}'.
-#0 14.84 src/services/matchmaking-helpers.ts(215,39): error TS2339: Property 'value' does not exist on type '{}'.
-#0 14.84 src/services/matchmaking-helpers.ts(230,35): error TS2339: Property 'value' does not exist on type '{}'.
-#0 14.84 src/stores/CommunityStore.ts(33,32): error TS7006: Parameter 'newState' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(34,9): error TS2551: Property 'acceptedChallengesStates' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getAcceptedChallengeState'?
-#0 14.84 src/stores/CommunityStore.ts(36,3): error TS7023: 'getAcceptedChallengeState' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
-#0 14.84 src/stores/CommunityStore.ts(37,16): error TS2551: Property 'acceptedChallengesStates' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getAcceptedChallengeState'?
-#0 14.84 src/stores/CommunityStore.ts(39,24): error TS7006: Parameter 'userId' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(39,32): error TS7006: Parameter 'newState' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(40,18): error TS2551: Property 'challengeStates' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getChallengeState'?
-#0 14.84 src/stores/CommunityStore.ts(42,9): error TS7023: 'getChallengeState' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
-#0 14.84 src/stores/CommunityStore.ts(42,27): error TS7006: Parameter 'userId' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(43,25): error TS2551: Property 'challengeStates' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getChallengeState'?
-#0 14.84 src/stores/CommunityStore.ts(45,35): error TS7006: Parameter 'userId' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(45,43): error TS7006: Parameter 'newState' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(46,9): error TS2551: Property 'challengesStatesForOpponent' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getChallengeStateForOpponent'?
-#0 14.84 src/stores/CommunityStore.ts(48,32): error TS7006: Parameter 'userId' implicitly has an 'any' type.
-#0 14.84 src/stores/CommunityStore.ts(49,16): error TS2551: Property 'challengesStatesForOpponent' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'. Did you mean 'getChallengeStateForOpponent'?
-#0 14.84 src/stores/CommunityStore.ts(53,15): error TS2571: Object is of type 'unknown'.
-#0 14.85 src/stores/CommunityStore.ts(53,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.85   Type 'undefined' is not assignable to type 'string'.
-#0 14.85 src/stores/CommunityStore.ts(61,45): error TS7006: Parameter 'channel' implicitly has an 'any' type.
-#0 14.85 src/stores/CommunityStore.ts(62,35): error TS7006: Parameter 'joinedChannel' implicitly has an 'any' type.
-#0 14.85 src/stores/CommunityStore.ts(72,63): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/stores/CommunityStore.ts(73,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 14.85 src/stores/CommunityStore.ts(85,31): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 14.85 src/stores/CommunityStore.ts(87,15): error TS2571: Object is of type 'unknown'.
-#0 14.85 src/stores/CommunityStore.ts(87,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.85   Type 'undefined' is not assignable to type 'string'.
-#0 14.85 src/stores/CommunityStore.ts(95,12): error TS2339: Property 'channelType' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'.
-#0 14.85 src/stores/CommunityStore.ts(101,11): error TS2339: Property 'channelType' does not exist on type '{ updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; getChallengeState(userId: any): any; ... 4 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; } & { ...; } & _StoreWithState<...> & _Store...'.
-#0 14.85 src/stores/CommunityStore.ts(107,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 14.85 src/stores/CommunityStore.ts(122,15): error TS2571: Object is of type 'unknown'.
-#0 14.85 src/stores/CommunityStore.ts(122,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.85   Type 'undefined' is not assignable to type 'string'.
-#0 14.85 src/stores/GameStore.ts(21,25): error TS7006: Parameter 'newGameState' implicitly has an 'any' type.
-#0 14.85 src/stores/GameStore.ts(23,36): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(24,36): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(26,35): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(27,35): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(28,42): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(29,42): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(30,41): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(31,41): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(32,38): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(33,38): error TS2531: Object is possibly 'null'.
-#0 14.85 src/stores/GameStore.ts(35,21): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 14.85 src/stores/GameStore.ts(38,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 14.85 src/stores/GameStore.ts(41,24): error TS7006: Parameter 'result' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(18,25): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(31,17): error TS2322: Type 'string' is not assignable to type 'null'.
-#0 14.85 src/stores/MatchmakingStore.ts(38,28): error TS2345: Argument of type '{ playerId: any; roomId: null; username: any; }' is not assignable to parameter of type '{ playerId: string | number; roomId: string; username: string; }'.
-#0 14.85   Types of property 'roomId' are incompatible.
-#0 14.85     Type 'null' is not assignable to type 'string'.
-#0 14.85 src/stores/MatchmakingStore.ts(41,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(48,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(52,24): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(55,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(58,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(61,28): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(64,25): error TS7006: Parameter 'uuid' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(67,29): error TS7006: Parameter 'username' implicitly has an 'any' type.
-#0 14.85 src/stores/MatchmakingStore.ts(70,19): error TS7006: Parameter 'id' implicitly has an 'any' type.
-
-#0 14.85 src/stores/UserProfileStore.ts(203,31): error TS2339: Property 'idGame' does not exist on type 'never'.
-#0 14.85 src/stores/UserProfileStore.ts(204,34): error TS2339: Property 'isWinner' does not exist on type 'never'.
-#0 14.85 src/stores/UserProfileStore.ts(322,41): error TS2339: Property 'username' does not exist on type 'never'.
-#0 14.85 src/stores/UserProfileStore.ts(324,31): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 14.85 src/stores/UserProfileStore.ts(331,20): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-#0 14.85 src/stores/UserProfileStore.ts(333,22): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-#0 14.85 src/stores/UserProfileStore.ts(339,27): error TS2339: Property 'idUser' does not exist on type 'never'.
-
-
-#0 14.85 src/views/CommunityView.vue(77,26): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(78,54): error TS2339: Property 'name' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(80,33): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(81,22): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(82,29): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(86,43): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(86,65): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(87,44): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(87,66): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(89,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(89,59): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(94,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(95,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(95,81): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(99,23): error TS2339: Property 'idType' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(100,34): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(127,23): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(131,45): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(132,47): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(134,40): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(136,20): error TS2339: Property 'name' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(177,55): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(178,52): error TS2339: Property 'content' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(219,19): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(221,26): error TS2339: Property 'role' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(223,19): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(227,30): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(227,76): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.85 src/views/CommunityView.vue(233,38): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(242,26): error TS2339: Property 'role' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(243,51): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(252,36): error TS2339: Property 'role' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(253,34): error TS2339: Property 'owner' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(257,20): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(260,52): error TS2339: Property 'role' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(261,37): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(266,69): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(268,29): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(268,75): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(273,38): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(277,56): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(280,51): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(281,41): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(282,57): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(285,70): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(286,47): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(286,87): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(287,42): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(290,48): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(291,48): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(294,109): error TS2339: Property 'owner' does not exist on type 'Object[]'.
-#0 14.86 src/views/CommunityView.vue(325,39): error TS2724: '"vue"' has no exported member named 'watched'. Did you mean 'watch'?
-#0 14.86 src/views/CommunityView.vue(332,38): error TS2440: Import declaration conflicts with local declaration of 'block'.
-#0 14.86 src/views/CommunityView.vue(339,5): error TS7034: Variable 'updateAvailableChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
-#0 14.86 src/views/CommunityView.vue(345,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.86 src/views/CommunityView.vue(354,48): error TS2551: Property 'acceptedChallengesStates' does not exist on type 'Store<"community", CommunityStoreState, {}, { updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; ... 5 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; }>'. Did you mean 'getAcceptedChallengeState'?
-#0 14.86 src/views/CommunityView.vue(357,19): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.86 src/views/CommunityView.vue(361,48): error TS2551: Property 'acceptedChallengesStates' does not exist on type 'Store<"community", CommunityStoreState, {}, { updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; ... 5 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; }>'. Did you mean 'getAcceptedChallengeState'?
-#0 14.86 src/views/CommunityView.vue(376,49): error TS2551: Property 'acceptedChallengesStates' does not exist on type 'Store<"community", CommunityStoreState, {}, { updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; ... 5 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; }>'. Did you mean 'getAcceptedChallengeState'?
-#0 14.86 src/views/CommunityView.vue(407,33): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
-#0 14.86 src/views/CommunityView.vue(409,5): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-#0 14.86 src/views/CommunityView.vue(410,27): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.86 src/views/CommunityView.vue(414,32): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
-#0 14.86 src/views/CommunityView.vue(415,9): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-#0 14.86 src/views/CommunityView.vue(416,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-#0 14.86 src/views/CommunityView.vue(417,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
-#0 14.86 src/views/CommunityView.vue(428,16): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(429,16): error TS7005: Variable 'updateAvailableChannelInterval' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(432,27): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(433,49): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(433,105): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(436,16): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(441,111): error TS2339: Property 'channelType' does not exist on type 'StoreToRefs<Store<"community", CommunityStoreState, {}, { updateAcceptedChallengeState(newState: any): void; getAcceptedChallengeState(): any; updateChallengeState(userId: any, newState: any): void; ... 5 more ...; setupNewChannel(name: string, type: number, password: string): Promise<...>; }>>'.
-#0 14.87 src/views/CommunityView.vue(490,41): error TS2339: Property 'username' does not exist on type 'never'.
-#0 14.87 src/views/CommunityView.vue(496,39): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-#0 14.87 src/views/CommunityView.vue(498,44): error TS2339: Property 'username' does not exist on type 'never'.
-#0 14.87 src/views/CommunityView.vue(543,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(550,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(550,54): error TS2551: Property '_value' does not exist on type 'Ref<never[]>'. Did you mean 'value'?
-#0 14.87 src/views/CommunityView.vue(552,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(556,19): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(560,44): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
-#0 14.87 src/views/CommunityView.vue(575,5): error TS7034: Variable 'updateChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
-#0 14.87 src/views/CommunityView.vue(578,10): error TS2304: Cannot find name 'users'.
-#0 14.87 src/views/CommunityView.vue(578,21): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(585,17): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(591,55): error TS2339: Property 'username' does not exist on type 'Object[]'.
-#0 14.87 src/views/CommunityView.vue(612,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(621,2): error TS2322: Type 'string' is not assignable to type 'null'.
-#0 14.87 src/views/CommunityView.vue(625,37): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
-#0 14.87 src/views/CommunityView.vue(636,30): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(683,7): error TS18046: 'error' is of type 'unknown'.
-#0 14.87 src/views/CommunityView.vue(697,40): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.87 src/views/CommunityView.vue(701,42): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(708,55): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.87 src/views/CommunityView.vue(716,39): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(720,38): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
-#0 14.87 src/views/CommunityView.vue(733,25): error TS7006: Parameter 'playerID' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(741,28): error TS7006: Parameter 'channType' implicitly has an 'any' type.
-#0 14.87 src/views/CommunityView.vue(773,28): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
-#0 14.88 src/views/CommunityView.vue(780,21): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 14.88 src/views/CommunityView.vue(785,20): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 14.88 src/views/CommunityView.vue(791,34): error TS7006: Parameter 'usernameToFriend' implicitly has an 'any' type.
-#0 14.88 src/views/CommunityView.vue(798,28): error TS7006: Parameter 'usernameToBlock' implicitly has an 'any' type.
-#0 14.88 src/views/CommunityView.vue(809,13): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
-#0 14.88 src/views/CommunityView.vue(815,40): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
-#0 14.88 src/views/CommunityView.vue(823,23): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-#0 14.88 src/views/CommunityView.vue(831,23): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
-#0 14.88 src/views/CommunityView.vue(836,28): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
-#0 14.88 src/views/CommunityView.vue(837,28): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
-#0 14.88 src/views/HomeView.vue(13,20): error TS2571: Object is of type 'unknown'.
-#0 14.88 src/views/HomeView.vue(13,31): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.88   Type 'undefined' is not assignable to type 'string'.
-#0 14.88 src/views/SettingsView.vue(167,5): error TS18047: 'fileInput.value' is possibly 'null'.
-#0 14.88 src/views/SettingsView.vue(187,3): error TS2322: Type '(value: unknown) => void' is not assignable to type 'boolean'.
-#0 14.88 src/views/SettingsView.vue(234,4): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
-#0 14.88   Property 'username' does not exist on type '{}'.
-#0 14.88 src/views/SettingsView.vue(239,33): error TS18047: 'fileInput.value.files' is possibly 'null'.
-#0 14.88 src/views/SettingsView.vue(246,6): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
-#0 14.88   Property 'avatar' does not exist on type '{}'.
-#0 14.88 src/views/SettingsView.vue(260,7): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
-#0 14.88   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
-#0 14.88 src/views/SettingsView.vue(269,5): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
-#0 14.88   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
-#0 14.88 src/views/SettingsView.vue(276,15): error TS2571: Object is of type 'unknown'.
-#0 14.88 src/views/SettingsView.vue(276,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
-#0 14.88   Type 'undefined' is not assignable to type 'string'.
-#0 15.01 ERROR: "type-check" exited with 2.
+#0 14.28 src/components/LeaveMatch.vue(20,22): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
+#0 14.28 src/components/MatchmakingBox.vue(22,36): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.28 src/components/MatchmakingBox.vue(24,17): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
+#0 14.29 src/components/MatchmakingBox.vue(36,5): error TS7034: Variable 'statusInterval' implicitly has type 'any' in some locations where its type cannot be determined.
+#0 14.29 src/components/MatchmakingBox.vue(49,19): error TS7005: Variable 'statusInterval' implicitly has an 'any' type.
+#0 14.29 src/components/MatchmakingButton.vue(34,53): error TS2551: Property 'userId' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: any) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'. Did you mean 'userID'?
+#0 14.29 src/components/MatchmakingButton.vue(46,21): error TS2322: Type 'string' is not assignable to type 'number'.
+#0 14.29 src/components/MatchmakingButton.vue(55,21): error TS2322: Type '{ id: string; isGuest: false; username: string; }' is not assignable to type 'PlayerInQueue'.
+#0 14.29   Types of property 'id' are incompatible.
+#0 14.29     Type 'string' is not assignable to type 'number'.
+#0 14.29 src/components/Pong.vue(52,52): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.29 src/components/Pong.vue(52,81): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.29 src/components/Pong.vue(58,59): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.29 src/components/Pong.vue(58,95): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.29 src/components/Pong.vue(64,58): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.29 src/components/Pong.vue(64,93): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.29   Type 'null' is not assignable to type 'string'.
+#0 14.30 src/components/Pong.vue(70,55): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'null' is not assignable to type 'string'.
+#0 14.30 src/components/Pong.vue(70,87): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'null' is not assignable to type 'string'.
+#0 14.30 src/components/Pong.vue(109,57): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'null' is not assignable to type 'string'.
+#0 14.30 src/components/Pong.vue(110,39): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'GameState'.
+#0 14.30 src/components/Pong.vue(113,17): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 14.30 src/components/Pong.vue(115,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 14.30 src/components/Pong.vue(117,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 14.30 src/router/index.ts(112,25): error TS18047: 'to.query.code' is possibly 'null'.
+#0 14.30 src/router/index.ts(115,33): error TS2571: Object is of type 'unknown'.
+#0 14.30 src/router/index.ts(115,44): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'undefined' is not assignable to type 'string'.
+#0 14.30 src/services/auth-helpers.ts(87,12): error TS2339: Property 'twoFactorAuthEnabled' does not exist on type 'unknown'.
+#0 14.30 src/services/auth-helpers.ts(87,34): error TS2339: Property 'twoFactorAuthOTP' does not exist on type 'unknown'.
+#0 14.30 src/services/game-helpers.ts(3,26): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(3,35): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(3,43): error TS7006: Parameter 'gameStore' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(3,54): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(3,62): error TS7006: Parameter 'movingUp' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(3,72): error TS7006: Parameter 'movingDown' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,19): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,28): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,36): error TS7006: Parameter 'racket1Size' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,49): error TS7006: Parameter 'racket2Size' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,62): error TS7006: Parameter 'racket1Position' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,79): error TS7006: Parameter 'racket2Position' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,96): error TS7006: Parameter 'ballSize' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,106): error TS7006: Parameter 'ballPosition' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,120): error TS7006: Parameter 'score1' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,128): error TS7006: Parameter 'score2' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,136): error TS7006: Parameter 'obstacle1Size' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,151): error TS7006: Parameter 'obstacle1Position' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,170): error TS7006: Parameter 'obstacle2Size' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(37,185): error TS7006: Parameter 'obstacle2Position' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(56,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(56,30): error TS7006: Parameter 'x' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(56,33): error TS7006: Parameter 'y' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(56,36): error TS7006: Parameter 'width' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(56,43): error TS7006: Parameter 'height' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(61,31): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(61,40): error TS7006: Parameter 'x' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(61,43): error TS7006: Parameter 'y' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(61,46): error TS7006: Parameter 'width' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(61,53): error TS7006: Parameter 'height' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(66,18): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(66,27): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(78,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(78,30): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(78,38): error TS7006: Parameter 'winner' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(78,46): error TS7006: Parameter 'reason' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(93,24): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(93,33): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 14.30 src/services/game-helpers.ts(93,41): error TS7006: Parameter 'count' implicitly has an 'any' type.
+#0 14.30 src/services/matchmaking-helpers.ts(80,9): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
+#0 14.30 src/services/matchmaking-helpers.ts(206,38): error TS2345: Argument of type 'null' is not assignable to parameter of type 'EndMatchResult'.
+#0 14.30 src/services/matchmaking-helpers.ts(214,40): error TS2339: Property 'value' does not exist on type '{}'.
+#0 14.30 src/services/matchmaking-helpers.ts(215,39): error TS2339: Property 'value' does not exist on type '{}'.
+#0 14.30 src/services/matchmaking-helpers.ts(230,35): error TS2339: Property 'value' does not exist on type '{}'.
+#0 14.30 src/stores/CommunityStore.ts(73,63): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/stores/CommunityStore.ts(74,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 14.30 src/stores/CommunityStore.ts(88,15): error TS2571: Object is of type 'unknown'.
+#0 14.30 src/stores/CommunityStore.ts(88,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'undefined' is not assignable to type 'string'.
+#0 14.30 src/stores/CommunityStore.ts(108,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 14.30 src/stores/CommunityStore.ts(123,15): error TS2571: Object is of type 'unknown'.
+#0 14.30 src/stores/CommunityStore.ts(123,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 14.30   Type 'undefined' is not assignable to type 'string'.
+#0 14.30 src/stores/MatchmakingStore.ts(30,30): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
+#0 14.30 src/stores/MatchmakingStore.ts(36,47): error TS2339: Property 'isAuthenticated' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: any) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'.
+#0 14.30 src/stores/UserProfileStore.ts(203,31): error TS2339: Property 'idGame' does not exist on type 'never'.
+#0 14.30 src/stores/UserProfileStore.ts(204,34): error TS2339: Property 'isWinner' does not exist on type 'never'.
+#0 14.30 src/stores/UserProfileStore.ts(322,41): error TS2339: Property 'username' does not exist on type 'never'.
+#0 14.30 src/stores/UserProfileStore.ts(324,31): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 14.30 src/stores/UserProfileStore.ts(339,27): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 14.30 src/views/CommunityView.vue(77,26): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(78,54): error TS2339: Property 'name' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(80,33): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(81,22): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(82,29): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(86,43): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(86,65): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(87,44): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(87,66): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(89,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.30 src/views/CommunityView.vue(89,59): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(94,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(95,37): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(95,81): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(99,23): error TS2339: Property 'idType' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(100,34): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(127,23): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(131,45): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(132,47): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(134,40): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(136,20): error TS2339: Property 'name' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(177,55): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(178,52): error TS2339: Property 'content' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(219,19): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(221,26): error TS2339: Property 'role' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(223,19): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(227,30): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(227,76): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(233,38): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(242,26): error TS2339: Property 'role' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(243,51): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(252,36): error TS2339: Property 'role' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(253,34): error TS2339: Property 'owner' does not exist on type 'Object[]'.
+#0 14.31 src/views/CommunityView.vue(257,20): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(260,52): error TS2339: Property 'role' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(261,37): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(266,69): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(268,29): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(268,75): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(273,38): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(277,56): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(280,51): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(281,41): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(282,57): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(285,70): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(286,47): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(286,87): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(287,42): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(290,48): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(291,48): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(294,109): error TS2339: Property 'owner' does not exist on type 'Object[]'.
+#0 14.32 src/views/CommunityView.vue(325,39): error TS2724: '"vue"' has no exported member named 'watched'. Did you mean 'watch'?
+#0 14.32 src/views/CommunityView.vue(332,38): error TS2440: Import declaration conflicts with local declaration of 'block'.
+#0 14.32 src/views/CommunityView.vue(339,5): error TS7034: Variable 'updateAvailableChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
+#0 14.32 src/views/CommunityView.vue(345,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.32 src/views/CommunityView.vue(357,19): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.33 src/views/CommunityView.vue(365,50): error TS2339: Property 'isReady' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(367,30): error TS2339: Property 'isReady' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(378,57): error TS2339: Property 'opponentId' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(381,51): error TS2339: Property 'opponentId' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(389,34): error TS2339: Property 'challengerId' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(389,63): error TS2339: Property 'opponentId' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(396,49): error TS2339: Property 'isChallengePending' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(403,49): error TS2339: Property 'isChallengePending' does not exist on type 'Object'.
+#0 14.33 src/views/CommunityView.vue(407,33): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 14.33 src/views/CommunityView.vue(409,5): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 14.33 src/views/CommunityView.vue(410,27): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.33 src/views/CommunityView.vue(414,32): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 14.33 src/views/CommunityView.vue(415,9): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 14.33 src/views/CommunityView.vue(416,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 14.33 src/views/CommunityView.vue(417,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 14.34 src/views/CommunityView.vue(428,16): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
+#0 14.34 src/views/CommunityView.vue(429,16): error TS7005: Variable 'updateAvailableChannelInterval' implicitly has an 'any' type.
+#0 14.34 src/views/CommunityView.vue(432,27): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
+#0 14.34 src/views/CommunityView.vue(433,49): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.34 src/views/CommunityView.vue(433,105): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.34 src/views/CommunityView.vue(436,16): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.34 src/views/CommunityView.vue(490,41): error TS2339: Property 'username' does not exist on type 'never'.
+#0 14.34 src/views/CommunityView.vue(496,39): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 14.34 src/views/CommunityView.vue(498,44): error TS2339: Property 'username' does not exist on type 'never'.
+#0 14.34 src/views/CommunityView.vue(543,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
+#0 14.34 src/views/CommunityView.vue(550,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.34 src/views/CommunityView.vue(550,54): error TS2551: Property '_value' does not exist on type 'Ref<never[]>'. Did you mean 'value'?
+#0 14.34 src/views/CommunityView.vue(552,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 14.34 src/views/CommunityView.vue(556,19): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 14.35 src/views/CommunityView.vue(560,44): error TS2339: Property 'idChannel' does not exist on type 'Object[]'.
+#0 14.35 src/views/CommunityView.vue(575,5): error TS7034: Variable 'updateChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
+#0 14.35 src/views/CommunityView.vue(578,10): error TS2304: Cannot find name 'users'.
+#0 14.35 src/views/CommunityView.vue(578,21): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 14.35 src/views/CommunityView.vue(585,17): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
+#0 14.35 src/views/CommunityView.vue(591,55): error TS2339: Property 'username' does not exist on type 'Object[]'.
+#0 14.35 src/views/CommunityView.vue(612,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
+#0 14.35 src/views/CommunityView.vue(621,2): error TS2322: Type 'string' is not assignable to type 'null'.
+#0 14.35 src/views/CommunityView.vue(625,37): error TS2339: Property 'idUser' does not exist on type 'Object[]'.
+#0 14.35 src/views/CommunityView.vue(636,30): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 14.35 src/views/CommunityView.vue(683,7): error TS18046: 'error' is of type 'unknown'.
+#0 14.35 src/views/CommunityView.vue(697,40): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
+#0 14.35 src/views/CommunityView.vue(701,42): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
+#0 14.35 src/views/CommunityView.vue(708,55): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
+#0 14.35 src/views/CommunityView.vue(716,39): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
+#0 14.35 src/views/CommunityView.vue(720,38): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
+#0 14.35 src/views/CommunityView.vue(733,25): error TS7006: Parameter 'playerID' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(741,28): error TS7006: Parameter 'channType' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(773,28): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(780,21): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 14.36 src/views/CommunityView.vue(785,20): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 14.36 src/views/CommunityView.vue(791,34): error TS7006: Parameter 'usernameToFriend' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(798,28): error TS7006: Parameter 'usernameToBlock' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(809,13): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
+#0 14.36 src/views/CommunityView.vue(815,40): error TS2345: Argument of type 'null' is not assignable to parameter of type 'string'.
+#0 14.36 src/views/CommunityView.vue(823,23): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 14.36 src/views/CommunityView.vue(831,23): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 14.36 src/views/CommunityView.vue(836,28): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
+#0 14.36 src/views/CommunityView.vue(837,28): error TS2345: Argument of type 'null' is not assignable to parameter of type 'number'.
+#0 14.36 src/views/HomeView.vue(13,20): error TS2571: Object is of type 'unknown'.
+#0 14.36 src/views/HomeView.vue(13,31): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 14.36   Type 'undefined' is not assignable to type 'string'.
+#0 14.36 src/views/SettingsView.vue(167,5): error TS18047: 'fileInput.value' is possibly 'null'.
+#0 14.37 src/views/SettingsView.vue(187,3): error TS2322: Type '(value: unknown) => void' is not assignable to type 'boolean'.
+#0 14.37 src/views/SettingsView.vue(234,4): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
+#0 14.37   Property 'username' does not exist on type '{}'.
+#0 14.37 src/views/SettingsView.vue(239,33): error TS18047: 'fileInput.value.files' is possibly 'null'.
+#0 14.37 src/views/SettingsView.vue(246,6): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
+#0 14.37   Property 'avatar' does not exist on type '{}'.
+#0 14.37 src/views/SettingsView.vue(260,7): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
+#0 14.37   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
+#0 14.37 src/views/SettingsView.vue(269,5): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
+#0 14.37   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
+#0 14.37 src/views/SettingsView.vue(276,15): error TS2571: Object is of type 'unknown'.
+#0 14.37 src/views/SettingsView.vue(276,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 14.37   Type 'undefined' is not assignable to type 'string'.
+#0 14.58 ERROR: "type-check" exited with 2.

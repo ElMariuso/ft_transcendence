@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { defineStore } from 'pinia'
 import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
@@ -9,10 +9,10 @@ interface CommunityStoreState {
 	selectedChannelMsg:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelMsg
 	selectedChannelUsers:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelUsers
 	roleInChannel: string; // Replace string with the actual type of roleInChannel
-	// challengeStates: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
-	// challengesStatesForOpponent: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
-	// acceptedChallengesStates: SomeType | null; // Replace SomeType with the actual type
-	// channelType: number;
+	challengeStates: Map<Object, Object>; // Replace SomeKeyType and SomeValueType with the actual types
+	challengesStatesForOpponent: Map<Object, Object>; // Replace SomeKeyType and SomeValueType with the actual types
+	acceptedChallengesStates: Object | null; // Replace SomeType with the actual type
+	channelType: number;
 	bannedChannel: Array<Object>[]; // Replace SomeType with the actual type of bannedChannel
   }
 
@@ -23,34 +23,35 @@ export const useCommunityStore = defineStore('community', {
 		selectedChannelMsg: [],
 		selectedChannelUsers: [],
 		roleInChannel: 'Member',
-		// challengeStates: new Map(),
-		// challengesStatesForOpponent: new Map(),
-		// acceptedChallengesStates: null,
-		// channelType: 0,
+		challengeStates: new Map(),
+		challengesStatesForOpponent: new Map(),
+		acceptedChallengesStates: null,
+		channelType: 0,
 		bannedChannel: []
 	}),
 	actions: {
-		updateAcceptedChallengeState(newState) {
+		updateAcceptedChallengeState(newState: any) {
 			this.acceptedChallengesStates = newState;
 		},
 		getAcceptedChallengeState() {
 			return this.acceptedChallengesStates;
 		},
-		updateChallengeState(userId, newState) {
+		updateChallengeState(userId: any, newState: any) {
             this.challengeStates.set(userId, newState);
         },
-        getChallengeState(userId) {
+        getChallengeState(userId: any) {
             return this.challengeStates.get(userId);
         },
-		updateChallengeStateForOpponent(userId, newState) {
+		updateChallengeStateForOpponent(userId: any, newState: any) {
 			this.challengesStatesForOpponent.set(userId, newState);
 		},
-		getChallengeStateForOpponent(userId) {
+		getChallengeStateForOpponent(userId: any) {
 			return this.challengesStatesForOpponent.get(userId);
 		},
 		async setupCommunity() {
-			const token = Cookies.get('token');
-			const id = jwt_decode(token).sub;
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const id: any = decodedToken.sub;
 	
 			try {
 				const channelsJoined = await getSubscribedChannels(id);
@@ -58,8 +59,8 @@ export const useCommunityStore = defineStore('community', {
 	
 				this.joinedChannels = channelsJoined;
 					
-				const resChannels = allChannels.filter((channel) => {
-					return !channelsJoined.some((joinedChannel) => channel.idChannel === joinedChannel.idChannel);
+				const resChannels = allChannels.filter((channel: any) => {
+					return !channelsJoined.some((joinedChannel: any) => channel.idChannel === joinedChannel.idChannel);
 				});
 	
 				this.openChannels = resChannels;
@@ -82,7 +83,7 @@ export const useCommunityStore = defineStore('community', {
 				console.error("Error setting up available channels:", error);
 			}
 		},
-		async updateSelectedChannel(channelID) {
+		async updateSelectedChannel(channelID: any) {
 			const token = Cookies.get('token');
 			const id = jwt_decode(token).sub;
 	
