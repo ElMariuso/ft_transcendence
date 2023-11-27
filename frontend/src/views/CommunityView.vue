@@ -418,6 +418,7 @@ onUnmounted(() => {
         clearInterval(acceptedChallengeInterval.value);
         acceptedChallengeInterval.value = null;
     }
+	clearInterval(updateChannelInterval);
 });
 
 const playerPlay = async (idUser) => {
