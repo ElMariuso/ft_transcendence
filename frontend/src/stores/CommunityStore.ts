@@ -14,6 +14,7 @@ export const useCommunityStore = defineStore('community', {
 		challengesStatesForOpponent: new Map(),
 		acceptedChallengesStates: null,
 		// const channelType = ref(0);
+		// const bannedChannel = ref([]);
 	}),
 	actions: {
 		updateAcceptedChallengeState(newState) {
@@ -50,13 +51,17 @@ export const useCommunityStore = defineStore('community', {
 	
 				this.openChannels = resChannels;
 
+				// let j = 0;
+				// bannedChannel.value = [];
+
 				// for(let i = 0; openChannels.value[i] ; i++)
 				// {
 				// 	const users = await getChannelUsers(openChannels.value[i].idChannel);
 				// 	const user = users.find(user => user.idUser === id);
 				// 	if (user && user.role == "Banned")
 				// 	{
-				// 		openChannels.value[i].idType = 4;
+				// 		bannedChannel.value[j] = openChannels.value[i]
+						// j++;
 				// 	}
 				// }
 

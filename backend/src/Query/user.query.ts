@@ -135,7 +135,7 @@ export class UserQuery
 				take: take,
 				orderBy:
 				{
-					points: 'asc'
+					points: 'desc'
 				}
 			},
 		);

@@ -87,8 +87,8 @@
 			  <button class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">View profile</button>
 			</router-link>
 			<button v-if="!alreadyFriend && !alreadyBlocked && !cannotSendFriendRequest" @click="sendFriendRequest" class="mt-2 bg-blue-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Send friend request</button>
-			<button v-if="!alreadyFriend && !alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
-			<button v-if="!alreadyFriend && alreadyBlocked" @click="Block" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
+			<button v-if="!alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Block</button>
+			<button v-if="alreadyBlocked" @click="Block(searchUsername)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Unblock</button>
 			<div v-if="cannotSendFriendRequest" class="text-lg text-red-600 font-semibold"> You cannot send another friend request to this user </div>
 		  </div>
     	</div>
@@ -125,6 +125,17 @@
 		  </div>		
 		</div>
 
+		<!-- Blocked list -->
+		<div class="mt-6">
+		  <h3 class="text-lg font-semibold">Blocked list</h3>
+		  <div class="mt-2">
+			<li v-for="block in blocked" :key="block.idUser" class="mb-2">
+				<span class="font-semibold">{{ block.username }}</span>
+				<button @click="Block(block.username)" class="ml-2 bg-red-500 hover:bg-sky-700 text-white px-3 py-1 rounded-lg">Unblock</button>
+			</li>			  
+		  </div>		
+		</div>
+
 	</div>
 
 
@@ -148,7 +159,7 @@ const ladderStore = useLadderStore()
 
 const showProfile = ref(false);
 
-const { friendlist } = storeToRefs(ladderStore);
+const { friendlist, blocked } = storeToRefs(ladderStore);
 const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
@@ -208,7 +219,12 @@ setAll()
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
-		uri[1] = 1;
+	{	
+		const token = Cookies.get('token')
+		const id = jwt_decode(token).sub;
+		uri[1] = id;
+		console.log("id :" + uri[1])
+	}
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
@@ -250,22 +266,18 @@ async function FindUser() {
 async function sendFriendRequest() {
 	
 	const userData = await ladderStore.sendFriendRequest(searchUsername.value);
-	if (userData == "error caught")
+	if (userData == 1)
 		cannotSendFriendRequest.value = true;
 }
 
-async function Block() {
+async function Block(username) {
 
-	await ladderStore.blockUnblock(searchUsername.value);
+	await ladderStore.blockUnblock(username);
 	if (alreadyBlocked.value == true)
 		alreadyBlocked.value = false;
 	else
 		alreadyBlocked.value = true;
 }
-
-// const refreshPage = () => {
-//   location.reload(); // Reloads the current page
-// };
 
 async function Accept(idFriend) {
 

@@ -77,7 +77,7 @@
 						<div v-if="channel.idType !== 3" class="mb-2 border px-2 py-1 rounded-lg text-lg flex flex-row ">
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button 
-								v-if="channel.idType !== 4"
+								v-if="!isBanned(channel.idChannel)"
 								:id="channel.idChannel" 
 								:channType="channel.idType" 
 								@click="btnJoinChannel" 
@@ -91,8 +91,8 @@
 							>
 								Join
 							</button>
-							<span v-if="channel.idType === 4" class="text-red-600"> Banned </span>
-							<img v-if="channel.idType !== 4" :src="getChannelTypeImg(channel.idType)" alt="channType">
+							<span v-if="isBanned(channel.idChannel)" class="text-red-600"> Banned </span>
+							<img v-if="!isBanned(channel.idChannel)" :src="getChannelTypeImg(channel.idType)" alt="channType">
 						</div>
 						<div class="flex justify-end">
 							<input
@@ -179,6 +179,7 @@
 							</li>
 						</ul>
 					</div>
+					<span v-if="block2" class="text-lg text-red-600 font-semibold">One of you blocked the other... </span>
 						<div v-if="selectedChannelID" class="flex">
 							<input
 								v-model="newMessage"
@@ -196,7 +197,6 @@
 							>
 								Send
 							</button>
-							<div v-if="block2"> <h3 class="text-lg text-red-600 font-semibold">One of you blocked the other...</h3> </div>
 						</div>			
 				</div>
 			</div>
@@ -217,7 +217,7 @@
 								
 								:id="user.idUser"
 							>
-							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg  border px-2 py-1 rounded-lg ">
+							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 								  {{ user.username }}
 								  <!-- <div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
@@ -282,7 +282,7 @@
 												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
 											</router-link>
 											<img v-if="channelType !== 3" @click="privateMessage(user.username)" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-											<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+											<img v-if="!isFriendOrBlocked(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
 											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 										</div>
 										<div v-else>
@@ -429,7 +429,7 @@ const playerPlay = async (idUser) => {
 }
 
 const communityStore = useCommunityStore();
-const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType } = storeToRefs(communityStore);
+const { openChannels, bannedChannel, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel, channelType } = storeToRefs(communityStore);
 
 const profileStore = useProfileStore();
 const { userID, username } = storeToRefs(profileStore);
@@ -496,7 +496,6 @@ async function privateMessage(name : string) {
 		const res = await creatDMChannel(searchIdUser.value, ladderStore.getId())
 	} catch (error) {
 		console.error('Error creating dm', error);
-		throw error;
 	}
 
 	newUsername.value = "";
@@ -544,6 +543,16 @@ async function btnJoinChannel(event) {
 	await communityStore.setupCommunity();
 }
 
+function isBanned(idChannel)
+{
+	for(let i = 0; bannedChannel.value[i]; i++)
+	{
+		if (idChannel === bannedChannel.value[i].idChannel)
+			return (true);
+	}
+	return (false);
+}
+
 // *************************************************
 
 // *********** CHAT ROOM
@@ -569,11 +578,10 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
     // Start the interval when selectedChannelID is set
     // if (newChannelID) {
 		updateChannelInterval = setInterval(async () => {
+			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
+				selectedChannelID.value = null;
 			await communityStore.updateSelectedChannel(newChannelID);
 			await communityStore.setupCommunity();
-			
-			if (!(selectedChannelUsers.value.some(user => user.username === username.value)))
-				selectedChannelID.value = null;
 		}, 500);
     // }
 });
@@ -750,13 +758,19 @@ const setAll = async () => {
 }
 setAll()
 
-function isFriend(friendId) {
+function isFriendOrBlocked(friendId) {
 	
 	let friendList = ladderStore.getFriends();
+	let blockList = ladderStore.getBlockedList();
 
 	for(let i = 0; friendList[i]; i++)
 	{
 		if (friendList[i].idUser == friendId)
+			return (true);
+	}
+	for(let i = 0; blockList[i]; i++)
+	{
+		if (blockList[i].idUser == friendId)
 			return (true);
 	}
 	return (false);

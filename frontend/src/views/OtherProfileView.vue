@@ -66,7 +66,7 @@
 	<div class="col-3">
 
 		<!-- Friend invitations -->
-		<div class="mt-6">
+		<!-- <div class="mt-6">
 		  <h3 class="text-lg font-semibold">Friend invitations</h3>
 		  <div class="mt-2">
             <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
@@ -77,7 +77,7 @@
 			  </span>
             </li>
           </div>
-		</div>
+		</div> -->
 
 		<!-- Friend list -->
 		<div class="mt-6">
@@ -105,7 +105,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, computed  } from 'vue'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import api from '../services/api';
@@ -116,6 +116,7 @@ import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
 const profileStore = useProfileStore()
 const ladderStore = useLadderStore()
+const { friendlist } = storeToRefs(ladderStore);
 
 const showProfile = ref(false);
 
@@ -125,6 +126,26 @@ const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
 const userNotFound = ref(false);
 const userFound = ref(false);
+
+let intervalId;
+
+onMounted(() => {
+	ladderStore.updateFriendStatuses();
+	intervalId = setInterval(ladderStore.updateFriendStatuses, 1000);
+});
+
+onUnmounted(() => {
+	clearInterval(intervalId);
+});
+
+const formattedFriendStatuses = computed(() => {
+    const statuses = {};
+    const friendsStatus = ladderStore.friendsStatus.value || {};
+    for (const [id, status] of Object.entries(friendsStatus)) {
+        statuses[id] = status;
+    }
+    return statuses;
+});
 
 const setAll = async () => {
 	let uri = window.location.href.split('id=');
@@ -137,7 +158,12 @@ setAll()
 function getAvatarImg() {
 	let uri = window.location.href.split('id=');
 	if (uri[1] == 0)
-		uri[1] = 1;
+	{	
+		const token = Cookies.get('token')
+		const id = jwt_decode(token).sub;
+		uri[1] = id;
+		console.log("id :" + uri[1])
+	}
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }
 
@@ -154,35 +180,33 @@ function getGameResult(idGame) {
 //   location.reload(); // Reloads the current page
 // };
 
-async function Accept(idFriend) {
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
+// 			"idFriend": idFriend,
+// 				})
+//     } catch (error) {
+//     	console.error('Error accepting a friend request:', error);
+//     	throw error;
+//     }
+// 	await ladderStore.updateFriendsInvite();//updating friends invite list
+// 	await ladderStore.updateFriends();
+// 	// refreshPage();
+// }
 
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-			"idFriend": idFriend,
-				})
-    } catch (error) {
-    	console.error('Error accepting a friend request:', error);
-    	throw error;
-    }
-	await ladderStore.updateFriendsInvite();//updating friends invite list
-	await ladderStore.updateFriends();
-	// refreshPage();
-}
+// async function Decline(idFriend) {
 
-async function Decline(idFriend) {
-
- 	try {
-        const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-			"idFriend": idFriend,
-			})
-    } catch (error) {
-    	console.error('Error refusing a friend request:', error);
-    	throw error;
-    }
-	await ladderStore.updateFriendsInvite();//updating friends invite list
-	await ladderStore.updateFriends();
-	// refreshPage();
-}
+//  	try {
+//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
+// 			"idFriend": idFriend,
+// 			})
+//     } catch (error) {
+//     	console.error('Error refusing a friend request:', error);
+//     	throw error;
+//     }
+// 	await ladderStore.updateFriendsInvite();//updating friends invite list
+// 	await ladderStore.updateFriends();
+// 	// refreshPage();
+// }
 
 </script>
 

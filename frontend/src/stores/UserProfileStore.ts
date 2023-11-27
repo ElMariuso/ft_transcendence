@@ -273,6 +273,7 @@ export const useLadderStore = defineStore('ladder', () => {
 			await postFriendsInviteData(userID.value, username);
 		} catch (error) {
 			console.error("Error posting new Friends Invite:", error);
+			return 1;
 		}
 	}
 
@@ -333,5 +334,5 @@ export const useLadderStore = defineStore('ladder', () => {
 		});
 	}
 
-	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult }
+	return {username, blocked, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses }
 })

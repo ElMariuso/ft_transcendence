@@ -12,7 +12,7 @@ import api from './api';
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the ladder data.
  */
-export const getLadderData = async (userID) => {
+export const getLadderData = async (userID : string) => {
     try {
         const response = await api.get('/users/ladder/' + userID);
         return response.data;
@@ -33,7 +33,7 @@ export const getLadderData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the user data.
  */
- export const getUserData = async (userID) => {
+ export const getUserData = async (userID : string) => {
     try {
         const response = await api.get('/users/user/' + userID);
         return response.data;
@@ -74,7 +74,7 @@ export const getLadderData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the stats data.
  */
- export const getStatsData = async (userID) => {
+ export const getStatsData = async (userID : string) => {
     try {
         const response = await api.get('/games/stats/' + userID);
         return response.data;
@@ -95,7 +95,7 @@ export const getLadderData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the achievements data.
  */
- export const getAchievementsData = async (userID) => {
+ export const getAchievementsData = async (userID : string) => {
     try {
         const response = await api.get('/achievements/' + userID);
         return response.data;
@@ -116,7 +116,7 @@ export const getLadderData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the games data.
  */
- export const getGamesData = async (userID) => {
+ export const getGamesData = async (userID : string) => {
     try {
         const response = await api.get('/games/allGamesUser/' + userID);
         return response.data;
@@ -148,7 +148,7 @@ export const getGamesResults = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the friends data.
  */
-export const getFriendsData = async (userID) => {
+export const getFriendsData = async (userID : string) => {
     try {
         const response = await api.get('/users/' + userID + '/friends');
         return response.data;
@@ -169,7 +169,7 @@ export const getFriendsData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the friends invite data.
  */
- export const getFriendsInviteData = async (userID) => {
+ export const getFriendsInviteData = async (userID : string) => {
     try {
         const response = await api.get('/users/' + userID + '/getInvitations');
         return response.data;
@@ -187,11 +187,11 @@ export const getFriendsData = async (userID) => {
  * the error message to the console and re-throws the error to be handled by 
  * the calling function.
  *
- * @param {number} userID - The unique identifier of the user.
+ * @param {string} userID - The unique identifier of the user.
  * @param {string} username - Username of the user to invite.
  * @returns {Promise<Object>} - A promise that resolves to the new channel data.
  */
- export const postFriendsInviteData = async (userID, username) => {
+ export const postFriendsInviteData = async (userID : string, username : string) => {
     try {
         const response = await api.post('/users/' + userID + '/addFriend', {
 			"username": username,
@@ -214,7 +214,7 @@ export const getFriendsData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the blocked list data.
  */
- export const getBlockedListData = async (userID) => {
+ export const getBlockedListData = async (userID : string) => {
     try {
         const response = await api.get('/users/' + userID + '/blocked');
         return response.data;
@@ -236,7 +236,7 @@ export const getFriendsData = async (userID) => {
  * @param {number} idFriend - The unique identifier of the friend to remove.
  * @returns {Promise<Object>} - A promise that resolves to the blocked list data.
  */
- export const deleteFriend = async (userID, idFriend) => {
+ export const deleteFriend = async (userID : string, idFriend : number) => {
     try {
         const response = await api.post('/users/' + userID + '/deleteFriendship',{
 				"idFriend": idFriend,
@@ -248,9 +248,9 @@ export const getFriendsData = async (userID) => {
     }
 };
 
-export const postBlock = async (idUser, usernameToBlock : string) => {
+export const postBlock = async (userID : string, usernameToBlock : string) => {
 	try {
-        const response = await api.post('/users/' + idUser + '/blockUser', {
+        const response = await api.post('/users/' + userID + '/blockUser', {
 			"username": usernameToBlock,
 				})
 		return response;
@@ -260,9 +260,9 @@ export const postBlock = async (idUser, usernameToBlock : string) => {
 	}
 }
 
-export const deleteBlock = async (idUser, idBlock : number) => {
+export const deleteBlock = async (userID : string, idBlock : number) => {
 	try {
-		const res = await api.post('/users/' + idUser + '/deleteBlock', {
+		const res = await api.post('/users/' + userID + '/deleteBlock', {
 			"idBlock" : idBlock,
 			})
 		return res;
