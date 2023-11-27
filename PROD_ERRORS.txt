@@ -32,12 +32,6 @@
 
 
 
-#0 19.11 src/services/Channel-helpers.ts(15,38): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 19.11 src/services/Channel-helpers.ts(36,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 19.11 src/services/Channel-helpers.ts(60,42): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 19.11 src/services/Channel-helpers.ts(60,50): error TS7006: Parameter 'content' implicitly has an 'any' type.
-#0 19.11 src/services/Channel-helpers.ts(60,59): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 19.11 src/services/Channel-helpers.ts(86,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
 
 
 
@@ -74,19 +68,6 @@
 #0 19.12 src/services/Community-helpers.ts(276,31): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
 #0 19.12 src/services/Community-helpers.ts(276,43): error TS7006: Parameter 'idCurrentChannel' implicitly has an 'any' type.
 #0 19.12 src/services/Community-helpers.ts(276,61): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-
-
-#0 19.12 src/services/UserProfile-helpers.ts(129,39): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-
-
-#0 19.12 src/services/auth-helpers.ts(18,35): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 19.12 src/services/auth-helpers.ts(74,32): error TS7006: Parameter 'authStore' implicitly has an 'any' type.
-#0 19.12 src/services/auth-helpers.ts(74,43): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 19.12 src/services/auth-helpers.ts(86,12): error TS2339: Property 'sub' does not exist on type 'unknown'.
-#0 19.12 src/services/auth-helpers.ts(86,25): error TS2339: Property 'twoFactorAuthEnabled' does not exist on type 'unknown'.
-#0 19.12 src/services/auth-helpers.ts(86,47): error TS2339: Property 'twoFactorAuthOTP' does not exist on type 'unknown'.
-
-
 
 #0 19.12 src/services/game-helpers.ts(3,26): error TS7006: Parameter 'context' implicitly has an 'any' type.
 #0 19.12 src/services/game-helpers.ts(3,35): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
@@ -388,3 +369,20 @@
 #0 19.21   Type 'undefined' is not assignable to type 'string'.
 #0 19.21 src/views/SettingsView.vue(284,32): error TS2345: Argument of type '{}' is not assignable to parameter of type '[]'.
 #0 19.29 ERROR: "type-check" exited with 2.
+
+
+
+
+The database schema is not empty. Read more about how to baseline an existing production database: https://pris.ly/d/migrate-baseline
+
+The migration 0_init could not be found. Please make sure that the migration exists, and that you included the whole name of the directory. (example: "20201207184859_initial_migration")
+
+The migration 20230907141549_test_migration/migration.sql could not be found. Please make sure that the migration exists, and that you included the whole name of the directory. (example: "20201207184859_initial_migration")
+The migration `20230907141549_test_migration` is already recorded as applied in the database.
+
+
+Error: Prisma Migrate has detected that the environment is non-interactive, which is not supported.
+
+`prisma migrate dev` is an interactive command designed to create new migrations and evolve the database in development.
+To apply existing migrations in deployments, use prisma migrate deploy.
+See https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy

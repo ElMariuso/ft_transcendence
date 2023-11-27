@@ -104,7 +104,7 @@ router.beforeEach((to, from, next) => {
 	const profileStore = useProfileStore();
 
 
-	checkJWT(authStore, profileStore).then(status => {
+	checkJWT(authStore).then(status => {
 		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
 			return next({ name: 'home' });
 

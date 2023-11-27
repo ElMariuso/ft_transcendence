@@ -126,7 +126,7 @@ export const getLadderData = async (userID : string) => {
     }
 };
 
-export const getGamesResults = async (userID) => {
+export const getGamesResults = async (userID: number) => {
 	try {
 		const res = await api.get('/games/gamesResult/' + userID);
 		console.log(res.data)

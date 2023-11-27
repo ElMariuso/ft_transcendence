@@ -15,7 +15,7 @@ import Cookies from 'js-cookie';
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the user data.
  */
-export const getUserData = async (userID) => {
+export const getUserData = async (userID: number) => {
     try {
         const response = await api.get('/users/user/' + userID);
         return response.data;
@@ -71,7 +71,7 @@ export const getRedirectURL = async() => {
  * @param {Object} profileStore - The store to manage user profile data.
  * @returns {Promise<Object>} - A promise that resolves to the status object containing `isAuth` and `jwtValid` boolean flags.
  */
-export async function checkJWT(authStore, profileStore) {
+export async function checkJWT(authStore: any) {
 	
 	const status = {
 		twoFactorAuthEnabled: false,
@@ -83,10 +83,11 @@ export async function checkJWT(authStore, profileStore) {
 	if (token) {
 		try {
             // Decode the token to obtain the userID, twoFactorAuthEnabled status and 2fa One Time Password.
-			const { sub: userID, twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
+			// const { sub: userID, twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
+			const { twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
 			
 			await api.get('/auth/jwt/verify', {})
-			.then(res => {
+			.then((res: { data: any; }) => {
 				if (res.data)
 					authStore.validateJWT();
 			});

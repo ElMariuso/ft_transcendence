@@ -3,8 +3,21 @@ import Cookies from 'js-cookie';
 import { defineStore } from 'pinia'
 import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
 
+interface CommunityStoreState {
+	openChannels: Array<Object>[]; // Replace SomeType with the actual type of openChannels
+	joinedChannels: Array<Object>[]; // Replace SomeType with the actual type of joinedChannels
+	selectedChannelMsg:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelMsg
+	selectedChannelUsers:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelUsers
+	roleInChannel: string; // Replace string with the actual type of roleInChannel
+	challengeStates: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
+	challengesStatesForOpponent: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
+	acceptedChallengesStates: SomeType | null; // Replace SomeType with the actual type
+	channelType: number;
+	bannedChannel: SomeType[]; // Replace SomeType with the actual type of bannedChannel
+  }
+
 export const useCommunityStore = defineStore('community', {
-	state: () => ({
+	state: (): CommunityStoreState => ({
 		openChannels: [],
 		joinedChannels: [],
 		selectedChannelMsg: [],
