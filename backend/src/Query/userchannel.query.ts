@@ -155,32 +155,32 @@ export class UserChannelQuery
 	}
 
 	/**
-	 * Update the mute time of a member of a channel. Mute time can be null.
-	 * 
-	 * @param idUserChannel UserChannel's id
-	 * @param timeToMute Time to mute a member
-	 * 
-	 * @returns  Updated record
-	 * 
-	 * @query update user_channel set user_channel.muteTime = new_date/null where user_channel.idUser_Channel = $idUserChannel;
-	 */
-	async updateMuteTime(idUserChannel: number, timeToMute: number)
-	{
-		// Convert seconds to milliseconds -> * 1000
-		const newMuteTime = timeToMute ? new Date(new Date().getTime() + timeToMute * 1000) : null;
+     * Update the mute time of a member of a channel. Mute time can be null.
+     * 
+     * @param idUserChannel UserChannel's id
+     * @param timeToMute Time to mute a member, can be null
+     * 
+     * @returns  Updated record
+     * 
+     * @query update user_channel set user_channel.muteTime = new_date/null where user_channel.idUser_Channel = $idUserChannel;
+     */
+    async updateMuteTime(idUserChannel: number, timeToMute: number | null)
+    {
+        // Convert seconds to milliseconds -> * 1000
+        const newMuteTime = timeToMute ? new Date(new Date().getTime() + timeToMute * 1000) : null;
 
-		const userchannel = await this.prisma.user_Channel.update
-		(
-			{
-				where: { idUser_Channel: idUserChannel },
+        const userchannel = await this.prisma.user_Channel.update
+        (
+            {
+                where: { idUser_Channel: idUserChannel },
 
-				data:
-				{
-					muteTime: newMuteTime,
-				},
-			}
-		);
+                data:
+                {
+                    muteTime: newMuteTime,
+                },
+            }
+        );
 
-		return userchannel;
-	}
+        return userchannel;
+    }
 }

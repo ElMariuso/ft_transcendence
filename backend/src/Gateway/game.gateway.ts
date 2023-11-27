@@ -444,7 +444,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     
                     createGameDto.idPlayerOne = id1;
                     createGameDto.idPlayerSecond = id2;
-                    if (gameState.score1 > gameState.score2)
+                    if (matchResult.winner === 'player1')
                         createGameDto.idWinner = id1;
                     else
                         createGameDto.idWinner = id2;

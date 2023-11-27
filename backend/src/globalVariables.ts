@@ -117,27 +117,28 @@ export const ERROR_MESSAGES =
 		DELETEMESSAGE_FAILED: "Message deletion failed",
 	},
 
-	/*	USER_CHANNEL ERROR	*/
-	
-	USER_CHANNEL:
-	{
-		NOT_FOUND: "The user is not in the channel",
-		WRONG_PASSWORD: "Passwords don't match",
-		WRONG_MUTETIME: "Wrong mute time",
-		ALREADY_IN: "User already in the channel",
-		FORBIDDEN_ACTION: "Forbidden action",
-		KICK_OWNER: "Can not kick the owner",
-		KICK_DM: "Can not kick anyone in DM",
-		CHANGE_OWNER_ROLE: "Can not change the role of the owner",
-		CHANGE_DM_ROLE: "Can not change role in DM",
-		CANTREJOINDM: "Can not join a Direct Message Channel",
+	/*    USER_CHANNEL ERROR    */
+    
+    USER_CHANNEL:
+    {
+        NOT_FOUND: "The user is not in the channel",
+        WRONG_PASSWORD: "Passwords don't match",
+        WRONG_MUTETIME: "Wrong mute time",
+        ALREADY_IN: "User already in the channel",
+        FORBIDDEN_ACTION: "Forbidden action",
+        KICK_OWNER: "Can not kick the owner",
+        KICK_DM: "Can not kick anyone in DM",
+        CHANGE_OWNER_ROLE: "Can not change the role of the owner",
+        CHANGE_DM_ROLE: "Can not change role in DM",
+        CANTREJOINDM: "Can not join a Direct Message Channel",
+        STILL_MUTE: "Can send any messages. You are still muted until ",
 
-		JOINCHANNEL_FAILED: "Joining channel failed",
-		FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
-		DELETEMEMBER_FAILED: "Userchannel deletion failed",
-		MODIFYROLE_FAILED: "Role update failed",
-		ADDMUTETIME_FAILED: "Adding mute time failed",
-	},
+        JOINCHANNEL_FAILED: "Joining channel failed",
+        FINDCHANNELFORAUSER_FAILED: "Can't get the channels for this user",
+        DELETEMEMBER_FAILED: "Userchannel deletion failed",
+        MODIFYROLE_FAILED: "Role update failed",
+        ADDMUTETIME_FAILED: "Adding mute time failed",
+    },
 
 	ROLE:
 	{

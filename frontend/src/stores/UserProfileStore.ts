@@ -18,21 +18,24 @@ import { deleteFriend } from '@/services/UserProfile-helpers'
 import { postBlock } from '@/services/UserProfile-helpers'
 import { deleteBlock } from '@/services/UserProfile-helpers'
 
+import { getPlayerStatus } from '@/services/matchmaking-helpers';
+
 
 export const useLadderStore = defineStore('ladder', () => {
 
 	const userID = ref(0)
-	const ladder = ref(['test', 'retest']);
-	const users = ref(['test', 'retest']);
-	const achievements = ref(['test', 'retest']);
-	const history = ref(['test', 'retest']);
-	const friends = ref(['test', 'retest']);
-	const invite = ref(['test', 'retest']);
-	const blocked = ref(['test', 'retest']);
+	const ladder = ref([]);
+	const users = ref([]);
+	const achievements = ref([]);
+	const history = ref([]);
+	const friendlist = ref([]);
+	const invite = ref([]);
+	const blocked = ref([]);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
+	const friendsStatus = ref({});
 
 	/////////////////// SETUP ////////////////////////
 
@@ -198,11 +201,30 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setFriends(newList: any) {
-		friends.values = newList;
+		friendlist.value = newList;
 	}
 
 	function getFriends() {
-		return friends.values;
+		return friendlist.value;
+	}
+
+	async function removeFriend(idFriend: number) {
+
+		try {
+			await deleteFriend(userID.value, idFriend);
+		} catch (error) {
+			console.error("Error removing a friend :", error);
+		}
+	}
+
+	async function updateFriends() {
+
+		try {
+			const userData = await getFriendsData(userID.value);
+			setFriends(userData);
+		} catch (error) {
+			console.error("Error updating up Friends:", error);
+		}
 	}
 
 	/////////////////// FRIENDS INVITE ////////////////////////
@@ -218,17 +240,16 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function setFriendsInvite(newList: any) {
-		invite.values = newList;
+		invite.value = newList;
 	}
 
 	function getFriendsInvite() {
-		return invite.values;
+		return invite.value;
 	}
 
 	async function sendFriendRequest(username: string) {
 
 		try {
-			// postFriendsInviteData(userID.value, username);
 			const userData = await postFriendsInviteData(userID.value, username);
 			if (userData == "Friend invite already sent")
 				return("error caught");
@@ -237,13 +258,13 @@ export const useLadderStore = defineStore('ladder', () => {
 		}
 	}
 
-	async function removeFriend(idFriend: number) {
+	async function updateFriendsInvite() {
 
-		// console.log(idFriend);
 		try {
-			deleteFriend(userID.value, idFriend);
+			const userData = await getFriendsInviteData(userID.value);
+			setFriendsInvite(userData);
 		} catch (error) {
-			console.error("Error removing a friend :", error);
+			console.error("Error updating Friends Invite:", error);
 		}
 	}
 
@@ -285,8 +306,14 @@ export const useLadderStore = defineStore('ladder', () => {
 			await postBlock(getId(), usernameToBlock);
 		else
 			await deleteBlock(getId(), idBlocked);
+		await setupBlockedList();//updating blocked list
 	}
 
+	function updateFriendStatuses() {
+		friendlist.value.forEach(friend => {
+			getPlayerStatus(friend.idUser);
+		});
+	}
 
-	return {username, avatar, history, ladder, friends, nbWin, nbLoose, achievements, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, setupBlockedList, getBlockedList, removeFriend, blockUnblock}
+	return {username, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses }
 })

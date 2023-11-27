@@ -19,6 +19,7 @@ import { AchievementService } from 'src/Service/achievement.service';
 import { AchievementQuery } from "src/Query/achievement.query";
 import { MessageQuery } from "src/Query/message.query";
 import { GameQuery } from "src/Query/game.query";
+import { StatusGateway } from 'src/Gateway/status.gateway';
 
 
 @Module({
@@ -39,6 +40,7 @@ import { GameQuery } from "src/Query/game.query";
 	AchievementQuery,
 	MessageQuery,
 	GameQuery,
+	StatusGateway
 ],
 })
 export class UserModule {}

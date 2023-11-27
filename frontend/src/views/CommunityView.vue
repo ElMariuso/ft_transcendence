@@ -199,16 +199,20 @@
 								
 								:id="user.idUser"
 							>
-								<div class="flex flex-row justify-between">
+								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
+									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
+									<span>{{ countReadyPlayers }} / 2</span>
+								</div>
+								<div v-else class="flex flex-row justify-between">
 
-									<p 
-										:class="{ 
-											'text-green-600': user.role === 'Admin',
-											'text-red-500': user.owner,
-										}"	
-									>
-										{{ user.username }}
-									</p>
+									<div class="flex items-center">
+										<p :class="{'text-green-600': user.role === 'Admin', 'text-red-500': user.owner, }"	>
+											{{ user.username }}
+										</p>
+										<div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
+											<div class="spinner"></div>
+										</div>
+									</div>
 
 									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
@@ -219,14 +223,25 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<img @click="playerPlay" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
-										<router-link :to="'/otherprofile/id=' + user.idUser">
-			 		 					  <img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
-										</router-link>
-										<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-										<img @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
-										<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+										<div v-if="isChallengeActiveForOpponent(user.idUser).value">
+											<span>Waiting</span>
+										</div>
+										<div v-else-if="!isChallengeActive(user.idUser).value">
+											<img @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+											<router-link :to="'/otherprofile/id=' + user.idUser">
+												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+											</router-link>
+											<img @click="playerMessage" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
+											<img v-if="!isFriend(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
+											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+										</div>
+										<div v-else>
+											<img @click="answerToChallenge(user.idUser, 1)" class="cursor-pointer" title="accept" src="../assets/accept.svg" alt="accept">
+											<img @click="answerToChallenge(user.idUser, 0)" class="cursor-pointer" title="refuse" src="../assets/refuse.svg" alt="refuse">
+										</div>
 									</div>
+									<!-- <div v-else class="flex justify-between">
+									</div> -->
 									<div v-if="roleInChannel === 'Admin' || roleInChannel === 'Owner'" class="flex justify-between mt-2 border-t pt-1">
 
 										<div class="flex flex-row">
@@ -257,18 +272,109 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onUnmounted, onMounted, computed, Ref } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, banUserFromChannel, getChannelMsg, deleteMessage, mute, block } from '@/services/Community-helpers'
+import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState, confirmChallenge } from '@/services/matchmaking-helpers'
 
-onBeforeMount(async () => {
-	await communityStore.setupCommunity();
+const usersIntervals = ref({});
+const acceptedChallengeInterval = ref<number | null>(null);
 
-	console.log(joinedChannels.value);
-}) 
+onMounted(async () => {
+    await communityStore.setupCommunity();
+
+	acceptedChallengeInterval.value = setInterval(() => {
+        askAcceptedChallengeState(profileStore.userID);
+    }, 1000);
+});
+
+const sendConfirmChallenge = async () => {
+	const acceptedChallengeState = communityStore.acceptedChallengesStates;
+	if (!acceptedChallengeState) return ;
+
+	confirmChallenge(profileStore.userID, profileStore.username);
+};
+
+const countReadyPlayers: Ref<number> = computed(() => {
+	const acceptedChallengeState = communityStore.acceptedChallengesStates;
+	if (!acceptedChallengeState) return 0;
+
+	let count = 0;
+	const keys = Object.keys(acceptedChallengeState.isReady);
+	for (const key of keys) {
+		if (acceptedChallengeState.isReady[key]) {
+			count++;
+		}
+	}
+	return count;
+});
+
+const isAcceptedChallengeActive = (idUser: number): Ref<boolean> => {
+	return computed(() => {
+		const acceptedChallengeState = communityStore.acceptedChallengesStates;
+
+		if (!acceptedChallengeState || acceptedChallengeState.opponentId === -1) {
+			return false;
+		}
+		const isOpponentActive = acceptedChallengeState.opponentId === idUser;
+		return isOpponentActive;
+	});
+};
+
+const answerToChallenge = async (idUser: number, response: number) => {
+	const challengeState = communityStore.getChallengeState(idUser);
+	if (challengeState) {
+		challengeAnswer(challengeState.challengerId, challengeState.opponentId, response);
+	}
+};
+
+const isChallengeActive = (idUser: number): Ref<boolean> => {
+	return computed(() => {
+        const challengeState = communityStore.getChallengeState(idUser);
+        return challengeState && challengeState.isChallengePending;
+    });
+};
+
+const isChallengeActiveForOpponent = (idUser: number): Ref<boolean> => {
+	return computed(() => {
+		const challengeState = communityStore.getChallengeStateForOpponent(idUser);
+        return challengeState && challengeState.isChallengePending;
+	});
+};
+
+const startChallengeInterval = (friendId) => {
+    stopChallengeInterval(friendId);
+    usersIntervals.value[friendId] = setInterval(() => {
+        askChallengeState(profileStore.userID, friendId);
+    }, 1000);
+};
+
+const stopChallengeInterval = (friendId) => {
+    if (usersIntervals.value[friendId]) {
+        clearInterval(usersIntervals.value[friendId]);
+        delete usersIntervals.value[friendId];
+    }
+};
+
+onUnmounted(() => {
+    Object.keys(usersIntervals.value).forEach(friendId => stopChallengeInterval(friendId));
+
+	if (acceptedChallengeInterval.value !== null) {
+        clearInterval(acceptedChallengeInterval.value);
+        acceptedChallengeInterval.value = null;
+    }
+});
+
+const playerPlay = async (idUser) => {
+	const isAnyChallengeActive = isChallengeActive(profileStore.userID).value || isAcceptedChallengeActive(profileStore.userID).value
+
+	if (!isAnyChallengeActive) {
+		askChallenge(profileStore.userID, idUser);
+	}
+}
 
 const communityStore = useCommunityStore();
 const { openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel } = storeToRefs(communityStore);
@@ -342,6 +448,9 @@ async function selectChannel(channelID: string) {
 	selectedChannelID.value = channelID;
 	await communityStore.updateSelectedChannel(channelID);
 
+	communityStore.selectedChannelUsers.forEach(user => {
+        startChallengeInterval(user.idUser);
+    });
 	// scrollToSelectedTab();
 }
 
@@ -415,10 +524,6 @@ function getChannelTypeImg(channType) {
 		return "src/assets/private.svg";
 }
 
-// async function playerPlay() {
-// 	console.log("play");
-// 	// Need game implementation
-// }
 // async function playerProfile() {
 // 	console.log("profile");
 // 	// Need profile implementation
@@ -444,9 +549,17 @@ const setAll = async () => {
 }
 setAll()
 
-const refreshPage = () => {
-  location.reload(); // Reloads the current page
-};
+function isFriend(friendId) {
+	
+	let friendList = ladderStore.getFriends();
+
+	for(let i = 0; friendList[i]; i++)
+	{
+		if (friendList[i].idUser == friendId)
+			return (true);
+	}
+	return (false);
+}
 
 async function sendFriendRequest(usernameToFriend) {
 	
@@ -458,7 +571,8 @@ async function sendFriendRequest(usernameToFriend) {
 async function playerBlock(usernameToBlock) {
 
 	await ladderStore.blockUnblock(usernameToBlock);
-	refreshPage();
+	console.log("Block / unblock")
+	// refreshPage();
 }
 
 async function playerMute() {
@@ -475,8 +589,92 @@ async function playerKick() {
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
-// async function playerBan() {
-// 	console.log("ban");
-// }
+async function playerBan() {
+	console.log("ban");
+
+	await banUserFromChannel(ladderStore.getId(), selectedUserID.value, selectedChannelID.value);
+	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
+}
 
 </script>
+
+<style scoped>
+.spinner-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 1vh;
+	margin-left: 3px !important;
+}
+  
+.spinner {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+  
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+}
+
+.checkmark {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    position: relative;
+    transform: rotate(-45deg);
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: green;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px green;
+    }
+}
+</style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from 'vue';
+import { onMounted, onBeforeUnmount, computed } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
 import Footer from './components/Footer.vue';
@@ -22,6 +22,10 @@ async function setupStore() {
 		await profileStore.setupProfile(0);
 }
 
+function handleBeforeUnload() {
+  updatePlayerStatus(1, profileStore);
+}
+
 onMounted(() => {
     matchmakingStore.initializeStore(profileStore);
     
@@ -30,11 +34,14 @@ onMounted(() => {
       setupStore();
     }
     initializeSocketListeners(matchmakingStore, profileStore);
-    updatePlayerStatus(0);
+    updatePlayerStatus(0, profileStore);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 });
-onUnmounted(() => {
-  updatePlayerStatus(1);
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
 });
+
 const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 

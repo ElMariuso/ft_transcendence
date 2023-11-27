@@ -7,6 +7,12 @@ import { PlayerInQueue, AuthenticatedPlayer } from 'src/Model/player.model';
 import { GameGateway } from './game.gateway';
 import { MatchmakingStateService } from 'src/Service/matchmakingstate.service';
 
+interface PlayerInfo {
+  playerId: number;
+  socketId: string;
+  username: string;
+}
+
 /**
  * @WebSocketGateway The gateway for handling all matchmaking related operations.
  * It listens for specific socket events related to standard and ranked matchmaking.
@@ -29,6 +35,8 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
      */
     private onlinePlayers: Map<string, { playerId: number | string; username: string }> = new Map();
     private matchmakingStates: Map<string | number, MatchmakingStateService> = new Map();
+    private challenges: Map<number, number> = new Map();
+    private acceptedChallenges: Map<number, { opponentInfo: PlayerInfo, challengerInfo: PlayerInfo, isReady: { [playerId: number]: boolean } }> = new Map();
     
     @WebSocketServer() server: Server;
     
@@ -63,6 +71,202 @@ export class MatchmakingGateway implements OnGatewayConnection, OnGatewayDisconn
     async handleDisconnect(client: Socket) {
       this.logger.log(`Client disconnected: ${client.id}`);
       this.deleteOnlinePlayer(client.id);
+
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        if (challengeInfo.challengerInfo.socketId === client.id) {
+          challengeInfo.challengerInfo.socketId = null;
+          challengeInfo.challengerInfo.username = null;
+          challengeInfo.isReady[challengeInfo.challengerInfo.playerId] = false;
+        } else if (challengeInfo.opponentInfo.socketId === client.id) {
+          challengeInfo.opponentInfo.socketId = null;
+          challengeInfo.opponentInfo.username = null;
+          challengeInfo.isReady[challengeInfo.opponentInfo.playerId] = false;
+        }
+      }
+    }
+
+    /**
+     * Handles the 'challenge' message to initiate a challenge between two players.
+     * Sets a challenge between the playerId and opponentId and schedules a timeout to delete the challenge if not accepted in time.
+     * @param client - The socket client sending the request.
+     * @param playerId - The ID of the player initiating the challenge.
+     * @param opponentId - The ID of the player being challenged.
+     */
+    @SubscribeMessage('challenge')
+    askChallenge(client: Socket, [playerId, opponentId]: [number, number]) {
+      this.challenges.set(playerId, opponentId);
+
+      setTimeout(() => {
+        if (this.challenges.has(playerId)) {
+            this.logger.log(`Challenge expired: ${playerId}`);
+            this.challenges.delete(playerId);
+        }
+    }, 120000);
+    }
+
+    /**
+     * Processes a player's response to a challenge, either accepting or declining it.
+     * Updates or deletes the challenge based on the player's response.
+     * @param client - The socket client sending the response.
+     * @param challengerId - The ID of the player who initiated the challenge.
+     * @param opponentId - The ID of the player who was challenged.
+     * @param answer - The player's response to the challenge (1 for accept, 0 for decline).
+     */
+    @SubscribeMessage('challenge-answer')
+    handleChallengeAnswer(client: Socket, [challengerId, opponentId, answer]: [number, number, number]) {
+      if (this.challenges.has(challengerId)) {
+        const challengedOpponentId = this.challenges.get(challengerId);
+
+        if (challengedOpponentId === opponentId) {
+          if (answer === 0) {
+            this.challenges.delete(challengerId);
+          } else if (answer === 1) {
+            const challengerInfo: PlayerInfo = {
+              playerId: challengerId,
+              socketId: null,
+              username: null
+            };
+            const opponentInfo: PlayerInfo = {
+              playerId: opponentId,
+              socketId: null,
+              username: null
+            };
+
+            this.acceptedChallenges.set(challengerId, { 
+              opponentInfo,
+              challengerInfo,
+              isReady: { [challengerId]: false, [opponentId]: false }
+            });
+            this.challenges.delete(challengerId);
+          }
+        }
+      }
+    }
+
+    /**
+     * Confirms a player's readiness for a challenge and initiates match creation if both players are ready.
+     * Updates player information and checks if both players are ready to start the match.
+     * @param client - The socket client of the player confirming the challenge.
+     * @param playerId - The ID of the player confirming readiness.
+     * @param playerUsername - The username of the player confirming readiness.
+     */
+    @SubscribeMessage('confirm-challenge')
+    confirmChallenge(client: Socket, [playerId, playerUsername]: [number, string]) {
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        let bothReady = false;
+
+        if (challengeInfo.challengerInfo.playerId === playerId) {
+          challengeInfo.challengerInfo.socketId = client.id;
+          challengeInfo.challengerInfo.username = playerUsername;
+          challengeInfo.isReady[playerId] = true;
+          bothReady = challengeInfo.isReady[challengeInfo.opponentInfo.playerId];
+        } else if (challengeInfo.opponentInfo.playerId === playerId) {
+          challengeInfo.opponentInfo.socketId = client.id;
+          challengeInfo.opponentInfo.username = playerUsername;
+          challengeInfo.isReady[playerId] = true;
+          bothReady = challengeInfo.isReady[challengeInfo.challengerInfo.playerId];
+        }
+
+        if (bothReady) {
+          const player1: AuthenticatedPlayer = {
+            id: challengeInfo.challengerInfo.playerId,
+            isGuest: false,
+            points: 0,
+            username: challengeInfo.challengerInfo.username 
+          };
+          const player2: AuthenticatedPlayer = {
+            id: challengeInfo.opponentInfo.playerId,
+            isGuest: false,
+            points: 0,
+            username: challengeInfo.opponentInfo.username
+          };
+          const player1Info = {
+            playerId: player1.id,
+            username: player1.username
+          };
+          const player2Info = {
+            playerId: player2.id,
+            username: player2.username
+          };
+          this.gameGateway.addOnlinePlayer(challengeInfo.challengerInfo.socketId, player1Info);
+          this.gameGateway.addOnlinePlayer(challengeInfo.opponentInfo.socketId, player2Info);
+          this.gameGateway.createMatch({ player1, player2}, false);
+          this.acceptedChallenges.delete(challengerId);
+        }
+        break ;
+      }
+    }
+
+    /**
+     * Sends the current state of an accepted challenge to a player.
+     * Provides information about the readiness of both players involved in the challenge.
+     * @param client - The socket client requesting the challenge state.
+     * @param playerId - The ID of the player requesting the challenge state.
+     */
+    @SubscribeMessage('accepted-challenge-state')
+    sendAcceptedChallengeState(client: Socket, playerId: number) {
+      let acceptedChallengeState = {
+        isReady: {},
+        opponentId: -1
+      };
+
+      for (const [challengerId, challengeInfo] of this.acceptedChallenges.entries()) {
+        if (challengeInfo.challengerInfo.playerId === playerId || challengeInfo.opponentInfo.playerId === playerId) {
+          acceptedChallengeState = {
+            isReady: challengeInfo.isReady,
+            opponentId: challengeInfo.opponentInfo.playerId
+          };
+          break ;
+        }
+      }
+      client.emit('accepted-challenge-state-response', acceptedChallengeState);
+    }
+
+    /**
+     * Sends the current state of a challenge to a player, indicating whether a challenge is pending.
+     * Provides information on the challenger and opponent involved in the challenge.
+     * @param client - The socket client requesting the challenge state.
+     * @param askerId - The ID of the player asking for the challenge state.
+     * @param friendId - The ID of the other player involved in the challenge.
+     */
+    @SubscribeMessage('challenge-state')
+    sendChallengeState(client: Socket, [askerId, friendId]: [number, number]) {
+      let challengeState = {
+        isChallengePending: false,
+        challengerId: -1,
+        opponentId: -1
+      };
+
+      if (askerId === friendId)
+        return ;
+      if (this.challenges.has(askerId) && this.challenges.get(askerId) === friendId) {
+        challengeState = {
+          isChallengePending: true,
+          challengerId: askerId,
+          opponentId: friendId
+        };
+      }
+      else if (this.challenges.has(friendId) && this.challenges.get(friendId) === askerId) {
+        challengeState = {
+          isChallengePending: true,
+          challengerId: friendId,
+          opponentId: askerId
+        };
+      }
+      else {
+        challengeState = {
+          isChallengePending: false,
+          challengerId: friendId,
+          opponentId: askerId
+        };
+        client.emit('challenge-state-response', challengeState);
+        challengeState = {
+          isChallengePending: false,
+          challengerId: askerId,
+          opponentId: friendId
+        };
+      }
+      client.emit('challenge-state-response', challengeState);
     }
 
     /**

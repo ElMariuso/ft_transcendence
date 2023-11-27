@@ -1,77 +1,85 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
+import { defineStore } from 'pinia'
+import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers } from '@/services/Community-helpers'
 
-import { 
-	getAllChannels, 
-	getSubscribedChannels, 
-	postNewChannelsData, 
-	getChannelMsg,
-	getChannelUsers } from '@/services/Community-helpers'
-
-export const useCommunityStore = defineStore('community', () => {
+export const useCommunityStore = defineStore('community', {
+	state: () => ({
+		openChannels: [],
+		joinedChannels: [],
+		selectedChannelMsg: [],
+		selectedChannelUsers: [],
+		roleInChannel: 'Member',
+		challengeStates: new Map(),
+		challengesStatesForOpponent: new Map(),
+		acceptedChallengesStates: null
+	}),
+	actions: {
+		updateAcceptedChallengeState(newState) {
+			this.acceptedChallengesStates = newState;
+		},
+		getAcceptedChallengeState() {
+			return this.acceptedChallengesStates;
+		},
+		updateChallengeState(userId, newState) {
+            this.challengeStates.set(userId, newState);
+        },
+        getChallengeState(userId) {
+            return this.challengeStates.get(userId);
+        },
+		updateChallengeStateForOpponent(userId, newState) {
+			this.challengesStatesForOpponent.set(userId, newState);
+		},
+		getChallengeStateForOpponent(userId) {
+			return this.challengesStatesForOpponent.get(userId);
+		},
+		async setupCommunity() {
+			const token = Cookies.get('token');
+			const id = jwt_decode(token).sub;
 	
-	const openChannels = ref([]);
-	const joinedChannels = ref([]);
-	const selectedChannelMsg = ref([]);
-	const selectedChannelUsers = ref([]);
-	const roleInChannel = ref('Member');
-
-	async function setupCommunity() {
+			try {
+				const allChannels = await getAllChannels();
+				const channelsJoined = await getSubscribedChannels(id);
 	
-		const token = Cookies.get('token');
-		const id = jwt_decode(token).sub;
-
-		try {
-			const allChannels = await getAllChannels();
-			const channelsJoined = await getSubscribedChannels(id);
-
-			joinedChannels.value = channelsJoined;
+				this.joinedChannels = channelsJoined;
+					
+				const resChannels = allChannels.filter((channel) => {
+					return !channelsJoined.some((joinedChannel) => channel.idChannel === joinedChannel.idChannel);
+				});
+	
+				this.openChannels = resChannels;
+			} catch (error) {
+				console.error("Error setting up available channels:", error);
+			}
+		},
+		async updateSelectedChannel(channelID) {
+			const token = Cookies.get('token');
+			const id = jwt_decode(token).sub;
+	
+			try {
+				const messages = await getChannelMsg(channelID);
+				this.selectedChannelMsg = messages;
 				
-			const resChannels = allChannels.filter((channel) => {
-				return !channelsJoined.some((joinedChannel) => channel.idChannel === joinedChannel.idChannel);
-			});
-
-			openChannels.value = resChannels;
-		} catch (error) {
-			console.error("Error setting up available channels:", error);
+				const users = await getChannelUsers(channelID);
+				const user = users.find(user => user.idUser === id);
+				if (user.owner)
+					this.roleInChannel = "Owner";
+				else
+					this.roleInChannel = user.role;
+				this.selectedChannelUsers = users;
+			} catch (error) {
+				console.error("Error fetching channel's messages:", error);
+			}
+		},
+		async setupNewChannel(name: string, type: number, password: string) {
+			const token = Cookies.get('token');
+			const id = jwt_decode(token).sub;
+	
+			try {
+				await postNewChannelsData(id, name, type, password);
+			} catch (error) {
+				console.error("Error creating a new channel:", error);
+			}
 		}
 	}
-
-	async function updateSelectedChannel(channelID) {
-		const token = Cookies.get('token');
-		const id = jwt_decode(token).sub;
-
-		try {
-			const messages = await getChannelMsg(channelID);
-			selectedChannelMsg.value = messages;
-			
-			const users = await getChannelUsers(channelID);
-			const user = users.find(user => user.idUser === id);
-			if (user.owner)
-				roleInChannel.value = "Owner";
-			else
-				roleInChannel.value = user.role;
-			selectedChannelUsers.value = users;
-		} catch (error) {
-			console.error("Error fetching channel's messages:", error);
-		}
-	}
-
-	async function setupNewChannel(name : string, type :number, password : string) {
-		const token = Cookies.get('token');
-		const id = jwt_decode(token).sub;
-
-		try {
-			await postNewChannelsData(id, name, type, password);
-		} catch (error) {
-			console.error("Error creating a new channel:", error);
-		}
-	}
-
-	return {
-		openChannels, joinedChannels, selectedChannelMsg, selectedChannelUsers, roleInChannel,
-		setupNewChannel, setupCommunity, updateSelectedChannel
-	};
-})
+});
