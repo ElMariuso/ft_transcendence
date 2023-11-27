@@ -321,7 +321,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMount, watched, computed, Ref } from 'vue'
+import { ref, onUnmounted, onMounted, watched, computed, Ref, watch } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
