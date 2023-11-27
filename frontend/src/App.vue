@@ -29,7 +29,7 @@ function handleBeforeUnload() {
 }
 
 onMounted(() => {
-    matchmakingStore.initializeStore(profileStore);
+    matchmakingStore.initializeStore();
     
     const token = Cookies.get('token');
     if (token) {

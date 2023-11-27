@@ -2,9 +2,11 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import { rejoinMatchmaking, rejoinRoom } from '@/services/matchmaking-helpers';
+import { useProfileStore } from './ProfileStore';
+import { MatchmakingStoreState, UpdateInfoData } from '@/models/matchmaking.model';
 
 export const useMatchmakingStore = defineStore('matchmaking', {
-    state: () => ({
+    state: (): MatchmakingStoreState => ({
         guestUUID: '',
         isSearching: false,
         isRanked: false,
@@ -15,8 +17,10 @@ export const useMatchmakingStore = defineStore('matchmaking', {
         roomID: null,
     }),
     actions: {
-        initializeStore(profileStore) {
+        initializeStore(): void {
+            const profileStore = useProfileStore();
             let guestUUIDCookie = Cookies.get('guestUUID');
+
             if (!guestUUIDCookie) {
                 guestUUIDCookie = uuidv4();
                 Cookies.set('guestUUID', guestUUIDCookie, { expires: 365 });
@@ -38,36 +42,36 @@ export const useMatchmakingStore = defineStore('matchmaking', {
                 rejoinRoom(data);
             }
         },
-        updateInformations(data) {
+        updateInformations(data: UpdateInfoData): void {
             this.isSearching = data.isSearching;
             this.isRanked = data.isRanked
             this.matchFound = data.matchFound;
             this.opponentUUID = data.opponentUUID;
             this.opponentUsername = data.opponentUsername;
         },
-        setGuestUUID(value) {
+        setGuestUUID(value: string): void {
             this.guestUUID = value;
             Cookies.set('guestUUID', this.guestUUID, { expires: 365 });
         },
-        setIsSearching(value) {
+        setIsSearching(value: boolean): void {
             this.isSearching = value;
         },
-        setIsRanked(value) {
+        setIsRanked(value: boolean): void {
             this.isRanked = value;
         },
-        setMatchFound(value) {
+        setMatchFound(value: boolean): void {
             this.matchFound = value;
         },
-        setNumberOfPlayers(count) {
+        setNumberOfPlayers(count: number): void {
             this.numberOfPlayers = count;
         },
-        setOpponentUUID(uuid) {
+        setOpponentUUID(uuid: string | null): void {
             this.opponentUUID = uuid;
         },
-        setOpponentUsername(username) {
+        setOpponentUsername(username: string | null): void {
             this.opponentUsername = username;  
         },
-        setRoomID(id) {
+        setRoomID(id: string | null): void {
             this.roomID = id;
 
             if (id) {

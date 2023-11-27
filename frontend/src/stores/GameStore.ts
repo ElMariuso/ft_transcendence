@@ -1,7 +1,8 @@
+import { GameStoreState, GameState, EndMatchResult } from '@/models/game.model';
 import { defineStore } from 'pinia';
 
 export const useGameStore = defineStore('game', {
-    state: () => ({
+    state: (): GameStoreState => ({
         gameState: null,
         count: 0,
         player1Username: 'Loading...',
@@ -18,7 +19,7 @@ export const useGameStore = defineStore('game', {
         matchResult: null,
     }),
     actions: {
-        updateGameState(newGameState) {
+        updateGameState(newGameState: GameState): void {
             this.gameState = newGameState;
             this.player1Username = this.gameState.player1Username;
             this.player2Username = this.gameState.player2Username;
@@ -32,13 +33,13 @@ export const useGameStore = defineStore('game', {
             this.isPlayer1Obstacle = this.gameState.obstacle.first;
             this.isPlayer2Obstacle = this.gameState.obstacle.second;
         },
-        updateCount(count) {
+        updateCount(count: number): void {
             this.count = count;
         },
-        setIsFirstPlayer(value) {
+        setIsFirstPlayer(value: boolean): void {
             this.isFirstPlayer = value;
         },
-        setMatchResult(result) {
+        setMatchResult(result: EndMatchResult): void {
             this.matchResult = result;
         },
     },
