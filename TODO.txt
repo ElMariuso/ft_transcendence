@@ -1,2 +1,0 @@
-- merge auth secure
-- players list / channel
