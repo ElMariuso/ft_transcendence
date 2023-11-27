@@ -1,6 +1,11 @@
+import { useGameStore } from "@/stores/GameStore";
 import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
+import { position, size, EndReason, Player } from "@/models/game.model";
 
-export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDown) {
+export function gameLoop(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,
+    roomId: string, movingUp: { value: boolean }, movingDown: { value: boolean }): void {
+    const gameStore = useGameStore();
+
     function loop() {
         const gameState = gameStore.gameState;
         const matchResult = gameStore.matchResult;
@@ -34,7 +39,11 @@ export function gameLoop(context, canvas, gameStore, roomId, movingUp, movingDow
     loop();
 }
 
-function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, racket2Position, ballSize, ballPosition, score1, score2, obstacle1Size, obstacle1Position, obstacle2Size, obstacle2Position) {
+function drawGame(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, 
+    racket1Size: size, racket2Size: size, racket1Position: position, racket2Position: position,
+    ballSize: size, ballPosition: position, score1: number, score2: number,
+    obstacle1Size: size, obstacle1Position: position, obstacle2Size: size, obstacle2Position: position): void {
+    /* Main functions */
     drawNet(context, canvas);
     drawSquare(context, racket1Position.x, racket1Position.y, racket1Size.width, racket1Size.height);
     drawSquare(context, racket2Position.x, racket2Position.y, racket2Size.width, racket2Size.height);
@@ -53,17 +62,17 @@ function drawGame(context, canvas, racket1Size, racket2Size, racket1Position, ra
     context.fillText(String(score2), player2ScoreX, scoreY);
 }
 
-function drawSquare(context, x, y, width, height) {
+function drawSquare(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void {
     context.fillStyle = 'white';
     context.fillRect(x, y, width, height);
 }
 
-function drawSquareFromCenter(context, x, y, width, height) {
+function drawSquareFromCenter(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void {
     context.fillStyle = 'white';
     context.fillRect(x - width / 2, y - height / 2, width, height);
 }
 
-function drawNet(context, canvas) {
+function drawNet(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
     const netWidth = 3;
     const netHeight = 16;
     const spaceBetween = 16;
@@ -75,7 +84,8 @@ function drawNet(context, canvas) {
     }
 }
 
-function drawWinner(context, canvas, winner, reason) {
+function drawWinner(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,
+    winner: string, reason: string): void {
     context.fillStyle = 'white';
     context.font = '50px Arial';
     context.textAlign = 'center';
@@ -90,7 +100,7 @@ function drawWinner(context, canvas, winner, reason) {
     context.fillText(reasonText, canvas.width / 2, centerY + 40);
 }
 
-function drawCountdown(context, canvas, count) {
+function drawCountdown(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, count: number): void {
     if (count > -1) {
         context.fillStyle = 'rgba(0, 0, 0, 0.75)';
         context.fillRect(0, 0, canvas.width, canvas.height);
