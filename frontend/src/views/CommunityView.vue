@@ -238,7 +238,7 @@
 								</div>
 							  </div>
 
-							  <div v-if="user.role !== 'Banned'" class="text-lg  border px-2 py-1 rounded-lg ">
+							  <div v-if="user.role !== 'Banned'" class="text-lg px-2 py-1 rounded-lg ">
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
 									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
 									<span>{{ countReadyPlayers }} / 2</span>
