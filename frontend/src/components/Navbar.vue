@@ -3,7 +3,7 @@ import { computed, watch, ref, onActivated } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import jwt_decode from 'jwt-decode';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 import MatchmakingButton from './MatchmakingButton.vue';
 import LeaveMatch from './LeaveMatch.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
@@ -48,9 +48,12 @@ watch(isAuthenticated, () => {
 });
 
 function getAvatarImg() {
-  const token = Cookies.get('token');
+  const token: any = Cookies.get('token');
+  const decodedToken: JwtPayload = jwt_decode(token);
+  const id: any = decodedToken.sub;
+
   if (token) {
-    return "http://localhost:3000/users/avatar/" + jwt_decode(token).sub;
+    return "http://localhost:3000/users/avatar/" + id;
   }
 }
 

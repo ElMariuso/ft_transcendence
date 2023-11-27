@@ -9,11 +9,11 @@ interface CommunityStoreState {
 	selectedChannelMsg:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelMsg
 	selectedChannelUsers:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelUsers
 	roleInChannel: string; // Replace string with the actual type of roleInChannel
-	challengeStates: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
-	challengesStatesForOpponent: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
-	acceptedChallengesStates: SomeType | null; // Replace SomeType with the actual type
-	channelType: number;
-	bannedChannel: SomeType[]; // Replace SomeType with the actual type of bannedChannel
+	// challengeStates: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
+	// challengesStatesForOpponent: Map<SomeKeyType, SomeValueType>; // Replace SomeKeyType and SomeValueType with the actual types
+	// acceptedChallengesStates: SomeType | null; // Replace SomeType with the actual type
+	// channelType: number;
+	bannedChannel: Array<Object>[]; // Replace SomeType with the actual type of bannedChannel
   }
 
 export const useCommunityStore = defineStore('community', {
@@ -23,10 +23,10 @@ export const useCommunityStore = defineStore('community', {
 		selectedChannelMsg: [],
 		selectedChannelUsers: [],
 		roleInChannel: 'Member',
-		challengeStates: new Map(),
-		challengesStatesForOpponent: new Map(),
-		acceptedChallengesStates: null,
-		channelType: 0,
+		// challengeStates: new Map(),
+		// challengesStatesForOpponent: new Map(),
+		// acceptedChallengesStates: null,
+		// channelType: 0,
 		bannedChannel: []
 	}),
 	actions: {

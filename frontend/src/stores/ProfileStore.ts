@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import jwt_decode from 'jwt-decode';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 import { getUserData } from '@/services/auth-helpers'
 import Cookies from 'js-cookie';
 
@@ -28,10 +28,12 @@ export const useProfileStore = defineStore('profile', () => {
 	*/
 	async function setupProfile(newId : number) {
 		const token = Cookies.get('token')
-		const id = jwt_decode(token).sub;
+		const decodedToken: JwtPayload = jwt_decode(token);
+		const id: any = decodedToken.sub;
 		userID.value = id;
+
 		if (newId != 0)
-			userID.value = newId;
+			userID.value = +newId;
 
 		try {
 			const userData = await getUserData(id);
@@ -46,7 +48,7 @@ export const useProfileStore = defineStore('profile', () => {
 		}
 	}
 
-	function updateProfile(bodyInfo: []) {
+	function updateProfile(bodyInfo: any) {
 		if (bodyInfo['username'])
 			username.value = bodyInfo['username'];
 		if (bodyInfo['isTwoFactorAuthEnabled'])

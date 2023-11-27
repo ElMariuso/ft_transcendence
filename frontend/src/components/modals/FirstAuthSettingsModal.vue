@@ -44,117 +44,125 @@
 
 <script setup lang="ts">
 import Backdrop from './Backdrop.vue';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, defineEmits, Ref } from 'vue';
 import api from '../../services/api';
 import { useProfileStore } from '../../stores/ProfileStore';
 import { storeToRefs } from 'pinia';
 import Cookies from 'js-cookie';
 import jwt_decode from 'jwt-decode';
 
+interface FileInputEvent extends Event {
+  target: HTMLInputElement & EventTarget;
+}
+
 const profileStore = useProfileStore();
 const { userID } = storeToRefs(profileStore);
 
 const emit = defineEmits(['closeModal']);
 const avatarInput = ref<HTMLInputElement | null>(null);
-const newUsername = ref('');
-const usernameAvailable = ref(false);
-const userInput = ref(false);
+const newUsername: Ref<string> = ref<string>('');
+const usernameAvailable: Ref<boolean> = ref<boolean>(false);
+const userInput: Ref<boolean | null | undefined> = ref<boolean | null | undefined>(false);
 
 const checkButtonLabel = computed(() => {
-	if (usernameAvailable.value && userInput.value)
-		return 'Available';
-	else if (userInput.value)
-		return 'Not Available';
-	else
-		return 'Check Availability';
+  if (usernameAvailable.value && userInput.value) {
+    return 'Available';
+  } else if (userInput.value) {
+    return 'Not Available';
+  } else {
+    return 'Check Availability';
+  }
 });
 
 const checkButtonClass = computed(() => {
-	if (!newUsername.value)
-		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
-	else if (usernameAvailable.value && userInput.value)
-		return {'bg-green-500 text-white': true};
-	else if (userInput.value)
-		return {'bg-red-500 text-white': true};
-	else
-		return {'bg-blue-500 text-white': true};
+  if (!newUsername.value) {
+    return { 'bg-gray-300 text-gray-700 cursor-not-allowed': true };
+  } else if (usernameAvailable.value && userInput.value) {
+    return { 'bg-green-500 text-white': true };
+  } else if (userInput.value) {
+    return { 'bg-red-500 text-white': true };
+  } else {
+    return { 'bg-blue-500 text-white': true };
+  }
 });
 
 watch(newUsername, (newVal: string, oldVal: string) => {
-	newVal = newVal.trim();
-	oldVal = oldVal.trim();
-	if (newVal == '')
-		userInput.value = false;
-	if (newVal !== '' && oldVal !== '' && newVal !== oldVal)
-		userInput.value = false;
+  newVal = newVal.trim();
+  oldVal = oldVal.trim();
+  if (newVal == '') {
+    userInput.value = false;
+  }
+  if (newVal !== '' && oldVal !== '' && newVal !== oldVal) {
+    userInput.value = false;
+  }
 });
 
 const handleAvatarInputChange = () => {
-	const fileInput = avatarInput.value;
-	userInput.value = fileInput?.files && fileInput.files.length > 0;
+  const fileInput = avatarInput.value;
+  userInput.value = fileInput?.files && fileInput.files.length > 0;
 };
 
 async function checkUsernameAvailability() {
-	if (newUsername.value) {	
-		console.log('test')
-		await api.get('/users/usernames')
-		.then(res => {
-			if (res.data.includes(newUsername.value))
-				usernameAvailable.value = false;
-			else
-				usernameAvailable.value = true;
-			userInput.value = true;
-			console.log(usernameAvailable.value)
-		});
-	}
+  if (newUsername.value) {
+    console.log('test');
+    await api.get('/users/usernames').then((res) => {
+      if (res.data.includes(newUsername.value)) {
+        usernameAvailable.value = false;
+      } else {
+        usernameAvailable.value = true;
+      }
+      userInput.value = true;
+      console.log(usernameAvailable.value);
+    });
+  }
 }
 
-
 function closeSettingsModal() {
-	emit('closeModal')
+  emit('closeModal');
 }
 
 async function saveSettings() {
-	let bodyInfo = {};
+  let bodyInfo: any = {};
 
-	// Username
-	if (newUsername.value.trim() !== '' && usernameAvailable.value)
-		bodyInfo['username'] = newUsername.value;
-		
-	// Avatar
-	if (avatarInput.value?.files[0]) {
-		const formData = new FormData();
-		formData.append('file', avatarInput.value?.files[0] || '');
+  // Username
+  if (newUsername.value.trim() !== '' && usernameAvailable.value) {
+    bodyInfo['username'] = newUsername.value;
+  }
 
-		try {
-			const response = await api.post('/users/uploadAvatar/' + userID.value, formData, {
-				headers: { 'Content-Type': 'multipart/form-data', }
-			})
-			if (response.data.message === 'Upload Successfully')
-				bodyInfo['avatar'] = response.data.path;
+  // Avatar
+  if (avatarInput.value?.files?.[0]) {
+    const formData = new FormData();
+    formData.append('file', avatarInput.value.files[0]);
 
-		} catch (error) {
-			console.error('Avatar upload error:', error);
-			return;
-		}
-	}
-		
-	// Saving changes, checks if any setting is being changed
-	if (Object.keys(bodyInfo).length !== 0) {
-		const token = Cookies.get('token');
-		let jsonToSend = JSON.stringify(bodyInfo);
-		const id = jwt_decode(token).sub;
-		
-		await api.put('/users/update/' + userID.value, jsonToSend, {
-			headers: {
-				Authorization: 'Bearer ' + token,
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-		}).then(() => {
-			profileStore.updateProfile(bodyInfo);
-		})
-		closeSettingsModal();
-	}
+    try {
+      const response = await api.post('/users/uploadAvatar/' + userID.value, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data.message === 'Upload Successfully') {
+        bodyInfo['avatar'] = response.data.path;
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      return;
+    }
+  }
+
+  // Saving changes, checks if any setting is being changed
+  if (Object.keys(bodyInfo).length !== 0) {
+    const token = Cookies.get('token');
+    let jsonToSend = JSON.stringify(bodyInfo);
+
+    await api
+      .put('/users/update/' + userID.value, jsonToSend, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      })
+      .then(() => {
+        profileStore.updateProfile(bodyInfo);
+      });
+    closeSettingsModal();
+  }
 }
-
 </script>

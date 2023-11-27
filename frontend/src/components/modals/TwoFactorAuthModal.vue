@@ -25,18 +25,22 @@
 </template>
   
 <script setup lang="ts">
-	import { ref, onMounted, watch, computed } from 'vue';
+	import { ref, onMounted, watch, computed, Ref } from 'vue';
 	import Cookies from 'js-cookie';
 	import api from '../../services/api';
-	import jwt_decode from 'jwt-decode';
+	import jwt_decode, {JwtPayload}  from 'jwt-decode';
 	import Backdrop from './Backdrop.vue';
 
 	const emit = defineEmits(['closeModal', 'cancelModal']);
 	const { resolve } = defineProps(['resolve']);
 	const qrCodeDataUrl = ref('');
-	const twoFactorAuthCode: ref<string> = ref('');
-	const token = Cookies.get('token');
-	const id = jwt_decode(token).sub;
+	const twoFactorAuthCode: Ref<string> = ref('');
+		
+	const token: any = Cookies.get('token');
+	const decodedToken: JwtPayload = jwt_decode(token);
+	const id: any = decodedToken.sub;
+
+
 	const checkTwoFactorAuthDisabled = ref(true);
 	const checkTwoFactorAuthPerformed = ref(false);
 
@@ -63,12 +67,12 @@
       }
     });
 
-	function cancelModal(resolve) {
+	function cancelModal(resolve: any) {
 		resolve(false);
 		emit('cancelModal')
 	}
 
-  	async function twoFactorAuthTest(resolve) {
+  	async function twoFactorAuthTest(resolve: any) {
 		try {
 			const response = await api.post('/auth/2fa/verify', {
 				code: twoFactorAuthCode.value,

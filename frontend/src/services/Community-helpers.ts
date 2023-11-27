@@ -13,7 +13,7 @@ import api from './api';
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the usernames data.
  */
-export const getUsernamesData = async (userID) => {
+export const getUsernamesData = async (userID: string) => {
     try {
         const response = await api.get('/users/usernames');
         return response.data;
@@ -34,7 +34,7 @@ export const getUsernamesData = async (userID) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the available channel data.
  */
- export const getAvailableChannelsData = async (userID) => {
+ export const getAvailableChannelsData = async (userID: string) => {
     try {
         const response = await api.get('/userchannels/' + userID);
         return response.data;
@@ -55,7 +55,7 @@ export const getAllChannels = async () => {
     }
 };
 
-export const getSubscribedChannels = async (userID) => {
+export const getSubscribedChannels = async (userID: string) => {
 	try {
         const response = await api.get('/userchannels/' + userID);
         return response.data;
@@ -86,7 +86,7 @@ export const joinChannel = async (userID: number, channelID: number, pw: string=
 	}
 }
 
-export const getChannel = async (channelID) => {
+export const getChannel = async (channelID: string) => {
 	try {
 		const res = await api.get('/channels/' + channelID);
 		return res.data;
@@ -96,7 +96,7 @@ export const getChannel = async (channelID) => {
 	}
 }
 
-export const getChannelMsg = async (channelID) => {
+export const getChannelMsg = async (channelID: string) => {
 	try {
 		const res = await api.get('/channels/allMessages/' + channelID);
 		return res.data;
@@ -106,7 +106,7 @@ export const getChannelMsg = async (channelID) => {
 	}
 }
 
-export const getChannelUsers = async (channelID) => {
+export const getChannelUsers = async (channelID: string) => {
 	try {
 		const res = await api.get('/channels/allUsers/' + channelID);
 		return res.data;
@@ -116,7 +116,7 @@ export const getChannelUsers = async (channelID) => {
 	}
 }
 
-export const sendMessageTo = async (body) => {
+export const sendMessageTo = async (body: any) => {
 	try {
 		const res = await api.post('/messages', body);
 		return res;
@@ -126,7 +126,7 @@ export const sendMessageTo = async (body) => {
 	}
 }
 
-export const creatDMChannel = async (id1 : number, id2) => {
+export const creatDMChannel = async (id1: number, id2: number) => {
 	try {
 		let body = {
 			"idUser": id1,
@@ -140,7 +140,7 @@ export const creatDMChannel = async (id1 : number, id2) => {
 	}
 }
 
-export const leaveCurrentChannel = async (idUser, idChannel) => {
+export const leaveCurrentChannel = async (idUser: string, idChannel: string) => {
 	try {
 
 		const res = await api.delete('/userchannels/delete/' + idUser + '/' + idChannel);
@@ -151,7 +151,7 @@ export const leaveCurrentChannel = async (idUser, idChannel) => {
 	}
 }
 
-export const updateUserRole = async (idUser, banId, idChannel, newRole) => {
+export const updateUserRole = async (idUser: string, banId: number, idChannel: number, newRole: string) => {
 	try {
 
 		const res = await api.put('/userchannels/modifyRole/' + idUser,{
@@ -166,7 +166,7 @@ export const updateUserRole = async (idUser, banId, idChannel, newRole) => {
 	}
 }
 
-export const deleteCurrentChannel = async (idChannel) => {
+export const deleteCurrentChannel = async (idChannel: number) => {
 	try {
 		const res = await api.delete('/channels/delete/' + idChannel);
 		return res;
@@ -176,7 +176,7 @@ export const deleteCurrentChannel = async (idChannel) => {
 	}
 }
 
-export const deleteMessage = async (idMessage) => {
+export const deleteMessage = async (idMessage: number) => {
 	try {
 		const res = await api.delete('/messages/delete/' + idMessage);
 		return res;
@@ -200,7 +200,7 @@ export const deleteMessage = async (idMessage) => {
  * @param {string} newPassword - The password of the new channel.
  * @returns {Promise<Object>} - A promise that resolves to the new channel data.
  */
- export const postNewChannelsData = async (userID, newName, newType, newPassword) => {
+ export const postNewChannelsData = async (userID: string, newName: string, newType: number, newPassword: string) => {
     try {
 		var id: number = +userID;
 
@@ -218,14 +218,14 @@ export const deleteMessage = async (idMessage) => {
     }
 };
 
-export const channelPrivToPub = async (userID, channelID) => {
+export const channelPrivToPub = async (userID: string, channelID: number) => {
 	const res = await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 2 // Public
 	})
 };
 
-export const modifyChannelPw = async (userID, channelID, pw) => {
+export const modifyChannelPw = async (userID: string, channelID: number, pw: string) => {
 	const res = await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 1, // Private
@@ -252,13 +252,13 @@ export const message = async () => {
 export const friend = async () => {
 	console.log("friend");
 }
-export const block = async (id, blockId) => {
+export const block = async (id: number, blockId: number) => {
 	const res = await api.post('users/' + id + "/blockUser", {
 		idBlock: blockId,
 	});
 	console.log(res);
 }
-export const mute = async (user, channel, time) => {
+export const mute = async (user: number, channel: number, time: number) => {
 	await api.put('/userchannels/addMuteTime', {
 		idUser: user,
 		idChannel: channel,
@@ -273,7 +273,7 @@ export const mute = async (user, channel, time) => {
 // 	console.log("ban");
 // }
 
-export const promote = async (idPromoted, idCurrentChannel, userID) => {
+export const promote = async (idPromoted: number, idCurrentChannel: number, userID: number) => {
 	const res = await api.put('/userchannels/modifyRole/' + userID, {
 		idMember: idPromoted,
 		idChannel: idCurrentChannel,
