@@ -53,8 +53,8 @@ export const useCommunityStore = defineStore('community', {
 			const id = jwt_decode(token).sub;
 	
 			try {
-				const allChannels = await getAllChannels();
 				const channelsJoined = await getSubscribedChannels(id);
+				const allChannels = await getAllChannels();
 	
 				this.joinedChannels = channelsJoined;
 					
@@ -87,23 +87,34 @@ export const useCommunityStore = defineStore('community', {
 			const id = jwt_decode(token).sub;
 	
 			try {
-				const channel = await getChannel(channelID);
-				this.channelType = channel.idType;
+				if (channelID)
+				{
+					const channel = await getChannel(channelID);
+					if (!channel)
+					{	
+						this.channelType = 0;
+						this.selectedChannelMsg = [];
+						this.roleInChannel = "Member";
+						this.selectedChannelUsers = [];
+						return ;
+					}
+					this.channelType = channel.idType;
 
-				const messages = await getChannelMsg(channelID);
-				this.selectedChannelMsg = messages;
+					const messages = await getChannelMsg(channelID);
+					this.selectedChannelMsg = messages;
 				
-				const users = await getChannelUsers(channelID);
-				const user = users.find(user => user.idUser === id);
-				if (user) {
-					if (user.owner)
-						this.roleInChannel = "Owner";
-					else
-						this.roleInChannel = user.role;
+					const users = await getChannelUsers(channelID);
+					const user = users.find(user => user.idUser === id);
+					if (user) {
+						if (user.owner)
+							this.roleInChannel = "Owner";
+						else
+							this.roleInChannel = user.role;
+					}
+					this.selectedChannelUsers = users;
 				}
-				this.selectedChannelUsers = users;
 			} catch (error) {
-				console.error("Error fetching channel's messages:", error);
+				console.error("Error updating channels:", error);
 			}
 		},
 		async setupNewChannel(name: string, type: number, password: string) {

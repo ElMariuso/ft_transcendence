@@ -180,6 +180,7 @@
 						</ul>
 					</div>
 					<span v-if="block2" class="text-lg text-red-600 font-semibold">One of you blocked the other... </span>
+					<span v-if="muted" class="text-lg text-red-600 font-semibold">You might be muted, please wait a little </span>
 						<div v-if="selectedChannelID" class="flex">
 							<input
 								v-model="newMessage"
@@ -238,7 +239,7 @@
 								</div>
 							  </div>
 
-							  <div v-if="user.role !== 'Banned'" class="text-lg  border px-2 py-1 rounded-lg ">
+							  <div v-if="user.role !== 'Banned'" class="text-lg px-2 py-1 rounded-lg ">
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
 									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
 									<span>{{ countReadyPlayers }} / 2</span>
@@ -335,12 +336,18 @@ const usersIntervals = ref({});
 const acceptedChallengeInterval = ref<number | null>(null);
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 
+let updateAvailableChannelInterval;
+
 onMounted(async () => {
     await communityStore.setupCommunity();
 
 	acceptedChallengeInterval.value = setInterval(() => {
         askAcceptedChallengeState(profileStore.userID);
     }, 1000);
+
+	updateAvailableChannelInterval = setInterval(async () => {
+	await communityStore.setupCommunity();
+	}, 500);
 });
 
 const sendConfirmChallenge = async () => {
@@ -418,6 +425,8 @@ onUnmounted(() => {
         clearInterval(acceptedChallengeInterval.value);
         acceptedChallengeInterval.value = null;
     }
+	clearInterval(updateChannelInterval);
+	clearInterval(updateAvailableChannelInterval);
 });
 
 const playerPlay = async (idUser) => {
@@ -445,6 +454,7 @@ const badUserName = ref(false);
 const alone = ref(false);
 const block = ref(false);
 const block2 = ref(false);
+const muted = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
@@ -581,7 +591,6 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
 			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
 				selectedChannelID.value = null;
 			await communityStore.updateSelectedChannel(newChannelID);
-			await communityStore.setupCommunity();
 		}, 500);
     // }
 });
@@ -649,6 +658,7 @@ async function checkForBlock(idChannel)
 async function sendMessage() {
 	// Also websocket pb, ping all connected users ?
 	block2.value = false;
+	muted.value = false;
 
 	if (channelType.value === 3)
 	{
@@ -670,6 +680,8 @@ async function sendMessage() {
 		const res = await sendMessageTo(body);
 		// update msg UI
 	} catch (error) {
+		if (error.message == "Request failed with status code 400")
+			muted.value = true;
 		console.error('Error sending message', error);
 	}
 
@@ -795,6 +807,7 @@ async function playerMute() {
 
 	// Adds to DB but doesnt mute ... (:
 	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
+	muteTime.value = null;
 }
 async function playerKick() {
 	console.log("kick");
