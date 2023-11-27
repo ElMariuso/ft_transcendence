@@ -200,7 +200,7 @@
 								:id="user.idUser"
 							>
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
-									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">R</button>
+									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
 									<span>{{ countReadyPlayers }} / 2</span>
 								</div>
 								<div v-else class="flex flex-row justify-between">
@@ -236,8 +236,8 @@
 											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
 										</div>
 										<div v-else>
-											<button @click="answerToChallenge(user.idUser, 1)">A</button>
-											<button @click="answerToChallenge(user.idUser, 0)">R</button>
+											<img @click="answerToChallenge(user.idUser, 1)" class="cursor-pointer" title="accept" src="../assets/accept.svg" alt="accept">
+											<img @click="answerToChallenge(user.idUser, 0)" class="cursor-pointer" title="refuse" src="../assets/refuse.svg" alt="refuse">
 										</div>
 									</div>
 									<!-- <div v-else class="flex justify-between">
