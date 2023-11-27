@@ -26,14 +26,14 @@ export const useProfileStore = defineStore('profile', () => {
      * This function retrieves the JWT token from localStorage, decodes the user ID from it, and 
      * uses it to fetch and set the user's data from the API, updating the store's reactive state properties.
 	*/
-	async function setupProfile(newId : number) {
-		const token = Cookies.get('token')
+	async function setupProfile(newId: number) {
+		const token: any = Cookies.get('token')
 		const decodedToken: JwtPayload = jwt_decode(token);
 		const id: any = decodedToken.sub;
 		userID.value = id;
 
 		if (newId != 0)
-			userID.value = +newId;
+			userID.value = String(newId);
 
 		try {
 			const userData = await getUserData(id);

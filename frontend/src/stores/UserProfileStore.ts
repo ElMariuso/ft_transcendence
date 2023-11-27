@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 // import axios from 'axios';
-import jwt_decode from 'jwt-decode';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
 
 import { getLadderData } from '@/services/UserProfile-helpers'
@@ -61,8 +61,9 @@ export const useLadderStore = defineStore('ladder', () => {
 
 		if (newId == 0)
 		{
-			const token = Cookies.get('token')
-			const id = jwt_decode(token).sub;
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const id: any = decodedToken.sub;
 			userID.value = id;
 		}
 		else
@@ -80,7 +81,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupUser() {
 
 		try {
-			const userData = await getUserData(userID.value);
+			const userData = await getUserData(String(userID.value));
 			setUser(userData);
 		} catch (error) {
 			console.error("Error setting up Username:", error);
@@ -97,7 +98,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupLadder() {
 
 		try {
-			const userData = await getLadderData(userID.value);
+			const userData = await getLadderData(String(userID.value));
 			setLadder(userData);
 		} catch (error) {
 			console.error("Error setting up Ladder:", error);
@@ -137,7 +138,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupAchievements() {
 
 		try {
-			const userData = await getAchievementsData(userID.value);
+			const userData = await getAchievementsData(String(userID.value));
 			setAchievements(userData);
 		} catch (error) {
 			console.error("Error setting up achievements:", error);
@@ -157,7 +158,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupStats() {
 
 		try {
-			const userData = await getStatsData(userID.value);
+			const userData = await getStatsData(String(userID.value));
 			setStats(userData);
 		} catch (error) {
 			console.error("Error setting up Stats:", error);
@@ -174,7 +175,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupGamesHistory() {
 
 		try {
-			const userData = await getGamesData(userID.value);
+			const userData = await getGamesData(String(userID.value));
 			setGamesHistory(userData);
 
 			const results = await getGamesResults(userID.value);
@@ -197,9 +198,11 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function getResult(idGame: any) {
-		for (let i = 0; gamesResults.value[i]; i++) {
-			if (gamesResults.value[i].idGame === idGame)
+		if (gamesResults.value) {
+			for (let i = 0; gamesResults.value[i]; i++) {
+				if (gamesResults.value[i].idGame === idGame)
 				return gamesResults.value[i].isWinner;
+			}
 		}
 	}
 
@@ -213,7 +216,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupFriends() {
 
 		try {
-			const userData = await getFriendsData(userID.value);
+			const userData = await getFriendsData(String(userID.value));
 			setFriends(userData);
 		} catch (error) {
 			console.error("Error setting up Friends:", error);
@@ -231,7 +234,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function removeFriend(idFriend: number) {
 
 		try {
-			await deleteFriend(userID.value, idFriend);
+			await deleteFriend(String(userID.value), idFriend);
 		} catch (error) {
 			console.error("Error removing a friend :", error);
 		}
@@ -240,7 +243,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function updateFriends() {
 
 		try {
-			const userData = await getFriendsData(userID.value);
+			const userData = await getFriendsData(String(userID.value));
 			setFriends(userData);
 		} catch (error) {
 			console.error("Error updating up Friends:", error);
@@ -252,7 +255,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupFriendsInvite() {
 
 		try {
-			const userData = await getFriendsInviteData(userID.value);
+			const userData = await getFriendsInviteData(String(userID.value));
 			setFriendsInvite(userData);
 		} catch (error) {
 			console.error("Error setting up Friends Invite:", error);
@@ -270,7 +273,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function sendFriendRequest(username: string) {
 
 		try {
-			await postFriendsInviteData(userID.value, username);
+			await postFriendsInviteData(String(userID.value), username);
 		} catch (error) {
 			console.error("Error posting new Friends Invite:", error);
 			return 1;
@@ -280,7 +283,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function updateFriendsInvite() {
 
 		try {
-			const userData = await getFriendsInviteData(userID.value);
+			const userData = await getFriendsInviteData(String(userID.value));
 			setFriendsInvite(userData);
 		} catch (error) {
 			console.error("Error updating Friends Invite:", error);
@@ -292,7 +295,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	async function setupBlockedList() {
 
 		try {
-			const userData = await getBlockedListData(userID.value);
+			const userData = await getBlockedListData(String(userID.value));
 			setBlockedList(userData);
 		} catch (error) {
 			console.error("Error setting up Blocked list:", error);
@@ -313,18 +316,21 @@ export const useLadderStore = defineStore('ladder', () => {
 		let idBlocked;
 		let alreadyBlocked = false;
 
-		for (let i = 0; blocklist[i]; i++) {
-			if (usernameToBlock == blocklist[i].username)
-			{	
-				idBlocked = blocklist[i].idUser;
-				alreadyBlocked = true;
+		if (blocklist) {
+
+			for (let i = 0; blocklist[i]; i++) {
+				if (usernameToBlock == blocklist[i].username)
+				{	
+					idBlocked = blocklist[i].idUser;
+					alreadyBlocked = true;
+				}
 			}
 		}
 	
 		if (alreadyBlocked == false)
-			await postBlock(getId(), usernameToBlock);
+			await postBlock(String(getId()), usernameToBlock);
 		else
-			await deleteBlock(getId(), idBlocked);
+			await deleteBlock(String(getId()), idBlocked);
 		await setupBlockedList();//updating blocked list
 	}
 

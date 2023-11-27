@@ -33,7 +33,7 @@ export const getLadderData = async (userID : string) => {
  * @param {string} userID - The unique identifier of the user.
  * @returns {Promise<Object>} - A promise that resolves to the user data.
  */
- export const getUserData = async (userID : string) => {
+ export const getUserData = async (userID: string) => {
     try {
         const response = await api.get('/users/user/' + userID);
         return response.data;
