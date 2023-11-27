@@ -75,10 +75,12 @@
 #0 15.27 src/services/game-helpers.ts(93,24): error TS7006: Parameter 'context' implicitly has an 'any' type.
 #0 15.27 src/services/game-helpers.ts(93,33): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
 #0 15.27 src/services/game-helpers.ts(93,41): error TS7006: Parameter 'count' implicitly has an 'any' type.
+
 #0 15.27 src/services/matchmaking-helpers.ts(208,38): error TS2345: Argument of type 'null' is not assignable to parameter of type 'EndMatchResult'.
 #0 15.27 src/services/matchmaking-helpers.ts(216,40): error TS2339: Property 'value' does not exist on type '{}'.
 #0 15.27 src/services/matchmaking-helpers.ts(217,39): error TS2339: Property 'value' does not exist on type '{}'.
 #0 15.27 src/services/matchmaking-helpers.ts(232,35): error TS2339: Property 'value' does not exist on type '{}'.
+
 #0 15.27 src/stores/CommunityStore.ts(73,63): error TS2339: Property 'idChannel' does not exist on type 'Object'.
 #0 15.27 src/stores/CommunityStore.ts(74,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
 #0 15.27 src/stores/CommunityStore.ts(77,7): error TS2696: The 'Object' type is assignable to very few other types. Did you mean to use the 'any' type instead?
