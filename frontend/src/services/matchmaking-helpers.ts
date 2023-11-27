@@ -3,6 +3,7 @@ import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
 import { useProfileStore } from "@/stores/ProfileStore";
 import { useLadderStore } from "@/stores/UserProfileStore";
+import { useCommunityStore } from "@/stores/CommunityStore";
 
 const joinQueue = (playerData) => {
     socket.emit('join-standard', playerData);
@@ -80,6 +81,26 @@ const updatePlayerStatus = (status, profileStore) => {
 
 const getPlayerStatus = (data) => {
     socket.emit('get-status', data);
+};
+
+const askChallenge = (playerId, opponentId) => {
+    socket.emit('challenge', playerId, opponentId);
+};
+
+const askChallengeState = (askerId, friendId) => {
+    socket.emit('challenge-state', askerId, friendId);
+};
+
+const challengeAnswer = (challengerId: number, opponentId: number, answer: number) => {
+    socket.emit('challenge-answer', challengerId, opponentId, answer);
+};
+
+const askAcceptedChallengeState = (playerId: number) => {
+    socket.emit('accepted-challenge-state', playerId);
+};
+
+const confirmChallenge = (playerId: number, playerUsername: string) => {
+    socket.emit('confirm-challenge', playerId, playerUsername);
 };
 
 const initializeSocketListeners = (matchmakingStore, profileStore) => {
@@ -214,6 +235,19 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     socket.on('matchmaking-informations', (data) => {
         matchmakingStore.updateInformations(data);
     });
+
+    socket.on('challenge-state-response', (data) => {
+        const communityStore = useCommunityStore()
+        
+        communityStore.updateChallengeState(data.challengerId, data);
+        communityStore.updateChallengeStateForOpponent(data.opponentId, data);
+    });
+
+    socket.on('accepted-challenge-state-response', (data) => {
+        const communityStore = useCommunityStore();
+
+        communityStore.updateAcceptedChallengeState(data);
+    });
 };
 
 export { joinQueue, 
@@ -233,5 +267,10 @@ export { joinQueue,
     setObstacle,
     updatePlayerStatus,
     getPlayerStatus,
+    askChallenge,
+    askChallengeState,
+    challengeAnswer,
+    askAcceptedChallengeState,
+    confirmChallenge,
     initializeSocketListeners
 };

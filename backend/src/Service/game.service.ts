@@ -122,32 +122,32 @@ export class GameService
 	 * @returns New game
 	 */
 	async createGame(game : CreateGameDTO) : Promise<GameDTO>
-	{
-		const checkOne = await this.userQuery.findUserById(game.idPlayerOne);
-		const checkSecond =  await this.userQuery.findUserById(game.idPlayerSecond);
+    {
+        const checkOne = await this.userQuery.findUserById(game.idPlayerOne);
+        const checkSecond =  await this.userQuery.findUserById(game.idPlayerSecond);
 
-		if (!checkOne || !checkSecond)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+        if (!checkOne || !checkSecond)
+            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
-		const newGame = await this.gameQuery.createGame(game);
+        const newGame = await this.gameQuery.createGame(game);
 
-		if (newGame)
-		{
-			if (game.idPlayerOne != game.idWinner && game.idPlayerSecond != game.idWinner)
-				throw new BadRequestException();
-			
-			let oneWin = false;
+        if (newGame)
+        {
+            if (game.idPlayerOne != game.idWinner && game.idPlayerSecond != game.idWinner)
+                throw new BadRequestException();
+            
+            let oneWin = false;
 
-			if (game.idPlayerOne === game.idWinner)
-				oneWin = true;
-			
-			await this.gameQuery.storeGame(game.idPlayerOne, newGame.idGame, oneWin);
-			await this.gameQuery.storeGame(game.idPlayerSecond, newGame.idGame, !oneWin);
+            if (game.idPlayerOne === game.idWinner)
+                oneWin = true;
+            
+            await this.gameQuery.storeGame(game.idPlayerOne, newGame.idGame, oneWin);
+            await this.gameQuery.storeGame(game.idPlayerSecond, newGame.idGame, !oneWin);
 
-			this.achievementService.checkAchievement(game.idPlayerOne, 1);
-			this.achievementService.checkAchievement(game.idPlayerSecond, 1);
-
-			const onePl = await this.userQuery.findUserById(game.idPlayerOne);
+            this.achievementService.checkAchievement(game.idPlayerOne, 1);
+            this.achievementService.checkAchievement(game.idPlayerSecond, 1);
+            
+            const onePl = await this.userQuery.findUserById(game.idPlayerOne);
             const secPl = await this.userQuery.findUserById(game.idPlayerSecond);
 
             let i = -1;
@@ -157,13 +157,19 @@ export class GameService
             onePl.points += (i * 10);
             secPl.points += (-i * 10);
 
+            if (onePl.points < 0)
+                onePl.points = 0;
+            if (secPl.points < 0)
+                 secPl.points = 0;
+
             await this.userQuery.updateUser(onePl.idUser, onePl);
             await this.userQuery.updateUser(secPl.idUser, secPl);
-		}
-		else
-			throw new InternalServerErrorException();
-		return this.transformToDTO(newGame);
-	}
+        }
+        else
+            throw new InternalServerErrorException();
+
+        return this.transformToDTO(newGame);
+    }
 
 	/**
 	 * Delete a game based on their id
