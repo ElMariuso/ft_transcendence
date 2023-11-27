@@ -180,6 +180,7 @@
 						</ul>
 					</div>
 					<span v-if="block2" class="text-lg text-red-600 font-semibold">One of you blocked the other... </span>
+					<span v-if="muted" class="text-lg text-red-600 font-semibold">You might be muted, please wait a little </span>
 						<div v-if="selectedChannelID" class="flex">
 							<input
 								v-model="newMessage"
@@ -453,6 +454,7 @@ const badUserName = ref(false);
 const alone = ref(false);
 const block = ref(false);
 const block2 = ref(false);
+const muted = ref(false);
 const newChannelname = ref('');
 const newChannelPassword = ref('');
 const newChannelType = ref('public');
@@ -656,6 +658,7 @@ async function checkForBlock(idChannel)
 async function sendMessage() {
 	// Also websocket pb, ping all connected users ?
 	block2.value = false;
+	muted.value = false;
 
 	if (channelType.value === 3)
 	{
@@ -677,6 +680,8 @@ async function sendMessage() {
 		const res = await sendMessageTo(body);
 		// update msg UI
 	} catch (error) {
+		if (error.message == "Request failed with status code 400")
+			muted.value = true;
 		console.error('Error sending message', error);
 	}
 
@@ -802,6 +807,7 @@ async function playerMute() {
 
 	// Adds to DB but doesnt mute ... (:
 	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
+	muteTime.value = null;
 }
 async function playerKick() {
 	console.log("kick");
