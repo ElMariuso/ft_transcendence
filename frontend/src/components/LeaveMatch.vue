@@ -17,7 +17,9 @@ const buttonText = computed(() => {
 });
 
 const quitMatchFront = async () => {
-    const playerId = profileStore.userID <= 0 ? matchmakingStore.guestUUID : profileStore.userID;
+	let id = parseInt(profileStore.userID, 10);
+
+    const playerId = id <= 0 ? matchmakingStore.guestUUID : profileStore.userID;
     try {
         console.log('Leaving the match...:', playerId);
         await quitMatch(playerId);

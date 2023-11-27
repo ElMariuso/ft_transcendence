@@ -28,6 +28,7 @@ import OtherProfileView from '../views/OtherProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import GameView from '../views/GameView.vue';
 import jwt_decode from 'jwt-decode';
+import { JwtPayload } from "@/models/jwtPayload.model";
 
 // Define the routes for the Vue application
 const router = createRouter({
@@ -99,21 +100,22 @@ const router = createRouter({
  * The guard also ensures that users are redirected appropriately based on their authentication state and 
  * the route they are attempting to access.
  */
+
 router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
-	const profileStore = useProfileStore();
-
 
 	checkJWT(authStore).then(status => {
 		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
 			return next({ name: 'home' });
 
-		else if (to.name === 'login' && to.query.code !== undefined) {
+		else if (to.name === 'login' && to.query.code !== undefined && to.query.code !== null) {
 			Cookies.set('token', to.query.code.toString(), { expires: 7 });
 			
-			const token = Cookies.get('token'); 
-			const twoFactorAuthEnabled = jwt_decode(token).twoFactorAuthEnabled;
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const twoFactorAuthEnabled: any = decodedToken.twoFactorAuthEnabled;
 
+			
 			if (twoFactorAuthEnabled) {
 				return next({ name: 'login2fa' });
 			}

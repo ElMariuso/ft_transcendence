@@ -1,6 +1,7 @@
 import api from './api';
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
+import { JwtPayload } from "@/models/jwtPayload.model";
 
 // import axios from 'axios';
 
@@ -84,7 +85,9 @@ export async function checkJWT(authStore: any) {
 		try {
             // Decode the token to obtain the userID, twoFactorAuthEnabled status and 2fa One Time Password.
 			// const { sub: userID, twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
-			const { twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const twoFactorAuthEnabled: any = decodedToken.twoFactorAuthEnabled;
+			const twoFactorAuthOTP: any = decodedToken.twoFactorAuthOTP;
 			
 			await api.get('/auth/jwt/verify', {})
 			.then((res: { data: any; }) => {

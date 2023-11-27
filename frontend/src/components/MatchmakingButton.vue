@@ -31,7 +31,7 @@ const handleClick = async () => {
         console.log('Cancelling the match search...');
         try {
             if (props.isRanked) {
-                await leaveRankedQueue(profileStore.userId.value);
+                await leaveRankedQueue(profileStore.userID);
             } else {
                 await leaveQueue(guestUUID.value);
             }
@@ -42,8 +42,10 @@ const handleClick = async () => {
         console.log(`Joining a ${props.isRanked ? 'ranked' : 'standard'} match...`);
         try {
             if (props.isRanked) {
+				let idUser = parseInt(profileStore.userID, 10);
+
                 const playerData: AuthenticatedPlayer = { 
-                    id: profileStore.userID,
+                    id: idUser,
                     isGuest: false,
                     points: 0,
                     username: profileStore.username
@@ -52,10 +54,14 @@ const handleClick = async () => {
             } else {
                 let playerData: PlayerInQueue;
                 if (isAuthenticated.value) {
+					let idUser = parseInt(profileStore.userID, 10);
+
                     playerData = {
-                        id: profileStore.userID,
+                        id: idUser,
                         isGuest: false,
-                        username: profileStore.username
+                        username: profileStore.username,
+						// TODO: ADD POINTS FETCHER
+						points: 0,
                     };
                 } else {
                     playerData = {

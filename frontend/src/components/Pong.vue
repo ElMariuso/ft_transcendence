@@ -5,6 +5,7 @@ import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { askGamesInformations, setObstacle, setReady, setSmallRacket, setWantBaseGame } from '@/services/matchmaking-helpers';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { GameState } from '@/models/game.model';
 
 const gameStore = useGameStore();
 const profileStore = useProfileStore();
@@ -110,14 +111,17 @@ onMounted(async () => {
             gameStore.updateGameState(gameInfo);
             isGameStateUpdated.value = true;
 
-            if (gameStore.gameState.player1ID === matchmakingStore.guestUUID)
+			if (gameStore.gameState) {
+
+				if (gameStore.gameState.player1ID === matchmakingStore.guestUUID)
                 gameStore.setIsFirstPlayer(true);
-            else if (gameStore.gameState.player2ID === matchmakingStore.guestUUID)
+				else if (gameStore.gameState.player2ID === matchmakingStore.guestUUID)
                 gameStore.setIsFirstPlayer(false);
-            else if (gameStore.gameState.player1ID === profileStore.userID)
+				else if (gameStore.gameState.player1ID === profileStore.userID)
                 gameStore.setIsFirstPlayer(true);
-            else
+				else
                 gameStore.setIsFirstPlayer(false);
+			}
             gameLoop(context, canvas, gameStore, roomID, movingUp, movingDown);
         } catch (error) {
             console.error("There was an error getting the game information: ", error);

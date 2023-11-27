@@ -21,7 +21,10 @@ const cancelSearch = async () => {
         if (matchmakingStore.isRanked) {
             await leaveRankedQueue(profileStore.userID);
         } else {
-            if (profileStore.userID > 0) {
+
+			let id = parseInt(profileStore.userID, 10);
+
+            if (id > 0) {
                 await leaveQueue(profileStore.userID);
             }
             else {
@@ -33,7 +36,7 @@ const cancelSearch = async () => {
     }
 };
 
-let statusInterval;
+let statusInterval: any;
 
 onMounted(() => {
     statusInterval = setInterval(() => {

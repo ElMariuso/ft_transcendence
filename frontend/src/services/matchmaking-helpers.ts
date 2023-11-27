@@ -6,6 +6,7 @@ import { useLadderStore } from "@/stores/UserProfileStore";
 import { useCommunityStore } from "@/stores/CommunityStore";
 import { useMatchmakingStore } from "@/stores/MatchmakingStore";
 import { AuthenticatedPlayer, PlayerInQueue } from "@/models/player.model";
+import { GameState } from "@/models/game.model";
 
 const joinQueue = (playerData: PlayerInQueue): void => {
     socket.emit('join-standard', playerData);
@@ -23,7 +24,7 @@ const joinRankedQueue = (playerData: AuthenticatedPlayer): void => {
     socket.emit('join-ranked', playerData);
 };
 
-const leaveRankedQueue = (playerId: number): void => {
+const leaveRankedQueue = (playerId: string): void => {
     socket.emit('leave-ranked', playerId);
 };
 
@@ -43,7 +44,7 @@ const rejoinMatchmaking = (playerId: string | number): void => {
     socket.emit('rejoin-matchmaking', playerId);
 };
 
-const askGamesInformations = (roomId: string) => {
+const askGamesInformations = (roomId: string | null) : Promise<GameState> => {
     return new Promise((resolve) => {
         socket.once('games-informations', (data) => {
             resolve(data);
@@ -57,19 +58,19 @@ const updateRacket = (roomId: string, action: string): void => {
     socket.emit('update-racket', roomId, action);
 };
 
-const setReady = (roomId: string, action: string): void => {
+const setReady = (roomId: string | null, action: string): void => {
     socket.emit('set-ready', roomId, action);
 };
 
-const setWantBaseGame = (roomId: string, action: string): void => {
+const setWantBaseGame = (roomId: string | null, action: string): void => {
     socket.emit('set-want-base-game', roomId, action);
 };
 
-const setSmallRacket = (roomId: string, action: string): void => {
+const setSmallRacket = (roomId: string | null, action: string): void => {
     socket.emit('set-small-racket', roomId, action);
 };
 
-const setObstacle = (roomId: string, action: string): void => {
+const setObstacle = (roomId: string | null, action: string): void => {
     socket.emit('set-obstacle', roomId, action);
 };
 
