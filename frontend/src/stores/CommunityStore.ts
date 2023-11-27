@@ -77,7 +77,7 @@ export const useCommunityStore = defineStore('community', {
 
 				for(let i = 0; this.openChannels[i] ; i++)
 				{
-					const users = await getChannelUsers(this.openChannels[i].idChannel);
+					const users = await getChannelUsers(String(this.openChannels[i].idChannel));
 					const user = users.find(user => user.idUser === id);
 					if (user && user.role == "Banned")
 					{
