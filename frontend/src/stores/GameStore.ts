@@ -39,7 +39,7 @@ export const useGameStore = defineStore('game', {
         setIsFirstPlayer(value: boolean): void {
             this.isFirstPlayer = value;
         },
-        setMatchResult(result: EndMatchResult): void {
+        setMatchResult(result: EndMatchResult | null): void {
             this.matchResult = result;
         },
     },
