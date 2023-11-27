@@ -1,321 +1,390 @@
-#0 18.66 src/App.vue(5,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.66   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.66 src/App.vue(19,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 18.66 src/components/LeaveMatch.vue(20,22): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
-#0 18.66 src/components/MatchmakingBox.vue(24,17): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
-#0 18.66 src/components/MatchmakingBox.vue(36,5): error TS7034: Variable 'statusInterval' implicitly has type 'any' in some locations where its type cannot be determined.
-#0 18.66 src/components/MatchmakingBox.vue(49,19): error TS7005: Variable 'statusInterval' implicitly has an 'any' type.
-#0 18.66 src/components/MatchmakingButton.vue(33,53): error TS2551: Property 'userId' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: []) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'. Did you mean 'userID'?
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(51,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.66   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(94,2): error TS2322: Type 'boolean | null | undefined' is not assignable to type 'boolean'.
-#0 18.66   Type 'undefined' is not assignable to type 'boolean'.
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(122,3): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
-#0 18.66   Property 'username' does not exist on type '{}'.
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(125,6): error TS18047: 'avatarInput.value.files' is possibly 'null'.
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(134,5): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
-#0 18.66   Property 'avatar' does not exist on type '{}'.
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(146,14): error TS2571: Object is of type 'unknown'.
-#0 18.66 src/components/modals/FirstAuthSettingsModal.vue(154,31): error TS2345: Argument of type '{}' is not assignable to parameter of type '[]'.
-#0 18.67 src/components/modals/TwoFactorAuthModal.vue(29,22): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.67   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.67 src/components/modals/TwoFactorAuthModal.vue(37,27): error TS2749: 'ref' refers to a value, but is being used as a type here. Did you mean 'typeof ref'?
-#0 18.67 src/components/modals/TwoFactorAuthModal.vue(39,13): error TS2571: Object is of type 'unknown'.
-#0 18.67 src/components/modals/TwoFactorAuthModal.vue(66,23): error TS7006: Parameter 'resolve' implicitly has an 'any' type.
-#0 18.67 src/components/modals/TwoFactorAuthModal.vue(71,37): error TS7006: Parameter 'resolve' implicitly has an 'any' type.
-#0 18.67 src/components/Navbar.vue(13,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.67   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.67 src/components/Navbar.vue(53,52): error TS2571: Object is of type 'unknown'.
-#0 18.67 src/components/Pong.vue(113,17): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 18.67 src/components/Pong.vue(115,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 18.67 src/components/Pong.vue(117,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
-#0 18.67 src/router/index.ts(20,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.67   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.67 src/router/index.ts(113,25): error TS18047: 'to.query.code' is possibly 'null'.
-#0 18.67 src/router/index.ts(116,33): error TS2571: Object is of type 'unknown'.
-#0 18.67 src/services/Channel-helpers.ts(15,38): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.67 src/services/Channel-helpers.ts(36,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.67 src/services/Channel-helpers.ts(60,42): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Channel-helpers.ts(60,50): error TS7006: Parameter 'content' implicitly has an 'any' type.
-#0 18.68 src/services/Channel-helpers.ts(60,59): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Channel-helpers.ts(86,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(16,40): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(37,49): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(58,45): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(89,34): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(99,37): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(109,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(119,37): error TS7006: Parameter 'body' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(129,52): error TS7006: Parameter 'id2' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(143,43): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(143,51): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(154,38): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(154,46): error TS7006: Parameter 'banId' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(154,53): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(154,64): error TS7006: Parameter 'newRole' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(169,44): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(179,37): error TS7006: Parameter 'idMessage' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(203,44): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(203,52): error TS7006: Parameter 'newName' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(203,61): error TS7006: Parameter 'newType' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(203,70): error TS7006: Parameter 'newPassword' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(221,40): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(221,48): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(228,39): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(228,47): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(228,58): error TS7006: Parameter 'pw' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(255,29): error TS7006: Parameter 'id' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(255,33): error TS7006: Parameter 'blockId' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(261,28): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(261,34): error TS7006: Parameter 'channel' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(261,43): error TS7006: Parameter 'time' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(276,31): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(276,43): error TS7006: Parameter 'idCurrentChannel' implicitly has an 'any' type.
-#0 18.68 src/services/Community-helpers.ts(276,61): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(15,37): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(36,36): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(77,37): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(98,44): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(119,37): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(129,39): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(151,38): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(172,45): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(194,46): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(194,54): error TS7006: Parameter 'username' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(217,43): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(239,37): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(239,45): error TS7006: Parameter 'idFriend' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(251,33): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
-#0 18.68 src/services/UserProfile-helpers.ts(263,35): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
-#0 18.68 src/services/api.ts(2,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.68   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.68 src/services/auth-helpers.ts(3,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.68   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.68 src/services/auth-helpers.ts(18,35): error TS7006: Parameter 'userID' implicitly has an 'any' type.
-#0 18.68 src/services/auth-helpers.ts(74,32): error TS7006: Parameter 'authStore' implicitly has an 'any' type.
-#0 18.68 src/services/auth-helpers.ts(74,43): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 18.68 src/services/auth-helpers.ts(86,12): error TS2339: Property 'sub' does not exist on type 'unknown'.
-#0 18.68 src/services/auth-helpers.ts(86,25): error TS2339: Property 'twoFactorAuthEnabled' does not exist on type 'unknown'.
-#0 18.68 src/services/auth-helpers.ts(86,47): error TS2339: Property 'twoFactorAuthOTP' does not exist on type 'unknown'.
-#0 18.68 src/services/game-helpers.ts(3,26): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.68 src/services/game-helpers.ts(3,35): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 18.68 src/services/game-helpers.ts(3,43): error TS7006: Parameter 'gameStore' implicitly has an 'any' type.
-#0 18.68 src/services/game-helpers.ts(3,54): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.68 src/services/game-helpers.ts(3,62): error TS7006: Parameter 'movingUp' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(3,72): error TS7006: Parameter 'movingDown' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,19): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,28): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,36): error TS7006: Parameter 'racket1Size' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,49): error TS7006: Parameter 'racket2Size' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,62): error TS7006: Parameter 'racket1Position' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,79): error TS7006: Parameter 'racket2Position' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,96): error TS7006: Parameter 'ballSize' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,106): error TS7006: Parameter 'ballPosition' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,120): error TS7006: Parameter 'score1' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,128): error TS7006: Parameter 'score2' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,136): error TS7006: Parameter 'obstacle1Size' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,151): error TS7006: Parameter 'obstacle1Position' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,170): error TS7006: Parameter 'obstacle2Size' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(37,185): error TS7006: Parameter 'obstacle2Position' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(56,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(56,30): error TS7006: Parameter 'x' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(56,33): error TS7006: Parameter 'y' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(56,36): error TS7006: Parameter 'width' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(56,43): error TS7006: Parameter 'height' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(61,31): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(61,40): error TS7006: Parameter 'x' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(61,43): error TS7006: Parameter 'y' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(61,46): error TS7006: Parameter 'width' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(61,53): error TS7006: Parameter 'height' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(66,18): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(66,27): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(78,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(78,30): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(78,38): error TS7006: Parameter 'winner' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(78,46): error TS7006: Parameter 'reason' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(93,24): error TS7006: Parameter 'context' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(93,33): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
-#0 18.69 src/services/game-helpers.ts(93,41): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 18.69 src/services/matchmaking-helpers.ts(7,20): error TS7006: Parameter 'playerData' implicitly has an 'any' type.
-#0 18.69 src/services/matchmaking-helpers.ts(11,21): error TS7006: Parameter 'playerId' implicitly has an 'any' type.
-#0 18.69 src/services/matchmaking-helpers.ts(19,26): error TS7006: Parameter 'playerData' implicitly has an 'any' type.
-#0 18.69 src/services/matchmaking-helpers.ts(23,27): error TS7006: Parameter 'playerId' implicitly has an 'any' type.
-#0 18.69 src/services/matchmaking-helpers.ts(31,20): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(35,21): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(39,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(43,31): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(53,23): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(53,31): error TS7006: Parameter 'action' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(57,19): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(57,27): error TS7006: Parameter 'action' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(61,26): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(61,34): error TS7006: Parameter 'action' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(65,25): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(65,33): error TS7006: Parameter 'action' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(69,22): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(69,30): error TS7006: Parameter 'action' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(73,29): error TS7006: Parameter 'status' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(73,37): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(81,26): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(85,36): error TS7006: Parameter 'matchmakingStore' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(85,54): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 18.70 src/services/matchmaking-helpers.ts(190,40): error TS2339: Property 'value' does not exist on type '{}'.
-#0 18.70 src/services/matchmaking-helpers.ts(191,39): error TS2339: Property 'value' does not exist on type '{}'.
-#0 18.70 src/services/matchmaking-helpers.ts(206,35): error TS2339: Property 'value' does not exist on type '{}'.
-#0 18.70 src/stores/ChannelStore.ts(42,7): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
-#0 18.70 src/stores/ChannelStore.ts(54,11): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
-#0 18.70 src/stores/ChannelStore.ts(58,18): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
-#0 18.70 src/stores/ChannelStore.ts(65,14): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/ChannelStore.ts(65,25): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
-#0 18.70   Type 'null' is not assignable to type 'string'.
-#0 18.70 src/stores/ChannelStore.ts(85,7): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
-#0 18.70 src/stores/ChannelStore.ts(119,8): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
-#0 18.70 src/stores/ChannelStore.ts(131,12): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
-#0 18.70 src/stores/ChannelStore.ts(135,19): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
-#0 18.70 src/stores/CommunityStore.ts(4,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.70   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.70 src/stores/CommunityStore.ts(26,14): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/CommunityStore.ts(34,44): error TS7006: Parameter 'channel' implicitly has an 'any' type.
-#0 18.70 src/stores/CommunityStore.ts(35,34): error TS7006: Parameter 'joinedChannel' implicitly has an 'any' type.
-#0 18.70 src/stores/CommunityStore.ts(41,63): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.70 src/stores/CommunityStore.ts(42,29): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 18.70 src/stores/CommunityStore.ts(45,28): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/stores/CommunityStore.ts(53,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
-#0 18.70 src/stores/CommunityStore.ts(55,14): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/CommunityStore.ts(66,28): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 18.70 src/stores/CommunityStore.ts(82,14): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/GameStore.ts(21,25): error TS7006: Parameter 'newGameState' implicitly has an 'any' type.
-#0 18.70 src/stores/GameStore.ts(23,36): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(24,36): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(26,35): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(27,35): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(28,42): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(29,42): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(30,41): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(31,41): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(32,38): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(33,38): error TS2531: Object is possibly 'null'.
-#0 18.70 src/stores/GameStore.ts(35,21): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 18.70 src/stores/GameStore.ts(38,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 18.70 src/stores/GameStore.ts(41,24): error TS7006: Parameter 'result' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(2,30): error TS7016: Could not find a declaration file for module 'uuid'. '/app/node_modules/uuid/wrapper.mjs' implicitly has an 'any' type.
-#0 18.70   Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
-#0 18.70 src/stores/MatchmakingStore.ts(3,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.70   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.70 src/stores/MatchmakingStore.ts(18,25): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(41,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(48,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(52,24): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(55,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(58,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(61,28): error TS7006: Parameter 'count' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(64,25): error TS7006: Parameter 'uuid' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(67,29): error TS7006: Parameter 'username' implicitly has an 'any' type.
-#0 18.70 src/stores/MatchmakingStore.ts(70,19): error TS7006: Parameter 'id' implicitly has an 'any' type.
-#0 18.70 src/stores/ProfileStore.ts(5,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.70   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.70 src/stores/ProfileStore.ts(31,14): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/ProfileStore.ts(34,4): error TS2322: Type 'number' is not assignable to type 'string'.
-#0 18.70 src/stores/ProfileStore.ts(50,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
-#0 18.70 src/stores/ProfileStore.ts(51,30): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
-#0 18.70 src/stores/ProfileStore.ts(52,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
-#0 18.70 src/stores/ProfileStore.ts(53,35): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
-#0 18.70 src/stores/ProfileStore.ts(54,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
-#0 18.70 src/stores/UserProfileStore.ts(5,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.70   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.70 src/stores/UserProfileStore.ts(65,15): error TS2571: Object is of type 'unknown'.
-#0 18.70 src/stores/UserProfileStore.ts(200,19): error TS18047: 'gamesResults.value' is possibly 'null'.
-#0 18.70 src/stores/UserProfileStore.ts(201,8): error TS18047: 'gamesResults.value' is possibly 'null'.
-#0 18.70 src/stores/UserProfileStore.ts(202,12): error TS18047: 'gamesResults.value' is possibly 'null'.
-#0 18.70 src/stores/UserProfileStore.ts(316,40): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.70 src/stores/UserProfileStore.ts(318,30): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.70 src/stores/UserProfileStore.ts(332,27): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(77,26): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(78,54): error TS2339: Property 'name' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(80,23): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(81,22): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(82,29): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(86,43): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(86,65): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(87,44): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(87,66): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(89,37): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.70 src/views/CommunityView.vue(89,59): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(94,28): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(95,27): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(95,73): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(99,23): error TS2339: Property 'idType' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(100,34): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(127,23): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(131,45): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(132,47): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(134,40): error TS2339: Property 'idChannel' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(136,20): error TS2339: Property 'name' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(177,55): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(178,52): error TS2339: Property 'content' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(218,19): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(220,26): error TS2339: Property 'role' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(222,19): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(223,30): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(223,76): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(229,38): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(238,26): error TS2339: Property 'role' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(244,36): error TS2339: Property 'role' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(245,34): error TS2339: Property 'owner' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(249,20): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(252,52): error TS2339: Property 'role' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(253,37): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(258,69): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(260,29): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(260,75): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(265,38): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.71 src/views/CommunityView.vue(269,24): error TS2339: Property 'playerPlay' does not exist on type '{ $: ComponentInternalInstance; $data: {}; $props: { key?: string | number | symbol | undefined; style?: unknown; class?: unknown; ref?: VNodeRef | undefined; ref_for?: boolean | undefined; ... 6 more ...; onVnodeUnmounted?: VNodeMountHook | ... 1 more ... | undefined; }; ... 10 more ...; $watch<T extends string | (...'.
-#0 18.71 src/views/CommunityView.vue(270,56): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(273,69): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(274,37): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(274,77): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(275,41): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(277,109): error TS2339: Property 'owner' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(315,38): error TS2440: Import declaration conflicts with local declaration of 'block'.
-#0 18.72 src/views/CommunityView.vue(373,41): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(381,44): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(427,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(434,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 18.72 src/views/CommunityView.vue(434,54): error TS2551: Property '_value' does not exist on type 'Ref<never[]>'. Did you mean 'value'?
-#0 18.72 src/views/CommunityView.vue(436,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
-#0 18.72 src/views/CommunityView.vue(449,5): error TS7034: Variable 'updateChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
-#0 18.72 src/views/CommunityView.vue(452,10): error TS2304: Cannot find name 'users'.
-#0 18.72 src/views/CommunityView.vue(452,21): error TS7006: Parameter 'user' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(459,17): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(468,55): error TS2339: Property 'username' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(488,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(497,2): error TS2322: Type 'string' is not assignable to type 'null'.
-#0 18.72 src/views/CommunityView.vue(509,30): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(603,25): error TS7006: Parameter 'playerID' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(611,28): error TS7006: Parameter 'channType' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(647,19): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(653,21): error TS2339: Property 'idUser' does not exist on type 'never'.
-#0 18.72 src/views/CommunityView.vue(659,34): error TS7006: Parameter 'usernameToFriend' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(666,28): error TS7006: Parameter 'usernameToBlock' implicitly has an 'any' type.
-#0 18.72 src/views/CommunityView.vue(703,28): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
-#0 18.72 src/views/HomeView.vue(3,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.72   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.72 src/views/HomeView.vue(13,20): error TS2571: Object is of type 'unknown'.
-#0 18.72 src/views/Login2faView.vue(6,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.72   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.72 src/views/SettingsView.vue(96,21): error TS7016: Could not find a declaration file for module 'js-cookie'. '/app/node_modules/js-cookie/dist/js.cookie.mjs' implicitly has an 'any' type.
-#0 18.72   Try `npm i --save-dev @types/js-cookie` if it exists or add a new declaration (.d.ts) file containing `declare module 'js-cookie';`
-#0 18.72 src/views/SettingsView.vue(167,5): error TS18047: 'fileInput.value' is possibly 'null'.
-#0 18.72 src/views/SettingsView.vue(187,3): error TS2322: Type '(value: unknown) => void' is not assignable to type 'boolean'.
-#0 18.72 src/views/SettingsView.vue(234,4): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
-#0 18.72   Property 'username' does not exist on type '{}'.
-#0 18.72 src/views/SettingsView.vue(239,33): error TS18047: 'fileInput.value.files' is possibly 'null'.
-#0 18.72 src/views/SettingsView.vue(246,6): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
-#0 18.72   Property 'avatar' does not exist on type '{}'.
-#0 18.73 src/views/SettingsView.vue(260,7): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
-#0 18.73   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
-#0 18.73 src/views/SettingsView.vue(269,5): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
-#0 18.73   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
-#0 18.73 src/views/SettingsView.vue(276,15): error TS2571: Object is of type 'unknown'.
-#0 18.73 src/views/SettingsView.vue(284,32): error TS2345: Argument of type '{}' is not assignable to parameter of type '[]'.
-#0 18.79 ERROR: "type-check" exited with 2.
+#0 19.05 src/App.vue(19,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.06 src/components/LeaveMatch.vue(20,22): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
+#0 19.06 src/components/MatchmakingBox.vue(24,17): error TS2365: Operator '>' cannot be applied to types 'string' and 'number'.
+#0 19.07 src/components/MatchmakingBox.vue(36,5): error TS7034: Variable 'statusInterval' implicitly has type 'any' in some locations where its type cannot be determined.
+#0 19.07 src/components/MatchmakingBox.vue(49,19): error TS7005: Variable 'statusInterval' implicitly has an 'any' type.
+#0 19.08 src/components/MatchmakingButton.vue(33,53): error TS2551: Property 'userId' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: []) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'. Did you mean 'userID'?
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(94,2): error TS2322: Type 'boolean | null | undefined' is not assignable to type 'boolean'.
+#0 19.08   Type 'undefined' is not assignable to type 'boolean'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(122,3): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
+#0 19.08   Property 'username' does not exist on type '{}'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(125,6): error TS18047: 'avatarInput.value.files' is possibly 'null'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(134,5): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
+#0 19.08   Property 'avatar' does not exist on type '{}'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(146,14): error TS2571: Object is of type 'unknown'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(146,25): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.08   Type 'undefined' is not assignable to type 'string'.
+#0 19.08 src/components/modals/FirstAuthSettingsModal.vue(154,31): error TS2345: Argument of type '{}' is not assignable to parameter of type '[]'.
+#0 19.08 src/components/modals/TwoFactorAuthModal.vue(37,27): error TS2749: 'ref' refers to a value, but is being used as a type here. Did you mean 'typeof ref'?
+#0 19.09 src/components/modals/TwoFactorAuthModal.vue(39,13): error TS2571: Object is of type 'unknown'.
+#0 19.09 src/components/modals/TwoFactorAuthModal.vue(39,24): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.09   Type 'undefined' is not assignable to type 'string'.
+#0 19.09 src/components/modals/TwoFactorAuthModal.vue(66,23): error TS7006: Parameter 'resolve' implicitly has an 'any' type.
+#0 19.09 src/components/modals/TwoFactorAuthModal.vue(71,37): error TS7006: Parameter 'resolve' implicitly has an 'any' type.
+#0 19.09 src/components/Navbar.vue(53,52): error TS2571: Object is of type 'unknown'.
+#0 19.09 src/components/Pong.vue(113,17): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 19.10 src/components/Pong.vue(115,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 19.10 src/components/Pong.vue(117,22): error TS18047: 'gameStore.gameState' is possibly 'null'.
+#0 19.10 src/router/index.ts(113,25): error TS18047: 'to.query.code' is possibly 'null'.
+#0 19.10 src/router/index.ts(116,33): error TS2571: Object is of type 'unknown'.
+#0 19.10 src/router/index.ts(116,44): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.10   Type 'undefined' is not assignable to type 'string'.
+
+
+
+#0 19.11 src/services/Channel-helpers.ts(15,38): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.11 src/services/Channel-helpers.ts(36,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.11 src/services/Channel-helpers.ts(60,42): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.11 src/services/Channel-helpers.ts(60,50): error TS7006: Parameter 'content' implicitly has an 'any' type.
+#0 19.11 src/services/Channel-helpers.ts(60,59): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.11 src/services/Channel-helpers.ts(86,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+
+
+
+#0 19.11 src/services/Community-helpers.ts(16,40): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.11 src/services/Community-helpers.ts(37,49): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.11 src/services/Community-helpers.ts(58,45): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.11 src/services/Community-helpers.ts(89,34): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(99,37): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(109,39): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(119,37): error TS7006: Parameter 'body' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(129,52): error TS7006: Parameter 'id2' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(143,43): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(143,51): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(154,38): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(154,46): error TS7006: Parameter 'banId' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(154,53): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(154,64): error TS7006: Parameter 'newRole' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(169,44): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(179,37): error TS7006: Parameter 'idMessage' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(203,44): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(203,52): error TS7006: Parameter 'newName' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(203,61): error TS7006: Parameter 'newType' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(203,70): error TS7006: Parameter 'newPassword' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(221,40): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(221,48): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(228,39): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(228,47): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(228,58): error TS7006: Parameter 'pw' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(255,29): error TS7006: Parameter 'id' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(255,33): error TS7006: Parameter 'blockId' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(261,28): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(261,34): error TS7006: Parameter 'channel' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(261,43): error TS7006: Parameter 'time' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(276,31): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(276,43): error TS7006: Parameter 'idCurrentChannel' implicitly has an 'any' type.
+#0 19.12 src/services/Community-helpers.ts(276,61): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+
+
+#0 19.12 src/services/UserProfile-helpers.ts(129,39): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+
+
+#0 19.12 src/services/auth-helpers.ts(18,35): error TS7006: Parameter 'userID' implicitly has an 'any' type.
+#0 19.12 src/services/auth-helpers.ts(74,32): error TS7006: Parameter 'authStore' implicitly has an 'any' type.
+#0 19.12 src/services/auth-helpers.ts(74,43): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
+#0 19.12 src/services/auth-helpers.ts(86,12): error TS2339: Property 'sub' does not exist on type 'unknown'.
+#0 19.12 src/services/auth-helpers.ts(86,25): error TS2339: Property 'twoFactorAuthEnabled' does not exist on type 'unknown'.
+#0 19.12 src/services/auth-helpers.ts(86,47): error TS2339: Property 'twoFactorAuthOTP' does not exist on type 'unknown'.
+
+
+
+#0 19.12 src/services/game-helpers.ts(3,26): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(3,35): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(3,43): error TS7006: Parameter 'gameStore' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(3,54): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(3,62): error TS7006: Parameter 'movingUp' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(3,72): error TS7006: Parameter 'movingDown' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,19): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,28): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,36): error TS7006: Parameter 'racket1Size' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,49): error TS7006: Parameter 'racket2Size' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,62): error TS7006: Parameter 'racket1Position' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,79): error TS7006: Parameter 'racket2Position' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,96): error TS7006: Parameter 'ballSize' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,106): error TS7006: Parameter 'ballPosition' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,120): error TS7006: Parameter 'score1' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,128): error TS7006: Parameter 'score2' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,136): error TS7006: Parameter 'obstacle1Size' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,151): error TS7006: Parameter 'obstacle1Position' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,170): error TS7006: Parameter 'obstacle2Size' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(37,185): error TS7006: Parameter 'obstacle2Position' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(56,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(56,30): error TS7006: Parameter 'x' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(56,33): error TS7006: Parameter 'y' implicitly has an 'any' type.
+#0 19.12 src/services/game-helpers.ts(56,36): error TS7006: Parameter 'width' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(56,43): error TS7006: Parameter 'height' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(61,31): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(61,40): error TS7006: Parameter 'x' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(61,43): error TS7006: Parameter 'y' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(61,46): error TS7006: Parameter 'width' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(61,53): error TS7006: Parameter 'height' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(66,18): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(66,27): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(78,21): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(78,30): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(78,38): error TS7006: Parameter 'winner' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(78,46): error TS7006: Parameter 'reason' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(93,24): error TS7006: Parameter 'context' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(93,33): error TS7006: Parameter 'canvas' implicitly has an 'any' type.
+#0 19.13 src/services/game-helpers.ts(93,41): error TS7006: Parameter 'count' implicitly has an 'any' type.
+
+
+
+#0 19.13 src/services/matchmaking-helpers.ts(8,20): error TS7006: Parameter 'playerData' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(12,21): error TS7006: Parameter 'playerId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(20,26): error TS7006: Parameter 'playerData' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(24,27): error TS7006: Parameter 'playerId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(32,20): error TS7006: Parameter 'data' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(36,21): error TS7006: Parameter 'data' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(40,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(44,31): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(54,23): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(54,31): error TS7006: Parameter 'action' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(58,19): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(58,27): error TS7006: Parameter 'action' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(62,26): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(62,34): error TS7006: Parameter 'action' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(66,25): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(66,33): error TS7006: Parameter 'action' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(70,22): error TS7006: Parameter 'roomId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(70,30): error TS7006: Parameter 'action' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(74,29): error TS7006: Parameter 'status' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(74,37): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(82,26): error TS7006: Parameter 'data' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(86,23): error TS7006: Parameter 'playerId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(86,33): error TS7006: Parameter 'opponentId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(90,28): error TS7006: Parameter 'askerId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(90,37): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(106,36): error TS7006: Parameter 'matchmakingStore' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(106,54): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
+#0 19.13 src/services/matchmaking-helpers.ts(211,40): error TS2339: Property 'value' does not exist on type '{}'.
+#0 19.13 src/services/matchmaking-helpers.ts(212,39): error TS2339: Property 'value' does not exist on type '{}'.
+#0 19.13 src/services/matchmaking-helpers.ts(227,35): error TS2339: Property 'value' does not exist on type '{}'.
+
+
+#0 19.13 src/stores/ChannelStore.ts(42,7): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
+#0 19.13 src/stores/ChannelStore.ts(54,11): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
+#0 19.13 src/stores/ChannelStore.ts(58,18): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
+#0 19.13 src/stores/ChannelStore.ts(65,14): error TS2571: Object is of type 'unknown'.
+#0 19.13 src/stores/ChannelStore.ts(65,25): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
+#0 19.13   Type 'null' is not assignable to type 'string'.
+#0 19.13 src/stores/ChannelStore.ts(85,7): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
+#0 19.13 src/stores/ChannelStore.ts(119,8): error TS2367: This comparison appears to be unintentional because the types 'Ref<string>' and 'string' have no overlap.
+#0 19.13 src/stores/ChannelStore.ts(131,12): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
+#0 19.13 src/stores/ChannelStore.ts(135,19): error TS2551: Property 'values' does not exist on type 'Ref<string[]>'. Did you mean 'value'?
+
+
+
+#0 19.13 src/stores/CommunityStore.ts(20,32): error TS7006: Parameter 'newState' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(26,24): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(26,32): error TS7006: Parameter 'newState' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(29,27): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(32,35): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(32,43): error TS7006: Parameter 'newState' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(35,32): error TS7006: Parameter 'userId' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(40,15): error TS2571: Object is of type 'unknown'.
+#0 19.13 src/stores/CommunityStore.ts(40,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.13   Type 'undefined' is not assignable to type 'string'.
+#0 19.13 src/stores/CommunityStore.ts(48,45): error TS7006: Parameter 'channel' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(49,35): error TS7006: Parameter 'joinedChannel' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(59,63): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.13 src/stores/CommunityStore.ts(60,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(72,31): error TS7006: Parameter 'channelID' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(74,15): error TS2571: Object is of type 'unknown'.
+#0 19.13 src/stores/CommunityStore.ts(74,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.13   Type 'undefined' is not assignable to type 'string'.
+#0 19.13 src/stores/CommunityStore.ts(84,29): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 19.13 src/stores/CommunityStore.ts(98,15): error TS2571: Object is of type 'unknown'.
+#0 19.13 src/stores/CommunityStore.ts(98,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.13   Type 'undefined' is not assignable to type 'string'.
+
+
+
+#0 19.13 src/stores/GameStore.ts(21,25): error TS7006: Parameter 'newGameState' implicitly has an 'any' type.
+#0 19.13 src/stores/GameStore.ts(23,36): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(24,36): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(26,35): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(27,35): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(28,42): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(29,42): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(30,41): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(31,41): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(32,38): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(33,38): error TS2531: Object is possibly 'null'.
+#0 19.13 src/stores/GameStore.ts(35,21): error TS7006: Parameter 'count' implicitly has an 'any' type.
+#0 19.13 src/stores/GameStore.ts(38,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
+#0 19.13 src/stores/GameStore.ts(41,24): error TS7006: Parameter 'result' implicitly has an 'any' type.
+
+
+
+#0 19.13 src/stores/MatchmakingStore.ts(18,25): error TS7006: Parameter 'profileStore' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(31,17): error TS2322: Type 'string' is not assignable to type 'null'.
+#0 19.13 src/stores/MatchmakingStore.ts(41,28): error TS7006: Parameter 'data' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(48,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(52,24): error TS7006: Parameter 'value' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(55,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(58,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(61,28): error TS7006: Parameter 'count' implicitly has an 'any' type.
+#0 19.13 src/stores/MatchmakingStore.ts(64,25): error TS7006: Parameter 'uuid' implicitly has an 'any' type.
+#0 19.14 src/stores/MatchmakingStore.ts(67,29): error TS7006: Parameter 'username' implicitly has an 'any' type.
+#0 19.14 src/stores/MatchmakingStore.ts(70,19): error TS7006: Parameter 'id' implicitly has an 'any' type.
+
+
+
+#0 19.14 src/stores/ProfileStore.ts(31,14): error TS2571: Object is of type 'unknown'.
+#0 19.14 src/stores/ProfileStore.ts(31,25): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.14   Type 'undefined' is not assignable to type 'string'.
+#0 19.14 src/stores/ProfileStore.ts(34,4): error TS2322: Type 'number' is not assignable to type 'string'.
+#0 19.14 src/stores/ProfileStore.ts(50,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+#0 19.14 src/stores/ProfileStore.ts(51,30): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+#0 19.14 src/stores/ProfileStore.ts(52,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+#0 19.14 src/stores/ProfileStore.ts(53,35): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+#0 19.14 src/stores/ProfileStore.ts(54,16): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+
+
+#0 19.14 src/stores/UserProfileStore.ts(65,15): error TS2571: Object is of type 'unknown'.
+#0 19.14 src/stores/UserProfileStore.ts(65,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.14   Type 'undefined' is not assignable to type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(83,39): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(100,41): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(140,47): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(160,40): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(177,40): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(200,19): error TS18047: 'gamesResults.value' is possibly 'null'.
+#0 19.14 src/stores/UserProfileStore.ts(201,8): error TS18047: 'gamesResults.value' is possibly 'null'.
+#0 19.14 src/stores/UserProfileStore.ts(202,12): error TS18047: 'gamesResults.value' is possibly 'null'.
+#0 19.14 src/stores/UserProfileStore.ts(216,42): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(234,23): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(243,42): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(255,48): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(273,32): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(283,48): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(295,46): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(317,40): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.14 src/stores/UserProfileStore.ts(319,30): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.14 src/stores/UserProfileStore.ts(325,20): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(327,22): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.14 src/stores/UserProfileStore.ts(333,27): error TS2339: Property 'idUser' does not exist on type 'never'.
+
+
+
+
+#0 19.14 src/views/CommunityView.vue(77,26): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(78,54): error TS2339: Property 'name' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(80,33): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(81,22): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(82,29): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(86,43): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(86,65): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(87,44): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(87,66): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(89,37): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(89,59): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(94,37): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(95,37): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(95,81): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(99,23): error TS2339: Property 'idType' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(100,34): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(127,23): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(131,45): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(132,47): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(134,40): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(136,20): error TS2339: Property 'name' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(177,55): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(178,52): error TS2339: Property 'content' does not exist on type 'never'.
+#0 19.14 src/views/CommunityView.vue(218,19): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(220,26): error TS2339: Property 'role' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(222,19): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(226,30): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(226,76): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(232,38): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(241,26): error TS2339: Property 'role' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(242,51): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(251,36): error TS2339: Property 'role' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(252,34): error TS2339: Property 'owner' does not exist on type 'never'.
+#0 19.15 src/views/CommunityView.vue(256,20): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(259,52): error TS2339: Property 'role' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(260,37): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(265,69): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(267,29): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(267,75): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(272,38): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(276,56): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(279,51): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.16 src/views/CommunityView.vue(280,41): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(281,57): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(284,70): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(285,47): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(285,87): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(286,42): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(289,48): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(290,48): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(293,109): error TS2339: Property 'owner' does not exist on type 'never'.
+#0 19.17 src/views/CommunityView.vue(324,39): error TS2724: '"vue"' has no exported member named 'watched'. Did you mean 'watch'?
+#0 19.17 src/views/CommunityView.vue(324,58): error TS1484: 'Ref' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+#0 19.17 src/views/CommunityView.vue(331,38): error TS2440: Import declaration conflicts with local declaration of 'block'.
+#0 19.18 src/views/CommunityView.vue(342,35): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.18 src/views/CommunityView.vue(350,19): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.18 src/views/CommunityView.vue(358,50): error TS2339: Property 'isReady' does not exist on type 'never'.
+#0 19.18 src/views/CommunityView.vue(360,30): error TS2339: Property 'isReady' does not exist on type 'never'.
+#0 19.18 src/views/CommunityView.vue(371,57): error TS2339: Property 'opponentId' does not exist on type 'never'.
+#0 19.18 src/views/CommunityView.vue(374,51): error TS2339: Property 'opponentId' does not exist on type 'never'.
+#0 19.18 src/views/CommunityView.vue(400,33): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 19.18 src/views/CommunityView.vue(402,5): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 19.18 src/views/CommunityView.vue(407,32): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 19.18 src/views/CommunityView.vue(408,9): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 19.18 src/views/CommunityView.vue(409,23): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 19.19 src/views/CommunityView.vue(410,16): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+#0 19.19 src/views/CommunityView.vue(423,27): error TS7006: Parameter 'idUser' implicitly has an 'any' type.
+#0 19.19 src/views/CommunityView.vue(424,49): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.19 src/views/CommunityView.vue(424,105): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.19 src/views/CommunityView.vue(480,41): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.19 src/views/CommunityView.vue(486,39): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+#0 19.19 src/views/CommunityView.vue(488,44): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.19 src/views/CommunityView.vue(533,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
+#0 19.19 src/views/CommunityView.vue(540,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.19 src/views/CommunityView.vue(540,54): error TS2551: Property '_value' does not exist on type 'Ref<never[]>'. Did you mean 'value'?
+#0 19.20 src/views/CommunityView.vue(542,21): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+#0 19.20 src/views/CommunityView.vue(546,19): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 19.20 src/views/CommunityView.vue(550,44): error TS2339: Property 'idChannel' does not exist on type 'never'.
+#0 19.20 src/views/CommunityView.vue(565,5): error TS7034: Variable 'updateChannelInterval' implicitly has type 'any' in some locations where its type cannot be determined.
+#0 19.20 src/views/CommunityView.vue(568,10): error TS2304: Cannot find name 'users'.
+#0 19.20 src/views/CommunityView.vue(568,21): error TS7006: Parameter 'user' implicitly has an 'any' type.
+#0 19.20 src/views/CommunityView.vue(575,17): error TS7005: Variable 'updateChannelInterval' implicitly has an 'any' type.
+#0 19.20 src/views/CommunityView.vue(581,55): error TS2339: Property 'username' does not exist on type 'never'.
+#0 19.20 src/views/CommunityView.vue(603,31): error TS7006: Parameter 'event' implicitly has an 'any' type.
+#0 19.20 src/views/CommunityView.vue(612,2): error TS2322: Type 'string' is not assignable to type 'null'.
+#0 19.20 src/views/CommunityView.vue(616,37): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.21 src/views/CommunityView.vue(627,30): error TS7006: Parameter 'idChannel' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(721,25): error TS7006: Parameter 'playerID' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(729,28): error TS7006: Parameter 'channType' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(761,28): error TS7006: Parameter 'friendId' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(768,21): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.21 src/views/CommunityView.vue(773,20): error TS2339: Property 'idUser' does not exist on type 'never'.
+#0 19.21 src/views/CommunityView.vue(779,34): error TS7006: Parameter 'usernameToFriend' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(786,28): error TS7006: Parameter 'usernameToBlock' implicitly has an 'any' type.
+#0 19.21 src/views/CommunityView.vue(823,28): error TS7006: Parameter 'idPromoted' implicitly has an 'any' type.
+
+
+
+#0 19.21 src/views/HomeView.vue(13,20): error TS2571: Object is of type 'unknown'.
+#0 19.21 src/views/HomeView.vue(13,31): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.21   Type 'undefined' is not assignable to type 'string'.
+
+
+#0 19.21 src/views/SettingsView.vue(167,5): error TS18047: 'fileInput.value' is possibly 'null'.
+#0 19.21 src/views/SettingsView.vue(187,3): error TS2322: Type '(value: unknown) => void' is not assignable to type 'boolean'.
+#0 19.21 src/views/SettingsView.vue(234,4): error TS7053: Element implicitly has an 'any' type because expression of type '"username"' can't be used to index type '{}'.
+#0 19.21   Property 'username' does not exist on type '{}'.
+#0 19.21 src/views/SettingsView.vue(239,33): error TS18047: 'fileInput.value.files' is possibly 'null'.
+#0 19.21 src/views/SettingsView.vue(246,6): error TS7053: Element implicitly has an 'any' type because expression of type '"avatar"' can't be used to index type '{}'.
+#0 19.21   Property 'avatar' does not exist on type '{}'.
+#0 19.21 src/views/SettingsView.vue(260,7): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
+#0 19.21   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
+#0 19.21 src/views/SettingsView.vue(269,5): error TS7053: Element implicitly has an 'any' type because expression of type '"isTwoFactorAuthEnabled"' can't be used to index type '{}'.
+#0 19.21   Property 'isTwoFactorAuthEnabled' does not exist on type '{}'.
+#0 19.21 src/views/SettingsView.vue(276,15): error TS2571: Object is of type 'unknown'.
+#0 19.21 src/views/SettingsView.vue(276,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+#0 19.21   Type 'undefined' is not assignable to type 'string'.
+#0 19.21 src/views/SettingsView.vue(284,32): error TS2345: Argument of type '{}' is not assignable to parameter of type '[]'.
+#0 19.29 ERROR: "type-check" exited with 2.
