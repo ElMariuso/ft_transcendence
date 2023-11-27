@@ -77,7 +77,9 @@ const updatePlayerStatus = (status: number): void => {
     const profileStore = useProfileStore();
     const playerId = profileStore.userID;
 
-    if (playerId > 0) {
+	let id = parseInt(playerId, 10);
+
+    if (id > 0) {
         socket.emit('update-status', { playerId, status });
     }
 };

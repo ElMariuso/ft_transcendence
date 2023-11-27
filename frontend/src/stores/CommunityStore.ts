@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
 
 interface CommunityStoreState {
-	openChannels: Array<Object>[]; // Replace SomeType with the actual type of openChannels
+	openChannels: Array<Object>; // Replace SomeType with the actual type of openChannels
 	joinedChannels: Array<Object>[]; // Replace SomeType with the actual type of joinedChannels
 	selectedChannelMsg:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelMsg
 	selectedChannelUsers:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelUsers
