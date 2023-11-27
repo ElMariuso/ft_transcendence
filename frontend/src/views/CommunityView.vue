@@ -78,7 +78,7 @@
 							<div class="w-2/3 overflow-x-auto">{{ channel.name }}</div>
 							<button 
 								v-if="!isBanned(channel.idChannel)"
-								:id="channel.idChannel" 
+								:id="String(channel.idChannel)" 
 								:channType="channel.idType" 
 								@click="btnJoinChannel" 
 								class="flex w-1/3"
@@ -124,7 +124,7 @@
 						<div class="overflow-y-auto" ref="scrollContainer">
 							<ul class="flex flex-row">
 								<button 
-									:id="channel.idChannel"
+									:id="String(channel.idChannel)"
 									v-for="channel in joinedChannels"
 									class="mx-1 border rounded-lg px-2 py-1 max-w-tab min-w-tab truncate"
 									:class="{ 
@@ -322,27 +322,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted, watched, computed, Ref, watch } from 'vue'
+import { ref, onUnmounted, onMounted, computed, Ref, watch } from 'vue'
 import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
 import api from '../services/api';
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, 
-	getChannelMsg, deleteMessage, mute, block, getChannelUsers, creatDMChannel, promote, channelPrivToPub, modifyChannelPw } from '@/services/Community-helpers'
+	getChannelMsg, deleteMessage, mute, getChannelUsers, creatDMChannel, promote, channelPrivToPub, modifyChannelPw } from '@/services/Community-helpers'
 import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState, confirmChallenge } from '@/services/matchmaking-helpers'
 
 const usersIntervals = ref({});
 const acceptedChallengeInterval = ref<number | null>(null);
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 
-let updateAvailableChannelInterval;
+let updateAvailableChannelInterval: any;
 
 onMounted(async () => {
     await communityStore.setupCommunity();
 
 	acceptedChallengeInterval.value = setInterval(() => {
-        askAcceptedChallengeState(profileStore.userID);
+		let id = parseInt(profileStore.userID, 10);
+        askAcceptedChallengeState(id);
     }, 1000);
 
 	updateAvailableChannelInterval = setInterval(async () => {
@@ -353,8 +354,8 @@ onMounted(async () => {
 const sendConfirmChallenge = async () => {
 	const acceptedChallengeState = communityStore.acceptedChallengesStates;
 	if (!acceptedChallengeState) return ;
-
-	confirmChallenge(profileStore.userID, profileStore.username);
+	let id = parseInt(profileStore.userID, 10);
+	confirmChallenge(id, profileStore.username);
 };
 
 const countReadyPlayers: Ref<number> = computed(() => {
@@ -404,14 +405,14 @@ const isChallengeActiveForOpponent = (idUser: number): Ref<boolean> => {
 	});
 };
 
-const startChallengeInterval = (friendId) => {
+const startChallengeInterval = (friendId: any) => {
     stopChallengeInterval(friendId);
     usersIntervals.value[friendId] = setInterval(() => {
         askChallengeState(profileStore.userID, friendId);
     }, 1000);
 };
 
-const stopChallengeInterval = (friendId) => {
+const stopChallengeInterval = (friendId: any) => {
     if (usersIntervals.value[friendId]) {
         clearInterval(usersIntervals.value[friendId]);
         delete usersIntervals.value[friendId];
@@ -615,7 +616,7 @@ const closeDropdownOnClick = (event) => {
 	}
 };
 
-async function selectChannel(channelID: string) {
+async function selectChannel(channelID: number) {
 
 	// Websocket connect here ?
 	selectedChannelID.value = channelID;
@@ -744,25 +745,6 @@ function getChannelTypeImg(channType) {
 	else if (channType === 1)
 		return "src/assets/private.svg";
 }
-
-// async function playerProfile() {
-// 	console.log("profile");
-// 	// Need profile implementation
-// }
-// async function playerMessage() {
-// 	console.log("message");
-// 	// Need websocket I believe
-// }
-// async function playerFriend() {
-// 	console.log("friend");
-// }
-
-// async function playerBlock() {
-// 	console.log("block");
-
-// 	await block(userID.value, selectedUserID.value);
-	
-// }
 
 const setAll = async () => {
 	await ladderStore.setup(0)

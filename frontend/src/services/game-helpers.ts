@@ -3,7 +3,7 @@ import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
 import { position, size, EndReason, Player } from "@/models/game.model";
 
 export function gameLoop(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,
-    roomId: string, movingUp: { value: boolean }, movingDown: { value: boolean }): void {
+    roomId: string | null, movingUp: { value: boolean }, movingDown: { value: boolean }): void {
     const gameStore = useGameStore();
 
     function loop() {

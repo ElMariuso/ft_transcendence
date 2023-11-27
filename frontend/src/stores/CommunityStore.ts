@@ -10,17 +10,45 @@ interface Channel {
 	idType: number;
 }
 
+interface Msg {
+	idMessage: number;
+	idUser: number;
+	idChannel: number;
+	username: string;
+	content: string;
+	timestamps: Date;
+}
+
+interface UserChannel {
+    idUser_Channel: number;
+    idUser: number;
+    idChannel: number;
+    idRole: number;
+    muteTime: Date | null;
+}
+ 
+interface ChallengeState {
+	isChallengePending: boolean,
+	challengerId: number,
+	opponentId: number
+};
+
+interface AcceptedChallengeState {
+	isReady: { [playerId: number]: boolean }
+	opponentId: number
+};
+
 interface CommunityStoreState {
 	openChannels: Array<Channel>; // Replace SomeType with the actual type of openChannels
-	joinedChannels: Array<Object>[]; // Replace SomeType with the actual type of joinedChannels
-	selectedChannelMsg:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelMsg
-	selectedChannelUsers:  Array<Object>[]; // Replace SomeType with the actual type of selectedChannelUsers
+	joinedChannels: Array<Channel>; // Replace SomeType with the actual type of joinedChannels
+	selectedChannelMsg:  Array<Msg>; // Replace SomeType with the actual type of selectedChannelMsg
+	selectedChannelUsers:  Array<UserChannel>; // Replace SomeType with the actual type of selectedChannelUsers
 	roleInChannel: string; // Replace string with the actual type of roleInChannel
-	challengeStates: Map<Object, Object>; // Replace SomeKeyType and SomeValueType with the actual types
-	challengesStatesForOpponent: Map<Object, Object>; // Replace SomeKeyType and SomeValueType with the actual types
-	acceptedChallengesStates: Object | null; // Replace SomeType with the actual type
+	challengeStates: Map<number, ChallengeState>; // Replace SomeKeyType and SomeValueType with the actual types
+	challengesStatesForOpponent: Map<number, ChallengeState>; // Replace SomeKeyType and SomeValueType with the actual types
+	acceptedChallengesStates: AcceptedChallengeState | null; // Replace SomeType with the actual type
 	channelType: number;
-	bannedChannel: Array<Object>[]; // Replace SomeType with the actual type of bannedChannel
+	bannedChannel: Array<Channel>; // Replace SomeType with the actual type of bannedChannel
   }
 
 export const useCommunityStore = defineStore('community', {

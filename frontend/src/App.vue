@@ -16,12 +16,7 @@ const matchmakingStore = useMatchmakingStore();
 async function setupStore() {
 	let uri = window.location.href.split('id=');
 
-	try {
-
-		let id = parseInt(uri[1], 10);
-	} catch(error) {
-		console.log("Mount error:", error);
-	}
+	let id = parseInt(uri[1], 10);
 	
 	if (uri[1])
 		await profileStore.setupProfile(id);

@@ -35,7 +35,8 @@ watch(isAuthenticated, async () => {
 watch(userID, async (oldID, newID) => {
 	if (oldID != newID) {
 
-		await profileStore.setupProfile(userID.value);
+		let id = parseInt(userID.value, 10);
+		await profileStore.setupProfile(id);
 		refreshNavbar();
 	}
 })
