@@ -50,7 +50,7 @@ export default {
         function logout() {
             const profileStore = useProfileStore();
             
-            updatePlayerStatus(1, profileStore);
+            updatePlayerStatus(1);
             Cookies.remove('token');
 			authStore.logout();
 			router.push('/login');
