@@ -3,7 +3,6 @@ import { computed, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import jwt_decode from 'jwt-decode';
 import MatchmakingButton from './MatchmakingButton.vue';
 import LeaveMatch from './LeaveMatch.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
@@ -11,7 +10,6 @@ import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import JoinMatch from './JoinMatch.vue';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
-import { JwtPayload } from "@/models/jwtPayload.model";
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
@@ -21,7 +19,7 @@ const route = useRoute();
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const showButtons = computed(() => route.path.startsWith('/game/'));
 const isInGame = computed(() => (matchmakingStore.roomID !== null));
-const { username, avatarUpdated } = storeToRefs(profileStore)
+const { username, avatarUpdated, userID } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
 
@@ -30,6 +28,14 @@ const updateAvatarKey = ref(0);
 watch(isAuthenticated, async () => {
 	if (isAuthenticated) {
 		await profileStore.setupProfile(0);
+		refreshNavbar();
+	}
+})
+
+watch(userID, async (oldID, newID) => {
+	if (oldID != newID) {
+
+		await profileStore.setupProfile(userID.value);
 		refreshNavbar();
 	}
 })
@@ -49,11 +55,9 @@ watch(avatarUpdated, () => {
 function getAvatarImg() {
 
   const token: any = Cookies.get('token');
-  const decodedToken: JwtPayload = jwt_decode(token);
-  const id: any = decodedToken.sub;
 
   if (token) {
-    return "http://localhost:3000/users/avatar/" + id;
+    return "http://localhost:3000/users/avatar/" + userID.value;
   }
 }
 
