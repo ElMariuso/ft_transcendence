@@ -335,12 +335,18 @@ const usersIntervals = ref({});
 const acceptedChallengeInterval = ref<number | null>(null);
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 
+let updateAvailableChannelInterval;
+
 onMounted(async () => {
     await communityStore.setupCommunity();
 
 	acceptedChallengeInterval.value = setInterval(() => {
         askAcceptedChallengeState(profileStore.userID);
     }, 1000);
+
+	updateAvailableChannelInterval = setInterval(async () => {
+	await communityStore.setupCommunity();
+	}, 500);
 });
 
 const sendConfirmChallenge = async () => {
@@ -419,6 +425,7 @@ onUnmounted(() => {
         acceptedChallengeInterval.value = null;
     }
 	clearInterval(updateChannelInterval);
+	clearInterval(updateAvailableChannelInterval);
 });
 
 const playerPlay = async (idUser) => {
@@ -582,7 +589,6 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
 			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
 				selectedChannelID.value = null;
 			await communityStore.updateSelectedChannel(newChannelID);
-			await communityStore.setupCommunity();
 		}, 500);
     // }
 });
