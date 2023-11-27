@@ -122,7 +122,7 @@ onMounted(async () => {
 				else
                 gameStore.setIsFirstPlayer(false);
 			}
-            gameLoop(context, canvas, gameStore, roomID, movingUp, movingDown);
+            gameLoop(context, canvas, roomID, movingUp, movingDown);
         } catch (error) {
             console.error("There was an error getting the game information: ", error);
         }
