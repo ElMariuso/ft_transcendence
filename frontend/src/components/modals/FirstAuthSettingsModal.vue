@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import Backdrop from './Backdrop.vue';
-import { ref, computed, watch, defineEmits, Ref } from 'vue';
+import { ref, computed, watch, Ref } from 'vue';
 import api from '../../services/api';
 import { useProfileStore } from '../../stores/ProfileStore';
 import { storeToRefs } from 'pinia';

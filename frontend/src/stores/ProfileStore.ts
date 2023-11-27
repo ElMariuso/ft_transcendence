@@ -33,9 +33,10 @@ export const useProfileStore = defineStore('profile', () => {
 		userID.value = id;
 
 		if (newId != 0)
-			userID.value = String(newId);
-
+		
 		try {
+			userID.value = String(newId);
+			console.log("ID: " + id)
 			const userData = await getUserData(id);
 			setUserID(id);
 			username.value = userData.username;

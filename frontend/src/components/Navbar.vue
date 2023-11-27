@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, watch, ref, onActivated } from 'vue';
+import { computed, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
-import jwt_decode, {JwtPayload} from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import MatchmakingButton from './MatchmakingButton.vue';
 import LeaveMatch from './LeaveMatch.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
@@ -11,6 +11,7 @@ import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import JoinMatch from './JoinMatch.vue';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
+import { JwtPayload } from "@/models/jwtPayload.model";
 
 const authStore = useAuthenticationStore();
 const profileStore = useProfileStore();
@@ -24,9 +25,13 @@ const { username, avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
 
+
+
 watch(isAuthenticated, async () => {
-	if (isAuthenticated)
+	if (isAuthenticated) {
 		await profileStore.setupProfile(0);
+		refreshNavbar();
+	}
 })
 
 const refreshNavbar = () => {
@@ -41,13 +46,8 @@ watch(avatarUpdated, () => {
 	}
 })
 
-watch(isAuthenticated, () => {
-  if (isAuthenticated) {
-    refreshNavbar();
-  }
-});
-
 function getAvatarImg() {
+
   const token: any = Cookies.get('token');
   const decodedToken: JwtPayload = jwt_decode(token);
   const id: any = decodedToken.sub;

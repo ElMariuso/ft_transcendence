@@ -15,7 +15,6 @@
 */
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
-import { useProfileStore } from '@/stores/ProfileStore'
 import { checkJWT } from '@/services/auth-helpers';
 import Cookies from 'js-cookie';
 
@@ -115,10 +114,10 @@ router.beforeEach((to, from, next) => {
 			const decodedToken: JwtPayload = jwt_decode(token);
 			const twoFactorAuthEnabled: any = decodedToken.twoFactorAuthEnabled;
 
-			
 			if (twoFactorAuthEnabled) {
 				return next({ name: 'login2fa' });
 			}
+			console.log("Here ?")
 			return next({ name: 'home' });
 		}
 				
