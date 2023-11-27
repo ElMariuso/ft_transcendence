@@ -217,6 +217,8 @@ export const getFriendsData = async (userID : string) => {
  export const getBlockedListData = async (userID : string) => {
     try {
         const response = await api.get('/users/' + userID + '/blocked');
+		console.log("REWSPONE")
+		console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('Error fetching blocked list data:', error);

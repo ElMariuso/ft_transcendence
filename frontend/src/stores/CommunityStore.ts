@@ -1,7 +1,7 @@
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { defineStore } from 'pinia'
-import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers } from '@/services/Community-helpers'
+import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
 
 export const useCommunityStore = defineStore('community', {
 	state: () => ({
@@ -13,8 +13,8 @@ export const useCommunityStore = defineStore('community', {
 		challengeStates: new Map(),
 		challengesStatesForOpponent: new Map(),
 		acceptedChallengesStates: null,
-		// const channelType = ref(0);
-		// const bannedChannel = ref([]);
+		channelType: 0,
+		bannedChannel: []
 	}),
 	actions: {
 		updateAcceptedChallengeState(newState) {
@@ -51,19 +51,19 @@ export const useCommunityStore = defineStore('community', {
 	
 				this.openChannels = resChannels;
 
-				// let j = 0;
-				// bannedChannel.value = [];
+				let j = 0;
+				this.bannedChannel = [];
 
-				// for(let i = 0; openChannels.value[i] ; i++)
-				// {
-				// 	const users = await getChannelUsers(openChannels.value[i].idChannel);
-				// 	const user = users.find(user => user.idUser === id);
-				// 	if (user && user.role == "Banned")
-				// 	{
-				// 		bannedChannel.value[j] = openChannels.value[i]
-						// j++;
-				// 	}
-				// }
+				for(let i = 0; this.openChannels[i] ; i++)
+				{
+					const users = await getChannelUsers(this.openChannels[i].idChannel);
+					const user = users.find(user => user.idUser === id);
+					if (user && user.role == "Banned")
+					{
+						this.bannedChannel[j] = this.openChannels[i]
+						j++;
+					}
+				}
 
 			} catch (error) {
 				console.error("Error setting up available channels:", error);
@@ -74,9 +74,8 @@ export const useCommunityStore = defineStore('community', {
 			const id = jwt_decode(token).sub;
 	
 			try {
-				// const channel = await getChannel(channelID);
-				// channelType.value = channel.idType;
-				// console.log(channelType.value)
+				const channel = await getChannel(channelID);
+				this.channelType = channel.idType;
 
 				const messages = await getChannelMsg(channelID);
 				this.selectedChannelMsg = messages;
