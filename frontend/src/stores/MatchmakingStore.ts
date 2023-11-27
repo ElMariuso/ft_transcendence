@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { rejoinMatchmaking, rejoinRoom } from '@/services/matchmaking-helpers';
 import { useProfileStore } from './ProfileStore';
 import { MatchmakingStoreState, UpdateInfoData } from '@/models/matchmaking.model';
+import { useAuthenticationStore } from './AuthenticationStore';
 
 export const useMatchmakingStore = defineStore('matchmaking', {
     state: (): MatchmakingStoreState => ({
@@ -19,6 +20,7 @@ export const useMatchmakingStore = defineStore('matchmaking', {
     actions: {
         initializeStore(): void {
             const profileStore = useProfileStore();
+            const authenticationStore = useAuthenticationStore();
             let guestUUIDCookie = Cookies.get('guestUUID');
 
             if (!guestUUIDCookie) {
@@ -27,13 +29,13 @@ export const useMatchmakingStore = defineStore('matchmaking', {
             }
             this.guestUUID = guestUUIDCookie;
 
-            const playerId = profileStore.userID <= 0 ? this.guestUUID : profileStore.userID;
+            const playerId = parseInt(profileStore.userID, 10) <= 0 ? this.guestUUID : profileStore.userID;
             rejoinMatchmaking(playerId);
 
             const roomIDCookie = Cookies.get('roomID');
             if (roomIDCookie) {
                 this.roomID = roomIDCookie;
-                const username = profileStore.isAuthenticated ? profileStore.username : 'Guest' + this.guestUUID.substring(0, 8);
+                const username = authenticationStore.isAuthenticated ? profileStore.username : 'Guest' + this.guestUUID.substring(0, 8);
                 const data = {
                     playerId: playerId,
                     roomId: this.roomID, 

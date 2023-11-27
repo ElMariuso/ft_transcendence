@@ -44,6 +44,7 @@
 #0 13.15 src/services/matchmaking-helpers.ts(217,40): error TS2551: Property 'value' does not exist on type 'never[]'. Did you mean 'values'?
 #0 13.15 src/services/matchmaking-helpers.ts(218,39): error TS2551: Property 'value' does not exist on type 'never[]'. Did you mean 'values'?
 #0 13.15 src/services/matchmaking-helpers.ts(233,35): error TS2551: Property 'value' does not exist on type 'never[]'. Did you mean 'values'?
+
 #0 13.15 src/stores/CommunityStore.ts(80,42): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
 #0 13.15 src/stores/CommunityStore.ts(81,30): error TS7006: Parameter 'user' implicitly has an 'any' type.
 #0 13.15 src/stores/CommunityStore.ts(84,7): error TS2740: Type '{ idChannel: number; name: string; idOwner: number; idType: number; }' is missing the following properties from type 'Object[]': length, pop, push, concat, and 25 more.
@@ -54,8 +55,10 @@
 #0 13.16 src/stores/CommunityStore.ts(130,15): error TS2571: Object is of type 'unknown'.
 #0 13.16 src/stores/CommunityStore.ts(130,26): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
 #0 13.16   Type 'undefined' is not assignable to type 'string'.
+
 #0 13.16 src/stores/MatchmakingStore.ts(30,30): error TS2365: Operator '<=' cannot be applied to types 'string' and 'number'.
 #0 13.16 src/stores/MatchmakingStore.ts(36,47): error TS2339: Property 'isAuthenticated' does not exist on type 'Store<"profile", _UnwrapAll<Pick<{ avatar: Ref<string>; username: Ref<string>; twoFactorAuth: Ref<boolean>; userID: Ref<string>; avatarUpdated: Ref<boolean>; setupProfile: (newId: number) => Promise<...>; updateProfile: (bodyInfo: any) => void; }, "username" | ... 3 more ... | "avatarUpdated">>, Pick<...>, Pick<...>>'.
+
 #0 13.16 src/stores/UserProfileStore.ts(203,31): error TS2339: Property 'idGame' does not exist on type 'never'.
 #0 13.16 src/stores/UserProfileStore.ts(204,34): error TS2339: Property 'isWinner' does not exist on type 'never'.
 #0 13.16 src/stores/UserProfileStore.ts(322,41): error TS2339: Property 'username' does not exist on type 'never'.
