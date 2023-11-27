@@ -4,6 +4,7 @@ import { joinQueue, leaveQueue, joinRankedQueue, leaveRankedQueue } from '@/serv
 import { useProfileStore } from '@/stores/ProfileStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
+import { AuthenticatedPlayer, PlayerInQueue } from "@/models/player.model";
 
 const props = defineProps({
     isRanked: {
@@ -41,7 +42,7 @@ const handleClick = async () => {
         console.log(`Joining a ${props.isRanked ? 'ranked' : 'standard'} match...`);
         try {
             if (props.isRanked) {
-                const playerData = { 
+                const playerData: AuthenticatedPlayer = { 
                     id: profileStore.userID,
                     isGuest: false,
                     points: 0,
@@ -49,7 +50,7 @@ const handleClick = async () => {
                 };
                 await joinRankedQueue(playerData);
             } else {
-                let playerData;
+                let playerData: PlayerInQueue;
                 if (isAuthenticated.value) {
                     playerData = {
                         id: profileStore.userID,

@@ -22,7 +22,7 @@ async function setupStore() {
 }
 
 function handleBeforeUnload() {
-  updatePlayerStatus(1, profileStore);
+  updatePlayerStatus(1);
 }
 
 onMounted(() => {
@@ -32,8 +32,8 @@ onMounted(() => {
     if (token) {
       setupStore();
     }
-    initializeSocketListeners(matchmakingStore, profileStore);
-    updatePlayerStatus(0, profileStore);
+    initializeSocketListeners();
+    updatePlayerStatus(0);
     window.addEventListener('beforeunload', handleBeforeUnload);
 });
 

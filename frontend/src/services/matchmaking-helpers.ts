@@ -4,44 +4,46 @@ import { useRouter } from 'vue-router';
 import { useProfileStore } from "@/stores/ProfileStore";
 import { useLadderStore } from "@/stores/UserProfileStore";
 import { useCommunityStore } from "@/stores/CommunityStore";
+import { useMatchmakingStore } from "@/stores/MatchmakingStore";
+import { AuthenticatedPlayer, PlayerInQueue } from "@/models/player.model";
 
-const joinQueue = (playerData) => {
+const joinQueue = (playerData: PlayerInQueue): void => {
     socket.emit('join-standard', playerData);
 };
 
-const leaveQueue = (playerId) => {
+const leaveQueue = (playerId: string | number): void => {
     socket.emit('leave-standard', { playerId });
 };
 
-const getQueueStatus = () => {
+const getQueueStatus = (): void => {
     socket.emit('status-standard');
 };
 
-const joinRankedQueue = (playerData) => {
+const joinRankedQueue = (playerData: AuthenticatedPlayer): void => {
     socket.emit('join-ranked', playerData);
 };
 
-const leaveRankedQueue = (playerId) => {
+const leaveRankedQueue = (playerId: number): void => {
     socket.emit('leave-ranked', playerId);
 };
 
-const getRankedQueueStatus = () => {
+const getRankedQueueStatus = (): void => {
     socket.emit('status-ranked');
 };
 
-const quitMatch = (data) => {
-    socket.emit('quit-match', data);
+const quitMatch = (playerId: number | string): void => {
+    socket.emit('quit-match', playerId);
 };
 
-const rejoinRoom = (data) => {
+const rejoinRoom = (data: { playerId: string | number, roomId: string, username: string }): void => {
     socket.emit('rejoin-room', data);
 };
 
-const rejoinMatchmaking = (data) => {
-    socket.emit('rejoin-matchmaking', data);
+const rejoinMatchmaking = (playerId: string | number): void => {
+    socket.emit('rejoin-matchmaking', playerId);
 };
 
-const askGamesInformations = (roomId) => {
+const askGamesInformations = (roomId: string) => {
     return new Promise((resolve) => {
         socket.once('games-informations', (data) => {
             resolve(data);
@@ -51,27 +53,28 @@ const askGamesInformations = (roomId) => {
     });
 };
 
-const updateRacket = (roomId, action) => {
+const updateRacket = (roomId: string, action: string): void => {
     socket.emit('update-racket', roomId, action);
 };
 
-const setReady = (roomId, action) => {
+const setReady = (roomId: string, action: string): void => {
     socket.emit('set-ready', roomId, action);
 };
 
-const setWantBaseGame = (roomId, action) => {
+const setWantBaseGame = (roomId: string, action: string): void => {
     socket.emit('set-want-base-game', roomId, action);
 };
 
-const setSmallRacket = (roomId, action) => {
+const setSmallRacket = (roomId: string, action: string): void => {
     socket.emit('set-small-racket', roomId, action);
 };
 
-const setObstacle = (roomId, action) => {
+const setObstacle = (roomId: string, action: string): void => {
     socket.emit('set-obstacle', roomId, action);
 };
 
-const updatePlayerStatus = (status, profileStore) => {
+const updatePlayerStatus = (status: number): void => {
+    const profileStore = useProfileStore();
     const playerId = profileStore.userID;
 
     if (playerId > 0) {
@@ -79,38 +82,40 @@ const updatePlayerStatus = (status, profileStore) => {
     }
 };
 
-const getPlayerStatus = (data) => {
-    socket.emit('get-status', data);
+const getPlayerStatus = (playerId: number): void => {
+    socket.emit('get-status', playerId);
 };
 
-const askChallenge = (playerId, opponentId) => {
+const askChallenge = (playerId: number, opponentId: number): void => {
     socket.emit('challenge', playerId, opponentId);
 };
 
-const askChallengeState = (askerId, friendId) => {
+const askChallengeState = (askerId: number, friendId: number): void => {
     socket.emit('challenge-state', askerId, friendId);
 };
 
-const challengeAnswer = (challengerId: number, opponentId: number, answer: number) => {
+const challengeAnswer = (challengerId: number, opponentId: number, answer: number): void => {
     socket.emit('challenge-answer', challengerId, opponentId, answer);
 };
 
-const askAcceptedChallengeState = (playerId: number) => {
+const askAcceptedChallengeState = (playerId: number): void => {
     socket.emit('accepted-challenge-state', playerId);
 };
 
-const confirmChallenge = (playerId: number, playerUsername: string) => {
+const confirmChallenge = (playerId: number, playerUsername: string): void => {
     socket.emit('confirm-challenge', playerId, playerUsername);
 };
 
-const initializeSocketListeners = (matchmakingStore, profileStore) => {
+const initializeSocketListeners = (): void => {
     const router = useRouter();
+    const matchmakingStore = useMatchmakingStore();
+    const profileStore = useProfileStore();
 
-    socket.on('joined', (response) => {
+    socket.on('joined', () => {
         matchmakingStore.setIsSearching(true);
     });
 
-    socket.on('left', (response) => {
+    socket.on('left', () => {
         matchmakingStore.setIsSearching(false);
     });
 
@@ -118,11 +123,11 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
         matchmakingStore.setNumberOfPlayers(response.playersInQueue);
     });
 
-    socket.on('joined-ranked', (response) => {
+    socket.on('joined-ranked', () => {
         matchmakingStore.setIsSearching(true);
     });
 
-    socket.on('left-ranked', (response) => {
+    socket.on('left-ranked', () => {
         matchmakingStore.setIsSearching(false);
     });
 
@@ -131,7 +136,6 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
     });
 
     socket.on('match-found-standard', (response) => {
-        console.log("Standard:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -151,11 +155,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setMatchFound(false);
             router.push({ name: 'game', params: { roomId: response.roomId } });
         }
-        updatePlayerStatus(2, profileStore);
+        updatePlayerStatus(2);
     });
 
     socket.on('match-found-ranked', (response) => {
-        console.log("Ranked:", response);
         matchmakingStore.setMatchFound(true);
 
         let opponentUUID;
@@ -176,10 +179,10 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             matchmakingStore.setIsRanked(false);
             router.push({ name: 'game', params: { roomId: response.roomId } });
         }
-        updatePlayerStatus(2, profileStore);
+        updatePlayerStatus(2);
     });
 
-    socket.on('rejoin-failed', (response) => {
+    socket.on('rejoin-failed', () => {
         matchmakingStore.setRoomID(null);
     });
 
@@ -202,7 +205,7 @@ const initializeSocketListeners = (matchmakingStore, profileStore) => {
             }
             gameStore.setMatchResult(null);
         }, 10000);
-        updatePlayerStatus(0, profileStore);
+        updatePlayerStatus(0);
     });
 
     socket.on('status-response', (data) => {
