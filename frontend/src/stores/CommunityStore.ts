@@ -62,7 +62,8 @@ export const useCommunityStore = defineStore('community', {
 		challengesStatesForOpponent: new Map(),
 		acceptedChallengesStates: null,
 		channelType: 0,
-		bannedChannel: []
+		bannedChannel: [],
+		tmpbannedChannel: []
 	}),
 	actions: {
 		updateAcceptedChallengeState(newState: any) {
@@ -101,7 +102,7 @@ export const useCommunityStore = defineStore('community', {
 				this.openChannels = resChannels;
 
 				let j = 0;
-				this.bannedChannel = [];
+				this.tmpbannedChannel = [];
 
 				for(let i = 0; this.openChannels[i] ; i++)
 				{
@@ -109,10 +110,11 @@ export const useCommunityStore = defineStore('community', {
 					const user = users.find(user => user.idUser === id);
 					if (user && user.role == "Banned")
 					{
-						this.bannedChannel[j] = this.openChannels[i]
+						this.tmpbannedChannel[j] = this.openChannels[i]
 						j++;
 					}
 				}
+				this.bannedChannel = this.tmpbannedChannel;
 
 			} catch (error) {
 				console.error("Error setting up available channels:", error);

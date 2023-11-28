@@ -94,7 +94,7 @@
 							<span v-if="isBanned(channel.idChannel)" class="text-red-600"> Banned </span>
 							<img v-if="!isBanned(channel.idChannel)" :src="getChannelTypeImg(channel.idType)" alt="channType">
 						</div>
-						<div class="flex justify-end">
+						<div v-if="!isBanned(channel.idChannel)" class="flex justify-end">
 							<input
 								v-if="channel.idType === 1"
 								v-model="pwInput[channel.idChannel]"
@@ -559,8 +559,12 @@ function isBanned(idChannel)
 	for(let i = 0; bannedChannel.value[i]; i++)
 	{
 		if (idChannel === bannedChannel.value[i].idChannel)
+		{	
+			console.log("Banned in : " + idChannel)
 			return (true);
+		}
 	}
+	console.log("Not banned in : " + idChannel)
 	return (false);
 }
 
