@@ -51,7 +51,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
-	const friendsStatus = ref([]);
+	const friendsStatus = ref(new Map());
 	const gamesResults: Ref<GameRes[] | null> = ref(null);
 
 	/////////////////// SETUP ////////////////////////

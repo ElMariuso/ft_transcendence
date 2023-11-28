@@ -214,10 +214,6 @@ const initializeSocketListeners = (): void => {
     socket.on('status-response', (data: any) => {
         const LadderStore = useLadderStore();
     
-        if (!LadderStore.friendsStatus.value) {
-            LadderStore.friendsStatus.value = {};
-        }
-
         let statusText = "Offline";
         switch (data.status) {
             case 0:
@@ -230,7 +226,7 @@ const initializeSocketListeners = (): void => {
                 statusText = "In Game";
                 break;
         }
-        LadderStore.friendsStatus.value[data.playerId] = statusText;
+        LadderStore.friendsStatus.value.set(data.playerId, statusText);
     });    
 
     socket.on('timer-before-launch', (response) => {
