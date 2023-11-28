@@ -140,7 +140,7 @@ onUnmounted(() => {
 
 const formattedFriendStatuses = computed(() => {
     const statuses = {};
-    const friendsStatusMap = ladderStore.friendsStatus.value || new Map();
+    const friendsStatusMap = ladderStore.friendsStatus || new Map();
     for (const [id, status] of friendsStatusMap.entries()) {
         statuses[id] = status;
     }

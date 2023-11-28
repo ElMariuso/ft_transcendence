@@ -2,6 +2,7 @@ import api from './api';
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { JwtPayload } from "@/models/jwtPayload.model";
+import { updatePlayerStatus } from './matchmaking-helpers';
 
 // import axios from 'axios';
 
@@ -108,6 +109,7 @@ export async function checkJWT(authStore: any) {
 			
             // Update the authState in the authStore to true.
 			authStore.login();
+			updatePlayerStatus(0);
 		} catch (error) {
 			console.error("JWT decode failed:", error);
 		}

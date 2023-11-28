@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 import { getUserData } from '@/services/auth-helpers'
 import Cookies from 'js-cookie';
+import { updatePlayerStatus } from '@/services/matchmaking-helpers';
 
 /**
  * Vue Store: Profile
@@ -32,7 +33,7 @@ export const useProfileStore = defineStore('profile', () => {
 		const id: any = decodedToken.sub;
 		userID.value = id;
 
-		if (newId != 0)
+		updatePlayerStatus(0);
 		
 		try {
 			userID.value = String(newId);

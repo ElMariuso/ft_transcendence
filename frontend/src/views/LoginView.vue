@@ -15,4 +15,3 @@ import Login from '../components/Login.vue';
 	</div>
 
 </template>
-  

@@ -124,6 +124,7 @@
 			</li>			  
 		  </div>		
 		</div>
+		<div>{{ console.log(formattedFriendStatuses) }}</div>
 
 		<!-- Blocked list -->
 		<div class="mt-6">
@@ -154,8 +155,8 @@ import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 //import { deleteBlock } from '@/services/UserProfile-helpers'
 
-const profileStore = useProfileStore()
-const ladderStore = useLadderStore()
+const profileStore = useProfileStore();
+const ladderStore = useLadderStore();
 
 const showProfile = ref(false);
 
@@ -194,7 +195,7 @@ onUnmounted(() => {
 
 const formattedFriendStatuses = computed(() => {
     const statuses = {};
-    const friendsStatusMap = ladderStore.friendsStatus.value || new Map();
+    const friendsStatusMap = ladderStore.friendsStatus || new Map();
     for (const [id, status] of friendsStatusMap.entries()) {
         statuses[id] = status;
     }
