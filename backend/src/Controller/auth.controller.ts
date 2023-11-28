@@ -106,7 +106,10 @@ export class AuthController {
 	twoFactorAuthLogin(@Body() body : TwoFactorAuthLoginDTO) {
 		try
 		{
-			return this.authService.login2fa(body.id, body.twoFactorAuth);
+			const res = this.authService.login2fa(body.id, body.twoFactorAuth);
+			console.log("2fa RES")
+			console.log(res)
+			return res;
 		}
 		catch (error)
 		{

@@ -284,9 +284,8 @@ async function saveSettings() {
 				},
 			}).then(() => {
 				profileStore.updateProfile(bodyInfo);
-				// profileStore.avatarUpdated.value = true;
 			})
-
+			
 			newUsername.value = '';
 			clearAvatarInput();
 

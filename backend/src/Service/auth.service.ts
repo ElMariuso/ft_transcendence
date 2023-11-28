@@ -70,7 +70,7 @@ export class AuthService {
 			let user = this.userService.findUserById(id);
 			if (!user)
 				throw new NotFoundException("klk");
-			return this.signJwtForUser(userID, twoFactorAuthEnabled, true);
+			return this.signJwtForUser(userID, twoFactorAuthEnabled, false, true);
 		}
 		catch (error)
 		{

@@ -43,7 +43,8 @@ const router = createRouter({
     {
 		path: '/intro',
 		name: 'intro',
-		component: IntroView
+		component: IntroView,
+		meta: { requiresAuth: true }
   },
 	{
 		path: '/login',
@@ -110,7 +111,7 @@ router.beforeEach((to, from, next) => {
 	const authStore = useAuthenticationStore();
 
 	checkJWT(authStore).then(status => {
-		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated) //
+		if ((to.name === 'login' || to.name === 'login2fa') && authStore.isAuthenticated)
 			return next({ name: 'home' });
 
 		else if (to.name === 'login' && to.query.code !== undefined && to.query.code !== null) {

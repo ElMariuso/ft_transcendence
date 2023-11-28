@@ -28,7 +28,7 @@ const updateAvatarKey = ref(0);
 watch(isAuthenticated, async () => {
 	if (isAuthenticated) {
 		await profileStore.setupProfile(0);
-		refreshNavbar();
+		await refreshNavbar();
 	}
 })
 
@@ -37,27 +37,23 @@ watch(userID, async (oldID, newID) => {
 
 		let id = parseInt(userID.value, 10);
 		await profileStore.setupProfile(id);
-		refreshNavbar();
+		await refreshNavbar();
 	}
 })
 
-const refreshNavbar = () => {
-  avatarImg.value = getAvatarImg();
+const refreshNavbar = async () => {
+  avatarImg.value = await getAvatarImg();
   updateAvatarKey.value++;
 }
 
-watch(avatarUpdated, () => {
-	console.log("NAVBAR AVATAR WATCHER")
+watch(avatarUpdated, async () => {
 	if (avatarUpdated.value) {
-		console.log("NAVBAR REFRESH WATCH")
-		refreshNavbar();
-		console.log("KEY: " + updateAvatarKey.value)
-		
+		await refreshNavbar();
 		avatarUpdated.value = false;
 	}
 })
 
-function getAvatarImg() {
+async function getAvatarImg() {
 
   const token: any = Cookies.get('token');
 
