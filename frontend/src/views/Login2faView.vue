@@ -4,6 +4,7 @@ import api from '../services/api';
 import { useProfileStore } from '../stores/ProfileStore'
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import jwt_decode, {JwtPayload} from 'jwt-decode';
 
 const profileStore = useProfileStore();
 const router = useRouter();
@@ -11,6 +12,7 @@ const router = useRouter();
 const twoFactorAuthCode = ref('');
 const authButtonDisabled = ref(true);
 const authCheckPerformed = ref(false);
+const updatePage = ref(0);
 
 const authButtonLabel = computed(() => {
 if (authCheckPerformed.value)
@@ -51,23 +53,54 @@ watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
 async function authenticate() {
 	// setupStore();
 	try {
+		const token: any = Cookies.get('token')
+		const decodedToken: JwtPayload = jwt_decode(token);
+		const id: any = decodedToken.sub;
+
 		const response = await api.post('/auth/2fa/verify', {
 			code: twoFactorAuthCode.value,
-			userID: profileStore.userID,
+			userID: id,
 		})
 
-		if (response.data) {
-			await api.post('/auth/2fa/authenticate', {
-				id: profileStore.userID,
-				twoFactorAuth: profileStore.twoFactorAuth
-			})
-			.then(res => {
+
+		try {
+			if (response.data) {
+				const token: any = Cookies.get('token')
+				const decodedToken: JwtPayload = jwt_decode(token);
+				const id: any = decodedToken.sub;
+				
+				const res = await api.post('/auth/2fa/authenticate', {
+					id: id,
+					twoFactorAuth: profileStore.twoFactorAuth
+				});
+
 				Cookies.set('token', res.data, { expires: 7 });
-			})
-			router.push('/login');
+				router.push('/login');
+			}
+			else
+				authCheckPerformed.value = true;
+		} catch (error) {
+			console.error('Error during 2FA authentication:', error);
+			window.location.reload();
 		}
-		else
-			authCheckPerformed.value = true;
+
+		// if (response.data) {
+		// 	await api.post('/auth/2fa/authenticate', {
+		// 		id: profileStore.userID,
+		// 		twoFactorAuth: profileStore.twoFactorAuth
+		// 	})
+		// 	.then(res => {
+		// 		Cookies.set('token', res.data, { expires: 7 });
+		// 	})
+		// 	.error( () => {
+		// 		window.location.reload();
+		// 	})
+		// 	router.push('/login');
+		// }
+		// else
+		// 	authCheckPerformed.value = true;
+			// window.location.reload();
+
 	} catch (error) {
 		console.error('Error authenticating:', error);
 	}
@@ -76,7 +109,7 @@ async function authenticate() {
 </script>
 
 <template>
-	<div class="flex justify-center mt-28">
+	<div class="flex justify-center mt-28" :key="updatePage">
 		<div class="flex flex-col">
 			<input 
 				v-model="twoFactorAuthCode" 
