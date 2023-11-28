@@ -68,7 +68,7 @@ function getAvatarImg() {
    <div class="h-20 flex justify-between border-b border-gray-400 p-4">
         <div class="ml-30px flex items-baseline">
 		
-			<router-link to="/">
+			<router-link to="/intro">
 				<h1 class="text-3xl m-0 leading-none mr-5">ft_transcendence</h1>
 			</router-link>
 

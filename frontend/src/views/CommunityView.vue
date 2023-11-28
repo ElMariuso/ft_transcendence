@@ -761,7 +761,6 @@ function getChannelTypeImg(channType: any) {
 
 const setAll = async () => {
 	await ladderStore.setup(0)
-	// showProfile.value = true // Set a flag to indicate that data is loaded
 }
 setAll()
 
@@ -786,50 +785,41 @@ function isFriendOrBlocked(friendId: any) {
 async function sendFriendRequest(usernameToFriend: any) {
 	
 	const userData = await ladderStore.sendFriendRequest(usernameToFriend);
-	// if (userData == "error caught")
-	// 	cannotSendFriendRequest.value = true;
 }
 
 async function playerBlock(usernameToBlock: any) {
 
 	await ladderStore.blockUnblock(usernameToBlock);
-	console.log("Block / unblock")
-	// refreshPage();
+
 }
 
 async function playerMute() {
-	console.log("mute");
 
-	// Adds to DB but doesnt mute ... (:
 	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
 	muteTime.value = null;
 }
 async function playerKick() {
-	console.log("kick");
 
 	const res = await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
-	console.log(res);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function playerUnBan() {
-	console.log("unban");
 
 	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 2);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function playerBan() {
-	console.log("ban");
 
 	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 3);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function promoteUser(idPromoted: any) {
-	await promote(idPromoted, selectedChannelID.value, userID.value)
-	communityStore.updateSelectedChannel(selectedChannelID.value);
 	
+	await promote(idPromoted, selectedChannelID.value, userID.value)
+	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 </script>
 
