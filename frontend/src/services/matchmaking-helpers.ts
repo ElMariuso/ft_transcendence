@@ -214,11 +214,6 @@ const initializeSocketListeners = (): void => {
     socket.on('status-response', (data: any) => {
         const LadderStore = useLadderStore();
     
-        if (!LadderStore.friendsStatus.value) {
-            // LadderStore.friendsStatus.value.empty();
-            LadderStore.friendsStatus.value.clear();
-        }
-
         let statusText = "Offline";
         switch (data.status) {
             case 0:
