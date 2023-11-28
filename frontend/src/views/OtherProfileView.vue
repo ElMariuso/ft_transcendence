@@ -162,7 +162,6 @@ function getAvatarImg() {
 		const token = Cookies.get('token')
 		const id = jwt_decode(token).sub;
 		uri[1] = id;
-		console.log("id :" + uri[1])
 	}
 	return "http://localhost:3000/users/avatar/" + uri[1];
 }

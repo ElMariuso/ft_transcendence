@@ -605,8 +605,6 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
 });
 
 function toggleDropdownChatSettings() {
-	
-	console.log(dropdownOpenChatSettings.value)
 	dropdownOpenChatSettings.value = !dropdownOpenChatSettings.value;
 }
 
@@ -713,8 +711,6 @@ async function leaveOrDeleteChannel() {
 		await deleteCurrentChannel(selectedChannelID.value);
 	}
 	else {
-		console.log("NOT OWNER")
-		// roleInChannel IF OWNER, DO SMTH ELSE (delete? ADD popup are you sure ?)
 		try {
 
 			await leaveCurrentChannel(userID.value, selectedChannelID.value);

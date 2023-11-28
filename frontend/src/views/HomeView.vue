@@ -18,7 +18,6 @@ const showModal = ref(true);
 function closeSettingsModal() {
 	showModal.value = false;
 	firstAuth.value++;
-	console.log('close')
 }
 </script>
 

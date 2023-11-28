@@ -37,7 +37,6 @@ export const useProfileStore = defineStore('profile', () => {
 		
 		try {
 			userID.value = String(newId);
-			console.log("ID: " + id)
 			const userData = await getUserData(id);
 			setUserID(id);
 			username.value = userData.username;

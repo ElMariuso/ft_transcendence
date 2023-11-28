@@ -104,7 +104,6 @@ const handleAvatarInputChange = () => {
 
 async function checkUsernameAvailability() {
   if (newUsername.value) {
-    console.log('test');
     await api.get('/users/usernames').then((res) => {
       if (res.data.includes(newUsername.value)) {
         usernameAvailable.value = false;
@@ -112,7 +111,6 @@ async function checkUsernameAvailability() {
         usernameAvailable.value = true;
       }
       userInput.value = true;
-      console.log(usernameAvailable.value);
     });
   }
 }

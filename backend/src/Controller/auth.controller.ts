@@ -104,15 +104,9 @@ export class AuthController {
 
 	@Post('/2fa/authenticate')
 	twoFactorAuthLogin(@Body() body : TwoFactorAuthLoginDTO) {
-		try
-		{
-			const res = this.authService.login2fa(body.id, body.twoFactorAuth);
-			console.log("2fa RES")
-			console.log(res)
-			return res;
-		}
-		catch (error)
-		{
+		try {
+			return this.authService.login2fa(body.id, body.twoFactorAuth);
+		} catch (error) {
 			if (error instanceof NotFoundException)
 				throw new NotFoundException(error.message);
 			if (error instanceof InternalServerErrorException)

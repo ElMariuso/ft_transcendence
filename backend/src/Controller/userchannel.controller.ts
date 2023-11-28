@@ -133,9 +133,7 @@ export class UserChannelController
 	async modifyMemberRole(@Body() updateRoleUserChannelDTO : UpdateRoleUserChannelDTO, @Param('id') id : string): Promise<UserChannelDTO>
 	{
 		try
-		{
-			console.log("Aled");
-			
+		{	
 			const newId = parseInt(id, 10);
 			return this.userchannelService.modifyMemberRole(newId, updateRoleUserChannelDTO.idMember, updateRoleUserChannelDTO.idChannel, updateRoleUserChannelDTO.idRole);
 		}
@@ -143,7 +141,6 @@ export class UserChannelController
 		{
 			
 			console.log("Error caught in userChannel controler")
-
 
 			if (error instanceof NotFoundException)
 				throw new NotFoundException(error.message);

@@ -88,8 +88,6 @@ export class UserController
 
 			const newId = parseInt(id, 10);
 			let filePath = await this.userService.getAvatarPath(newId);
-			
-			console.log("FILE PATH" + filePath);
 
 			res.sendFile(filePath);
 

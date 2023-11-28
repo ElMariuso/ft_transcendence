@@ -197,8 +197,6 @@ export const useLadderStore = defineStore('ladder', () => {
 			setGamesHistory(userData);
 
 			const results = await getGamesResults(userID.value);
-			console.log("res")
-			console.log(results)
 
 			setGamesResults(results);
 

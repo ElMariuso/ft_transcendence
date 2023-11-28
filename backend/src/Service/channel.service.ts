@@ -115,14 +115,11 @@ export class ChannelService
 		if (!users)
 			return [];
 
-		console.log(users)
-
 		const usersDTO: UserInChannelDTO[] = users.map((user) =>
 		{
 			return this.transformToUserInChannelDTO(user, channel.idOwner === user.idUser ? true : false);
 		});
 
-		console.log(usersDTO)
 		return usersDTO;
 	}
 

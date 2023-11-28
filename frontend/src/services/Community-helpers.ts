@@ -77,8 +77,6 @@ export const joinChannel = async (userID: number, channelID: number, pw: string=
 		// if (pw != "")
 		// 	body.password = pw;
 
-		console.log("body")
-		console.log(body)
 		const res = await api.post('/userchannels/', body)
 	} catch (error) {
 		console.error('Error joining channel: ', error);
@@ -203,7 +201,6 @@ export const deleteMessage = async (idMessage: number) => {
     try {
 		var id: number = +userID;
 
-		console.log("newType: " + newType)
         const response = await api.post('/channels', {
 			"name": newName,
 			"password": newPassword,
@@ -231,31 +228,30 @@ export const modifyChannelPw = async (userID: string, channelID: number | null, 
 		password: pw
 	})
 
-	console.log(res)
 };
 
 // Player actions
 
-export const play = async () => {
-	console.log("play");
-	// Need game implementation
-}
-export const profile = async () => {
-	console.log("profile");
-	// Need profile implementation
-}
-export const message = async () => {
-	console.log("message");
-	// Need websocket I believe
-}
-export const friend = async () => {
-	console.log("friend");
-}
+// export const play = async () => {
+// 	console.log("play");
+// 	// Need game implementation
+// }
+// export const profile = async () => {
+// 	console.log("profile");
+// 	// Need profile implementation
+// }
+// export const message = async () => {
+// 	console.log("message");
+// 	// Need websocket I believe
+// }
+// export const friend = async () => {
+// 	console.log("friend");
+// }
+
 export const block = async (id: number, blockId: number) => {
 	const res = await api.post('users/' + id + "/blockUser", {
 		idBlock: blockId,
 	});
-	console.log(res);
 }
 export const mute = async (user: number | null, channel: number | null, time: number | null) => {
 	await api.put('/userchannels/addMuteTime', {
@@ -278,7 +274,4 @@ export const promote = async (idPromoted: number, idCurrentChannel: number | nul
 		idChannel: idCurrentChannel,
 		idRole: 1,
 	})
-
-	console.log("Promote: ")
-	console.log(res);
 }

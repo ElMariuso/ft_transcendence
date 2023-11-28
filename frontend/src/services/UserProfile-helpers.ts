@@ -129,7 +129,6 @@ export const getLadderData = async (userID : string) => {
 export const getGamesResults = async (userID: number) => {
 	try {
 		const res = await api.get('/games/gamesResult/' + userID);
-		console.log(res.data)
 		return res.data;
 	} catch (error) {
         console.error('Error fetching games results:', error);
@@ -217,8 +216,6 @@ export const getFriendsData = async (userID : string) => {
  export const getBlockedListData = async (userID : string) => {
     try {
         const response = await api.get('/users/' + userID + '/blocked');
-		console.log("REWSPONE")
-		console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('Error fetching blocked list data:', error);
