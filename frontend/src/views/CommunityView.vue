@@ -94,7 +94,7 @@
 							<span v-if="isBanned(channel.idChannel)" class="text-red-600"> Banned </span>
 							<img v-if="!isBanned(channel.idChannel)" :src="getChannelTypeImg(channel.idType)" alt="channType">
 						</div>
-						<div class="flex justify-end">
+						<div v-if="!isBanned(channel.idChannel)" class="flex justify-end">
 							<input
 								v-if="channel.idType === 1"
 								v-model="pwInput[channel.idChannel]"
@@ -274,21 +274,21 @@
 									class="border-t pt-2"
 								>
 									<div class="flex justify-between">
-										<div v-if="isChallengeActiveForOpponent(user.idUser).value">
+										<div v-if="isChallengeActiveForOpponent(user.idUser).value" class="flex">
 											<span>Waiting</span>
 										</div>
-										<div v-else-if="!isChallengeActive(user.idUser).value">
-											<img @click="playerPlay(user.idUser)" class="cursor-pointer" title="play" src="../assets/player/play.svg" alt="play" >
+										<div v-else-if="!isChallengeActive(user.idUser).value" class="flex">
+											<img @click="playerPlay(user.idUser)" class="cursor-pointer mr-2" title="play" src="../assets/player/play.svg" alt="play" >
 											<router-link :to="'/otherprofile/id=' + user.idUser">
-												<img class="cursor-pointer" title="profile" src="../assets/player/profile.svg" alt="profile">
+												<img class="cursor-pointer mr-2" title="profile" src="../assets/player/profile.svg" alt="profile">
 											</router-link>
-											<img v-if="channelType !== 3" @click="privateMessage(user.username)" class="cursor-pointer" title="message" src="../assets/player/message.svg" alt="message">
-											<img v-if="!isFriendOrBlocked(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer" title="friend" src="../assets/player/friend.svg" alt="friend">
-											<img @click="playerBlock(user.username)" class="cursor-pointer" title="block" src="../assets/player/block.svg" alt="block">
+											<img v-if="channelType !== 3" @click="privateMessage(user.username)" class="cursor-pointer mr-2" title="message" src="../assets/player/message.svg" alt="message">
+											<img v-if="!isFriendOrBlocked(user.idUser)" @click="sendFriendRequest(user.username)" class="cursor-pointer mr-2" title="friend" src="../assets/player/friend.svg" alt="friend">
+											<img @click="playerBlock(user.username)" class="cursor-pointer mr-2" title="block" src="../assets/player/block.svg" alt="block">
 										</div>
-										<div v-else>
-											<img @click="answerToChallenge(user.idUser, 1)" class="cursor-pointer" title="accept" src="../assets/accept.svg" alt="accept">
-											<img @click="answerToChallenge(user.idUser, 0)" class="cursor-pointer" title="refuse" src="../assets/refuse.svg" alt="refuse">
+										<div v-else class="flex">
+											<img @click="answerToChallenge(user.idUser, 1)" class="cursor-pointer mr-2" title="accept" src="../assets/accept.svg" alt="accept">
+											<img @click="answerToChallenge(user.idUser, 0)" class="cursor-pointer mr-2" title="refuse" src="../assets/refuse.svg" alt="refuse">
 										</div>
 									</div>
 									<div v-if="(channelType !== 3 && (roleInChannel === 'Admin' || roleInChannel === 'Owner') && !user.owner)" class="flex justify-between mt-2 border-t pt-1">
@@ -563,8 +563,12 @@ function isBanned(idChannel: any)
 	for(let i = 0; bannedChannel.value[i]; i++)
 	{
 		if (idChannel === bannedChannel.value[i].idChannel)
+		{	
+			console.log("Banned in : " + idChannel)
 			return (true);
+		}
 	}
+	console.log("Not banned in : " + idChannel)
 	return (false);
 }
 
