@@ -98,7 +98,7 @@ import Cookies from 'js-cookie';
 // Store ***************************************************************************
 
 const profileStore = useProfileStore();
-const { username, avatar, avatarUpdated } = storeToRefs(profileStore)
+const { userID } = storeToRefs(profileStore)
 
 // Username ***************************************************************************
 
@@ -284,6 +284,8 @@ async function saveSettings() {
 				},
 			}).then(() => {
 				profileStore.updateProfile(bodyInfo);
+				
+				window.location.reload();
 			})
 			
 			newUsername.value = '';

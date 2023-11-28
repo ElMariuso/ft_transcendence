@@ -84,23 +84,6 @@ async function authenticate() {
 			window.location.reload();
 		}
 
-		// if (response.data) {
-		// 	await api.post('/auth/2fa/authenticate', {
-		// 		id: profileStore.userID,
-		// 		twoFactorAuth: profileStore.twoFactorAuth
-		// 	})
-		// 	.then(res => {
-		// 		Cookies.set('token', res.data, { expires: 7 });
-		// 	})
-		// 	.error( () => {
-		// 		window.location.reload();
-		// 	})
-		// 	router.push('/login');
-		// }
-		// else
-		// 	authCheckPerformed.value = true;
-			// window.location.reload();
-
 	} catch (error) {
 		console.error('Error authenticating:', error);
 	}
