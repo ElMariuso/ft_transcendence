@@ -33,9 +33,8 @@ if [ "$1" == "dev" ]; then
     npx prisma db push --force-reset
 elif [ "$1" == "prod" ]; then
     # Run Prisma migration for production
-	echo "ON DEPLOYE"
-    npx prisma migrate deploy
-	echo "FIN du dEPLOYE"
+	# UNUSED AS PROD
+
 fi
 
 # Start your application based on the environment argument

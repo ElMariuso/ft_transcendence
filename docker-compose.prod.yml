@@ -9,6 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - ./database:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # Mount the directory containing your SQL script
     networks:
       - db-network
     env_file:
@@ -23,8 +24,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./logs-back:/usr/src/app/logs
-      - ./uploads:/usr/src/app/uploads
+      # - ./logs-back:/usr/src/app/logs
+      - ./backend/upload:/usr/src/app/upload
     networks:
       - web-network
       - db-network
@@ -40,9 +41,9 @@ services:
       context: ./frontend
       dockerfile: ./Dockerfile.prod  # Use the production Dockerfile for the frontend
     ports:
-      - "8080:3000"
-    volumes:
-      - ./logs-front:/usr/src/app/logs
+      - "8080:5173"
+    # volumes:
+      # - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
     env_file:

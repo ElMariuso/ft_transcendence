@@ -1,41 +1,34 @@
-### Build stage ###
-FROM node:18 AS build
+# Use the official Node.js image.
+FROM node:14
+
+# Set the working directory in the container.
 WORKDIR /app
 
-# Copying configuration files for dependencies
+# Install netcat for the entrypoint script
+RUN apt-get update && apt-get install -y netcat && rm -rf /var/lib/apt/lists/*
+
+# Copy the `package.json` and `package-lock.json` files (if it exists).
 COPY package*.json ./
 
-# Installing all dependencies
+# Install the project's dependencies.
 RUN npm install
 
-# Copy entrypoint script
-COPY entrypoint.sh ./entrypoint.sh
+# Use a volume for node_modules to improve rebuild speed.
+# This will prevent the need to reinstall all node modules with every build.
+VOLUME [ "/app/node_modules" ]
 
-# Make entrypoint script executable
-RUN chmod +x ./entrypoint.sh
+# Copy entrypoint script and make it executable
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Copying all other source files
+# Copy the rest of the application files into the container.
 COPY . .
 
-# If you have a build script, add it here
-RUN npm run build
-
-### Execution stage ###
-FROM node:18-slim
-WORKDIR /app
-
-# Copying dependencies from the build stage
-COPY --from=build /app/node_modules ./node_modules
-
-# Copy the entrypoint script and other files from the build stage
-COPY --from=build /app/entrypoint.sh /app/entrypoint.sh
-
-# Expose the default port for your production server
+# Expose Vite's default port.
 EXPOSE 5173
 
 # Use entrypoint script to ensure backend is up before starting the frontend
-ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh", "backend-dev:3000", "--"]
+ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh", "backend-prod:3000", "--"]
 
-# Command to run the application
-CMD ["npm", "start"]
-
+# Command to run the application using Vite.
+CMD ["npm", "run", "prod"]

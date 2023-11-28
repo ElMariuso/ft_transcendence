@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 # Copy package files and install ALL dependencies (including devDependencies)
 COPY package*.json ./
-RUN npm ci
+RUN npm i
 
 # Copy all other files
 COPY . .
@@ -21,7 +21,7 @@ RUN apt update && apt install libssl-dev dumb-init postgresql-client -y --no-ins
 WORKDIR /usr/src/app
 
 # Create folders for logs and upload
-RUN mkdir -p logs uploads
+# RUN mkdir -p logs uploads
 
 # Copy necessary files from the build phase
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
@@ -37,7 +37,9 @@ COPY --chown=node:node entrypoint.sh /usr/src/app/
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 # Install ONLY production dependencies
-RUN npm ci --production
+RUN npm i --omit-dev
+
+# ENTRYPOINT ["/bin/bash", "/usr/src/app/entrypoint.sh", "prod"]
 
 # Define the user to run the application for added security
 USER node

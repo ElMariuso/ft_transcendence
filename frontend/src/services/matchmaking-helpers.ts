@@ -226,7 +226,7 @@ const initializeSocketListeners = (): void => {
                 statusText = "In Game";
                 break;
         }
-        LadderStore.friendsStatus.value.set(data.playerId, statusText);
+        LadderStore.friendsStatus.set(data.playerId, statusText);
     });    
 
     socket.on('timer-before-launch', (response) => {
