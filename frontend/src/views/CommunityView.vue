@@ -815,16 +815,14 @@ async function playerKick() {
 async function playerUnBan() {
 	console.log("unban");
 
-	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, "2");
-	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 2);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function playerBan() {
 	console.log("ban");
 
-	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, "3");
-	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 3);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
