@@ -26,6 +26,14 @@ interface UserChannel {
     idRole: number;
     muteTime: Date | null;
 }
+
+interface UserInChannel {
+	idUser: number;
+	username: string;
+	email: string;
+	owner: boolean;
+	role: string;
+}
  
 interface ChallengeState {
 	isChallengePending: boolean,
@@ -42,7 +50,7 @@ interface CommunityStoreState {
 	openChannels: Array<Channel>; // Replace SomeType with the actual type of openChannels
 	joinedChannels: Array<Channel>; // Replace SomeType with the actual type of joinedChannels
 	selectedChannelMsg:  Array<Msg>; // Replace SomeType with the actual type of selectedChannelMsg
-	selectedChannelUsers:  Array<UserChannel>; // Replace SomeType with the actual type of selectedChannelUsers
+	selectedChannelUsers:  Array<UserInChannel>; // Replace SomeType with the actual type of selectedChannelUsers
 	roleInChannel: string; // Replace string with the actual type of roleInChannel
 	challengeStates: Map<number, ChallengeState>; // Replace SomeKeyType and SomeValueType with the actual types
 	challengesStatesForOpponent: Map<number, ChallengeState>; // Replace SomeKeyType and SomeValueType with the actual types
@@ -106,7 +114,7 @@ export const useCommunityStore = defineStore('community', {
 				for(let i = 0; this.openChannels[i] ; i++)
 				{
 					const users = await getChannelUsers(String(this.openChannels[i].idChannel));
-					const user = users.find(user => user.idUser === id);
+					const user: UserInChannel = users.find((user: UserInChannel) => user.idUser === id);
 					if (user && user.role == "Banned")
 					{
 						this.bannedChannel[j] = this.openChannels[i]
@@ -119,8 +127,9 @@ export const useCommunityStore = defineStore('community', {
 			}
 		},
 		async updateSelectedChannel(channelID: any) {
-			const token = Cookies.get('token');
-			const id = jwt_decode(token).sub;
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const id: any = decodedToken.sub;
 	
 			try {
 				if (channelID)
@@ -140,7 +149,7 @@ export const useCommunityStore = defineStore('community', {
 					this.selectedChannelMsg = messages;
 				
 					const users = await getChannelUsers(channelID);
-					const user = users.find(user => user.idUser === id);
+					const user = users.find((user: any) => user.idUser === id);
 					if (user) {
 						if (user.owner)
 							this.roleInChannel = "Owner";
@@ -154,8 +163,9 @@ export const useCommunityStore = defineStore('community', {
 			}
 		},
 		async setupNewChannel(name: string, type: number, password: string) {
-			const token = Cookies.get('token');
-			const id = jwt_decode(token).sub;
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
+			const id: any = decodedToken.sub;
 	
 			try {
 				await postNewChannelsData(id, name, type, password);

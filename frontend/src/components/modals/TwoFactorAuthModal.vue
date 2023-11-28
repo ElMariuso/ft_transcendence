@@ -72,7 +72,7 @@
 		emit('cancelModal')
 	}
 
-  	async function twoFactorAuthTest(resolve: any) {
+  	async function twoFactorAuthTest(resolve: (value: boolean) => void) {
 		try {
 			const response = await api.post('/auth/2fa/verify', {
 				code: twoFactorAuthCode.value,

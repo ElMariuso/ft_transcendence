@@ -5,12 +5,14 @@ import jwt_decode from 'jwt-decode';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { storeToRefs } from 'pinia';
 import FirstAuthSettingsModal from '../components/modals/FirstAuthSettingsModal.vue';
+import { JwtPayload } from "@/models/jwtPayload.model";
 
 const authStore = useAuthenticationStore();
 const { firstAuth } = storeToRefs(authStore);
 
-const token = Cookies.get('token');
-const firstLogin = jwt_decode(token).firstLogin;
+const token: any = Cookies.get('token');
+const decodedToken: JwtPayload = jwt_decode(token);
+const firstLogin: any = decodedToken.firstLogin;
 const showModal = ref(true);
 
 function closeSettingsModal() {

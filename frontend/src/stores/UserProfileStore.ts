@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
 // import axios from 'axios';
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
@@ -21,6 +21,21 @@ import { getGamesResults } from '@/services/UserProfile-helpers'
 
 import { getPlayerStatus } from '@/services/matchmaking-helpers';
 
+interface GameRes {
+	idGame: number;
+	isWinner: number;
+	username: string;
+	idUser: number;
+}
+
+interface Blocked {
+	username: string;
+	idUser: number;
+}
+
+interface Friend {
+	idUser: number;
+}
 
 export const useLadderStore = defineStore('ladder', () => {
 
@@ -29,15 +44,15 @@ export const useLadderStore = defineStore('ladder', () => {
 	const users = ref([]);
 	const achievements = ref([]);
 	const history = ref([]);
-	const friendlist = ref([]);
+	const friendlist: Ref<Friend[]> = ref([]);
 	const invite = ref([]);
-	const blocked = ref([]);
+	const blocked: Ref<Blocked[]> = ref([]);
 	const nbWin = ref(0);
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
 	const friendsStatus = ref([]);
-	const gamesResults = ref(null);
+	const gamesResults: Ref<GameRes[] | null> = ref(null);
 
 	/////////////////// SETUP ////////////////////////
 
@@ -312,7 +327,7 @@ export const useLadderStore = defineStore('ladder', () => {
 
 	async function blockUnblock(usernameToBlock: string) {
 
-		let blocklist = getBlockedList();
+		let blocklist: Blocked[] = getBlockedList();
 		let idBlocked;
 		let alreadyBlocked = false;
 
@@ -335,7 +350,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	}
 
 	function updateFriendStatuses() {
-		friendlist.value.forEach(friend => {
+		friendlist.value.forEach((friend: Friend) => {
 			getPlayerStatus(friend.idUser);
 		});
 	}

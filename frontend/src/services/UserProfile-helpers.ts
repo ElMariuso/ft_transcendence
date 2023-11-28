@@ -262,7 +262,7 @@ export const postBlock = async (userID : string, usernameToBlock : string) => {
 	}
 }
 
-export const deleteBlock = async (userID : string, idBlock : number) => {
+export const deleteBlock = async (userID : string, idBlock : number | undefined) => {
 	try {
 		const res = await api.post('/users/' + userID + '/deleteBlock', {
 			"idBlock" : idBlock,

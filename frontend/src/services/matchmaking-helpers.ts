@@ -54,7 +54,7 @@ const askGamesInformations = (roomId: string | null) : Promise<GameState> => {
     });
 };
 
-const updateRacket = (roomId: string, action: string): void => {
+const updateRacket = (roomId: string | null, action: string): void => {
     socket.emit('update-racket', roomId, action);
 };
 
@@ -211,7 +211,7 @@ const initializeSocketListeners = (): void => {
         updatePlayerStatus(0);
     });
 
-    socket.on('status-response', (data) => {
+    socket.on('status-response', (data: any) => {
         const LadderStore = useLadderStore();
     
         if (!LadderStore.friendsStatus.value) {

@@ -96,7 +96,8 @@ export const getChannel = async (channelID: string) => {
 	}
 }
 
-export const getChannelMsg = async (channelID: string) => {
+
+export const getChannelMsg = async (channelID: number | null) => {
 	try {
 		const res = await api.get('/channels/allMessages/' + channelID);
 		return res.data;
@@ -140,18 +141,16 @@ export const creatDMChannel = async (id1: number, id2: number) => {
 	}
 }
 
-export const leaveCurrentChannel = async (idUser: string, idChannel: string) => {
+export const leaveCurrentChannel = async (idUser: string | null, idChannel: number | null) => {
 	try {
-
-		const res = await api.delete('/userchannels/delete/' + idUser + '/' + idChannel);
-		return res;
+		await api.delete('/userchannels/delete/' + idUser + '/' + idChannel);
 	} catch (error) {
 		console.error('Error leaving channel', error);
 		throw error;
 	}
 }
 
-export const updateUserRole = async (idUser: string, banId: number, idChannel: number, newRole: string) => {
+export const updateUserRole = async (idUser: string, banId: number | null, idChannel: number | null, newRole: string) => {
 	try {
 
 		const res = await api.put('/userchannels/modifyRole/' + idUser,{
@@ -166,7 +165,7 @@ export const updateUserRole = async (idUser: string, banId: number, idChannel: n
 	}
 }
 
-export const deleteCurrentChannel = async (idChannel: number) => {
+export const deleteCurrentChannel = async (idChannel: number | null) => {
 	try {
 		const res = await api.delete('/channels/delete/' + idChannel);
 		return res;
@@ -218,14 +217,14 @@ export const deleteMessage = async (idMessage: number) => {
     }
 };
 
-export const channelPrivToPub = async (userID: string, channelID: number) => {
+export const channelPrivToPub = async (userID: string, channelID: number | null) => {
 	const res = await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 2 // Public
 	})
 };
 
-export const modifyChannelPw = async (userID: string, channelID: number, pw: string) => {
+export const modifyChannelPw = async (userID: string, channelID: number | null, pw: string) => {
 	const res = await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 1, // Private
@@ -258,7 +257,7 @@ export const block = async (id: number, blockId: number) => {
 	});
 	console.log(res);
 }
-export const mute = async (user: number, channel: number, time: number) => {
+export const mute = async (user: number | null, channel: number | null, time: number | null) => {
 	await api.put('/userchannels/addMuteTime', {
 		idUser: user,
 		idChannel: channel,
@@ -273,7 +272,7 @@ export const mute = async (user: number, channel: number, time: number) => {
 // 	console.log("ban");
 // }
 
-export const promote = async (idPromoted: number, idCurrentChannel: number, userID: number) => {
+export const promote = async (idPromoted: number, idCurrentChannel: number | null, userID: string) => {
 	const res = await api.put('/userchannels/modifyRole/' + userID, {
 		idMember: idPromoted,
 		idChannel: idCurrentChannel,

@@ -90,7 +90,7 @@
 import { ref, watch, computed } from 'vue';
 import { useProfileStore } from '../stores/ProfileStore'
 import api from '../services/api';
-import jwt_decode from 'jwt-decode';
+import jwt_decode, {JwtPayload } from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
 import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
@@ -163,15 +163,15 @@ function handleAvatarChange() {
 }
 
 function clearAvatarInput() {
-      // Use the ref to access the input element and reset its value
-    fileInput.value.value = '';
+	if (fileInput.value)
+    	fileInput.value.value = '';
 	avatarImgChanged.value = false;
 }
 
 // Two Factor Auth ***************************************************************************
 
 const twoFactorAuth = ref(profileStore.twoFactorAuth);
-const twoAuthRes = ref(false);
+const twoAuthRes = ref<((value: boolean | null) => void) | null>(null);
 const showTwoFactorAuthModal = ref(false);
 
 function enableTwoFactorAuth() {
@@ -183,8 +183,8 @@ function disableTwoFactorAuth() {
 }
 
 async function openTwoFactorAuthModal() {
-	return new Promise(async (resolve) => {
-		twoAuthRes.value = resolve;
+	return new Promise<boolean>(async (resolve) => {
+		twoAuthRes.value = resolve as (value: boolean | null) => void;;
 		showTwoFactorAuthModal.value = true;
 	})
 }
@@ -225,7 +225,7 @@ function showPopup(msg: string) {
 }
 
 async function saveSettings() {
-	let bodyInfo = {};
+	let bodyInfo: any = {};
 
 	if (!saveButtonDisabled.value) {
 
@@ -236,7 +236,8 @@ async function saveSettings() {
 		// Avatar
 		if (avatarImgChanged.value) {
 			const formData = new FormData();
-      		formData.append('file', fileInput.value?.files[0] || '');
+			if (fileInput.value && fileInput.value.files && fileInput.value.files.length > 0)
+      			formData.append('file', fileInput?.value.files[0] || '');
 
 			try {
 				const response = await api.post('/users/uploadAvatar/' + profileStore.userID, formData, {
@@ -271,9 +272,10 @@ async function saveSettings() {
 		
 		// Saving changes, checks if any setting is being changed
 		if (Object.keys(bodyInfo).length !== 0) {
-			const token = Cookies.get('token');
+			const token: any = Cookies.get('token');
+			const decodedToken: JwtPayload = jwt_decode(token);
 			let jsonToSend = JSON.stringify(bodyInfo);
-			const id = jwt_decode(token).sub;
+			const id: any = decodedToken.sub;
 			
 			await api.put('/users/update/' + id, jsonToSend, {
 				headers: {

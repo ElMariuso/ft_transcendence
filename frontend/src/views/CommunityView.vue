@@ -216,7 +216,7 @@
 								v-for="user in selectedChannelUsers" 
 								class="text-lg border px-2 py-1 rounded-lg "
 								
-								:id="user.idUser"
+								:id="String(user.idUser)"
 							>
 							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
@@ -224,7 +224,7 @@
 								  <!-- <div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
 											<div class="spinner"></div>
 										</div> -->
-								  <button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
+								  <button v-if="String(user.idUser) != userID" @click="toggleDropDown(user.idUser)">
 									<img src="../assets/elipsis-h.svg" alt="options">
 								  </button>
 								</div>
@@ -265,7 +265,7 @@
 									</div>
 									<p v-if="channelType === 3" class="text-green-600">{{ user.username }}</p>
 
-									<button v-if="user.idUser != userID" @click="toggleDropDown(user.idUser)">
+									<button v-if="String(user.idUser) != userID" @click="toggleDropDown(user.idUser)">
 										<img src="../assets/elipsis-h.svg" alt="options">
 									</button>
 								</div>
@@ -332,7 +332,11 @@ import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, 
 	getChannelMsg, deleteMessage, mute, getChannelUsers, creatDMChannel, promote, channelPrivToPub, modifyChannelPw } from '@/services/Community-helpers'
 import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState, confirmChallenge } from '@/services/matchmaking-helpers'
 
-const usersIntervals = ref({});
+interface UserIntervals {
+  [friendId: number]: ReturnType<typeof setInterval>;
+}
+
+const usersIntervals = ref<UserIntervals>({});
 const acceptedChallengeInterval = ref<number | null>(null);
 import { getBlockedListData } from '@/services/UserProfile-helpers'
 
@@ -359,7 +363,7 @@ const sendConfirmChallenge = async () => {
 };
 
 const countReadyPlayers: Ref<number> = computed(() => {
-	const acceptedChallengeState = communityStore.acceptedChallengesStates;
+	const acceptedChallengeState: any = communityStore.acceptedChallengesStates;
 	if (!acceptedChallengeState) return 0;
 
 	let count = 0;
@@ -391,28 +395,28 @@ const answerToChallenge = async (idUser: number, response: number) => {
 	}
 };
 
-const isChallengeActive = (idUser: number): Ref<boolean> => {
+const isChallengeActive = (idUser: number): Ref<boolean | undefined> => {
 	return computed(() => {
         const challengeState = communityStore.getChallengeState(idUser);
         return challengeState && challengeState.isChallengePending;
     });
 };
 
-const isChallengeActiveForOpponent = (idUser: number): Ref<boolean> => {
+const isChallengeActiveForOpponent = (idUser: number): Ref<boolean | undefined> => {
 	return computed(() => {
 		const challengeState = communityStore.getChallengeStateForOpponent(idUser);
         return challengeState && challengeState.isChallengePending;
 	});
 };
 
-const startChallengeInterval = (friendId: any) => {
+const startChallengeInterval = (friendId: number) => {
     stopChallengeInterval(friendId);
     usersIntervals.value[friendId] = setInterval(() => {
-        askChallengeState(profileStore.userID, friendId);
+        askChallengeState(Number(profileStore.userID), friendId);
     }, 1000);
 };
 
-const stopChallengeInterval = (friendId: any) => {
+const stopChallengeInterval = (friendId: number) => {
     if (usersIntervals.value[friendId]) {
         clearInterval(usersIntervals.value[friendId]);
         delete usersIntervals.value[friendId];
@@ -420,7 +424,7 @@ const stopChallengeInterval = (friendId: any) => {
 };
 
 onUnmounted(() => {
-    Object.keys(usersIntervals.value).forEach(friendId => stopChallengeInterval(friendId));
+    Object.keys(usersIntervals.value).forEach(friendId => stopChallengeInterval(Number(friendId)));
 
 	if (acceptedChallengeInterval.value !== null) {
         clearInterval(acceptedChallengeInterval.value);
@@ -430,11 +434,11 @@ onUnmounted(() => {
 	clearInterval(updateAvailableChannelInterval);
 });
 
-const playerPlay = async (idUser) => {
-	const isAnyChallengeActive = isChallengeActive(profileStore.userID).value || isAcceptedChallengeActive(profileStore.userID).value
+const playerPlay = async (idUser: any) => {
+	const isAnyChallengeActive = isChallengeActive(Number(profileStore.userID)).value || isAcceptedChallengeActive(Number(profileStore.userID)).value
 
 	if (!isAnyChallengeActive) {
-		askChallenge(profileStore.userID, idUser);
+		askChallenge(Number(profileStore.userID), idUser);
 	}
 }
 
@@ -494,7 +498,7 @@ async function privateMessage(name : string) {
 	if (badUserName.value == true || alone.value == true || block.value == true)
 		return ;
 	
-	blocklist = await getBlockedListData(searchIdUser.value)
+	blocklist = await getBlockedListData(String(searchIdUser.value))
 	for (let i = 0; blocklist[i]; i++) {
 		if (ladderStore.username == blocklist[i].username)
 		{	
@@ -541,20 +545,20 @@ async function createChannel() {
 
 const pwInput = ref([]);
 
-async function btnJoinChannel(event) {
+async function btnJoinChannel(event: any) {
 
 	const idChannel = +event.target.id;
 	const type = +event.target.getAttribute('channType');
 
 	// if Private, send PW
 	if (type === 1)
-		await joinChannel(userID.value, idChannel, pwInput._value[idChannel]);
+		await joinChannel(Number(userID.value), idChannel, pwInput.value[idChannel]);
 	else
-		await joinChannel(userID.value, idChannel);
+		await joinChannel(Number(userID.value), idChannel);
 	await communityStore.setupCommunity();
 }
 
-function isBanned(idChannel)
+function isBanned(idChannel: any)
 {
 	for(let i = 0; bannedChannel.value[i]; i++)
 	{
@@ -568,16 +572,16 @@ function isBanned(idChannel)
 
 // *********** CHAT ROOM
 
-const selectedChannelID = ref(null);
+const selectedChannelID: Ref<number | null> = ref(null);
 const scrollContainer = ref(null);
 const newMessage = ref('');
 const dropdownOpenChatSettings = ref(false);
 const channelNewPw = ref('');
-let updateChannelInterval;
+let updateChannelInterval: any;
 
-const userIsInChannel = (usernameToSearch: string): boolean => {
-  return users.some(user => user.username === usernameToSearch);
-};
+// const userIsInChannel = (usernameToSearch: string): boolean => {
+//   return users.some(user => user.username === usernameToSearch);
+// };
 
 // Refreshes Chat + players list
 watch(selectedChannelID, (newChannelID, oldChannelID) => {
@@ -610,13 +614,13 @@ watch(dropdownOpenChatSettings, (isOpen) => {
 	}
 });
 
-const closeDropdownOnClick = (event) => {
+const closeDropdownOnClick = (event: any) => {
 	if (dropdownOpenChatSettings.value && !event.target.closest('.chatDropDown')) {
 		dropdownOpenChatSettings.value = false;
 	}
 };
 
-async function selectChannel(channelID: number) {
+async function selectChannel(channelID: any) {
 
 	// Websocket connect here ?
 	selectedChannelID.value = channelID;
@@ -634,7 +638,7 @@ async function selectChannel(channelID: number) {
 //   };
 // };
 
-async function checkForBlock(idChannel)
+async function checkForBlock(idChannel: any)
 {
 	let users = await getChannelUsers(idChannel);
 
@@ -680,7 +684,7 @@ async function sendMessage() {
 	try {
 		const res = await sendMessageTo(body);
 		// update msg UI
-	} catch (error) {
+	} catch (error: any) {
 		if (error.message == "Request failed with status code 400")
 			muted.value = true;
 		console.error('Error sending message', error);
@@ -696,18 +700,23 @@ async function leaveOrDeleteChannel() {
 	if (roleInChannel.value === "Owner" || channelType.value === 3) {
 		// Confirmation popup, then
 		const messages = await getChannelMsg(selectedChannelID.value);
-		for (let i = 0; messages[i]; i++) {
-			await deleteMessage(messages[i].idMessage);//removing all message from the channel to delete so it doesn't crash
+		if (messages) {
+
+			for (let i = 0; messages[i]; i++) {
+				await deleteMessage(messages[i].idMessage);//removing all message from the channel to delete so it doesn't crash
+			}
 		}
-		const res = await deleteCurrentChannel(selectedChannelID.value);
-		// console.log(res);
-		// console.log("OWNER")
+		await deleteCurrentChannel(selectedChannelID.value);
 	}
 	else {
 		console.log("NOT OWNER")
 		// roleInChannel IF OWNER, DO SMTH ELSE (delete? ADD popup are you sure ?)
-		const res = await leaveCurrentChannel(userID.value, selectedChannelID.value);
-		console.log(res);
+		try {
+
+			await leaveCurrentChannel(userID.value, selectedChannelID.value);
+		} catch (error) {
+			console.log("Error leaving channel: ", error);
+		}
 	}
 	selectedChannelID.value = null;
 	await communityStore.setupCommunity();
@@ -731,7 +740,7 @@ const dropDownOpen = ref(null);
 const muteTime = ref(null);
 const updatePlayersList = ref(0);
 
-function toggleDropDown(playerID) {
+function toggleDropDown(playerID: any) {
 	selectedUserID.value = playerID;
 	if (dropDownOpen.value != playerID)
 		dropDownOpen.value = playerID;
@@ -739,7 +748,7 @@ function toggleDropDown(playerID) {
 		dropDownOpen.value = null;
 }
 
-function getChannelTypeImg(channType) {
+function getChannelTypeImg(channType: any) {
 	if (channType === 2)
 		return "src/assets/public.svg";
 	else if (channType === 1)
@@ -752,7 +761,7 @@ const setAll = async () => {
 }
 setAll()
 
-function isFriendOrBlocked(friendId) {
+function isFriendOrBlocked(friendId: any) {
 	
 	let friendList = ladderStore.getFriends();
 	let blockList = ladderStore.getBlockedList();
@@ -770,14 +779,14 @@ function isFriendOrBlocked(friendId) {
 	return (false);
 }
 
-async function sendFriendRequest(usernameToFriend) {
+async function sendFriendRequest(usernameToFriend: any) {
 	
 	const userData = await ladderStore.sendFriendRequest(usernameToFriend);
 	// if (userData == "error caught")
 	// 	cannotSendFriendRequest.value = true;
 }
 
-async function playerBlock(usernameToBlock) {
+async function playerBlock(usernameToBlock: any) {
 
 	await ladderStore.blockUnblock(usernameToBlock);
 	console.log("Block / unblock")
@@ -802,7 +811,7 @@ async function playerKick() {
 async function playerUnBan() {
 	console.log("unban");
 
-	await updateUserRole(ladderStore.getId(), selectedUserID.value, selectedChannelID.value, 2);
+	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, "2");
 	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
@@ -810,12 +819,12 @@ async function playerUnBan() {
 async function playerBan() {
 	console.log("ban");
 
-	await updateUserRole(ladderStore.getId(), selectedUserID.value, selectedChannelID.value, 3);
+	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, "3");
 	//await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
-async function promoteUser(idPromoted) {
+async function promoteUser(idPromoted: any) {
 	await promote(idPromoted, selectedChannelID.value, userID.value)
 	communityStore.updateSelectedChannel(selectedChannelID.value);
 	
