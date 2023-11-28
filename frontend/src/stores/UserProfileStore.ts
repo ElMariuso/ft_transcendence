@@ -4,21 +4,20 @@ import { ref, Ref } from 'vue'
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-import { getLadderData } from '@/services/UserProfile-helpers'
-import { getUserData } from '@/services/UserProfile-helpers'
-import { getAllUserData } from '@/services/UserProfile-helpers'
-import { getStatsData } from '@/services/UserProfile-helpers'
-import { getAchievementsData } from '@/services/UserProfile-helpers'
-import { getGamesData } from '@/services/UserProfile-helpers'
-import { getFriendsData } from '@/services/UserProfile-helpers'
-import { getFriendsInviteData } from '@/services/UserProfile-helpers'
-import { postFriendsInviteData } from '@/services/UserProfile-helpers'
-import { getBlockedListData } from '@/services/UserProfile-helpers'
-import { deleteFriend } from '@/services/UserProfile-helpers'
-import { postBlock } from '@/services/UserProfile-helpers'
-import { deleteBlock } from '@/services/UserProfile-helpers'
-import { getGamesResults } from '@/services/UserProfile-helpers'
-
+import { getLadderData,
+		getUserData,
+		getAllUserData,
+		getStatsData,
+		getAchievementsData,
+		getGamesData,
+		getFriendsData,
+		getFriendsInviteData,
+		postFriendsInviteData,
+		getBlockedListData,
+		deleteFriend,
+		postBlock,
+		deleteBlock,
+		getGamesResults } from '@/services/UserProfile-helpers';
 import { getPlayerStatus } from '@/services/matchmaking-helpers';
 
 interface GameRes {
@@ -37,6 +36,10 @@ interface Friend {
 	idUser: number;
 }
 
+interface FriendStatus {
+	value: Map<number, string>;
+}
+
 export const useLadderStore = defineStore('ladder', () => {
 
 	const userID = ref(0)
@@ -51,7 +54,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
-	const friendsStatus = ref([]);
+	const friendsStatus = ref(new Map());
 	const gamesResults: Ref<GameRes[] | null> = ref(null);
 
 	/////////////////// SETUP ////////////////////////
