@@ -150,7 +150,7 @@ export const leaveCurrentChannel = async (idUser: string | null, idChannel: numb
 	}
 }
 
-export const updateUserRole = async (idUser: string, banId: number | null, idChannel: number | null, newRole: string) => {
+export const updateUserRole = async (idUser: string, banId: number | null, idChannel: number | null, newRole: number) => {
 	try {
 
 		const res = await api.put('/userchannels/modifyRole/' + idUser,{
@@ -160,7 +160,7 @@ export const updateUserRole = async (idUser: string, banId: number | null, idCha
 			})
 		return res;
 	} catch (error) {
-		console.error('Error banning user from channel', error);
+		console.error('Error chaging user role from channel', error);
 		throw error;
 	}
 }

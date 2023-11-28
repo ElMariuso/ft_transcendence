@@ -19,6 +19,7 @@ import { checkJWT } from '@/services/auth-helpers';
 import Cookies from 'js-cookie';
 
 import HomeView from '@/views/HomeView.vue';
+import IntroView from '@/views/IntroView.vue';
 import LoginView from '../views/LoginView.vue';
 import Login2faView from '../views/Login2faView.vue';
 import CommunityView from '../views/CommunityView.vue';
@@ -39,6 +40,11 @@ const router = createRouter({
       	component: HomeView,
 		meta: { requiresAuth: true }
     },
+    {
+		path: '/intro',
+		name: 'intro',
+		component: IntroView
+  },
 	{
 		path: '/login',
 		name: 'login',
