@@ -57,6 +57,7 @@ interface CommunityStoreState {
 	acceptedChallengesStates: AcceptedChallengeState | null; // Replace SomeType with the actual type
 	channelType: number;
 	bannedChannel: Array<Channel>; // Replace SomeType with the actual type of bannedChannel
+	tmpbannedChannel: Array<Channel>;
   }
 
 export const useCommunityStore = defineStore('community', {

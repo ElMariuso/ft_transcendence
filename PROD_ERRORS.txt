@@ -1,4 +1,4 @@
-#0 9.775 src/services/matchmaking-helpers.ts(218,13): error TS2322: Type 'never[]' is not assignable to type '() => IterableIterator<never>'.
-#0 9.775   Type 'never[]' provides no match for the signature '(): IterableIterator<never>'.
-#0 9.777 src/services/matchmaking-helpers.ts(233,35): error TS2551: Property 'value' does not exist on type 'never[]'. Did you mean 'values'?
-#0 9.852 ERROR: "type-check" exited with 2.
+#0 9.493 src/services/matchmaking-helpers.ts(233,9): error TS7052: Element implicitly has an 'any' type because type 'Map<number, string>' has no index signature. Did you mean to call 'LadderStore.friendsStatus.value.set'?
+#0 9.494 src/stores/UserProfileStore.ts(58,8): error TS2322: Type 'Ref<never[]>' is not assignable to type 'Ref<FriendStatus>'.
+#0 9.494   Property 'value' is missing in type 'never[]' but required in type 'FriendStatus'.
+#0 9.542 ERROR: "type-check" exited with 2.

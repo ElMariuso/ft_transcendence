@@ -37,6 +37,10 @@ interface Friend {
 	idUser: number;
 }
 
+interface FriendStatus {
+	value: Map<number, string>;
+}
+
 export const useLadderStore = defineStore('ladder', () => {
 
 	const userID = ref(0)
@@ -51,6 +55,7 @@ export const useLadderStore = defineStore('ladder', () => {
 	const nbLoose = ref(0);
 	const username = ref("username")
 	const avatar = ref("../../upload/default_avatar.png")
+	// const friendsStatus: Ref<FriendStatus> = ref([]);
 	const friendsStatus = ref([]);
 	const gamesResults: Ref<GameRes[] | null> = ref(null);
 
