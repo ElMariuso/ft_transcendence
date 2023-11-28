@@ -142,20 +142,21 @@ onUnmounted(() => {
             <!-- Player 1 -->
             <div class="flex flex-col mr-5 space-y-2">
                 <!-- Player 1's Username -->
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>{{ truncateUsername(player1Username) }}</span>
                     <span v-if="isPlayer1Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
                 </div>
                 <!-- Player 1's Options -->
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>Base game</span>
                     <span v-if="isPlayer1WantBaseGame" class="ml-3 text-green-400">🟢</span>
                 </div>
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
+
                     <span>Small racket</span>
                     <span v-if="isPlayer1SmallRacket" class="ml-3 text-green-400">🟢</span>
                 </div>
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>Obstacle</span>
                     <span v-if="isPlayer1Obstacle" class="ml-3 text-green-400">🟢</span>
                 </div>
@@ -167,20 +168,20 @@ onUnmounted(() => {
             <!-- Player 2 -->
             <div class="flex flex-col ml-5 space-y-2">
                 <!-- Player 2's Username -->
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>{{ truncateUsername(player2Username) }}</span>
                     <span v-if="isPlayer2Ready && !areBothPlayersReady" class="ml-3 text-green-400">🟢</span>
                 </div>
                 <!-- Player 2's Options -->
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>Base game</span>
                     <span v-if="isPlayer2WantBaseGame" class="ml-3 text-green-400">🟢</span>
                 </div>
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>Small racket</span>
                     <span v-if="isPlayer2SmallRacket" class="ml-3 text-green-400">🟢</span>
                 </div>
-                <div class="flex items-center border-2 border-white p-4 rounded-xl text-2xl username-box">
+                <div class="flex items-center border-2 border-white p-4 rounded-xl username-box text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
                     <span>Obstacle</span>
                     <span v-if="isPlayer2Obstacle" class="ml-3 text-green-400">🟢</span>
                 </div>
@@ -190,22 +191,22 @@ onUnmounted(() => {
 
     <!-- Game Commands Reminder -->
     <div class="mt-5 flex justify-center flex-wrap gap-5">
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">⬆️</span> Move Up
         </div>
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">⬇️</span> Move Down
         </div>
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">Space</span> Ready
         </div>
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">0</span> Base Game
         </div>
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">1</span> Small Racket
         </div>
-        <div class="flex items-center border-2 border-white p-2 rounded-lg">
+        <div class="flex items-center border-2 border-white p-2 rounded-lg text-xs sm:text-sm md:text-md lg:text-lg xl:text-xl 2xl:text-2xl">
             <span class="bg-gray-800 p-2 rounded mr-2">2</span> Obstacle
         </div>
     </div>
@@ -215,14 +216,18 @@ onUnmounted(() => {
 #gameCanvas {
     top: 50%;
     left: 50%;
+	width: 70%; /* Use a percentage for the canvas width */
+    height: auto; /* Maintain aspect ratio */
 }
 
 .username-box {
     display: flex;
     justify-content: space-between;
-    min-width: calc(13ch + 90px);
-    overflow: hidden; 
+    /* min-width: calc(13ch + 90px); */
+    overflow: hidden;
+	width: auto;
     white-space: nowrap; 
 }
+
 </style>
   
