@@ -24,8 +24,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # - ./logs-back:/usr/src/app/logs
+      - ./logs-back:/usr/src/app/logs
       - ./backend/upload:/usr/src/app/upload
+      # - ./upload:/usr/src/app/upload
     networks:
       - web-network
       - db-network
@@ -42,8 +43,8 @@ services:
       dockerfile: ./Dockerfile.prod  # Use the production Dockerfile for the frontend
     ports:
       - "8080:5173"
-    # volumes:
-      # - ./logs-front:/usr/src/app/logs
+    volumes:
+      - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
     env_file:

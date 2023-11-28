@@ -30,11 +30,7 @@ wait_for_postgres
 if [ "$1" == "dev" ]; then
     # Run Prisma migration for development
 
-    npx prisma db push --force-reset
-elif [ "$1" == "prod" ]; then
-    # Run Prisma migration for production
-	# UNUSED AS PROD
-
+    npx prisma db push #--force-reset
 fi
 
 # Start your application based on the environment argument

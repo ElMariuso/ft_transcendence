@@ -27,7 +27,8 @@ export const MESSAGES =
 
 	UPLOAD:
 	{
-		UPLOAD_PATH: "src/../upload",
+		// UPLOAD_PATH: "src/../upload",
+		UPLOAD_PATH: "/usr/src/app/upload",
 		// UPLOAD_PATH: "src/assets/upload",
 		UPLOAD_SUCCESS: "Upload Successfully",
 		UPLOAD_FAILED: "Upload failed"
@@ -199,6 +200,8 @@ export const ACCEPTED_TYPE_FILE =
 
 // export const DEFAULT_AVATAR = "src/../upload/avatar-default.jpg";
 // export const DEFAULT_AVATAR = "src/../upload/default_avatar.png";
-export const DEFAULT_AVATAR = "src/../upload/default_avatar.png";
 
-export const DEFAULT_PATH = "/usr/src/app/";
+// export const DEFAULT_AVATAR = "src/../upload/default_avatar.png";
+export const DEFAULT_AVATAR = "/usr/src/app/upload/default_avatar.png";
+
+export const DEFAULT_PATH = "/usr/src/app/upload/";

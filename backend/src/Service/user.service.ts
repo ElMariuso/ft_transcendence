@@ -116,7 +116,7 @@ export class UserService
 		
 
 		let tmp = user.avatar.split('../').pop();
-		tmp = DEFAULT_PATH + tmp;
+		// tmp = DEFAULT_PATH + tmp;
 
 		console.log("TMP " + tmp)
 

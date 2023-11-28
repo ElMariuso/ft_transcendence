@@ -47,8 +47,12 @@ const refreshNavbar = () => {
 }
 
 watch(avatarUpdated, () => {
+	console.log("NAVBAR AVATAR WATCHER")
 	if (avatarUpdated.value) {
+		console.log("NAVBAR REFRESH WATCH")
 		refreshNavbar();
+		console.log("KEY: " + updateAvatarKey.value)
+		
 		avatarUpdated.value = false;
 	}
 })

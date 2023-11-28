@@ -21,7 +21,7 @@ RUN apt update && apt install libssl-dev dumb-init postgresql-client -y --no-ins
 WORKDIR /usr/src/app
 
 # Create folders for logs and upload
-# RUN mkdir -p logs uploads
+RUN mkdir -p logs
 
 # Copy necessary files from the build phase
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist

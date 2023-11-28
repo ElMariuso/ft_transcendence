@@ -83,15 +83,13 @@ export class UserController
 	@Get('/avatar/:id')
 	async getAvatar(@Param('id') id: string, @Res() res: Response)
 	{
-		console.log("AVATAR GET")
 		try
 		{
 
 			const newId = parseInt(id, 10);
-			console.log("BEFORE GETAVATARPATH")
 			let filePath = await this.userService.getAvatarPath(newId);
 			
-			console.log("FILE PATH" + filePath)
+			console.log("FILE PATH" + filePath);
 
 			res.sendFile(filePath);
 
