@@ -3,12 +3,14 @@ import { Player, Direction, EndReason, EndMatchResult, size, position } from 'sr
 
 @Injectable()
 export class GameStateService {
+    // Constants defining various game settings
     private static readonly WINNING_SCORE = 5;
     private static readonly BALL_LAUNCH_DELAY_MS = 1500;
     private static readonly RACKET_MOVEMENT = 13;
     private static readonly INITIAL_BALL_SPEED = 3;
     private static readonly INITIAL_OBSTACLE_SPEED = 1;
 
+    // Properties representing the state of players and the game
     player1ID: number | string;
     player2ID: number | string;
     player1Username: string;
@@ -35,7 +37,17 @@ export class GameStateService {
     obstacle1Direction: number;
     obstacle2Direction: number;
 
+    // Callback to be invoked to end a match
     private endMatchCallback: (result: EndMatchResult) => void;
+
+    /**
+     * Initializes the game state with player information and the end match callback.
+     * @param player1ID - ID of the first player.
+     * @param player2ID - ID of the second player.
+     * @param player1Username - Username of the first player.
+     * @param player2Username - Username of the second player.
+     * @param endMatchCallback - Callback function to invoke when the match ends.
+     */
     public initialize(
         player1ID: number | string,
         player2ID: number | string,
@@ -51,6 +63,9 @@ export class GameStateService {
         this.initializeDefaultValues(); 
     }
 
+    /**
+     * Initializes default values for a new game.
+     */
     private initializeDefaultValues(): void {
         this.canvasSize = { width: 858, height: 525 };
         this.score1 = 0;
@@ -82,6 +97,11 @@ export class GameStateService {
         this.launchBall();
     }
 
+    /**
+     * Moves the racket of a player in a given direction.
+     * @param player - The player whose racket is to be moved.
+     * @param direction - The direction to move the racket.
+     */
     moveRacket(player: Player, direction: Direction): void {
         if (!this.playerReady.first && !this.playerReady.second)
             return ;
@@ -95,6 +115,9 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Updates the position of the ball on each tick of the game loop.
+     */
     updateBallPosition() {
         if (!this.isGameEnded()) {
             this.ballMovement();
@@ -104,21 +127,34 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Checks if the game has ended based on the scores.
+     * @returns true if the game has ended, false otherwise.
+     */
     private isGameEnded(): boolean {
         return this.score1 === GameStateService.WINNING_SCORE || this.score2 === GameStateService.WINNING_SCORE;
     }
 
+    /**
+     * Resets the ball position and size after a match is completed.
+     */
     private resetBallPostMatch() {
         this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
         this.ballSize = { width: 0, height: 0 };
     }
 
+    /**
+     * Handles the movement of the ball, including collisions and scoring.
+     */
     private ballMovement() {
         this.ballPosition.x += this.ballVelocity.x;
         this.ballPosition.y += this.ballVelocity.y;
         this.checkCollisions();
     }
 
+    /**
+     * Manages the movement of obstacles within the game.
+     */
     private obstacleMovement() {
         const obstacleSpeed = GameStateService.INITIAL_OBSTACLE_SPEED;
 
@@ -136,6 +172,9 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Checks and handles collisions of the ball with rackets, obstacles, and canvas edges.
+     */
     private checkCollisions() {
         const ballHalfWidth = this.ballSize.width / 2;
         const ballHalfHeight = this.ballSize.height / 2;
@@ -206,8 +245,12 @@ export class GameStateService {
             this.updateScore(1, Player.Player1);
             this.resetBall();
         }
-    }    
+    }
 
+    /**
+     * Resets the ball to the center and stops its movement.
+     * Called after a score or at game restart.
+     */
     private resetBall() {
         this.ballSize = { width: 0, height: 0 };
         this.ballPosition = { x: this.canvasSize.width / 2, y: this.canvasSize.height / 2 };
@@ -219,6 +262,9 @@ export class GameStateService {
         }, GameStateService.BALL_LAUNCH_DELAY_MS);
     }
 
+    /**
+     * Determines the initial direction and speed of the ball when launched.
+     */
     private launchBall(): void {
         const isTopPosition = Math.random() < 0.5;
         const newYPosition = isTopPosition 
@@ -235,10 +281,20 @@ export class GameStateService {
         };
     }
 
+    /**
+     * Displays the ball on the game canvas.
+     * Called after a delay following a score or at game start.
+     */
     displayBall(): void {
         this.ballSize = { width: 10, height: 10 };
     }
 
+    /**
+     * Calculates the angle at which the ball will be launched.
+     * @param isGoingRight - Boolean indicating if the ball is going right or left.
+     * @param isTopPosition - Boolean indicating if the ball is in the top or bottom half.
+     * @returns The angle in radians for the ball's trajectory.
+     */
     private calculateBallAngle(isGoingRight: boolean, isTopPosition: boolean): number {
         if (isGoingRight) {
             return isTopPosition ? 3 * Math.PI / 4 : Math.PI / 4;
@@ -247,6 +303,11 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Updates the score based on the player and increments it by the given value.
+     * @param value - The value to increment the score.
+     * @param target - The player for whom the score is to be updated.
+     */
     private updateScore(value, target: Player) {
         if (target === Player.Player1)
             this.score1 += value;
@@ -255,6 +316,9 @@ export class GameStateService {
         this.checkEndMatch();
     }
 
+    /**
+     * Checks if the match has ended based on the scores and calls the end match callback.
+     */
     private checkEndMatch() {
         if (this.score1 === GameStateService.WINNING_SCORE) {
             this.endMatch(Player.Player1, EndReason.Score);
@@ -265,6 +329,10 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Sets a player's status as forfeited and determines the match winner.
+     * @param playerID - The ID of the player who forfeited.
+     */
     setForfeit(playerID: string | number) {
         if (playerID === this.player1ID) {
             this.endMatch(Player.Player2, EndReason.Forfeit);
@@ -275,6 +343,11 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Ends the match and notifies the end match callback with the result.
+     * @param winner - The player who won the match.
+     * @param reason - The reason for the match ending (score or forfeit).
+     */
     private endMatch(winner: Player, reason: EndReason): void {
         const result: EndMatchResult = {
             winner: winner,
@@ -283,6 +356,11 @@ export class GameStateService {
         this.endMatchCallback(result);
     }
 
+    /**
+     * Sets a player's readiness for the game.
+     * @param value - The readiness state to set.
+     * @param target - The player to update ('player1' or 'player2').
+     */
     setReady(value: boolean, target: string) {
         if (target === 'player1') {
             this.playerReady.first = value;
@@ -291,6 +369,12 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Toggles the base game option for a player.
+     * Disables small racket and obstacle options if enabled.
+     * @param value - Whether the player wants the base game.
+     * @param target - The player to update ('player1' or 'player2').
+     */
     setWantBaseGame(value: boolean, target: string) {
         if (target === 'player1') {
             this.wantBaseGame.first = value;
@@ -305,6 +389,12 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Sets the small racket option for a player.
+     * Adjusts the racket size based on the option.
+     * @param value - Whether to enable the small racket.
+     * @param target - The player to update ('player1' or 'player2').
+     */
     setSmallRacket(value: boolean, target: string) {
         if (target === 'player1') {
             this.smallRacket.first = value;
@@ -323,6 +413,12 @@ export class GameStateService {
         }
     }
 
+    /**
+     * Sets the obstacle option for a player.
+     * Positions and sizes the obstacle based on the option.
+     * @param value - Whether to enable the obstacle.
+     * @param target - The player to update ('player1' or 'player2').
+     */
     setObstacle(value: boolean, target: string) {
         if (target === 'player1') {
             this.obstacle.first = value;
