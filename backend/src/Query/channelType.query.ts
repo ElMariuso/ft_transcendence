@@ -35,34 +35,6 @@ export class ChannelQuery
 	 */
 	async findAllChannelsByUserId(idUser: number) //: Promise<Channel[]>
 	{
-		// const channels = await this.prisma.channel.findMany
-		// (
-		// 	{
-		// 		where: { idUser },
-		// 		include:
-		// 		{
-		// 			User_Channel:
-		// 			{
-		// 				include: {User: true}
-		// 			}
-		// 		},
-		// 	}
-		// );
-		// const channels = await this.prisma.user.findMany({
-		// 	where: { idUser },
-		// 	include: {
-		// 	  User_Channel: {
-		// 		include: {
-		// 		  Channel: true
-		// 		}
-		// 	  }
-		// 	}
-		// });
-
-		// if (!channels)
-		//   	return [];
-
-		// return channels.User_Channel.map(uc => uc.Channel);
 		const us_ch = await this.prisma.user_Channel.findMany
 		(
 			{

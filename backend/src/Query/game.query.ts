@@ -96,9 +96,6 @@ export class GameQuery
 	}
 
 	/**
-	 *  ---------------------
-	 * | SUREMENT A MODIFIER |
-	 *  ---------------------
 	 * 
 	 * Posts a new Game in DB
 	 * 

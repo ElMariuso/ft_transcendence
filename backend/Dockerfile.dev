@@ -20,10 +20,6 @@ FROM node:18-slim
 RUN apt update && apt install libssl-dev dumb-init postgresql-client -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/src/app
 
-# Create folders for logs and upload
-# RUN mkdir -p logs uploads
-# RUN chmod 777 uploads
-
 # Copy necessary files from the build phase
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env
@@ -34,7 +30,6 @@ COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client ./n
 COPY --chown=node:node --from=build /usr/src/app/schema.prisma ./schema.prisma
 
 # Install the Nest.js CLI
-# RUN npm install -g @nestjs/cli
 RUN npm i
 
 # Copy the custom entry script into the container

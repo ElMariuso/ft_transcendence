@@ -29,7 +29,6 @@ wait_for_postgres
 # Run Prisma migration based on the environment argument
 if [ "$1" == "dev" ]; then
     # Run Prisma migration for development
-
     npx prisma db push #--force-reset
 fi
 

@@ -246,63 +246,6 @@ export class UserService
 		return this.transformToDTO(updatedUser);
 	}
 
-	// async getFriendsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
-	// {
-	// 	const checkUser = await this.userQuery.findUserById(idUser);
-
-	// 	if (!checkUser)
-	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-
-	// 	const friends = await this.userQuery.getFriends(idUser);
-
-	// 	const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
-			
-	// 		const {idUser, username, email} = friend;
-
-	// 		return {
-	// 			idUser,
-	// 			username,
-	// 			email,
-	// 		};
-	// 	});
-	// 	return formatFriends;
-	// }
-
-	// async addFriend(idUser: number, friendUsername: string) : Promise<FriendBlockedDTO>
-	// {
-	// 	const checkUser = await this.userQuery.findUserByUsername(friendUsername);
-
-	// 	if (!checkUser)
-	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-
-	// 	const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
-
-	// 	return this.transformToFriendBlockUserDTO(checkUser);
-	// }
-
-	// async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
-	// {
-	// 	const checkUser = await this.userQuery.findUserById(idUser);
-
-	// 	if (!checkUser)
-	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-
-
-	// 	const blockeds = await this.userQuery.getBlockeds(idUser);
-
-	// 	const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
-			
-	// 		const {idUser, username, email} = blocked;
-
-	// 		return {
-	// 			idUser,
-	// 			username,
-	// 			email,
-	// 		};
-	// 	});
-	// 	return formatBlockeds;
-	// }
-
 	/**
 	 * Transform a Prisma User Object to a UserDTO
 	 * 

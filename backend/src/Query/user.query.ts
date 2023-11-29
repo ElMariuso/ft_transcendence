@@ -199,7 +199,6 @@ export class UserQuery
 				username,
 				email,
 				id42,
-				//avatar: './src/assets/default_avatar.png',
 				avatar: DEFAULT_AVATAR,
 				points: 0,
 				isTwoFactorAuthEnabled: false,
@@ -247,18 +246,6 @@ export class UserQuery
 			}
 		);
 
-		// await this.prisma.friend.deleteMany
-		// (
-		// 	{
-		// 		OR: 
-		// 		[
-		// 			{ idUser },
-		// 			{ idFriendUser: idUser}
-		// 		],
-		// 	}
-		// )
-
-
 		await this.prisma.block.deleteMany
 		(
 			{
@@ -271,17 +258,6 @@ export class UserQuery
 				where: { idBlockedUser: idUser},
 			}
 		);
-
-		// await this.prisma.block.deleteMany
-		// (
-		// 	{
-		// 		OR:
-		// 		[
-		// 			{ idUser },
-		// 			{ idBlockedUser: idUser}
-		// 		]
-		// 	}
-		// )
 	}
 
 	/**

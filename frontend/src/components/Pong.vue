@@ -139,8 +139,6 @@ onUnmounted(() => {
     window.removeEventListener('keydown', eventDown);
     window.removeEventListener('keyup', eventUp);
 });
-
-console.log(window.innerHeight)
 </script>
 
 <template>
