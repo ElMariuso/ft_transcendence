@@ -284,7 +284,6 @@ async function saveSettings() {
 				},
 			}).then(() => {
 				profileStore.updateProfile(bodyInfo);
-				
 				window.location.reload();
 			})
 			

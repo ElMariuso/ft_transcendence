@@ -6,9 +6,16 @@ import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { storeToRefs } from 'pinia';
 import FirstAuthSettingsModal from '../components/modals/FirstAuthSettingsModal.vue';
 import { JwtPayload } from "@/models/jwtPayload.model";
+import { useRouter } from 'vue-router';
+// import { useProfileStore } from '../stores/ProfileStore'
+
+const router = useRouter();
 
 const authStore = useAuthenticationStore();
 const { firstAuth } = storeToRefs(authStore);
+
+// const profileStore = useProfileStore();
+// const { userID } = storeToRefs(profileStore)
 
 const token: any = Cookies.get('token');
 const decodedToken: JwtPayload = jwt_decode(token);
@@ -18,6 +25,7 @@ const showModal = ref(true);
 function closeSettingsModal() {
 	showModal.value = false;
 	firstAuth.value++;
+	router.push('/intro');
 }
 </script>
 

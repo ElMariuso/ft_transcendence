@@ -19,8 +19,11 @@ const route = useRoute();
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const showButtons = computed(() => route.path.startsWith('/game/'));
 const isInGame = computed(() => (matchmakingStore.roomID !== null));
+const {isSearching} = storeToRefs(matchmakingStore);
 const { username, avatarUpdated, userID } = storeToRefs(profileStore)
-const avatarImg = ref(getAvatarImg());
+// const avatarImg = ref(getAvatarImg());
+const avatarImg = ref(() => (getAvatarImg()));
+
 const updateAvatarKey = ref(0);
 
 
@@ -29,6 +32,7 @@ watch(isAuthenticated, async () => {
 	if (isAuthenticated) {
 		await profileStore.setupProfile(0);
 		await refreshNavbar();
+		
 	}
 })
 
@@ -44,6 +48,7 @@ watch(userID, async (oldID, newID) => {
 const refreshNavbar = async () => {
   avatarImg.value = await getAvatarImg();
   updateAvatarKey.value++;
+
 }
 
 watch(avatarUpdated, async () => {
@@ -51,7 +56,7 @@ watch(avatarUpdated, async () => {
 		await refreshNavbar();
 		avatarUpdated.value = false;
 	}
-})
+}, { deep: true })
 
 async function getAvatarImg() {
 
@@ -101,7 +106,7 @@ async function getAvatarImg() {
 				<img :src="avatarImg" alt="avatar" class="ml-3 h-14 w-auto rounded-full">
 			</div>
 
-			<SettingsDropDown />
+			<SettingsDropDown v-if="isInGame === false && isSearching === false" />
 		</div>
 
 	</div>

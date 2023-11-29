@@ -48,8 +48,8 @@ services:
       - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
-    env_file:
-      - ./frontend/.env
+    # env_file:
+    #   - ./frontend/.env
     depends_on:
       - backend-dev
     restart: always

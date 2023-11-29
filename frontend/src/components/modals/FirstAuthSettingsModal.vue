@@ -1,10 +1,11 @@
 <template>
 	<Backdrop>
 		<transition name="opacity" mode="out-in" appear>
-			<div class="flex flex-col fixed z-50 bg-white p-4 rounded-lg shadow-lg  h-1/3">
+			<div class="flex flex-col fixed z-50 bg-white p-4 rounded-lg shadow-lg">
 
 				<div class="text-xl font-bold border-b text-black"> Setting up your profile</div>
 
+				<div class="mt-2 text-l">Default username: {{ username }}</div>
 				<div class="flex flex-row items-baseline mt-3">
 					<p class="text-lg font-medium">Username:</p>
 					<input v-model="newUsername" type="text" class="ml-5 p-2 w-1/3 border rounded-lg mr-5">
@@ -56,7 +57,7 @@ interface FileInputEvent extends Event {
 }
 
 const profileStore = useProfileStore();
-const { userID } = storeToRefs(profileStore);
+const { userID, username } = storeToRefs(profileStore);
 
 const emit = defineEmits(['closeModal']);
 const avatarInput = ref<HTMLInputElement | null>(null);
@@ -159,7 +160,7 @@ async function saveSettings() {
       })
       .then(() => {
         profileStore.updateProfile(bodyInfo);
-      });
+	});
     closeSettingsModal();
   }
 }
