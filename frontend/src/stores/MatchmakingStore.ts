@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
-import Cookies from 'js-cookie';
 import { rejoinMatchmaking, rejoinRoom } from '@/services/matchmaking-helpers';
 import { useProfileStore } from './ProfileStore';
 import { MatchmakingStoreState, UpdateInfoData } from '@/models/matchmaking.model';
 import { useAuthenticationStore } from './AuthenticationStore';
+import Cookies from 'js-cookie';
 
 export const useMatchmakingStore = defineStore('matchmaking', {
     state: (): MatchmakingStoreState => ({

@@ -73,15 +73,6 @@ export const useProfileStore = defineStore('profile', () => {
 	}
 
 	/**
-     * Function to set the user's username.
-     * 
-     * @param {string} newUsername - The new username.
-     */
-	function setUsername(newUsername: string) {
-		username.value = newUsername
-	}
-
-	/**
      * Function to set the user's two-factor authentication status.
      * 
      * @param {boolean} val - The two-factor authentication status.

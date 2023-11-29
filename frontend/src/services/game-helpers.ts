@@ -1,6 +1,6 @@
 import { useGameStore } from "@/stores/GameStore";
-import { askGamesInformations, updateRacket } from "./matchmaking-helpers";
-import { position, size, EndReason, Player } from "@/models/game.model";
+import { updateRacket } from "./matchmaking-helpers";
+import { position, size } from "@/models/game.model";
 
 export function gameLoop(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,
     roomId: string | null, movingUp: { value: boolean }, movingDown: { value: boolean }): void {

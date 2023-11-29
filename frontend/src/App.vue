@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, computed } from 'vue';
+import { useProfileStore } from './stores/ProfileStore'
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { initializeSocketListeners } from './services/matchmaking-helpers';
+import { updatePlayerStatus } from './services/matchmaking-helpers';
 import Navbar from './components/Navbar.vue';
 import MatchmakingBox from './components/MatchmakingBox.vue';
 import Cookies from 'js-cookie';
 
-import { useProfileStore } from './stores/ProfileStore'
-import { useMatchmakingStore } from '@/stores/MatchmakingStore';
-import { initializeSocketListeners } from './services/matchmaking-helpers';
-
-import { updatePlayerStatus } from './services/matchmaking-helpers';
-
 const profileStore = useProfileStore();
 const matchmakingStore = useMatchmakingStore();
+const isSearchingValue = computed(() => matchmakingStore.isSearching);
 
 async function setupStore() {
 	let uri = window.location.href.split('id=');
@@ -43,8 +42,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload);
 });
-
-const isSearchingValue = computed(() => matchmakingStore.isSearching);
 </script>
 
 <template>

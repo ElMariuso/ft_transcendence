@@ -1,21 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Cookies from 'js-cookie';
-import jwt_decode from 'jwt-decode';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { storeToRefs } from 'pinia';
-import FirstAuthSettingsModal from '../components/modals/FirstAuthSettingsModal.vue';
 import { JwtPayload } from "@/models/jwtPayload.model";
 import { useRouter } from 'vue-router';
-// import { useProfileStore } from '../stores/ProfileStore'
+import Cookies from 'js-cookie';
+import jwt_decode from 'jwt-decode';
+import FirstAuthSettingsModal from '../components/modals/FirstAuthSettingsModal.vue';
 
 const router = useRouter();
 
 const authStore = useAuthenticationStore();
 const { firstAuth } = storeToRefs(authStore);
-
-// const profileStore = useProfileStore();
-// const { userID } = storeToRefs(profileStore)
 
 const token: any = Cookies.get('token');
 const decodedToken: JwtPayload = jwt_decode(token);

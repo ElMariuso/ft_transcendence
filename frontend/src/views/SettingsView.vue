@@ -67,7 +67,6 @@
 			:resolve="twoAuthRes"
 		/>
 
-
 		<!-- Save and Cancel Buttons -->
 		<div class="flex mt-6">
 			<button 
@@ -92,13 +91,11 @@ import { useProfileStore } from '../stores/ProfileStore'
 import api from '../services/api';
 import jwt_decode, {JwtPayload } from 'jwt-decode';
 import TwoFactorAuthModal from '../components/modals/TwoFactorAuthModal.vue';
-import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 
 // Store ***************************************************************************
 
 const profileStore = useProfileStore();
-const { userID } = storeToRefs(profileStore)
 
 // Username ***************************************************************************
 

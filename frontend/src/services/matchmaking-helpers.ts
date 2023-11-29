@@ -1,5 +1,4 @@
 import { useGameStore } from "@/stores/GameStore";
-import socket from "./socket-helpers";
 import { useRouter } from 'vue-router';
 import { useProfileStore } from "@/stores/ProfileStore";
 import { useLadderStore } from "@/stores/UserProfileStore";
@@ -7,6 +6,7 @@ import { useCommunityStore } from "@/stores/CommunityStore";
 import { useMatchmakingStore } from "@/stores/MatchmakingStore";
 import { AuthenticatedPlayer, PlayerInQueue } from "@/models/player.model";
 import { GameState } from "@/models/game.model";
+import socket from "./socket-helpers";
 
 const joinQueue = (playerData: PlayerInQueue): void => {
     socket.emit('join-standard', playerData);

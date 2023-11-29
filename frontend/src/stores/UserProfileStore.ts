@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, Ref } from 'vue'
-// import axios from 'axios';
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
-
+import { getPlayerStatus } from '@/services/matchmaking-helpers';
+import { GameRes, Blocked, Friend } from '@/models/ladder.model';
 import { getLadderData,
 		getUserData,
 		getAllUserData,
@@ -18,27 +18,6 @@ import { getLadderData,
 		postBlock,
 		deleteBlock,
 		getGamesResults } from '@/services/UserProfile-helpers';
-import { getPlayerStatus } from '@/services/matchmaking-helpers';
-
-interface GameRes {
-	idGame: number;
-	isWinner: number;
-	username: string;
-	idUser: number;
-}
-
-interface Blocked {
-	username: string;
-	idUser: number;
-}
-
-interface Friend {
-	idUser: number;
-}
-
-interface FriendStatus {
-	value: Map<number, string>;
-}
 
 export const useLadderStore = defineStore('ladder', () => {
 
@@ -355,7 +334,7 @@ export const useLadderStore = defineStore('ladder', () => {
 			await postBlock(String(getId()), usernameToBlock);
 		else
 			await deleteBlock(String(getId()), idBlocked);
-		await setupBlockedList();//updating blocked list
+		await setupBlockedList(); //updating blocked list
 	}
 
 	function updateFriendStatuses() {
@@ -364,5 +343,8 @@ export const useLadderStore = defineStore('ladder', () => {
 		});
 	}
 
-	return {username, blocked, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult, update }
+	return {username, blocked, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, 
+		setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, 
+		setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, 
+		getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult, update }
 })

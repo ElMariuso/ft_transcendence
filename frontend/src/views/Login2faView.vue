@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import api from '../services/api';
 import { useProfileStore } from '../stores/ProfileStore'
 import { useRouter } from 'vue-router';
+import api from '../services/api';
 import Cookies from 'js-cookie';
 import jwt_decode, {JwtPayload} from 'jwt-decode';
 
@@ -15,19 +15,19 @@ const authCheckPerformed = ref(false);
 const updatePage = ref(0);
 
 const authButtonLabel = computed(() => {
-if (authCheckPerformed.value)
-	return 'Wrong code';
-else
-	return 'Authenticate';
+	if (authCheckPerformed.value)
+		return 'Wrong code';
+	else
+		return 'Authenticate';
 });
 
 const authButtonClass = computed(() => {
-if (authButtonDisabled.value)
-	return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
-else if (authCheckPerformed.value)
-	return {'bg-red-500 text-white': true};
-else
-	return {'bg-blue-500 text-white': true};
+	if (authButtonDisabled.value)
+		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
+	else if (authCheckPerformed.value)
+		return {'bg-red-500 text-white': true};
+	else
+		return {'bg-blue-500 text-white': true};
 });
 
 watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
@@ -45,13 +45,8 @@ watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
 	}
 });
 
-// async function setupStore() {
-// 	await profileStore.setupProfile();
-// }
-
 
 async function authenticate() {
-	// setupStore();
 	try {
 		const token: any = Cookies.get('token')
 		const decodedToken: JwtPayload = jwt_decode(token);
@@ -61,7 +56,6 @@ async function authenticate() {
 			code: twoFactorAuthCode.value,
 			userID: id,
 		})
-
 
 		try {
 			if (response.data) {

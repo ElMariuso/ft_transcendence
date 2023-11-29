@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - ./database:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d  # Mount the directory containing your SQL script
+      - ./init-scripts:/docker-entrypoint-initdb.d  # Mounts the directory containing the SQL script
     networks:
       - db-network
     env_file:
@@ -24,7 +24,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./backend:/usr/src/app  # Mount the local backend directory into the container for live code updates
+      - ./backend:/usr/src/app  # Mounts the local backend directory into the container for live code updates
       - ./logs-back:/usr/src/app/logs
       - ./uploads:/usr/src/app/uploads
     networks:
@@ -44,12 +44,10 @@ services:
     ports:
       - "8080:5173"
     volumes:
-      - ./frontend:/app  # Mount the local frontend directory into the container for live code updates
+      - ./frontend:/app  # Mounts the local frontend directory into the container for live code updates
       - ./logs-front:/usr/src/app/logs
     networks:
       - web-network
-    # env_file:
-    #   - ./frontend/.env
     depends_on:
       - backend-dev
     restart: always

@@ -13,10 +13,13 @@
  * - Routes that require authentication are protected and redirect unauthenticated 
  *   users to the home page.
 */
+
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore'
 import { checkJWT } from '@/services/auth-helpers';
+import { JwtPayload } from "@/models/jwtPayload.model";
 import Cookies from 'js-cookie';
+import jwt_decode from 'jwt-decode';
 
 import HomeView from '@/views/HomeView.vue';
 import IntroView from '@/views/IntroView.vue';
@@ -27,8 +30,6 @@ import ProfileView from '../views/ProfileView.vue';
 import OtherProfileView from '../views/OtherProfileView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import GameView from '../views/GameView.vue';
-import jwt_decode from 'jwt-decode';
-import { JwtPayload } from "@/models/jwtPayload.model";
 
 // Define the routes for the Vue application
 const router = createRouter({

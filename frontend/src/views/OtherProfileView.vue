@@ -65,20 +65,6 @@
 
 	<div class="col-3">
 
-		<!-- Friend invitations -->
-		<!-- <div class="mt-6">
-		  <h3 class="text-lg font-semibold">Friend invitations</h3>
-		  <div class="mt-2">
-            <li v-for="Invite in ladderStore.getFriendsInvite()" class="mb-2">
-			  <span class="font-semibold">
-				{{ Invite.username }}
-				<button @click="Accept(Invite.idUser)" class="mt-2 bg-green-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Accept</button>
-				<button @click="Decline(Invite.idUser)" class="mt-2 bg-red-500 hover:bg-sky-700 text-white px-4 py-2 rounded-lg">Decline</button>
-			  </span>
-            </li>
-          </div>
-		</div> -->
-
 		<!-- Friend list -->
 		<div class="mt-6">
 			<h3 class="text-lg font-semibold">Friend list</h3>
@@ -106,27 +92,18 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed  } from 'vue'
-import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
-import api from '../services/api';
-import jwt_decode from 'jwt-decode';
 import { storeToRefs } from 'pinia'
+import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
-import { getPlayerStatus } from '@/services/matchmaking-helpers'
 
-const profileStore = useProfileStore()
+
 const ladderStore = useLadderStore()
 const { friendlist } = storeToRefs(ladderStore);
 
 const showProfile = ref(false);
-
-const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
-const searchIdUser = ref(0);
-const userNotFound = ref(false);
-const userFound = ref(false);
-
 let intervalId;
 
 onMounted(() => {
@@ -149,10 +126,10 @@ const formattedFriendStatuses = computed(() => {
 
 const setAll = async () => {
 	let uri = window.location.href.split('id=');
-	await ladderStore.setup(uri[1])
-	showProfile.value = true // Set a flag to indicate that data is loaded
+	await ladderStore.setup(uri[1]);
+	showProfile.value = true; // Set a flag to indicate that data is loaded
 }
-setAll()
+setAll();
 
 
 function getAvatarImg() {
@@ -174,42 +151,4 @@ function getGameResult(idGame) {
 	else
 		return "Lose";
 }
-
-// const refreshPage = () => {
-//   location.reload(); // Reloads the current page
-// };
-
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/acceptFriendship', {
-// 			"idFriend": idFriend,
-// 				})
-//     } catch (error) {
-//     	console.error('Error accepting a friend request:', error);
-//     	throw error;
-//     }
-// 	await ladderStore.updateFriendsInvite();//updating friends invite list
-// 	await ladderStore.updateFriends();
-// 	// refreshPage();
-// }
-
-// async function Decline(idFriend) {
-
-//  	try {
-//         const response = await api.put('/users/' + ladderStore.getId() + '/refuseFriendship', {
-// 			"idFriend": idFriend,
-// 			})
-//     } catch (error) {
-//     	console.error('Error refusing a friend request:', error);
-//     	throw error;
-//     }
-// 	await ladderStore.updateFriendsInvite();//updating friends invite list
-// 	await ladderStore.updateFriends();
-// 	// refreshPage();
-// }
-
 </script>
-
-<style scoped>
-/* Add Tailwind CSS classes if not already included */
-
-</style>

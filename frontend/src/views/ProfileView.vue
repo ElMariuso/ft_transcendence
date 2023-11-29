@@ -147,21 +147,15 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
-import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
+import { storeToRefs } from 'pinia'
 import api from '../services/api';
 import jwt_decode from 'jwt-decode';
-import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
-//import { deleteBlock } from '@/services/UserProfile-helpers'
 
-const profileStore = useProfileStore();
 const ladderStore = useLadderStore();
-
 const showProfile = ref(false);
-
 const { friendlist, blocked } = storeToRefs(ladderStore);
-const { avatarUpdated } = storeToRefs(profileStore)
 const avatarImg = ref(getAvatarImg());
 const updateAvatarKey = ref(0);
 const searchIdUser = ref(0);
@@ -256,7 +250,7 @@ async function FindUser() {
 		if (userFound.value != true)
 			userNotFound.value = true;
 	});
-	//youself
+	//yourself
 	if (searchUsername.value == ladderStore.username)
 		alreadyFriend.value = true;
 	//friendlist
@@ -298,9 +292,8 @@ async function Accept(idFriend) {
     	console.error('Error accepting a friend request:', error);
     	throw error;
     }
-	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriendsInvite(); //updating friends invite list
 	await ladderStore.updateFriends();
-	//refreshPage();
 }
 
 async function Decline(idFriend) {
@@ -313,9 +306,8 @@ async function Decline(idFriend) {
     	console.error('Error refusing a friend request:', error);
     	throw error;
     }
-	await ladderStore.updateFriendsInvite();//updating friends invite list
+	await ladderStore.updateFriendsInvite(); //updating friends invite list
 	await ladderStore.updateFriends();
-	// refreshPage();
 }
 
 async function Unfriend(idFriend) {
@@ -328,8 +320,3 @@ async function Unfriend(idFriend) {
 }
 
 </script>
-
-<style scoped>
-/* Add Tailwind CSS classes if not already included */
-
-</style>

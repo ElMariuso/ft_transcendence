@@ -221,10 +221,10 @@
 							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg border px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 								  {{ user.username }}
-								  <!-- <div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
-											<div class="spinner"></div>
-										</div> -->
-								  <button v-if="String(user.idUser) != userID" @click="toggleDropDown(user.idUser)">
+								  	<div v-if="isChallengeActive(user.idUser).value" class="bg-white spinner-wrapper">
+										<div class="spinner"> </div>
+									</div>
+								  <button v-if="String(user.idUser) !== userID" @click="toggleDropDown(user.idUser)">
 									<img src="../assets/elipsis-h.svg" alt="options">
 								  </button>
 								</div>
@@ -327,10 +327,10 @@ import { useCommunityStore } from '../stores/CommunityStore'
 import { useProfileStore } from '../stores/ProfileStore'
 import { useLadderStore } from '../stores/UserProfileStore'
 import { storeToRefs } from 'pinia'
-import api from '../services/api';
 import { joinChannel, sendMessageTo, leaveCurrentChannel, deleteCurrentChannel, updateUserRole, 
 	getChannelMsg, deleteMessage, mute, getChannelUsers, creatDMChannel, promote, channelPrivToPub, modifyChannelPw } from '@/services/Community-helpers'
 import { askChallenge, askChallengeState, challengeAnswer, askAcceptedChallengeState, confirmChallenge } from '@/services/matchmaking-helpers'
+import api from '../services/api';
 
 interface UserIntervals {
   [friendId: number]: ReturnType<typeof setInterval>;
@@ -397,7 +397,7 @@ const answerToChallenge = async (idUser: number, response: number) => {
 
 const isChallengeActive = (idUser: number): Ref<boolean | undefined> => {
 	return computed(() => {
-        const challengeState = communityStore.getChallengeState(idUser);
+		const challengeState = communityStore.getChallengeState(idUser);
         return challengeState && challengeState.isChallengePending;
     });
 };
@@ -564,11 +564,9 @@ function isBanned(idChannel: any)
 	{
 		if (idChannel === bannedChannel.value[i].idChannel)
 		{	
-			console.log("Banned in : " + idChannel)
 			return (true);
 		}
 	}
-	// console.log("Not banned in : " + idChannel)
 	return (false);
 }
 
@@ -583,10 +581,6 @@ const dropdownOpenChatSettings = ref(false);
 const channelNewPw = ref('');
 let updateChannelInterval: any;
 
-// const userIsInChannel = (usernameToSearch: string): boolean => {
-//   return users.some(user => user.username === usernameToSearch);
-// };
-
 // Refreshes Chat + players list
 watch(selectedChannelID, (newChannelID, oldChannelID) => {
     // Clear the existing interval when selectedChannelID is reset
@@ -595,13 +589,11 @@ watch(selectedChannelID, (newChannelID, oldChannelID) => {
     }
 
     // Start the interval when selectedChannelID is set
-    // if (newChannelID) {
-		updateChannelInterval = setInterval(async () => {
-			if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
-				selectedChannelID.value = null;
-			await communityStore.updateSelectedChannel(newChannelID);
-		}, 500);
-    // }
+	updateChannelInterval = setInterval(async () => {
+		if (!(selectedChannelUsers.value.some(user => user.username === username.value)) || roleInChannel.value === 'Banned')
+			selectedChannelID.value = null;
+		await communityStore.updateSelectedChannel(newChannelID);
+	}, 500);
 });
 
 function toggleDropdownChatSettings() {
@@ -624,21 +616,13 @@ const closeDropdownOnClick = (event: any) => {
 
 async function selectChannel(channelID: any) {
 
-	// Websocket connect here ?
 	selectedChannelID.value = channelID;
 	await communityStore.updateSelectedChannel(channelID);
 
 	communityStore.selectedChannelUsers.forEach(user => {
         startChallengeInterval(user.idUser);
     });
-	// scrollToSelectedTab();
 }
-
-// const scrollToSelectedTab = () => {
-//   if (selectedChannelID.value) {
-//     scrollContainer.value.scrollTop = selectedChannelID.value.offsetTop - scrollContainer.value.offsetTop;
-//   };
-// };
 
 async function checkForBlock(idChannel: any)
 {
@@ -663,7 +647,6 @@ async function checkForBlock(idChannel: any)
 }
 
 async function sendMessage() {
-	// Also websocket pb, ping all connected users ?
 	block2.value = false;
 	muted.value = false;
 
@@ -685,7 +668,6 @@ async function sendMessage() {
 	}
 	try {
 		const res = await sendMessageTo(body);
-		// update msg UI
 	} catch (error: any) {
 		if (error.message == "Request failed with status code 400")
 			muted.value = true;
@@ -700,12 +682,11 @@ async function sendMessage() {
 async function leaveOrDeleteChannel() {
 
 	if (roleInChannel.value === "Owner" || channelType.value === 3) {
-		// Confirmation popup, then
 		const messages = await getChannelMsg(selectedChannelID.value);
 		if (messages) {
 
 			for (let i = 0; messages[i]; i++) {
-				await deleteMessage(messages[i].idMessage);//removing all message from the channel to delete so it doesn't crash
+				await deleteMessage(messages[i].idMessage); //removing all message from the channel to delete so it doesn't crash
 			}
 		}
 		await deleteCurrentChannel(selectedChannelID.value);
@@ -738,7 +719,6 @@ async function changeChannelPw() {
 const selectedUserID = ref(null);
 const dropDownOpen = ref(null);
 const muteTime = ref(null);
-const updatePlayersList = ref(0);
 
 function toggleDropDown(playerID: any) {
 	selectedUserID.value = playerID;
@@ -779,41 +759,33 @@ function isFriendOrBlocked(friendId: any) {
 }
 
 async function sendFriendRequest(usernameToFriend: any) {
-	
-	const userData = await ladderStore.sendFriendRequest(usernameToFriend);
+	await ladderStore.sendFriendRequest(usernameToFriend);
 }
 
 async function playerBlock(usernameToBlock: any) {
-
 	await ladderStore.blockUnblock(usernameToBlock);
-
 }
 
 async function playerMute() {
-
 	await mute(selectedUserID.value, selectedChannelID.value, muteTime.value);
 	muteTime.value = null;
 }
 async function playerKick() {
-
-	const res = await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
+	await leaveCurrentChannel(selectedUserID.value, selectedChannelID.value);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function playerUnBan() {
-
 	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 2);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function playerBan() {
-
 	await updateUserRole(String(ladderStore.getId()), selectedUserID.value, selectedChannelID.value, 3);
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }
 
 async function promoteUser(idPromoted: any) {
-	
 	await promote(idPromoted, selectedChannelID.value, userID.value)
 	await communityStore.updateSelectedChannel(selectedChannelID.value);
 }

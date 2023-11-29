@@ -3,49 +3,7 @@ import Cookies from 'js-cookie';
 import { defineStore } from 'pinia'
 import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
 import { useLadderStore } from "@/stores/UserProfileStore";
-
-interface Channel {
-	idChannel: number;
-	name: string;
-	idOwner: number;
-	idType: number;
-}
-
-interface Msg {
-	idMessage: number;
-	idUser: number;
-	idChannel: number;
-	username: string;
-	content: string;
-	timestamps: Date;
-}
-
-interface UserChannel {
-    idUser_Channel: number;
-    idUser: number;
-    idChannel: number;
-    idRole: number;
-    muteTime: Date | null;
-}
-
-interface UserInChannel {
-	idUser: number;
-	username: string;
-	email: string;
-	owner: boolean;
-	role: string;
-}
- 
-interface ChallengeState {
-	isChallengePending: boolean,
-	challengerId: number,
-	opponentId: number
-};
-
-interface AcceptedChallengeState {
-	isReady: { [playerId: number]: boolean }
-	opponentId: number
-};
+import { Channel, Msg, UserInChannel, ChallengeState, AcceptedChallengeState } from '@/models/community.model'
 
 interface CommunityStoreState {
 	openChannels: Array<Channel>; // Replace SomeType with the actual type of openChannels
@@ -59,7 +17,7 @@ interface CommunityStoreState {
 	channelType: number;
 	bannedChannel: Array<Channel>; // Replace SomeType with the actual type of bannedChannel
 	tmpbannedChannel: Array<Channel>;
-  }
+}
 
 export const useCommunityStore = defineStore('community', {
 	state: (): CommunityStoreState => ({

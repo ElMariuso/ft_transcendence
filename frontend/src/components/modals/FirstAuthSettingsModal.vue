@@ -44,17 +44,12 @@
 </template>
 
 <script setup lang="ts">
-import Backdrop from './Backdrop.vue';
 import { ref, computed, watch, Ref } from 'vue';
-import api from '../../services/api';
 import { useProfileStore } from '../../stores/ProfileStore';
 import { storeToRefs } from 'pinia';
+import Backdrop from './Backdrop.vue';
+import api from '../../services/api';
 import Cookies from 'js-cookie';
-import jwt_decode from 'jwt-decode';
-
-interface FileInputEvent extends Event {
-  target: HTMLInputElement & EventTarget;
-}
 
 const profileStore = useProfileStore();
 const { userID, username } = storeToRefs(profileStore);

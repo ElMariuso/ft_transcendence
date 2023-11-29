@@ -4,8 +4,6 @@ import Cookies from 'js-cookie';
 import { JwtPayload } from "@/models/jwtPayload.model";
 import { updatePlayerStatus } from './matchmaking-helpers';
 
-// import axios from 'axios';
-
 /**
  * Asynchronous function to retrieve user data from the API.
  * 
@@ -85,7 +83,6 @@ export async function checkJWT(authStore: any) {
 	if (token) {
 		try {
             // Decode the token to obtain the userID, twoFactorAuthEnabled status and 2fa One Time Password.
-			// const { sub: userID, twoFactorAuthEnabled, twoFactorAuthOTP } = jwt_decode(token);
 			const decodedToken: JwtPayload = jwt_decode(token);
 			const twoFactorAuthEnabled: any = decodedToken.twoFactorAuthEnabled;
 			const twoFactorAuthOTP: any = decodedToken.twoFactorAuthOTP;

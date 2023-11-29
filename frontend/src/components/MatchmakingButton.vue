@@ -60,7 +60,6 @@ const handleClick = async () => {
                         id: idUser,
                         isGuest: false,
                         username: profileStore.username,
-						// TODO: ADD POINTS FETCHER
 						points: 0,
                     };
                 } else {

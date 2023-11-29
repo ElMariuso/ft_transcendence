@@ -2,13 +2,13 @@
 
 # Check if an environment argument is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 {dev|prod} {start|stop|restart|clean-volumes|remove-volumes|remove-images}"
+    echo "Usage: $0 { dev | prod } { start | stop | restart | clean-volumes | remove-volumes | remove-images }"
     exit 1
 fi
 
 # Check if a valid environment argument is provided
 if [ "$1" != "dev" ] && [ "$1" != "prod" ]; then
-    echo "Usage: $0 {dev|prod} {start|stop|restart|clean-volumes|remove-volumes|remove-images}"
+    echo "Usage: $0 { dev | prod } { start | stop | restart | clean-volumes | remove-volumes | remove-images }"
     exit 1
 fi
 
@@ -43,6 +43,6 @@ case $2 in
         docker system prune -a
         ;;
     *)
-        echo "Usage: $0 {dev|prod} {start|stop|restart|clean-volumes|remove-volumes|remove-images}"
+        echo "Usage: $0 { dev | prod } { start | stop | restart | clean-volumes | remove-volumes | remove-images }"
         exit 1
 esac

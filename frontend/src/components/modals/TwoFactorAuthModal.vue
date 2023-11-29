@@ -40,7 +40,6 @@
 	const decodedToken: JwtPayload = jwt_decode(token);
 	const id: any = decodedToken.sub;
 
-
 	const checkTwoFactorAuthDisabled = ref(true);
 	const checkTwoFactorAuthPerformed = ref(false);
 

@@ -3,41 +3,39 @@ import { computed, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthenticationStore } from '@/stores/AuthenticationStore';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { useMatchmakingStore } from '@/stores/MatchmakingStore';
+import { storeToRefs } from 'pinia'
 import MatchmakingButton from './MatchmakingButton.vue';
 import LeaveMatch from './LeaveMatch.vue';
 import SettingsDropDown from './SettingsDropDown.vue';
-import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import JoinMatch from './JoinMatch.vue';
-import { storeToRefs } from 'pinia'
 import Cookies from 'js-cookie';
 
 const authStore = useAuthenticationStore();
-const profileStore = useProfileStore();
-const matchmakingStore = useMatchmakingStore();
-const route = useRoute();
-
 const isAuthenticated = computed(() => authStore.isAuthenticated);
-const showButtons = computed(() => route.path.startsWith('/game/'));
-const isInGame = computed(() => (matchmakingStore.roomID !== null));
-const {isSearching} = storeToRefs(matchmakingStore);
+
+const profileStore = useProfileStore();
 const { username, avatarUpdated, userID } = storeToRefs(profileStore)
+
+const matchmakingStore = useMatchmakingStore();
+const isInGame = computed(() => (matchmakingStore.roomID !== null));
+const { isSearching } = storeToRefs(matchmakingStore);
+
+const route = useRoute();
+const showButtons = computed(() => route.path.startsWith('/game/'));
+
 const avatarImg = ref(getAvatarImg());
-
 const updateAvatarKey = ref(0);
-
-
 
 watch(isAuthenticated, async () => {
 	if (isAuthenticated) {
 		await profileStore.setupProfile(0);
 		await refreshNavbar();
-		
 	}
 })
 
 watch(userID, async (oldID, newID) => {
 	if (oldID != newID) {
-
 		let id = parseInt(userID.value, 10);
 		await profileStore.setupProfile(id);
 		await refreshNavbar();
@@ -47,7 +45,6 @@ watch(userID, async (oldID, newID) => {
 const refreshNavbar = async () => {
   avatarImg.value = await getAvatarImg();
   updateAvatarKey.value++;
-
 }
 
 watch(avatarUpdated, async () => {
@@ -55,10 +52,9 @@ watch(avatarUpdated, async () => {
 		await refreshNavbar();
 		avatarUpdated.value = false;
 	}
-}, { deep: true })
+})
 
 async function getAvatarImg() {
-
   const token: any = Cookies.get('token');
 
   if (token) {

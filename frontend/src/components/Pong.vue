@@ -5,7 +5,6 @@ import { useGameStore } from '@/stores/GameStore';
 import { useMatchmakingStore } from '@/stores/MatchmakingStore';
 import { askGamesInformations, setObstacle, setReady, setSmallRacket, setWantBaseGame } from '@/services/matchmaking-helpers';
 import { useProfileStore } from '@/stores/ProfileStore';
-import { GameState } from '@/models/game.model';
 
 const gameStore = useGameStore();
 const profileStore = useProfileStore();

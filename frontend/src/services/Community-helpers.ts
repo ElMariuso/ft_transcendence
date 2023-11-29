@@ -1,6 +1,4 @@
 import api from './api';
-// import bcrypt from 'bcrypt';
-// const bcrypt = require("bcrypt")
 
 /**
  * Asynchronous function to retrieve usernames data from the API.
@@ -74,10 +72,7 @@ export const joinChannel = async (userID: number, channelID: number, pw: string=
 			...(pw !== "" ? { "password": pw } : {}),
 		}
 
-		// if (pw != "")
-		// 	body.password = pw;
-
-		const res = await api.post('/userchannels/', body)
+		await api.post('/userchannels/', body)
 	} catch (error) {
 		console.error('Error joining channel: ', error);
 		throw error;
@@ -215,14 +210,14 @@ export const deleteMessage = async (idMessage: number) => {
 };
 
 export const channelPrivToPub = async (userID: string, channelID: number | null) => {
-	const res = await api.put('channels/update/' + userID, {
+	await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 2 // Public
 	})
 };
 
 export const modifyChannelPw = async (userID: string, channelID: number | null, pw: string) => {
-	const res = await api.put('channels/update/' + userID, {
+	await api.put('channels/update/' + userID, {
 		idChannel: channelID,
 		idType: 1, // Private
 		password: pw
@@ -232,24 +227,8 @@ export const modifyChannelPw = async (userID: string, channelID: number | null, 
 
 // Player actions
 
-// export const play = async () => {
-// 	console.log("play");
-// 	// Need game implementation
-// }
-// export const profile = async () => {
-// 	console.log("profile");
-// 	// Need profile implementation
-// }
-// export const message = async () => {
-// 	console.log("message");
-// 	// Need websocket I believe
-// }
-// export const friend = async () => {
-// 	console.log("friend");
-// }
-
 export const block = async (id: number, blockId: number) => {
-	const res = await api.post('users/' + id + "/blockUser", {
+	await api.post('users/' + id + "/blockUser", {
 		idBlock: blockId,
 	});
 }
@@ -261,15 +240,8 @@ export const mute = async (user: number | null, channel: number | null, time: nu
 	});
 }
 
-// export const kick = async () => {
-// 	console.log("kick");
-// }
-// export const ban = async () => {
-// 	console.log("ban");
-// }
-
 export const promote = async (idPromoted: number, idCurrentChannel: number | null, userID: string) => {
-	const res = await api.put('/userchannels/modifyRole/' + userID, {
+	await api.put('/userchannels/modifyRole/' + userID, {
 		idMember: idPromoted,
 		idChannel: idCurrentChannel,
 		idRole: 1,
