@@ -160,12 +160,14 @@ export const ERROR_MESSAGES =
 	GAME:
 	{
 		NOT_FOUND: "Game not found",
+		WRONG_WINNER: "No user'ids match with winner's id",
 
 		CREATEGAME_FAILED: "Game creation failed",
 		DELETEGAME_FAILED: "Game deletion failed",
 		GETGAMESTATS_FAILED: "Get game datas failed",
 		GETGAME_FAILED: "Get game failed",
 		GETALLGAMEUSER_FAILED: "Get all games for a user failed",
+		GETGAMESRESULTS_FAILED: "Get games results failed",
 	},
 
 	/*	ACHIEVEMENT ERROR	*/

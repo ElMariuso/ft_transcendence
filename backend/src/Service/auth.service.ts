@@ -1,10 +1,9 @@
-import { Injectable, HttpException, HttpStatus, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDTO } from '../DTO/user/createUser.dto';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
 import { UserDTO } from 'src/DTO/user/user.dto';
-import { UpdateUserDTO } from 'src/DTO/user/updateUser.dto';
 import { toDataURL } from 'qrcode';
 
 /**
@@ -69,13 +68,13 @@ export class AuthService {
 
 			let user = this.userService.findUserById(id);
 			if (!user)
-				throw new NotFoundException("klk");
+				throw new BadRequestException("klk");
 			return this.signJwtForUser(userID, twoFactorAuthEnabled, false, true);
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			throw new InternalServerErrorException("kkk");
 		}
 		
@@ -162,7 +161,7 @@ export class AuthService {
 		const user = await this.userService.findUserById(userID);
 
 		if (!user)
-			throw new NotFoundException("FDP");
+			throw new BadRequestException("FDP");
 
 		const attempts = this.failedAttempts[user.idUser] || 0;
 		if (attempts >= this.maxAttempts)

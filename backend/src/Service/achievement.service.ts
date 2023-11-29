@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { ERROR_MESSAGES } from "src/globalVariables";
 import { AchievementQuery } from "src/Query/achievement.query";
 import { FriendQuery } from "src/Query/friend.query";
@@ -39,7 +39,7 @@ export class AchievementService
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		return await this.achievementQuery.findAchievementsByUserId(idUser);
 	}
@@ -55,7 +55,7 @@ export class AchievementService
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const achievements = await this.achievementQuery.findAchievementsByUserId(idUser);
 		

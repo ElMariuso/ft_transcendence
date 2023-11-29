@@ -52,7 +52,7 @@ export class ChannelController
 	 * 
 	 * @returns List of messages
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the channel is not found
+	 * @throw HTTPException with status BAD_REQUEST if the channel is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the list failed
 	 */
 	@Get('/allMessages/:id')
@@ -66,40 +66,12 @@ export class ChannelController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+
 			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.GETALLMESSAGESFROMCHANNEL_FAILED);
 		}
 	}
-
-	/**
-     * Create a new DM channel in database and assossiate the two users
-     * 
-     * @param data DTO containing data to create the new DM channel
-     * 
-     * @returns channelDTO
-     * 
-     * @throw HTTPException with status BAD_REQUEST if the first user is not found
-     * @throw HTTPException with status BAD_REQUEST if the second user is not found
-     * @throw HTTPException with status BAD_REQUEST if the DM channel type is not found
-     * @throw HTTPException with status BAD_REQUEST if a DM channel already exist between the two users
-     * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
-     */
-    @Post('/createDM/')
-    async creatDM(@Body() data: CreateDMChannelDTO) : Promise<ChannelDTO>
-    {
-        try
-        {
-            return this.channelService.createDM(data);
-        }
-        catch (error)
-        {
-            if (error instanceof BadRequestException)
-                throw new BadRequestException(error.message);
-                
-            throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.CREATEDMCHANNEL_FAILED);
-        }
-    }
 
 	/**
 	 * Gets all users in a channel from a specific channel id
@@ -108,7 +80,7 @@ export class ChannelController
 	 * 
 	 * @returns List of users
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the channel is not found
+	 * @throw HTTPException with status BAD_REQUEST if the channel is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the list failed
 	 */
 	@Get('/allUsers/:id')
@@ -122,8 +94,9 @@ export class ChannelController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+
 			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.GETALLMESSAGESFROMCHANNEL_FAILED);
 		}
 	}
@@ -135,7 +108,10 @@ export class ChannelController
 	 * 
 	 * @returns channelDTO
 	 * 
-	 * @throw HTTPException with status BAD_REQUEST if the channelname already exists
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the channel type is not found
+	 * @throw HTTPException with status BAD_REQUEST if the channel type is DM
+	 * @throw HTTPException with status BAD_REQUEST if the channel type is private and the password is empty
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
 	 */
 	@Post()
@@ -160,6 +136,35 @@ export class ChannelController
 			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.CREATECHANNEL_FAILED);
 		}
 	}
+
+	/**
+     * Create a new DM channel in database and assossiate the two users
+     * 
+     * @param data DTO containing data to create the new DM channel
+     * 
+     * @returns channelDTO
+     * 
+     * @throw HTTPException with status BAD_REQUEST if the first user is not found
+     * @throw HTTPException with status BAD_REQUEST if the second user is not found
+     * @throw HTTPException with status BAD_REQUEST if the DM channel type is not found
+     * @throw HTTPException with status BAD_REQUEST if a DM channel already exist between the two users
+     * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
+     */
+	@Post('/createDM/')
+	async creatDM(@Body() data: CreateDMChannelDTO) : Promise<ChannelDTO>
+	{
+		try
+		{
+			return this.channelService.createDM(data);
+		}
+		catch (error)
+		{
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+				
+			throw new InternalServerErrorException(ERROR_MESSAGES.CHANNEL.CREATEDMCHANNEL_FAILED);
+		}
+	} 
 
 	/**
      * Update a channel in DB.
@@ -203,7 +208,7 @@ export class ChannelController
 	 * 
 	 * @returns Message in a string
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the channel is not found
+	 * @throw HTTPException with status BAD_REQUEST if the channel is not found
 	 * @throw HTTPException INTERNAL_SERVER_EXCEPTION if the deletion of the channel failed
 	 */
 	@Delete('/delete/:id')

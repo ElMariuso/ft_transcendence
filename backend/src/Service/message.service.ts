@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Message } from '@prisma/client';
 
 import { MessageQuery } from 'src/Query/message.query';
@@ -45,11 +45,11 @@ export class MessageService
 		const message = await this.messageQuery.findMessageById(id);
 
 		if (!message)
-			throw new NotFoundException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
 
 		const user = await this.userQuery.findUserById(message.idUser);
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		return this.transformToDTO(message, user.username);
 	}
@@ -68,9 +68,9 @@ export class MessageService
 		const channel = await this.channelQuery.findChannelById(idChannel);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		const check = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 		if (!check)
@@ -97,11 +97,11 @@ export class MessageService
     {
         const user = await this.userQuery.findUserById(message.idUser);
         if (!user)
-            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
         const channel = await this.channelQuery.findChannelById(message.idChannel);
         if(!channel)
-            throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+            throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
         
         const userchannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(user.idUser, channel.idChannel);
         if (!userchannel)
@@ -133,7 +133,7 @@ export class MessageService
 		const deletedMessage = await this.messageQuery.findMessageById(id);
 
 		if (!deletedMessage)
-			throw new NotFoundException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.MESSAGE.NOT_FOUND);
 		
 		await this.messageQuery.deleteMessage(id);
 	}

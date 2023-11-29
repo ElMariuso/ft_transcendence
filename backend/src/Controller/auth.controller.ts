@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, HttpStatus, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, HttpStatus, BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { FT_AuthGuard } from '../Guards/42-auth.guard';
 import { AuthService } from '../Service/auth.service';
 import { UserService } from '../Service/user.service';
@@ -93,8 +93,8 @@ export class AuthController {
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ForbiddenException)
 				throw new ForbiddenException(error.message);
 			
@@ -107,8 +107,8 @@ export class AuthController {
 		try {
 			return this.authService.login2fa(body.id, body.twoFactorAuth);
 		} catch (error) {
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof InternalServerErrorException)
 				throw new InternalServerErrorException(error.message);
 			throw new InternalServerErrorException();

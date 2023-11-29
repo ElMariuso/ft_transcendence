@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { UserQuery } from 'src/Query/user.query';
@@ -93,31 +93,19 @@ export class UserService
 	 * @param id User's id
 	 * 
 	 * @returns Absolute path of the user's avatar
-	 * 
-	 * @throw NotFoundException if the user is not found
-	 * @throw NotFoundException if the avatar file is not found
-	 * @throw NotFoundException if the absolute path of the avatar don't find the avatar
 	 */
 	async getAvatarPath(id: number) : Promise<string>
 	{
 		const user = await this.userQuery.findUserById(id);
-		// const user = await this.userQuery.findUserBy42Id(id);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-		// console.log("IF EXISTSYNC")
-		// console.log("USER AVATAR " + user.avatar)
-		// console.log("Current Directory:", __dirname);
-
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		if (!fs.existsSync(user.avatar))
 			throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
 		
 
 		let tmp = user.avatar.split('../').pop();
-		// tmp = DEFAULT_PATH + tmp;
-
-		// console.log("TMP " + tmp)
 
 		if (!fs.existsSync(tmp))
 				throw new NotFoundException(ERROR_MESSAGES.USER.AVATAR_NOT_FOUND);
@@ -142,11 +130,18 @@ export class UserService
 		return users;
 	}
 
-	async getLadderUser(id: number)
+	/**
+	 * Get the position of the user in the ladder
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns UserDTO[]
+	 */
+	async getLadderUser(id: number) : Promise<UserDTO[]>
 	{
 		const checkUser = await this.userQuery.findUserById(id);
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		let ladderAbove = await this.userQuery.getAboveLadder(checkUser.points, 5, checkUser.idUser);
 		let ladderBelow = await this.userQuery.getBelowLadder(checkUser.points, 5, checkUser.idUser);
@@ -199,7 +194,7 @@ export class UserService
 		const deletedUser = await this.userQuery.findUserById(id);
 
 		if (!deletedUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		await this.userQuery.deleteUser(id);
 
@@ -221,7 +216,7 @@ export class UserService
 		const updateUser = await this.userQuery.findUserById(id);
 
 		if (!updateUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const data = this.checkUpdateData(userData);
 
@@ -251,62 +246,62 @@ export class UserService
 		return this.transformToDTO(updatedUser);
 	}
 
-	async getFriendsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
-	{
-		const checkUser = await this.userQuery.findUserById(idUser);
+	// async getFriendsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	// {
+	// 	const checkUser = await this.userQuery.findUserById(idUser);
 
-		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+	// 	if (!checkUser)
+	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
-		const friends = await this.userQuery.getFriends(idUser);
+	// 	const friends = await this.userQuery.getFriends(idUser);
 
-		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
+	// 	const formatFriends: FriendBlockedDTO[] = friends.map((friend) => {
 			
-			const {idUser, username, email} = friend;
+	// 		const {idUser, username, email} = friend;
 
-			return {
-				idUser,
-				username,
-				email,
-			};
-		});
-		return formatFriends;
-	}
+	// 		return {
+	// 			idUser,
+	// 			username,
+	// 			email,
+	// 		};
+	// 	});
+	// 	return formatFriends;
+	// }
 
-	async addFriend(idUser: number, friendUsername: string) : Promise<FriendBlockedDTO>
-	{
-		const checkUser = await this.userQuery.findUserByUsername(friendUsername);
+	// async addFriend(idUser: number, friendUsername: string) : Promise<FriendBlockedDTO>
+	// {
+	// 	const checkUser = await this.userQuery.findUserByUsername(friendUsername);
 
-		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+	// 	if (!checkUser)
+	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
-		const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
+	// 	const friend = await this.friendQuery.addFriend(idUser, checkUser.idUser);
 
-		return this.transformToFriendBlockUserDTO(checkUser);
-	}
+	// 	return this.transformToFriendBlockUserDTO(checkUser);
+	// }
 
-	async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
-	{
-		const checkUser = await this.userQuery.findUserById(idUser);
+	// async getBlockedsByUserId(idUser: number) : Promise<FriendBlockedDTO[]>
+	// {
+	// 	const checkUser = await this.userQuery.findUserById(idUser);
 
-		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+	// 	if (!checkUser)
+	// 		throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 
-		const blockeds = await this.userQuery.getBlockeds(idUser);
+	// 	const blockeds = await this.userQuery.getBlockeds(idUser);
 
-		const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
+	// 	const formatBlockeds: FriendBlockedDTO[] = blockeds.map((blocked) => {
 			
-			const {idUser, username, email} = blocked;
+	// 		const {idUser, username, email} = blocked;
 
-			return {
-				idUser,
-				username,
-				email,
-			};
-		});
-		return formatBlockeds;
-	}
+	// 		return {
+	// 			idUser,
+	// 			username,
+	// 			email,
+	// 		};
+	// 	});
+	// 	return formatBlockeds;
+	// }
 
 	/**
 	 * Transform a Prisma User Object to a UserDTO

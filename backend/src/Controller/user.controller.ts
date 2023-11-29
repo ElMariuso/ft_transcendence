@@ -75,10 +75,10 @@ export class UserController
 	 * 
 	 * @return Avatar
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the the user is not found
 	 * @throw HTTPException with status NOT_FOUND if the avatar file is not found
 	 * @throw HTTPException with status NOT_FOUND if the absolute path of the avatar don't find the avatar
-	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the user failed
+	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if getting the avatar failed
 	 */
 	@Get('/avatar/:id')
 	async getAvatar(@Param('id') id: string, @Res() res: Response)
@@ -94,6 +94,9 @@ export class UserController
 		}
 		catch (error)
 		{
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+
 			if (error instanceof NotFoundException)
 				throw new NotFoundException(error.message);
 			
@@ -101,12 +104,24 @@ export class UserController
 		}
 	}
 
+	/**
+	 * Gets the top 10 players in descind orders
+	 * 
+	 * @returns UserDTO[]
+	 */
 	@Get('/topLadder')
 	async getTopLadder() : Promise<UserDTO[]>
 	{
 		return await this.userService.getTopLadder();
 	}
 
+	/**
+	 * Get the position of the user in the ladder
+	 * 
+	 * @param id User's id
+	 * 
+	 * @returns UserDTO[]
+	 */
 	@Get('/ladder/:id') 
 	async getLadderUser(@Param('id') id :string): Promise<UserDTO[]>
 	{
@@ -118,8 +133,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			
 				throw new InternalServerErrorException(ERROR_MESSAGES.USER.GETLADDERUSER_FAILED);
 		}
@@ -224,8 +239,7 @@ export class UserController
 	 * 
 	 * @returns Message in a string
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion of the user failed
 	 */
 	@Delete('/delete/:id')
@@ -240,8 +254,9 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER.DELETION_FAILED);
 		}
 	}
@@ -255,7 +270,7 @@ export class UserController
 	 * 
 	 * @returns UserDTO
 	 * 
-	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException with status BAD_REQUEST if the user is not found
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the update of the user failed
 	 */
 	@Put('/update/:id')
@@ -269,8 +284,8 @@ export class UserController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER.UPDATE_FAILED);
 		}
@@ -289,7 +304,7 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO[]
 	 * 
-	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException with status BAD_REQUEST if the user is not found
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if get the friends list failed
 	 */
 	@Get(':id/friends')
@@ -302,8 +317,8 @@ export class UserController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.GETFRIENDS_FAILED);
 		}
@@ -316,7 +331,7 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO[]
 	 * 
-	 * @throw HTTPException with status NOT_FOUND id the user is not found
+	 * @throw HTTPException with status BAD_REQUEST id the user is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if get the friend invitation list failed
 	 */
 	@Get(':id/getInvitations')
@@ -329,8 +344,8 @@ export class UserController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.GETINVITATIONS_FAILED);
 		}
@@ -344,7 +359,7 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
 	 * @throw HTTPException with status CONFLICT if the bond already exists
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the invitation failed
 	 */
@@ -358,8 +373,8 @@ export class UserController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.ADDFRIEND_FAILED);	
@@ -374,8 +389,8 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO
 	 *
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
-	 * @throw HTTPException with status NOT_FOUND if the invitation is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the invitation is not found
 	 * @throw HTTPException with status CONFLICT if the user has already accepted the invitation
 	 * @throw HTTPException with status CONFLICT if the user who sent the invitation tried to accept it
 	 * @throw HTTPException with status CONFLICT if the invitation is in waiting
@@ -394,8 +409,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.ACCEPTFRIEND_FAILED);	
@@ -410,8 +425,8 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO
 	 *
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
-	 * @throw HTTPException with status NOT_FOUND if the invitation is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the invitation is not found
 	 * @throw HTTPException with status CONFLICT if the user has already accepted the invitation
 	 * @throw HTTPException with status CONFLICT if the user who sent the invitation tried to accept it
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the denial failed
@@ -427,8 +442,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.REFUSEFRIEND_FAILED);	
@@ -443,8 +458,8 @@ export class UserController
 	 * 
 	 * @returns The deleted bond
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
-	 * @throw HTTPException with status NOT_FOUND if the bond is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the bond is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
 	@Post(':id/deleteFriendship')
@@ -458,8 +473,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			
 			throw new InternalServerErrorException(ERROR_MESSAGES.FRIEND.DELETEFRIEND_FAILED);	
 		}
@@ -477,7 +492,7 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO[]
 	 * 
-	 * @throws HTTPException with status NOT_FOUND if the user is not found
+	 * @throws HTTPException with status BAD_REQUEST if the user is not found
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if get the blocked users list failed
 	 */
 	@Get(':id/blocked')
@@ -490,8 +505,8 @@ export class UserController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.BLOCK.GETBLOCK_FAILED);
 		}
@@ -505,7 +520,7 @@ export class UserController
 	 * 
 	 * @returns FriendBlockedDTO
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
 	 * @throw HTTPException with status CONFLICT if the relation already exists
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the relation failed
 	 */
@@ -519,8 +534,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 
@@ -536,8 +551,8 @@ export class UserController
 	 * 
 	 * @returns Bond deleted
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
-	 * @throw HTTPException with status NOT_FOUND if the relation is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the relation is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
 	@Post(':id/deleteBlock')
@@ -550,8 +565,8 @@ export class UserController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.BLOCK.BLOCKUSER_FAILED);
 		}
