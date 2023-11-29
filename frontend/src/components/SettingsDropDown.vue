@@ -3,6 +3,7 @@
         <div @click="toggleDropdown" class="cursor-pointer p-2">
             <img  
                 src="../assets/settings_elipsis.svg" 
+				title="Settings"
                 alt="Settings"
             />
         </div>

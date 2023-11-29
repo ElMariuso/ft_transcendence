@@ -260,7 +260,7 @@
 											v-if="roleInChannel === 'Owner' && user.role !== 'Admin'"
 											@click="promoteUser(user.idUser)"
 										>
-											<img src="../assets/player/promote.svg" class="px-1 py-1" alt="promote">
+											<img src="../assets/player/promote.svg" title="promote" class="px-1 py-1" alt="promote">
 										</button>
 									</div>
 									<p v-if="channelType === 3" class="text-green-600">{{ user.username }}</p>
