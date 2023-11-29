@@ -206,16 +206,16 @@ INSERT INTO "Achievement" ("name", "content") VALUES ('Double-Face', 'Provoque t
 --          USER
 
 INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
-VALUES ('TinkyWinky', 'TinkyWinky@gmail.be', 'src/../upload/default_avatar.png', 50, false, 1, 'default');
+VALUES ('TinkyWinky', 'TinkyWinky@gmail.be', '/usr/src/app/upload/default_avatar.png', 50, false, 1, 'default');
 
 INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
-VALUES ('Dipsy', 'Dipsy@gmail.be', 'src/../upload/default_avatar.png', 0, false, 2, 'default');
+VALUES ('Dipsy', 'Dipsy@gmail.be', '/usr/src/app/upload/default_avatar.png', 0, false, 2, 'default');
 
 INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
-VALUES ('Laa-Laa', 'Laa-Laa@gmail.be', 'src/../upload/default_avatar.png', 10, false, 3, 'default');
+VALUES ('Laa-Laa', 'Laa-Laa@gmail.be', '/usr/src/app/upload/default_avatar.png', 10, false, 3, 'default');
 
 INSERT INTO "User" ("username", "email", "avatar", "points", "isTwoFactorAuthEnabled", "id42", "twoFactorAuthSecret")
-VALUES ('Po', 'Po@gmail.be', 'src/../upload/default_avatar.png', 40, false, 4, 'default');
+VALUES ('Po', 'Po@gmail.be', '/usr/src/app/upload/default_avatar.png', 40, false, 4, 'default');
 
 
 

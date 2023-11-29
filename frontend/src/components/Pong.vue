@@ -49,8 +49,15 @@ const eventDown = (event: KeyboardEvent) => {
             break;
         case 'Space':
             if (!areBothPlayersReady.value) {
+                let playerId;
+                if (profileStore.userID > 0) {
+                    playerId = profileStore.userID;
+                } else {
+                    playerId = matchmakingStore.guestUUID;
+                }
+
                 const roomId = matchmakingStore.roomID;
-                gameStore.isFirstPlayer ? setReady(roomId, 'player1'): setReady(roomId, 'player2');
+                gameStore.isFirstPlayer ? setReady(roomId, 'player1', playerId): setReady(roomId, 'player2', playerId);
             }
             break;
         case 'Numpad0':

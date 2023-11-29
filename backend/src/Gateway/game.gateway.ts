@@ -24,6 +24,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private clientRooms: Map<string, string> = new Map();
     private gameStates: Map<string, GameLoopService> = new Map();
     private gameStateUpdateIntervals: Map<string, NodeJS.Timeout> = new Map();
+    private gameTimers = new Map<string, NodeJS.Timeout>();
 
     constructor(private readonly gameService: GameService) {}
 
@@ -191,7 +192,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
      * @param action - The action specifying which player is being updated.
      */
     @SubscribeMessage('set-ready')
-    setReady(client: Socket, [roomId, action]: [string, string]): void {
+    setReady(client: Socket, [roomId, action, playerId]: [string, string, string | number]): void {
         const gameLoop = this.gameStates.get(roomId);
         const gameState = gameLoop.getGameState();
 
@@ -201,11 +202,72 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             if (gameState.playerReady.first && gameState.playerReady.second) {
                 this.startCountDown(roomId, 3, gameLoop);
-            }            
+                this.clearGameTimer(roomId);
+            } else {
+                this.startGameTimer(roomId, playerId);
+            }
         } else {
             client.emit('error-set-ready', { message: 'Can\'t set player to ready' });
         }
     }
+
+    private findSocketIdByPlayerId(playerId: string | number): string | undefined {
+        for (const [socketId, playerInfo] of this.onlinePlayers.entries()) {
+            if (playerInfo.playerId === playerId) {
+                return socketId;
+            }
+        }
+        return undefined;
+    }
+
+    private findOpponentId(playerId: string | number): string | number | undefined {
+        const roomId = this.findRoomIdByPlayerId(playerId);
+        if (!roomId) {
+            return undefined;
+        }
+
+        const gameState = this.gameStates.get(roomId)?.getGameState();
+        if (!gameState) {
+            return undefined;
+        }
+
+        for (const [socketId, playerInfo] of this.onlinePlayers.entries()) {
+            if (playerInfo.playerId !== playerId && this.clientRooms.get(socketId) === roomId) {
+                return playerInfo.playerId;
+            }
+        }
+        return undefined;
+    }
+
+    private findRoomIdByPlayerId(playerId: string | number): string | undefined {
+        for (const [socketId, playerInfo] of this.onlinePlayers.entries()) {
+            if (playerInfo.playerId === playerId) {
+                return this.clientRooms.get(socketId);
+            }
+        }
+        return undefined;
+    }
+
+    private startGameTimer(roomId: string, playerId: string | number): void {
+        this.clearGameTimer(roomId);
+    
+        this.gameTimers.set(roomId, setTimeout(() => {
+            const opponentId = this.findOpponentId(playerId);
+            const opponentSocketId = this.findSocketIdByPlayerId(opponentId);
+            const opponentSocket = this.server.sockets.sockets.get(opponentSocketId);
+
+            this.quitMatch(opponentSocket, opponentId);
+        }, 30000));
+    }
+
+    private clearGameTimer(roomId: string): void {
+        if (this.gameTimers.has(roomId)) {
+            clearTimeout(this.gameTimers.get(roomId));
+            this.gameTimers.delete(roomId);
+        }
+    }
+
+    private quitMatchForOpponent
 
     /**
      * Handles the 'set-want-base-game' message to toggle the base game option for a player.

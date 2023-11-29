@@ -58,8 +58,8 @@ const updateRacket = (roomId: string | null, action: string): void => {
     socket.emit('update-racket', roomId, action);
 };
 
-const setReady = (roomId: string | null, action: string): void => {
-    socket.emit('set-ready', roomId, action);
+const setReady = (roomId: string | null, action: string, playerId: string | number): void => {
+    socket.emit('set-ready', roomId, action, playerId);
 };
 
 const setWantBaseGame = (roomId: string | null, action: string): void => {
