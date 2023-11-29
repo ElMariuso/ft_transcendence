@@ -214,11 +214,11 @@
 							
 							<li 
 								v-for="user in selectedChannelUsers" 
-								class="text-lg border px-2 py-1 rounded-lg "
+								class="text-lg px-2 py-1 rounded-lg "
 								
 								:id="String(user.idUser)"
 							>
-							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg px-2 py-1 rounded-lg ">
+							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg border px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 								  {{ user.username }}
 								  <!-- <div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
@@ -239,7 +239,7 @@
 								</div>
 							  </div>
 
-							  <div v-if="user.role !== 'Banned'" class="text-lg px-2 py-1 rounded-lg ">
+							  <div v-if="user.role !== 'Banned'" class="text-lg border px-2 py-1 rounded-lg ">
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
 									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
 									<span>{{ countReadyPlayers }} / 2</span>
