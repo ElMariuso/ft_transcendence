@@ -193,7 +193,7 @@
 							<button 
 								@click="sendMessage" 
 								:disabled="!newMessage" 
-								class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg"
+								class="px-2 py-3 mr-2 w-1/6 bg-blue-500 text-white border rounded-lg"
 								:class="{ 'bg-blue-500 text-white': newMessage, 'bg-gray-500': !newMessage }"
 							>
 								Send
@@ -214,11 +214,11 @@
 							
 							<li 
 								v-for="user in selectedChannelUsers" 
-								class="text-lg border px-2 py-1 rounded-lg "
+								class="text-lg px-2 py-1 rounded-lg "
 								
 								:id="String(user.idUser)"
 							>
-							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg px-2 py-1 rounded-lg ">
+							  <div v-if="user.role === 'Banned' && (roleInChannel === 'Admin' || roleInChannel === 'Owner')" class="text-lg border px-2 py-1 rounded-lg ">
 								<div class="flex flex-row justify-between">
 								  {{ user.username }}
 								  <!-- <div v-if="isChallengeActive(user.idUser).value" class="spinner-wrapper">
@@ -239,7 +239,7 @@
 								</div>
 							  </div>
 
-							  <div v-if="user.role !== 'Banned'" class="text-lg px-2 py-1 rounded-lg ">
+							  <div v-if="user.role !== 'Banned'" class="text-lg border px-2 py-1 rounded-lg ">
 								<div v-if="isAcceptedChallengeActive(user.idUser).value" class="bg-green-500 rounded-lg p-2 flex justify-between items-center">
 									<button @click="sendConfirmChallenge()" class="bg-white p-1 rounded">Ready</button>
 									<span>{{ countReadyPlayers }} / 2</span>
@@ -260,7 +260,7 @@
 											v-if="roleInChannel === 'Owner' && user.role !== 'Admin'"
 											@click="promoteUser(user.idUser)"
 										>
-											<img src="../assets/player/promote.svg" class="px-1 py-1" alt="promote">
+											<img src="../assets/player/promote.svg" title="promote" class="px-1 py-1" alt="promote">
 										</button>
 									</div>
 									<p v-if="channelType === 3" class="text-green-600">{{ user.username }}</p>

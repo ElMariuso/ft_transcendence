@@ -73,6 +73,14 @@ export const useLadderStore = defineStore('ladder', () => {
 		await setupBlockedList();
 	}
 
+	async function update() {
+
+		await setupUser();
+		await setupLadder();
+		await setupFriends();
+		await setupFriendsInvite();
+	}
+
 	/////////////////// ID ////////////////////////
 
 	function setId(newId : number) {
@@ -356,5 +364,5 @@ export const useLadderStore = defineStore('ladder', () => {
 		});
 	}
 
-	return {username, blocked, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult }
+	return {username, blocked, avatar, history, ladder, friendlist, nbWin, nbLoose, achievements, friendsStatus, setup, getId, setupUser, setId, getGamesHistory, getLadder, getFriends, getAchievements, setupGamesHistory, setupLadder, setupFriends, updateFriends, setupStats, setupAchievements, setupAllUsers, getUsers, setupFriendsInvite, getFriendsInvite, sendFriendRequest, updateFriendsInvite, setupBlockedList, getBlockedList, removeFriend, blockUnblock, updateFriendStatuses, getResult, update }
 })

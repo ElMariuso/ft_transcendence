@@ -174,6 +174,7 @@ const alreadyRequested = ref(false);
 const cannotSendFriendRequest = ref(false);
 
 let intervalId;
+let updateProfile;
 
 function getGameResult(idGame) {
 	const result = ladderStore.getResult(idGame);
@@ -187,10 +188,15 @@ function getGameResult(idGame) {
 onMounted(() => {
 	ladderStore.updateFriendStatuses();
 	intervalId = setInterval(ladderStore.updateFriendStatuses, 1000);
+
+	updateProfile = setInterval(async () => {
+	await ladderStore.update();
+	}, 500);
 });
 
 onUnmounted(() => {
 	clearInterval(intervalId);
+	clearInterval(updateProfile);
 });
 
 const formattedFriendStatuses = computed(() => {
