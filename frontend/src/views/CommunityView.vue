@@ -193,7 +193,7 @@
 							<button 
 								@click="sendMessage" 
 								:disabled="!newMessage" 
-								class="mt-2 w-1/6 bg-blue-500 text-white px-4 py-2 rounded-lg"
+								class="px-2 py-3 mr-2 w-1/6 bg-blue-500 text-white border rounded-lg"
 								:class="{ 'bg-blue-500 text-white': newMessage, 'bg-gray-500': !newMessage }"
 							>
 								Send
