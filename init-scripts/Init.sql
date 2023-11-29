@@ -198,10 +198,10 @@ INSERT INTO "ChannelType" ("name") VALUES ('private');
 INSERT INTO "ChannelType" ("name") VALUES ('public');
 INSERT INTO "ChannelType" ("name") VALUES ('dm');
 
-INSERT INTO "Achievement" ("name", "content") VALUES ('Depucelage', 'Joue ta première partie.');
-INSERT INTO "Achievement" ("name", "content") VALUES ('Mysanthrope?', 'Obtiens ton premier ami.');
-INSERT INTO "Achievement" ("name", "content") VALUES ('Moulin à parole', 'Envoie ton premier message.');
-INSERT INTO "Achievement" ("name", "content") VALUES ('Double-Face', 'Provoque ta propre chance.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Like a virgin', 'Play your first game.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Mysanthropist', 'Get your first friend.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Windbag', 'Send your first message.');
+INSERT INTO "Achievement" ("name", "content") VALUES ('Two-faces', 'Make your own luck.');
 
 --          USER
 
