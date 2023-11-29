@@ -211,6 +211,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
     }
 
+    /**
+     * Finds the socket ID of a player based on their playerId.
+     * @param playerId - The ID of the player.
+     * @returns The corresponding socket ID, or undefined if not found.
+     */
     private findSocketIdByPlayerId(playerId: string | number): string | undefined {
         for (const [socketId, playerInfo] of this.onlinePlayers.entries()) {
             if (playerInfo.playerId === playerId) {
@@ -220,6 +225,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return undefined;
     }
 
+    /**
+     * Finds the ID of the opponent of a player based on their playerId.
+     * @param playerId - The ID of the player.
+     * @returns The opponent's ID, or undefined if not found.
+     */
     private findOpponentId(playerId: string | number): string | number | undefined {
         const roomId = this.findRoomIdByPlayerId(playerId);
         if (!roomId) {
@@ -239,6 +249,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return undefined;
     }
 
+    /**
+     * Finds the room ID (roomId) based on a player's ID.
+     * @param playerId - The ID of the player.
+     * @returns The room ID, or undefined if not found.
+     */
     private findRoomIdByPlayerId(playerId: string | number): string | undefined {
         for (const [socketId, playerInfo] of this.onlinePlayers.entries()) {
             if (playerInfo.playerId === playerId) {
@@ -248,6 +263,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return undefined;
     }
 
+    /**
+     * Starts a timer for a game in a specific room.
+     * @param roomId - The ID of the room where the game is taking place.
+     * @param playerId - The ID of the player who initiated the timer.
+     */
     private startGameTimer(roomId: string, playerId: string | number): void {
         this.clearGameTimer(roomId);
     
@@ -260,14 +280,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }, 30000));
     }
 
+    /**
+     * Clears an ongoing timer in a specific game room.
+     * @param roomId - The ID of the room where the game is taking place.
+     */
     private clearGameTimer(roomId: string): void {
         if (this.gameTimers.has(roomId)) {
             clearTimeout(this.gameTimers.get(roomId));
             this.gameTimers.delete(roomId);
         }
     }
-
-    private quitMatchForOpponent
 
     /**
      * Handles the 'set-want-base-game' message to toggle the base game option for a player.
@@ -441,6 +463,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.gameStateUpdateIntervals.set(roomId, gameStateUpdateInterval);
     }
 
+    /**
+     * Finds player information based on their ID.
+     * @param playerId - The ID of the player.
+     * @returns The player's information, or undefined if not found.
+     */
     private findPlayerInfoById(playerId: number | string): { socketId: string; username: string } | undefined {
         let playerInfo;
     
