@@ -21,8 +21,7 @@ const showButtons = computed(() => route.path.startsWith('/game/'));
 const isInGame = computed(() => (matchmakingStore.roomID !== null));
 const {isSearching} = storeToRefs(matchmakingStore);
 const { username, avatarUpdated, userID } = storeToRefs(profileStore)
-// const avatarImg = ref(getAvatarImg());
-const avatarImg = ref(() => (getAvatarImg()));
+const avatarImg = ref(getAvatarImg());
 
 const updateAvatarKey = ref(0);
 

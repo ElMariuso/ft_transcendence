@@ -2,6 +2,7 @@ import jwt_decode, {JwtPayload} from 'jwt-decode';
 import Cookies from 'js-cookie';
 import { defineStore } from 'pinia'
 import { getAllChannels, getSubscribedChannels, postNewChannelsData, getChannelMsg, getChannelUsers, getChannel } from '@/services/Community-helpers'
+import { useLadderStore } from "@/stores/UserProfileStore";
 
 interface Channel {
 	idChannel: number;
@@ -133,7 +134,10 @@ export const useCommunityStore = defineStore('community', {
 			const token: any = Cookies.get('token');
 			const decodedToken: JwtPayload = jwt_decode(token);
 			const id: any = decodedToken.sub;
-	
+			
+			const ladderStore = useLadderStore();
+
+
 			try {
 				if (channelID)
 				{
@@ -149,7 +153,12 @@ export const useCommunityStore = defineStore('community', {
 					this.channelType = channel.idType;
 
 					const messages = await getChannelMsg(channelID);
-					this.selectedChannelMsg = messages;
+
+					const filteredMessages = messages.filter(message => {
+						return !ladderStore.blocked.some(blockedUser => blockedUser.idUser === message.idUser);
+					  });
+
+					this.selectedChannelMsg = filteredMessages;
 				
 					const users = await getChannelUsers(channelID);
 					const user = users.find((user: any) => user.idUser === id);

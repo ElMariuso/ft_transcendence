@@ -568,7 +568,7 @@ function isBanned(idChannel: any)
 			return (true);
 		}
 	}
-	console.log("Not banned in : " + idChannel)
+	// console.log("Not banned in : " + idChannel)
 	return (false);
 }
 
