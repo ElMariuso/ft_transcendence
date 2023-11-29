@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException, NotFoundException, Param } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException, BadRequestException, Param } from "@nestjs/common";
 
 import { ERROR_MESSAGES } from "src/globalVariables";
 import { AchievementService } from "src/Service/achievement.service";
@@ -27,6 +27,8 @@ export class AchievementController
 	 * @param idUser User's id
 	 * 
 	 * @returns Achievement []
+	 * 
+	 * @throw HTTPException with status BAD_REQUEST if the the user is not found
 	 */
 	@Get(':id')
 	async getAllAchievementsByUserId(@Param('id') id: string)
@@ -39,8 +41,8 @@ export class AchievementController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.ACHIEVEMENT.GETALLBYUSERID_FAILED);
 		}

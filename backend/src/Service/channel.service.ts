@@ -1,6 +1,6 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 
-import { Channel, Message, User } from '@prisma/client';
+import { Channel, Message } from '@prisma/client';
 
 import { ChannelQuery } from 'src/Query/channel.query';
 import { ChannelTypeQuery } from 'src/Query/type.query';
@@ -72,7 +72,7 @@ export class ChannelService
 		const channel = await this.channelQuery.findChannelById(id);
 
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		const messages = await this.messageQuery.findAllMessagesByChannelId(id);
 
@@ -108,7 +108,7 @@ export class ChannelService
 		const channel = await this.channelQuery.findChannelById(id);
 
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		const users = await this.userChannelQuery.findAllUsersByChannelId(id);
 
@@ -181,20 +181,21 @@ export class ChannelService
         const common = await this.userChannelQuery.findUserChannelByUserIds(user.idUser, user2.idUser, dmType);
         if (common)
             throw new BadRequestException(ERROR_MESSAGES.USER_CHANNEL.CHANNEL_ALREADY_EXIST);
-			let isBlocked = await this.blockedQuery.getBlockedByUserIds(user.idUser, user2.idUser);
-			if (isBlocked)
-				throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
-	
-			isBlocked = await this.blockedQuery.getBlockedByUserIds(user2.idUser, user.idUser);
-			if (isBlocked)
-				throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
-	
-			const name = "DM " + user.username + " | " + user2.username;
-			const password = "";
-			const role = await this.roleQuery.findRoleByName(ROLE.MEMBER);
-	
-			const newChannel = await this.channelQuery.createDM(user.idUser, user2.idUser, name, password, dmType, role.idRole);
-			return this.transformToDTO(newChannel);
+			
+		let isBlocked = await this.blockedQuery.getBlockedByUserIds(user.idUser, user2.idUser);
+		if (isBlocked)
+			throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
+
+		isBlocked = await this.blockedQuery.getBlockedByUserIds(user2.idUser, user.idUser);
+		if (isBlocked)
+			throw new ForbiddenException(ERROR_MESSAGES.BLOCK.USER_BLOCKED);
+
+		const name = "DM " + user.username + " | " + user2.username;
+		const password = "";
+		const role = await this.roleQuery.findRoleByName(ROLE.MEMBER);
+
+		const newChannel = await this.channelQuery.createDM(user.idUser, user2.idUser, name, password, dmType, role.idRole);
+		return this.transformToDTO(newChannel);
 		}
 	/**
      * Update a channel in DB.
@@ -259,7 +260,7 @@ export class ChannelService
 		const deletedChannel = await this.channelQuery.findChannelById(id);
 
 		if (!deletedChannel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 		
 		await this.channelQuery.deleteChannel(id);
 	}

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Game } from '@prisma/client';
 import { GameQuery } from 'src/Query/game.query';
 import { GameDTO } from 'src/DTO/game/game.dto';
@@ -56,7 +56,7 @@ export class GameService
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const games = await this.gameQuery.findAllGamesByUserId(idUser);
 
@@ -80,7 +80,7 @@ export class GameService
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const games = await this.gameQuery.findAllGamesDatasByUserId(idUser);
 		
@@ -102,11 +102,12 @@ export class GameService
 		return { nbGames: nbGames, nbWin: nbWin, nbLoose: nbLoose };
 	}
 
-	async getGamesResult(idUser: number) {
+	async getGamesResult(idUser: number)
+	{
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const res = await this.gameQuery.findAllGamesDatasByUserId(idUser);
 
@@ -127,14 +128,14 @@ export class GameService
         const checkSecond =  await this.userQuery.findUserById(game.idPlayerSecond);
 
         if (!checkOne || !checkSecond)
-            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
         const newGame = await this.gameQuery.createGame(game);
 
         if (newGame)
         {
             if (game.idPlayerOne != game.idWinner && game.idPlayerSecond != game.idWinner)
-                throw new BadRequestException();
+                throw new BadRequestException(ERROR_MESSAGES.GAME.WRONG_WINNER);
             
             let oneWin = false;
 
@@ -183,7 +184,7 @@ export class GameService
 		const deletedGame = await this.gameQuery.findGameById(id);
 
 		if (!deletedGame)
-			throw new NotFoundException(ERROR_MESSAGES.GAME.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.GAME.NOT_FOUND);
 		
 		await this.gameQuery.deleteGame(id);
 	}

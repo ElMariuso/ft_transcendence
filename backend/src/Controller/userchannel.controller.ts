@@ -27,7 +27,7 @@ export class UserChannelController
 	 * 
 	 * @returns All channels for the user's id
 	 * 
-	 * @throws HTTPException NOT_FOUND if the user is not found
+	 * @throws HTTPException BAD_REQUEST if the user is not found
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if generating the list failed
 	 */
 	@Get(':id')
@@ -41,8 +41,8 @@ export class UserChannelController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER_CHANNEL.FINDCHANNELFORAUSER_FAILED);
 		}
@@ -55,7 +55,8 @@ export class UserChannelController
 	 * 
 	 * @returns UserChannelDTO
 	 * 
-	 * @throws HTTPException NOT_FOUND if the user or the channel is not found
+	 * @throws HTTPException BAD_REQUEST if the user or the channel is not found
+	 * @throws HTTPException FORBIDDEN if the password did not match in case of private channel
 	 * @throws HTTPException CONFLICT if the user don't belong to the channel
 	 * @throws HTTPException CONFLICT if the user try to join a DM chat
 	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the creation of the channel failed
@@ -69,10 +70,13 @@ export class UserChannelController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+			if (error instanceof ForbiddenException)
+				throw new ForbiddenException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
+
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER_CHANNEL.JOINCHANNEL_FAILED);
 		}
 	}
@@ -85,7 +89,7 @@ export class UserChannelController
 	 * 
 	 * @returns Message in a string
 	 * 
-	 * @throws HTTPException NOT_FOUND if the user or the channel is not found
+	 * @throws HTTPException BAD_REQUEST if the user or the channel is not found
 	 * @throws HTTPException CONFLICT if the user don't belong to the channel
 	 * @throws HTTPException FORBIDDEN if the user try to kick the owner
 	 * @throws HTTPException FORBIDDEN if the user try to kick someone in DM channel
@@ -105,8 +109,8 @@ export class UserChannelController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER_CHANNEL.DELETEMEMBER_FAILED);
@@ -121,9 +125,9 @@ export class UserChannelController
 	 * 
 	 * @returns Updated record
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if user is not found or the member is not found
-	 * @throw HTTPException with status NOT_FOUND if channel is not found
-	 * @throw HTTPException with status NOT_FOUND if user's role is not found or the new role is not found
+	 * @throw HTTPException with status Bad_REQUEST if user is not found or the member is not found
+	 * @throw HTTPException with status Bad_REQUEST if channel is not found
+	 * @throw HTTPException with status Bad_REQUEST if user's role is not found or the new role is not found
 	 * @throw HTTPException with status CONFLICT if user or member is not in the channel
 	 * @throw HTTPException with status FORBIDDEN if the user is not a admin of the channel
 	 * @throw HTTPException with status FORBIDDEN if trying to change the owner's role
@@ -142,8 +146,8 @@ export class UserChannelController
 			
 			console.log("Error caught in userChannel controler")
 
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			if (error instanceof ForbiddenException)
@@ -160,8 +164,8 @@ export class UserChannelController
 	 * 
 	 * @returns Updated record
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if user is not found
-	 * @throw HTTPException with status NOT_FOUND if channel is not found
+	 * @throw HTTPException with status BAD_REQUEST if user is not found
+	 * @throw HTTPException with status BAD_REQUEST if channel is not found
 	 * @throw HTTPException with status CONFLICT if user is not in the channel
 	 * @throw HTTPException with status BAD_REQUEST if the time to mute equals null or is negative or equals 0
 	 */
@@ -174,11 +178,9 @@ export class UserChannelController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
-			if (error instanceof ConflictException)
-				throw new ConflictException(error.message);
 			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+			if (error instanceof ConflictException)
 				throw new ConflictException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.USER_CHANNEL.ADDMUTETIME_FAILED);
 		}

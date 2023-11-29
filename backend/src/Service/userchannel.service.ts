@@ -38,7 +38,7 @@ export class UserChannelService
 		const user = await this.userQuery.findUserById(idUser);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const channels = await this.channelQuery.findAllChannelsByUserId(idUser);
 
@@ -73,9 +73,9 @@ export class UserChannelService
 		const channel = await this.channelQuery.findChannelById(newUser.idChannel);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.PRIVATE))
 		{
@@ -85,9 +85,6 @@ export class UserChannelService
 			if (!pwIsCorrect)
 				throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
 			
-
-			// if (newUser.password != channel.password)
-			// 	throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.WRONG_PASSWORD);
 		}
 
 		const userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(newUser.idUser, newUser.idChannel);
@@ -116,12 +113,13 @@ export class UserChannelService
 		const channel = await this.channelQuery.findChannelById(idChannel);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 		
 		if (user.idUser === channel.idOwner)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.KICK_OWNER);
+
 		if (channel.idType === await this.typeQuery.findChannelTypeIdByName(TYPE.DM))
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.KICK_DM);
 
@@ -148,12 +146,12 @@ export class UserChannelService
 		const member = await this.userQuery.findUserById(idMember);
 
 		if (!user || !member)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const channel = await this.channelQuery.findChannelById(idChannel);	
 
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		if (channel.idOwner == member.idUser)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.CHANGE_OWNER_ROLE);
@@ -162,7 +160,7 @@ export class UserChannelService
 
 		const role = await this.roleQuery.findRoleById(idRole);
 		if (!role)
-			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.ROLE.NOT_FOUND);
 
 		const checkAdmin = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);
 		if (!checkAdmin)
@@ -170,7 +168,7 @@ export class UserChannelService
 
 		const admin = await this.roleQuery.findRoleById(checkAdmin.idRole);
 		if (!admin)
-			throw new NotFoundException(ERROR_MESSAGES.ROLE.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.ROLE.NOT_FOUND);
 
 		if (admin.name != ROLE.ADMIN)
 			throw new ForbiddenException(ERROR_MESSAGES.USER_CHANNEL.FORBIDDEN_ACTION);
@@ -202,9 +200,9 @@ export class UserChannelService
 		const channel = await this.channelQuery.findChannelById(idChannel);
 
 		if (!user)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		if (!channel)
-			throw new NotFoundException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.CHANNEL.NOT_FOUND);
 
 		
 		let userChannel = await this.userchannelQuery.findUserChannelByUserAndChannelIds(idUser, idChannel);

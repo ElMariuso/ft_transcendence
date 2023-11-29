@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { BlockedQuery } from 'src/Query/blocked.query'
@@ -25,7 +25,7 @@ export class BlockedService
 		const checkUser = await this.userQuery.findUserById(idUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const blockeds = await this.blockedQuery.getBlockeds(idUser);
 
@@ -55,7 +55,7 @@ export class BlockedService
 		const checkUser = await this.userQuery.findUserByUsername(blockedUsername);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 
 		const bond = await this.blockedQuery.getBlockedByUserIds(idUser, checkUser.idUser);
@@ -82,12 +82,12 @@ export class BlockedService
 		const checkUser = await this.userQuery.findUserById(idBlockedUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const bond = await this.blockedQuery.getBlockedByUserIds(idUser, checkUser.idUser);
 
 		if (!bond)
-			throw new NotFoundException(ERROR_MESSAGES.BLOCK.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.BLOCK.NOT_FOUND);
 
 		await this.blockedQuery.deleteBlocked(bond.idBlock);
 

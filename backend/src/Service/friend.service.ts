@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, BadRequestException } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { FriendQuery } from 'src/Query/friend.query';
@@ -31,7 +31,7 @@ export class FriendService
 		const checkFriend = await this.userQuery.findUserById(idUser);
 
 		if (!checkFriend)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const friends = await this.friendQuery.getFriends(idUser);
 		const formatFriends: FriendBlockedDTO[] = friends.map((friend) => 
@@ -59,7 +59,7 @@ export class FriendService
 		const checkFriend = await this.userQuery.findUserById(idUser);
 
 		if (!checkFriend)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 
 		const friends = await this.friendQuery.getFriendsInvitations(idUser);
 
@@ -89,7 +89,7 @@ export class FriendService
         const checkUser = await this.userQuery.findUserByUsername(username);
 
         if (!checkUser)
-            throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+            throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
         if (checkUser.idUser == idUser)
             throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_INVITE_ITSELF);
         
@@ -122,14 +122,15 @@ export class FriendService
 	async acceptFriendship(idUser: number, idFriendUser: number) : Promise<FriendBlockedDTO>
 	{
 		const checkUser = await this.userQuery.findUserById(idFriendUser);
+		const user = await this.userQuery.findUserById(idFriendUser);
 
-		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+		if (!checkUser || !user)
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
 		
 		if (!bond)
-			throw new NotFoundException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
 		if (bond.idUser == idUser)
 			throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_ACCEPT);
 		if (bond.idStatus == 2)
@@ -138,6 +139,7 @@ export class FriendService
 		const newFriendship = await this.friendQuery.acceptFriendship(bond.idFriend);
 
 		this.achievementService.checkAchievement(idUser, 2);
+		this.achievementService.checkAchievement(idFriendUser, 2);
 
 		return this.transformToFriendBlockedDTO(checkUser);
 	}
@@ -155,12 +157,12 @@ export class FriendService
 		const checkUser = await this.userQuery.findUserById(idFriendUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
 		
 		if (!bond)
-			throw new NotFoundException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
 		if (bond.idUser == idUser)
 			throw new ConflictException(ERROR_MESSAGES.FRIEND.USER_TRYING_REFUSE);
 		if (bond.idStatus == 3)
@@ -184,12 +186,12 @@ export class FriendService
 		const checkUser = await this.userQuery.findUserById(idFriendUser);
 
 		if (!checkUser)
-			throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.USER.NOT_FOUND);
 		
 		const bond = await this.friendQuery.getFriendshipByUserIds(idUser, checkUser.idUser);
 		
 		if (!bond)
-			throw new NotFoundException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
+			throw new BadRequestException(ERROR_MESSAGES.FRIEND.NOT_FOUND);
 
 
 		await this.friendQuery.deleteFriendship(bond.idFriend);

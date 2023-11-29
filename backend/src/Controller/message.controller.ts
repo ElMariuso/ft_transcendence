@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, Param, Post } from '@nestjs/common';
 import { MessageService } from 'src/Service/message.service';
 import { MessageDTO } from 'src/DTO/message/message.dto';
 import { CreateMessageDTO } from 'src/DTO/message/createMessage.dto';
@@ -41,7 +41,12 @@ export class MessageController
 	 * @param createMessageDTO DTO containing data to create the new message
 	 * 
 	 * @returns MessageDTO
-	 * @Throws HTTPException INTERNAL_SERVER_EXCEPTION if the creation of the message failed
+	 * 
+	 * @throws HTTPException BAD_REQUEST if the user is not found
+	 * @throws HTTPException BAD_REQUEST if the channel is not found
+	 * @throws HTTPException BAD_REQUEST if the user is not in the channel
+	 * @throws HTTPException BAD_REQUEST if the user is still in mute time
+	 * @throws HTTPException INTERNAL_SERVER_EXCEPTION if the creation of the message failed
 	 */
 	@Post()
 	async createMessage(@Body() createMessageDTO : CreateMessageDTO): Promise<MessageDTO>
@@ -52,8 +57,6 @@ export class MessageController
 		}
 		catch(error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
 			if (error instanceof BadRequestException)
 				throw new BadRequestException(error.message);
 				
@@ -67,7 +70,8 @@ export class MessageController
 	 * @param id Message's id to delete
 	 * 
 	 * @returns Message in a string
-	 * @throws HTTPException with status NOT_FOUND if the message is not found
+	 * 
+	 * @throws HTTPException with status BAD_REQUEST if the message is not found
 	 */
 	@Delete('/delete/:id')
 	async deleteMessageById(@Param('id') id: string) : Promise<String>
@@ -82,8 +86,8 @@ export class MessageController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 			throw new InternalServerErrorException(ERROR_MESSAGES.MESSAGE.DELETEMESSAGE_FAILED);
 		}
 	}

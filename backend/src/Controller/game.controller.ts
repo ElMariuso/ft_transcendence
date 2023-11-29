@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, BadRequestException, Param, Post } from '@nestjs/common';
 import { GameService } from 'src/Service/game.service';
 import { GameDTO } from 'src/DTO/game/game.dto';
 import { CreateGameDTO } from 'src/DTO/game/createGame.dto';
@@ -65,8 +65,8 @@ export class GameController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETALLGAMEUSER_FAILED);
 		}
@@ -79,7 +79,7 @@ export class GameController
 	 * 
 	 * @returns Number of games, the number of wins, the number of looses
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if the user is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if getting the stats failed
 	 */
 	@Get('stats/:id')
@@ -93,21 +93,28 @@ export class GameController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETGAMESTATS_FAILED);
 		}
 	}
 	
 	@Get('gamesResult/:id')
-	async getGamesResult(@Param('id') id: string) {
-		try {
+	async getGamesResult(@Param('id') id: string)
+	{
+		try
+		{
 			let newId = parseInt(id, 10);
 
 			return this.gameService.getGamesResult(newId);
-		} catch (error) {
-			throw new NotFoundException(error.message);
+		}
+		catch (error)
+		{
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
+
+			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.GETGAMESRESULTS_FAILED);
 		}
 	}
 
@@ -118,6 +125,8 @@ export class GameController
 	 * 
 	 * @returns GameDTO
 	 * 
+	 * @throw HTTPException with status BAD_REQUEST if one of the user is not found
+	 * @throw HTTPException with status BAD_REQUEST if none user's ids match the winner's id
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the creation of the game failed
 	 */
 	@Post()
@@ -129,6 +138,7 @@ export class GameController
 		}
 		catch(error)
 		{
+
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.CREATEGAME_FAILED);
 		}
 	}
@@ -140,7 +150,7 @@ export class GameController
 	 * 
 	 * @returns Message in a string
 	 * 
-	 * @throw HTTPException with status NOT_FOUND if the Game is not found
+	 * @throw HTTPException with status BadRequest if the Game is not found
 	 * @throw HTTPException with status INTERNAL_SERVER_EXCEPTION if the deletion failed
 	 */
 	@Delete('/delete/:id')
@@ -156,8 +166,8 @@ export class GameController
 		}
 		catch (error)
 		{
-			if (error instanceof NotFoundException)
-				throw new NotFoundException(error.message);
+			if (error instanceof BadRequestException)
+				throw new BadRequestException(error.message);
 
 			throw new InternalServerErrorException(ERROR_MESSAGES.GAME.DELETEGAME_FAILED);
 		}
