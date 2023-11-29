@@ -10,7 +10,7 @@
 					<input v-model="twoFactorAuthCode" type="text" placeholder="Enter 2FA Code" class="w-32 mt-1 p-2 text-sm border rounded-lg"/>
 					<button 
 						@click="() => twoFactorAuthTest(resolve)"
-						:disabled="checkTwoFactorAuthDisabled" 
+						:disabled="checkTwoFactorAuthDisabled || countdownInterval !== null" 
 						:class="test2faClass"
 						class="ml-5 text-lg px-4 py-2 rounded-lg"
 					>
@@ -19,6 +19,13 @@
 					
 					<button @click="() => cancelModal(resolve)" class="ml-5 text-lg text-white bg-red-500 px-4 py-2 rounded-lg">Cancel</button>
 				</div>
+
+				<div v-if="nbAttempts === 3" class="flex mt-2 text-red-500">
+					Too many bad attemps, retry in:  
+					<div class="mx-2 text-black">{{ countdownTimer }}</div>
+					seconds
+				</div>
+
 			</div>
 		</transition>
 	</Backdrop>
@@ -35,7 +42,11 @@
 	const { resolve } = defineProps(['resolve']);
 	const qrCodeDataUrl = ref('');
 	const twoFactorAuthCode: Ref<string> = ref('');
-		
+
+	const nbAttempts = ref(0);
+	const countdownTimer = ref(60); // Initial countdown time in seconds
+	let countdownInterval: number | null = null;	
+
 	const token: any = Cookies.get('token');
 	const decodedToken: JwtPayload = jwt_decode(token);
 	const id: any = decodedToken.sub;
@@ -44,7 +55,7 @@
 	const checkTwoFactorAuthPerformed = ref(false);
 
 	const test2faClass = computed(() => {
-		if (checkTwoFactorAuthDisabled.value)
+		if (checkTwoFactorAuthDisabled.value || countdownInterval !== null)
 			return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
 		else if (checkTwoFactorAuthPerformed.value && !checkTwoFactorAuthDisabled.value)
 			return {'bg-red-500 text-white': true};
@@ -71,6 +82,22 @@
 		emit('cancelModal')
 	}
 
+	function startCountdownTimer() {
+		if (countdownInterval === null) {
+			countdownInterval = setInterval(() => {
+				countdownTimer.value--;
+
+				if (countdownTimer.value === 0) {
+					// Reset nbAttempts and stop the countdown when it reaches 0
+					nbAttempts.value = 0;
+					clearInterval(countdownInterval!);
+					countdownInterval = null;
+					countdownTimer.value = 60;
+				}
+			}, 1000); // Update every second
+		}
+	}
+
   	async function twoFactorAuthTest(resolve: (value: boolean) => void) {
 		try {
 			const response = await api.post('/auth/2fa/verify', {
@@ -82,6 +109,12 @@
 				emit('closeModal')
 			}
 			checkTwoFactorAuthPerformed.value = true;
+			nbAttempts.value++;
+			
+			if (nbAttempts.value >= 3) {
+				// Start the countdown timer if nbAttempts reaches 3
+				startCountdownTimer();
+			}
 		} catch (error) {
 			console.error('Error authenticating:', error);
   		}

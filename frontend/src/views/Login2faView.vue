@@ -14,6 +14,10 @@ const authButtonDisabled = ref(true);
 const authCheckPerformed = ref(false);
 const updatePage = ref(0);
 
+const nbAttempts = ref(0);
+const countdownTimer = ref(60); // Initial countdown time in seconds
+let countdownInterval: number | null = null;	
+
 const authButtonLabel = computed(() => {
 	if (authCheckPerformed.value)
 		return 'Wrong code';
@@ -22,7 +26,7 @@ const authButtonLabel = computed(() => {
 });
 
 const authButtonClass = computed(() => {
-	if (authButtonDisabled.value)
+	if (authButtonDisabled.value || countdownInterval !== null)
 		return {'bg-gray-300 text-gray-700 cursor-not-allowed': true};
 	else if (authCheckPerformed.value)
 		return {'bg-red-500 text-white': true};
@@ -45,6 +49,21 @@ watch(twoFactorAuthCode, (newVal: string, oldVal: string) => {
 	}
 });
 
+function startCountdownTimer() {
+	if (countdownInterval === null) {
+		countdownInterval = setInterval(() => {
+			countdownTimer.value--;
+
+			if (countdownTimer.value === 0) {
+				// Reset nbAttempts and stop the countdown when it reaches 0
+				nbAttempts.value = 0;
+				clearInterval(countdownInterval!);
+				countdownInterval = null;
+				countdownTimer.value = 60;
+			}
+		}, 1000); // Update every second
+	}
+}
 
 async function authenticate() {
 	try {
@@ -71,8 +90,16 @@ async function authenticate() {
 				Cookies.set('token', res.data, { expires: 7 });
 				router.push('/login');
 			}
-			else
+			else {
 				authCheckPerformed.value = true;
+				nbAttempts.value++;
+				
+				if (nbAttempts.value >= 3) {
+					// Start the countdown timer if nbAttempts reaches 3
+					startCountdownTimer();
+				}
+			}
+
 		} catch (error) {
 			console.error('Error during 2FA authentication:', error);
 			window.location.reload();
@@ -97,12 +124,18 @@ async function authenticate() {
 			/>
 			<button 
 				class="mt-5 px-4 py-2 rounded-lg"
-				:disabled="authButtonDisabled" 
+				:disabled="authButtonDisabled || countdownInterval !== null" 
 				:class="authButtonClass"
 				@click="authenticate"
 			>
 				{{ authButtonLabel }}
 			</button>
+
+			<div v-if="nbAttempts === 3" class="flex mt-2 text-red-500">
+				Too many bad attemps, retry in:  
+				<div class="mx-2 text-white">{{ countdownTimer }}</div>
+				seconds
+			</div>
 		</div>
 	</div>
 </template>
